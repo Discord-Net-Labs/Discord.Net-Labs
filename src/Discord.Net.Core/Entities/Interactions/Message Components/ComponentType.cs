@@ -19,6 +19,11 @@ namespace Discord
         /// <summary>
         ///     A clickable button
         /// </summary>
-        Button = 2
+        Button = 2,
+        
+        /// <summary>
+        ///     A selection dropdown
+        /// </summary>
+        Select = 3
     }
 }
