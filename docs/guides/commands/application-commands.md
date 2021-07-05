@@ -1,6 +1,6 @@
 # Warning
 
-Slash commands and interactions are still under development and are subject to change at any time. This doccument is temporary and is only here to help those who wish to use the interaction features in the development state.
+Slash commands and interactions are still under development and are subject to change at any time. This document is temporary and is only here to help those who wish to use the interaction features in their development state.
 
 # Application commands
 
@@ -11,7 +11,7 @@ Application commands are a new feature thats still a work in progress, this guid
 ### Configuring
 
 There is a new configuration setting for your DiscordSocketClient called `AlwaysAcknowledgeInteractions`, It's default value is true. 
-Interactions work off of the Recieve -> Respond pipeline, meaning if you dont acknowledge the interaction within 3 seconds its gone forever.
+Interactions work off of the Receive -> Respond pipeline, meaning if you dont acknowledge the interaction within 3 seconds its gone forever.
 With `AlwaysAcknowledgeInteractions` set to true, the client will automatically acknowledge the interaction as its recieved, 
 letting you wait up to 15 minutes before responding with a message.
 
@@ -82,7 +82,7 @@ This returns all the application commands in that guild.
 
 ### Responding
 
-First thing we want to do is listen to the `InteractionCreated` event. This event is fired when a socket interaction is recieved via the gateway, It looks somthing like this
+First thing we want to do is listen to the `InteractionCreated` event. This event is fired when a socket interaction is recieved via the gateway, It looks something like this
 ```cs
 _client.InteractionCreated += MyEventHandler;
 
