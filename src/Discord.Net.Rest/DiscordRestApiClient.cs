@@ -56,7 +56,7 @@ namespace Discord.API
             _restClientProvider = restClientProvider;
             UserAgent = userAgent;
             DefaultRetryMode = defaultRetryMode;
-            _serializer = serializer ?? new JsonSerializer { ContractResolver = new DiscordContractResolver() };
+            _serializer = serializer ?? new JsonSerializer { ContractResolver = new DiscordContractResolver(), PreserveReferencesHandling = PreserveReferencesHandling.All };
 			UseSystemClock = useSystemClock;
 
             RequestQueue = new RequestQueue();
@@ -1476,6 +1476,215 @@ namespace Discord.API
 
             var ids = new BucketIds(channelId: channelId);
             return await SendAsync<IReadOnlyCollection<Webhook>>("GET", () => $"channels/{channelId}/webhooks", ids, options: options).ConfigureAwait(false);
+        }
+
+        //Slash Commands
+        public async Task<IReadOnlyCollection<ApplicationCommand>> GetGlobalApplicationCommands(ulong applicationId, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            return await SendAsync<IReadOnlyCollection<ApplicationCommand>>("GET", () => $"applications/{applicationId}/commands",
+                new BucketIds(), options: options).ConfigureAwait(false);
+        }
+        public async Task<ApplicationCommand> CreateGlobalApplicationCommand(ulong applicationId, CreateApplicationCommandParams args,
+            RequestOptions options = null)
+        {
+            Preconditions.SlashCommandName(args.Name, nameof(args.Name));
+            Preconditions.SlashCommandDescription(args.Description, nameof(args.Description));
+
+            options = RequestOptions.CreateOrClone(options);
+
+            return await SendJsonAsync<ApplicationCommand>("POST", ( ) => $"applications/{applicationId}/commands", args,
+                new BucketIds(), options: options).ConfigureAwait(false);
+        }
+        public async Task<ApplicationCommand> GetGlobalApplicationCommand(ulong applicationId, ulong commandId, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            return await SendAsync<ApplicationCommand>("GET", ( ) => $"applications/{applicationId}/commands/{commandId}",
+                new BucketIds(), options: options).ConfigureAwait(false);
+        }
+        public async Task<ApplicationCommand> ModifyGlobalApplicationCommand (ulong applicationId, ulong commandId, ModifyApplicationCommandParams args,
+            RequestOptions options = null )
+        {
+            Preconditions.SlashCommandName(args.Name, nameof(args.Name));
+            Preconditions.SlashCommandDescription(args.Description, nameof(args.Description));
+
+            options = RequestOptions.CreateOrClone(options);
+
+            return await SendJsonAsync<ApplicationCommand>("PATCH", ( ) => $"applications/{applicationId}/commands/{commandId}", args,
+                new BucketIds(), options: options).ConfigureAwait(false);
+        }
+        public async Task DeleteGlobalApplicationCommand(ulong applicationId, ulong commandId, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            await SendAsync("DELETE", ( ) => $"applications/{applicationId}/commands/{commandId}", new BucketIds(), options: options).ConfigureAwait(false);
+        }
+
+        public async Task<IReadOnlyCollection<ApplicationCommand>> GetGuildApplicationCommands (ulong applicationId, ulong guildId, RequestOptions options )
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+            return await SendAsync<IReadOnlyCollection<ApplicationCommand>>("GET", ( ) => $"applications/{applicationId}/guilds/{guildId}/commands",
+                ids, options: options).ConfigureAwait(false);
+        }
+        public async Task<IReadOnlyCollection<ApplicationCommand>> BulkOverwriteGlobalApplicationCommands (ulong applicationId,
+            IEnumerable<ApplicationCommand> args, RequestOptions options )
+        {
+            foreach(var commmand in args)
+            {
+                Preconditions.SlashCommandName(commmand.Name, nameof(commmand.Name));
+                Preconditions.SlashCommandDescription(commmand.Description, nameof(commmand.Description));
+            }
+
+            options = RequestOptions.CreateOrClone(options);
+
+            return await SendJsonAsync<IReadOnlyCollection<ApplicationCommand>>("PUT", ( ) => $"/applications/{applicationId}/commands", args, new BucketIds(), options: options)
+                .ConfigureAwait(false);
+        }
+        public async Task<ApplicationCommand> CreateGuildApplicationCommand (ulong applicationId, ulong guildId, CreateApplicationCommandParams args,
+            RequestOptions options = null)
+        {
+            Preconditions.SlashCommandName(args.Name, nameof(args.Name));
+            Preconditions.SlashCommandDescription(args.Description, nameof(args.Description));
+
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+            return await SendJsonAsync<ApplicationCommand>("POST", ( ) => $"applications/{applicationId}/guilds/{guildId}/commands", args, ids, options: options)
+                            .ConfigureAwait(false);
+        }
+        public async Task<ApplicationCommand> GetGuildApplicationCommand(ulong applicationId, ulong guildId, ulong commandId, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+            return await SendAsync<ApplicationCommand>("GET", ( ) => $"applications/{applicationId}/guilds/{guildId}/commands/{commandId}", ids, options: options)
+                .ConfigureAwait(false);
+        }
+        public async Task<ApplicationCommand> ModifyGuildApplicationCommand(ulong applicationId, ulong guildId, ulong commandId,
+            ModifyApplicationCommandParams args, RequestOptions options = null)
+        {
+            Preconditions.SlashCommandName(args.Name, nameof(args.Name));
+            Preconditions.SlashCommandDescription(args.Description, nameof(args.Description));
+
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+            return await SendJsonAsync<ApplicationCommand>("PATCH", ( ) => $"applications/{applicationId}/guilds/{guildId}/commands/{commandId}", args,
+                ids, options: options).ConfigureAwait(false);
+        }
+        public async Task DeleteGuildApplicationCommand(ulong applicationId, ulong guildId, ulong commandId, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+            await SendAsync("DELETE", ( ) => $"applications/{applicationId}/guilds/{guildId}/commands/{commandId}", ids, options: options)
+                .ConfigureAwait(false);
+        }
+        public async Task<IReadOnlyCollection<ApplicationCommand>> BulkOverwriteGuildApplicationCommands (ulong applicationId, ulong guildId,
+            IEnumerable<ApplicationCommand> args, RequestOptions options = null)
+        {
+            foreach (var commmand in args)
+            {
+                Preconditions.SlashCommandName(commmand.Name, nameof(commmand.Name));
+                Preconditions.SlashCommandDescription(commmand.Description, nameof(commmand.Description));
+            }
+
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+            return await SendJsonAsync<IReadOnlyCollection<ApplicationCommand>>("PUT", ( ) => $"applications/{applicationId}/guilds/{guildId}/commands",
+                args, ids, options: options).ConfigureAwait(false);
+        }
+        public async Task<IReadOnlyCollection<GuildApplicationCommandPermission>> GetGuildApplicationCommandPermissions (ulong applicationId,
+            ulong guildId, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+            return await SendAsync<IReadOnlyCollection<GuildApplicationCommandPermission>>("GET",
+                ( ) => $"applications/{applicationId}/guilds/{guildId}/commands/permissions", ids, options: options).ConfigureAwait(false);
+        }
+        public async Task<GuildApplicationCommandPermission> GetApplicationCommandPermissions(ulong applicationId, ulong guildId,
+            ulong commandId, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+            return await SendAsync<GuildApplicationCommandPermission>("GET",
+                ( ) => $"applications/{applicationId}/guilds/{guildId}/commands/{commandId}/permissions", ids, options: options).ConfigureAwait(false);
+        }
+        public async Task<GuildApplicationCommandPermission> ModifyApplicationCommandPermissions(ulong applicationId, ulong guildId, ulong commandId,
+            IEnumerable<ApplicationCommandPermission> args, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+            return await SendJsonAsync<GuildApplicationCommandPermission>("PUT", ( ) => $"applications/{applicationId}/guilds/{guildId}/commands/{commandId}/permissions",
+                args, ids, options: options).ConfigureAwait(false);
+        }
+        public async Task<IReadOnlyCollection<GuildApplicationCommandPermission>> BatchModifyApplicationCommandPermissions(ulong applicationId,
+            ulong guildId, ModifyBatchGuildApplicationCommandPermissionsParams args, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+            return await SendJsonAsync<IReadOnlyCollection<GuildApplicationCommandPermission>>("PUT",
+                ( ) => $"applications/{applicationId}/guilds/{guildId}/commands/permissions", args, ids, options: options).ConfigureAwait(false);
+        }
+
+        //Interactions
+        public async Task CreateInteractionResponse (ulong interactionId, string interactionToken,
+            CreateInteractionResponseParams args, RequestOptions options = null )
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            await SendJsonAsync("POST", ( ) => $"interactions/{interactionId}/{interactionToken}/callback", args, new BucketIds(), options: options).ConfigureAwait(false);
+        }
+        public async Task<InteractionResponse> GetOriginalInteractionResponse (ulong applicationId, string interactionToken, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            return await SendAsync<InteractionResponse>("GET", ( ) => $"webhooks/{applicationId}/{interactionToken}/messages/@original",
+                new BucketIds(), options: options).ConfigureAwait(false);
+        }
+        public async Task ModifyOriginalInteraction(ulong applicationId, string interactionToken, ModifyInteractionResponseParams args,
+            RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            await SendJsonAsync("PATCH", ( ) => $"webhooks/{applicationId}/{interactionToken}/messages/@original", args, new BucketIds(),
+                options: options).ConfigureAwait(false);
+        }
+        public async Task DeleteOriginalInteractionResponse(ulong applicationId, string interactionToken, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            await SendAsync("DELETE", ( ) => $"webhooks/{applicationId}/{interactionToken}/messages/@original", new BucketIds(), options: options).ConfigureAwait(false);
+        }
+        public async Task<Message> CreateFollowupMessage(ulong applicationId, string interactionToken, CreateWebhookMessageParams args, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            return await SendJsonAsync<Message>("POST", ( ) => $"webhooks/{applicationId}/{interactionToken}?wait=true", args,
+                new BucketIds(), clientBucket: ClientBucketType.SendEdit, options: options).ConfigureAwait(false);
+        }
+        public async Task ModifyFollowupMessage(ulong applicationId, string interactionToken, ulong messageId,
+            ModifyWebhookMessageParams args, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            await SendJsonAsync("PATCH", ( ) => $"webhooks/{applicationId}/{interactionToken}/messages/{messageId}", args,
+                new BucketIds(), ClientBucketType.SendEdit, options).ConfigureAwait(false);
+        }
+        public async Task DeleteFollowupMessage(ulong applicationId, string interactionToken, ulong messageId, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
+
+            await SendAsync("DELETE", ( ) => $"webhooks/{applicationId}/{interactionToken}/messages/{messageId}", new BucketIds(), options: options).ConfigureAwait(false);
         }
 
         //Helpers

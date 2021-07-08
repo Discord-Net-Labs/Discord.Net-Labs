@@ -71,6 +71,7 @@ namespace Discord.WebSocket
         internal WebSocketProvider WebSocketProvider { get; private set; }
         internal bool AlwaysDownloadUsers { get; private set; }
         internal int? HandlerTimeout { get; private set; }
+        internal bool AlwaysAcknowledgeInteractions { get; private set; }
 
         internal new DiscordSocketApiClient ApiClient => base.ApiClient as DiscordSocketApiClient;
         /// <inheritdoc />
@@ -131,6 +132,7 @@ namespace Discord.WebSocket
             WebSocketProvider = config.WebSocketProvider;
             AlwaysDownloadUsers = config.AlwaysDownloadUsers;
             HandlerTimeout = config.HandlerTimeout;
+            AlwaysAcknowledgeInteractions = config.AlwaysAcknowledgeInteractions;
             State = new ClientState(0, 0);
             Rest = new DiscordSocketRestClient(config, ApiClient);
             _heartbeatTimes = new ConcurrentQueue<long>();
@@ -1860,6 +1862,117 @@ namespace Discord.WebSocket
                                 }
                                 break;
 
+                            //Interactions
+                            case "INTERACTION_CREATE":
+                                {
+                                    await _gatewayLogger.DebugAsync("Received Dispatch (INTERACTION_CREATE)").ConfigureAwait(false);
+                                    var data = ( payload as JToken ).ToObject<Interaction>(_serializer);
+
+                                    if (data != null && AlwaysAcknowledgeInteractions) // Acknowledge the interaction
+                                    {
+                                        API.Rest.CreateInteractionResponseParams callback;
+                                        switch (data.Type)
+                                        {
+                                            
+                                            case InteractionType.Ping:
+                                                {
+                                                    callback = new API.Rest.CreateInteractionResponseParams(InteractionCallbackType.Pong);
+                                                }
+                                                break;
+                                            case InteractionType.ApplicationCommand:
+                                                {
+                                                    callback = new API.Rest.CreateInteractionResponseParams(InteractionCallbackType.DeferredChannelMessageWithSource);
+                                                }
+                                                break;
+                                            case InteractionType.MessageComponent:
+                                                {
+                                                    callback = new API.Rest.CreateInteractionResponseParams(InteractionCallbackType.DeferredUpdateMessage);
+                                                }
+                                                break;
+                                            default:
+                                                callback = null;
+                                                break;
+                                        }
+                                        if (callback != null)
+                                            await ApiClient.CreateInteractionResponse(data.Id, data.Token, callback);
+                                        else
+                                            await _gatewayLogger.DebugAsync("Unknown interaction type, skipping Auto-Ack");
+                                    }
+                                        
+
+                                    ISocketMessageChannel channel = null;
+
+                                    if(data.ChannelId.IsSpecified)
+                                        channel = await GetChannelAsync(data.ChannelId.Value) as ISocketMessageChannel;
+
+                                    SocketUser user = null;
+
+                                    if (data.Member.IsSpecified) // Assume Guild
+                                    {
+                                        var guild = ( channel as SocketGuildChannel )?.Guild;
+
+                                        if (guild != null)
+                                            user = guild.AddOrUpdateUser(data.Member.Value);
+                                    }
+                                    else if (data.User.IsSpecified) // Assume DM
+                                    {
+                                        if (channel is SocketGroupChannel groupChannel)
+                                            user = groupChannel.GetOrAddUser(data.User.Value);
+                                        else
+                                            user = ( channel as SocketChannel ).GetUser(data.User.Value.Id);
+                                    }
+                                    else
+                                    {
+                                        await UnknownChannelUserAsync(type, data.User.Value.Id, channel.Id).ConfigureAwait(false);
+                                        return;
+                                    }
+                                    var interaction = SocketInteraction.Create(this, State, user, channel, data);
+                                    await TimedInvokeAsync(_interactionReceivedEvent, nameof(InteractionRecieved), interaction).ConfigureAwait(false);
+                                }
+                                break;
+                            case "APPLICATION_COMMAND_CREATE":
+                                {
+                                    await _gatewayLogger.DebugAsync("Received Dispatch (APPLICATION_COMMAND_CREATE)").ConfigureAwait(false);
+                                    var data = ( payload as JToken ).ToObject<ApplicationCommand>(_serializer);
+
+                                    SocketGuild guild = null;
+
+                                    if (data.GuildId.IsSpecified)
+                                        guild = new SocketGuild(this, data.GuildId.Value);
+
+                                    var applicationCommand = new SocketApplicationCommand(this, data.Id, guild, data);
+                                    await TimedInvokeAsync(_applicationCommandCreatedEvent, nameof(ApplicationCommandCreated), applicationCommand).ConfigureAwait(false);
+                                }
+                                break;
+                            case "APPLICATION_COMMAND_UPDATE":
+                                {
+                                    await _gatewayLogger.DebugAsync("Received Dispatch (APPLICATION_COMMAND_UPDATE)").ConfigureAwait(false);
+                                    var data = ( payload as JToken ).ToObject<ApplicationCommand>(_serializer);
+
+                                    SocketGuild guild = null;
+
+                                    if (data.GuildId.IsSpecified)
+                                        guild = new SocketGuild(this, data.GuildId.Value);
+
+                                    var applicationCommand = new SocketApplicationCommand(this, data.Id, guild, data);
+                                    await TimedInvokeAsync(_applicationCommandCreatedEvent, nameof(ApplicationCommandCreated), applicationCommand).ConfigureAwait(false);
+                                }
+                                break;
+                            case "APPLICATION_COMMAND_DELETE":
+                                {
+                                    await _gatewayLogger.DebugAsync("Received Dispatch (APPLICATION_COMMAND_DELETE)").ConfigureAwait(false);
+                                    var data = ( payload as JToken ).ToObject<ApplicationCommand>(_serializer);
+
+                                    SocketGuild guild = null;
+
+                                    if (data.GuildId.IsSpecified)
+                                        guild = new SocketGuild(this, data.GuildId.Value);
+
+                                    var applicationCommand = new SocketApplicationCommand(this, data.Id, guild, data);
+                                    await TimedInvokeAsync(_applicationCommandCreatedEvent, nameof(ApplicationCommandCreated), applicationCommand).ConfigureAwait(false);
+                                }
+                                break;
+
                             //Ignored (User only)
                             case "CHANNEL_PINS_ACK":
                                 await _gatewayLogger.DebugAsync("Ignored Dispatch (CHANNEL_PINS_ACK)").ConfigureAwait(false);
@@ -2162,6 +2275,11 @@ namespace Discord.WebSocket
         {
             string details = $"{evnt} Guild={guildId}";
             await _gatewayLogger.DebugAsync($"Unsynced Guild ({details}).").ConfigureAwait(false);
+        }
+
+        private async Task UnknownInteractionSourceAsync(string evnt)
+        {
+            await _gatewayLogger.WarningAsync($"Interaction recieved from unknown source ({evnt}).").ConfigureAwait(false);
         }
 
         internal int GetAudioId() => _nextAudioId++;

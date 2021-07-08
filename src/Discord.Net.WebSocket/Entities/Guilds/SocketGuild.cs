@@ -1183,6 +1183,12 @@ namespace Discord.WebSocket
             }
         }
 
+        // Application Commands
+
+        /// <inheritdoc cref="IGuild.GetSlashCommands(RequestOptions)"/>
+        public async Task<IEnumerable<RestApplicationCommand>> GetSlashCommands (RequestOptions options = null) =>
+            await SlashCommandHelper.GetApplicationCommands(Discord, this, options).ConfigureAwait(false);
+
         /// <summary>
         ///     Gets the name of the guild.
         /// </summary>
@@ -1350,6 +1356,9 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         async Task<IReadOnlyCollection<IWebhook>> IGuild.GetWebhooksAsync(RequestOptions options)
             => await GetWebhooksAsync(options).ConfigureAwait(false);
+        /// <inheritdoc />
+        async Task<IEnumerable<IApplicationCommand>> IGuild.GetSlashCommands (RequestOptions options = null) =>
+            await GetSlashCommands(options);
 
         void IDisposable.Dispose()
         {

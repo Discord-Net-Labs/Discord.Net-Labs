@@ -802,6 +802,12 @@ namespace Discord.Rest
         public Task DeleteEmoteAsync(GuildEmote emote, RequestOptions options = null)
             => GuildHelper.DeleteEmoteAsync(this, Discord, emote.Id, options);
 
+        // Application Commands
+
+        /// <inheritdoc cref="IGuild.GetSlashCommands(RequestOptions)"/>
+        public async Task<IEnumerable<RestApplicationCommand>> GetSlashCommands (RequestOptions options = null) =>
+            await SlashCommandHelper.GetApplicationCommands(Discord, this, options).ConfigureAwait(false);
+
         //IGuild
         /// <inheritdoc />
         bool IGuild.Available => Available;
@@ -1028,5 +1034,8 @@ namespace Discord.Rest
         /// <inheritdoc />
         async Task<IReadOnlyCollection<IWebhook>> IGuild.GetWebhooksAsync(RequestOptions options)
             => await GetWebhooksAsync(options).ConfigureAwait(false);
+        /// <inheritdoc />
+        async Task<IEnumerable<IApplicationCommand>> IGuild.GetSlashCommands (RequestOptions options = null) =>
+            await GetSlashCommands(options);
     }
 }

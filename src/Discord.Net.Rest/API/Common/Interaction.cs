@@ -1,0 +1,31 @@
+using Newtonsoft.Json;
+
+namespace Discord.API
+{
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
+    internal class Interaction
+    {
+        [JsonProperty("id")]
+        public ulong Id { get; set; }
+        [JsonProperty("application_id")]
+        public ulong ApplicationId { get; set; }
+        [JsonProperty("type")]
+        public InteractionType Type { get; set; }
+        [JsonProperty("data")]
+        public Optional<ApplicationCommandInteractionData> Data { get; set; }
+        [JsonProperty("guild_id")]
+        public Optional<ulong> GuildId { get; set; }
+        [JsonProperty("channel_id")]
+        public Optional<ulong> ChannelId { get; set; }
+        [JsonProperty("member")]
+        public Optional<GuildMember> Member { get; set; }
+        [JsonProperty("user")]
+        public Optional<User> User { get; set; }
+        [JsonProperty("token")]
+        public string Token { get; set; }
+        [JsonProperty("version")]
+        public int Version { get; set; }
+        [JsonProperty("message")]
+        public Optional<Message> Message { get; set; }
+    }
+}

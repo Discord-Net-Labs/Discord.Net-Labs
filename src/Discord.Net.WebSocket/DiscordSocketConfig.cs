@@ -160,6 +160,8 @@ namespace Discord.WebSocket
         /// </remarks>
         public GatewayIntents GatewayIntents { get; set; } = GatewayIntents.AllUnprivileged;
 
+        public bool AlwaysAcknowledgeInteractions { get; set; } = true;
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="DiscordSocketConfig"/> class with the default configuration.
         /// </summary>

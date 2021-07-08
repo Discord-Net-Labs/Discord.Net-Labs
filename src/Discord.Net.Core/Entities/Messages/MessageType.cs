@@ -61,5 +61,9 @@ namespace Discord
         ///     The message is an inline reply.
         /// </summary>
         Reply = 19,
+        /// <summary>
+        ///     The message is an Application Command
+        /// </summary>
+        ApplicationCommand = 20
     }
 }
