@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -74,6 +75,9 @@ namespace Discord.Rest
         /// <inheritdoc/>
         public MessageType Type { get; private set; }
 
+        /// <inheritdoc/>
+        public IReadOnlyCollection<ActionRowComponent> Components { get; private set; }
+
         internal RestMessage(BaseDiscordClient discord, ulong id, IMessageChannel channel, IUser author, MessageSource source)
             : base(discord, id)
         {
@@ -121,7 +125,7 @@ namespace Discord.Rest
                 };
             }
 
-            if(model.Reference.IsSpecified)
+            if (model.Reference.IsSpecified)
             {
                 // Creates a new Reference from the API model
                 Reference = new MessageReference
@@ -131,6 +135,55 @@ namespace Discord.Rest
                     MessageId = model.Reference.Value.MessageId
                 };
             }
+
+            if (model.Components.IsSpecified)
+            {
+                Components = model.Components.Value.Select(x => new ActionRowComponent(x.Components.Select<IMessageComponent, IMessageComponent>(y =>
+                {
+                    switch (y.Type)
+                    {
+                        case ComponentType.Button:
+                            {
+                                var parsed = (API.ButtonComponent)y;
+                                return new Discord.ButtonComponent(
+                                    parsed.Style,
+                                    parsed.Label.GetValueOrDefault(),
+                                    parsed.Emote.IsSpecified
+                                        ? parsed.Emote.Value.Id.HasValue
+                                            ? new Emote(parsed.Emote.Value.Id.Value, parsed.Emote.Value.Name, parsed.Emote.Value.Animated.GetValueOrDefault())
+                                            : new Emoji(parsed.Emote.Value.Name)
+                                        : null,
+                                    parsed.CustomId.GetValueOrDefault(),
+                                    parsed.Url.GetValueOrDefault(),
+                                    parsed.Disabled.GetValueOrDefault());
+                            }
+                        case ComponentType.SelectMenu:
+                            {
+                                var parsed = (API.SelectMenuComponent)y;
+                                return new SelectMenu(
+                                    parsed.CustomId,
+                                    parsed.Options.Select(z => new SelectMenuOption(
+                                        z.Label,
+                                        z.Value,
+                                        z.Description.GetValueOrDefault(),
+                                        z.Emoji.IsSpecified
+                                        ? z.Emoji.Value.Id.HasValue
+                                            ? new Emote(z.Emoji.Value.Id.Value, z.Emoji.Value.Name, z.Emoji.Value.Animated.GetValueOrDefault())
+                                            : new Emoji(z.Emoji.Value.Name)
+                                        : null,
+                                        z.Default.ToNullable())).ToList(),
+                                    parsed.Placeholder.GetValueOrDefault(),
+                                    parsed.MinValues,
+                                    parsed.MaxValues
+                                    );
+                            }
+                        default:
+                            return null;
+                    }
+                }).ToList())).ToImmutableArray();
+            }
+            else
+                Components = new List<ActionRowComponent>();
 
             if (model.Flags.IsSpecified)
                 Flags = model.Flags.Value;
@@ -177,6 +230,10 @@ namespace Discord.Rest
         IReadOnlyCollection<IEmbed> IMessage.Embeds => Embeds;
         /// <inheritdoc />
         IReadOnlyCollection<ulong> IMessage.MentionedUserIds => MentionedUsers.Select(x => x.Id).ToImmutableArray();
+        
+        /// <inheritdoc/>
+        IReadOnlyCollection<IMessageComponent> IMessage.Components => Components;
+
         /// <inheritdoc />
         IReadOnlyCollection<ISticker> IMessage.Stickers => Stickers;
 

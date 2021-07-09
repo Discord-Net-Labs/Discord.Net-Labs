@@ -127,8 +127,7 @@ namespace Discord.WebSocket
         ///     <code language="cs" region="MessageDeleted"
         ///           source="..\Discord.Net.Examples\WebSocket\BaseSocketClient.Events.Examples.cs" />
         /// </example>
-        public event Func<Cacheable<IMessage, ulong>, Cacheable<IMessageChannel, ulong>, Task> MessageDeleted
-        {
+        public event Func<Cacheable<IMessage, ulong>, Cacheable<IMessageChannel, ulong>, Task> MessageDeleted {
             add { _messageDeletedEvent.Add(value); }
             remove { _messageDeletedEvent.Remove(value); }
         }

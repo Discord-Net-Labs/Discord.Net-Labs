@@ -193,8 +193,31 @@ namespace Discord.Rest
                 }
             };
         }
+
+        public static async Task<IReadOnlyCollection<RestGlobalCommand>> GetGlobalApplicationCommands(BaseDiscordClient client, RequestOptions options)
+        {
+            var response = await client.ApiClient.GetGlobalApplicationCommandsAsync(options).ConfigureAwait(false);
+
+            if (!response.Any())
+                return new RestGlobalCommand[0];
+
+            return response.Select(x => RestGlobalCommand.Create(client, x)).ToArray();
+        }
+
+        public static async Task<IReadOnlyCollection<RestGuildCommand>> GetGuildApplicationCommands(BaseDiscordClient client, ulong guildId, RequestOptions options)
+        {
+            var response = await client.ApiClient.GetGuildApplicationCommandsAsync(guildId, options).ConfigureAwait(false);
+
+            if (!response.Any())
+                return new RestGuildCommand[0].ToImmutableArray();
+
+            return response.Select(x => RestGuildCommand.Create(client, x, guildId)).ToImmutableArray();
+        }
+
+
         public static Task AddRoleAsync(BaseDiscordClient client, ulong guildId, ulong userId, ulong roleId, RequestOptions options = null)
             => client.ApiClient.AddRoleAsync(guildId, userId, roleId, options);
+        
         public static Task RemoveRoleAsync(BaseDiscordClient client, ulong guildId, ulong userId, ulong roleId, RequestOptions options = null)
             => client.ApiClient.RemoveRoleAsync(guildId, userId, roleId, options);
     }

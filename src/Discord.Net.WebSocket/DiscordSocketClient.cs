@@ -25,7 +25,7 @@ namespace Discord.WebSocket
     public partial class DiscordSocketClient : BaseSocketClient, IDiscordClient
     {
         private readonly ConcurrentQueue<ulong> _largeGuilds;
-        private readonly JsonSerializer _serializer;
+        internal readonly JsonSerializer _serializer;
         private readonly DiscordShardedClient _shardedClient;
         private readonly DiscordSocketClient _parentClient;
         private readonly ConcurrentQueue<long> _heartbeatTimes;
@@ -131,6 +131,7 @@ namespace Discord.WebSocket
             UdpSocketProvider = config.UdpSocketProvider;
             WebSocketProvider = config.WebSocketProvider;
             AlwaysDownloadUsers = config.AlwaysDownloadUsers;
+            AlwaysAcknowledgeInteractions = config.AlwaysAcknowledgeInteractions;
             HandlerTimeout = config.HandlerTimeout;
             AlwaysAcknowledgeInteractions = config.AlwaysAcknowledgeInteractions;
             State = new ClientState(0, 0);
@@ -617,6 +618,7 @@ namespace Discord.WebSocket
                                         var state = new ClientState(data.Guilds.Length, data.PrivateChannels.Length);
 
                                         var currentUser = SocketSelfUser.Create(this, state, data.User);
+                                        Rest.CreateRestSelfUser(data.User);
                                         var activities = _activity.IsSpecified ? ImmutableList.Create(_activity.Value) : null;
                                         currentUser.Presence = new SocketPresence(Status, null, activities);
                                         ApiClient.CurrentUserId = currentUser.Id;
@@ -1861,7 +1863,7 @@ namespace Discord.WebSocket
                                     }
                                 }
                                 break;
-
+                                
                             //Interactions
                             case "INTERACTION_CREATE":
                                 {

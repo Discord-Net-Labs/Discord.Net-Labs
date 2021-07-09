@@ -1,9 +1,10 @@
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace Discord.API
 {
     [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-    internal class ApplicationCommandInteractionData
+    internal class ApplicationCommandInteractionData : IDiscordInteractionData
     {
         [JsonProperty("id")]
         public ulong Id { get; set; }

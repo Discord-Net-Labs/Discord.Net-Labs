@@ -1,4 +1,10 @@
+using Discord.API;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Discord.API.Rest
 {
@@ -14,13 +20,15 @@ namespace Discord.API.Rest
         [JsonProperty("default_permission")]
         public Optional<bool> DefaultPermission { get; set; }
 
-        public CreateApplicationCommandParams (string name, string description)
+        public CreateApplicationCommandParams (string name, string description, ApplicationCommandOption[] options = null)
         {
             Preconditions.SlashCommandName(name, nameof(name));
             Preconditions.SlashCommandDescription(description, nameof(description));
 
             Name = name;
             Description = description;
+            if(options != null)
+              Options = options;
         }
     }
 }

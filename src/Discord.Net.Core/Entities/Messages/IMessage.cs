@@ -165,6 +165,10 @@ namespace Discord
         IReadOnlyDictionary<IEmote, ReactionMetadata> Reactions { get; }
 
         /// <summary>
+        ///     The <see cref="IMessageComponent"/>'s attached to this message
+        /// </summary>
+        IReadOnlyCollection<IMessageComponent> Components { get; }
+
         ///     Gets all stickers included in this message.
         /// </summary>
         /// <returns>
@@ -182,7 +186,7 @@ namespace Discord
         ///     A message's flags, if any is associated.
         /// </returns>
         MessageFlags? Flags { get; }
-
+        
         /// <summary>
         ///     Adds a reaction to this message.
         /// </summary>
