@@ -78,8 +78,17 @@ namespace Discord.Rest
             await SlashCommandHelper.ModifyApplicationCommand(Discord, Id, Guild, name, description, defaultPermission, commandOptions, options)
             .ConfigureAwait(false);
 
+        /// <inheritdoc cref="IApplicationCommand.ModifyPermissions(IDictionary{IUser, bool}, IDictionary{IRole, bool}, RequestOptions)"/>
+        public async Task<ApplicationCommandPermissions> ModifyPermissions (IDictionary<IUser, bool> userPerms = null,
+            IDictionary<IRole, bool> rolePerms = null, RequestOptions options = null) =>
+            await SlashCommandHelper.ModifyCommandPermissions(Discord, this, userPerms, rolePerms, options).ConfigureAwait(false);
+
         /// <inheritdoc/>
         async Task<IApplicationCommand> IApplicationCommand.Modify (string name, string description, bool defaultPermission,
             IEnumerable<IApplicationCommandOption> commandOptions, RequestOptions options) => await Modify(name,description, defaultPermission, commandOptions, options);
+
+        /// <inheritdoc/>
+        async Task<IApplicationCommandPermissions> IApplicationCommand.ModifyPermissions (IDictionary<IUser, bool> userPerms,
+            IDictionary<IRole, bool> rolePerms, RequestOptions options) => await ModifyPermissions(userPerms, rolePerms, options);
     }
 }

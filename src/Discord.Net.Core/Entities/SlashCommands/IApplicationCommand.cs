@@ -48,5 +48,14 @@ namespace Discord
         /// <returns></returns>
         Task<IApplicationCommand> Modify (string name, string description, bool defaultPermission, IEnumerable<IApplicationCommandOption> commandOptions,
             RequestOptions options);
+
+        /// <summary>
+        /// Modify the User and Role permissions for this Application Command
+        /// </summary>
+        /// <param name="userPerms">User and the corresponding clearance values</param>
+        /// <param name="rolePerms">Role and the corresponding clearance values</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns></returns>
+        Task<IApplicationCommandPermissions> ModifyPermissions (IDictionary<IUser, bool> userPerms, IDictionary<IRole, bool> rolePerms, RequestOptions options);
     }
 }
