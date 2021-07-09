@@ -3442,6 +3442,27 @@
                 A task that represents the asynchronous removal operation.
             </returns>
         </member>
+        <member name="M:Discord.IGuild.GetSlashCommandsAsync(Discord.RequestOptions)">
+            <summary>
+                Gets a collection of slash commands created by the current user in this guild.
+            </summary>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous get operation. The task result contains a read-only collection of
+                slash commands created by the current user.
+            </returns>
+        </member>
+        <member name="M:Discord.IGuild.GetSlashCommandAsync(System.UInt64,Discord.RequestOptions)">
+            <summary>
+                Gets a slash command in the current guild.
+            </summary>
+            <param name="commandId">The unique identifier of the slash command.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous get operation. The task result contains a
+                slash command created by the current user.
+            </returns>
+        </member>
         <member name="T:Discord.IGuildIntegration">
             <summary>
                 Holds information for a guild integration feature.
@@ -3887,17 +3908,17 @@
                 If the option is a subcommand or subcommand group type, this nested options will be the parameters.
             </summary>
         </member>
-        <member name="T:Discord.ApplicationCommandOptionChoiceProperties">
+        <member name="T:Discord.ApplicationCommandOptionChoice">
             <summary>
                 Represents a choice for a <see cref="T:Discord.IApplicationCommandInteractionDataOption"/>. This class is used when making new commands.
             </summary>
         </member>
-        <member name="P:Discord.ApplicationCommandOptionChoiceProperties.Name">
+        <member name="P:Discord.ApplicationCommandOptionChoice.Name">
             <summary>
                 The name of this choice.
             </summary>
         </member>
-        <member name="P:Discord.ApplicationCommandOptionChoiceProperties.Value">
+        <member name="P:Discord.ApplicationCommandOptionChoice.Value">
             <summary>
                 The value of this choice.
             </summary>
@@ -3979,40 +4000,61 @@
         </member>
         <member name="T:Discord.IApplicationCommand">
             <summary>
-                The base command model that belongs to an application. see <see href="https://discord.com/developers/docs/interactions/slash-commands#applicationcommand"/>
-            </summary>
-        </member>
-        <member name="P:Discord.IApplicationCommand.ApplicationId">
-            <summary>
-                Gets the unique id of the parent application.
+            Represents an Discord Application Command
             </summary>
         </member>
         <member name="P:Discord.IApplicationCommand.Name">
             <summary>
-                The name of the command.
+            Get the name of this command
             </summary>
         </member>
         <member name="P:Discord.IApplicationCommand.Description">
             <summary>
-                The description of the command.
+            Get the description of this command
+            </summary>
+        </member>
+        <member name="P:Discord.IApplicationCommand.ApplicationId">
+            <summary>
+            Get the Snowflake ID of the application this command belongs to
             </summary>
         </member>
         <member name="P:Discord.IApplicationCommand.DefaultPermission">
             <summary>
-                Whether the command is enabled by default when the app is added to a guild.
+            Wheter this command is executable by defult
             </summary>
+        </member>
+        <member name="P:Discord.IApplicationCommand.Guild">
+            <summary>
+            Get the guild this command belongs to if it is a Guild Command
+            </summary>
+            <remarks>
+            Will be <see langword="null"/> if the Command is a Global Command
+            </remarks>
         </member>
         <member name="P:Discord.IApplicationCommand.Options">
             <summary>
-                If the option is a subcommand or subcommand group type, this nested options will be the parameters.
+            Contains the information on the options of this command, these may be Sub-Commands, Sub-Command Groups or command parameters
             </summary>
         </member>
-        <member name="M:Discord.IApplicationCommand.DeleteAsync(Discord.RequestOptions)">
+        <member name="M:Discord.IApplicationCommand.Modify(System.String,System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.IApplicationCommandOption},Discord.RequestOptions)">
             <summary>
-                Deletes this command
+            Modify this Application Command on Discord
             </summary>
+            <param name="name"></param>
+            <param name="description"></param>
+            <param name="defaultPermission"></param>
+            <param name="commandOptions"></param>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Discord.IApplicationCommand.ModifyPermissions(System.Collections.Generic.IDictionary{Discord.IUser,System.Boolean},System.Collections.Generic.IDictionary{Discord.IRole,System.Boolean},Discord.RequestOptions)">
+            <summary>
+            Modify the User and Role permissions for this Application Command
+            </summary>
+            <param name="userPerms">User and the corresponding clearance values</param>
+            <param name="rolePerms">Role and the corresponding clearance values</param>
             <param name="options">The options to be used when sending the request.</param>
-            <returns>A task that represents the asynchronous delete operation.</returns>
+            <returns></returns>
         </member>
         <member name="T:Discord.IApplicationCommandInteractionData">
             <summary>
@@ -4115,41 +4157,158 @@
         </member>
         <member name="T:Discord.IDiscordInteraction">
             <summary>
-                Represents a discord interaction
-                <para>
-                    An interaction is the base "thing" that is sent when a user invokes a command, and is the same for Slash Commands
-                    and other future interaction types. see <see href="https://discord.com/developers/docs/interactions/slash-commands#interaction"/>.
-                </para>
+            Represents an Discord Client originated user interaction
             </summary>
         </member>
-        <member name="P:Discord.IDiscordInteraction.Id">
+        <member name="P:Discord.IDiscordInteraction.InteractionType">
             <summary>
-                The id of the interaction.
+            Get the type of the interaction
             </summary>
         </member>
-        <member name="P:Discord.IDiscordInteraction.Type">
+        <member name="P:Discord.IDiscordInteraction.User">
             <summary>
-                The type of this <see cref="T:Discord.IDiscordInteraction"/>.
+            Get the user that created this interaction
             </summary>
         </member>
-        <member name="P:Discord.IDiscordInteraction.Data">
+        <member name="P:Discord.IDiscordInteraction.Channel">
             <summary>
-                Represents the data sent within this interaction.
+            Get the channel this interaction originated from
             </summary>
         </member>
         <member name="P:Discord.IDiscordInteraction.Token">
             <summary>
-                A continuation token for responding to the interaction.
+            Get the manipulation token for this interaction
             </summary>
+            <remarks>
+            Valid for 15 mins
+            </remarks>
         </member>
         <member name="P:Discord.IDiscordInteraction.Version">
             <summary>
-                read-only property, always 1.
+            Get the version of the Interaction API
             </summary>
+            <remarks>
+            Constant 1
+            </remarks>
+        </member>
+        <member name="P:Discord.IDiscordInteraction.ApplicationId">
+            <summary>
+            Get the Snowflake ID of the application this interaction was issued to
+            </summary>
+        </member>
+        <member name="M:Discord.IDiscordInteraction.AcknowledgeAsync(Discord.RequestOptions)">
+            <summary>
+            Send an acknowledgement to verify the handoff
+            </summary>
+            <param name="options"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Discord.IDiscordInteraction.PopulateAcknowledgement(System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.InteractionApplicationCommandCallbackFlags,System.Collections.Generic.IEnumerable{Discord.MessageComponent},Discord.RequestOptions)">
+            <summary>
+            Send a response that will remove the thinking animation from the original acknowledgement and displayed to the user
+            </summary>
+            <param name="text">Text content of the response</param>
+            <param name="isTTS">Determines whether the message should be read aloud by Discord or not.</param>
+            <param name="embeds">The embeds to be sent with the response</param>
+            <param name="allowedMentions">Specifies if notifications are sent for mentioned users and roles in the message <paramref name="text"/>.
+            If <see langword="null"/>, all mentioned roles and users will be notified.</param>
+            <param name="flags">Response flags to determine the responses behaviour</param>
+            <param name="messageComponents">Message components that will be sent with the response</param>
+            <param name="options">The options to be used when sending the request</param>
+            <returns></returns>
+        </member>
+        <member name="M:Discord.IDiscordInteraction.SendResponse(System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.InteractionApplicationCommandCallbackFlags,System.Collections.Generic.IEnumerable{Discord.MessageComponent},Discord.RequestOptions)">
+            <summary>
+            Send a response that will be directly shown to the user without displaying the "Thinking" animation
+            </summary>
+            <remarks>
+            If this method is preferred over the "Acknowledge, Modify" method, response must be sent right away for the interaction hand-off to be successful,
+            otherwise an "interction failed" message will be displayed to the user.
+            </remarks>
+            <param name="text">Text content of the response</param>
+            <param name="isTTS">Determines whether the message should be read aloud by Discord or not.</param>
+            <param name="embeds">The embeds to be sent with the response</param>
+            <param name="allowedMentions">Specifies if notifications are sent for mentioned users and roles in the message <paramref name="text"/>.
+            If <see langword="null"/>, all mentioned roles and users will be notified.</param>
+            <param name="flags">Response flags to determine the responses behaviour</param>
+            <param name="messageComponents">Message components that will be sent with the response</param>
+            <param name="options">The options to be used when sending the request</param>
+            <returns></returns>
+        </member>
+        <member name="M:Discord.IDiscordInteraction.DeleteAsync(Discord.RequestOptions)">
+            <summary>
+            Delete the Interaction Response
+            </summary>
+            <param name="options">The options to be used when sending the request</param>
+            <returns></returns>
+        </member>
+        <member name="M:Discord.IDiscordInteraction.SendFollowupAsync(System.String,System.Boolean,System.String,System.String,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.RequestOptions)">
+            <summary>
+            Send a followup message for this interaction
+            </summary>
+            <param name="text">Text content of the response</param>
+            <param name="isTTS">Determines whether the message should be read aloud by Discord or not.</param>
+            <param name="username">override the default username</param>
+            <param name="avatarUrl">override the default avatar</param>
+            <param name="embeds">The embeds to be sent with the response</param>
+            <param name="allowedMentions">Specifies if notifications are sent for mentioned users and roles in the message <paramref name="text"/>.
+            If <see langword="null"/>, all mentioned roles and users will be notified.</param>
+            <param name="options">The options to be used when sending the request</param>
+            <returns></returns>
+        </member>
+        <member name="M:Discord.IDiscordInteraction.ModifyFollowup(System.UInt64,System.String,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.RequestOptions)">
+            <summary>
+            Modify an Interaction Followup message
+            </summary>
+            <param name="messageId">Id of the followup message that will be modified</param>
+            <param name="text">Text content of the response</param>
+            <param name="embeds">The embeds to be sent with the response</param>
+            <param name="allowedMentions">Specifies if notifications are sent for mentioned users and roles in the message <paramref name="text"/>.
+            If <see langword="null"/>, all mentioned roles and users will be notified.</param>
+            <param name="options">The options to be used when sending the request</param>
+            <returns></returns>
+        </member>
+        <member name="M:Discord.IDiscordInteraction.DeleteFollowup(System.UInt64,Discord.RequestOptions)">
+            <summary>
+            Delete an Interaction Followup message
+            </summary>
+            <param name="messageId">Id of the followup message that will be deleted</param>
+            <param name="options">The options to be used when sending the request</param>
+            <returns></returns>
         </member>
         <member name="T:Discord.IDiscordInteractionData">
             <summary>
                 Represents an interface used to specify classes that they are a vaild dataype of a <see cref="T:Discord.IDiscordInteraction"/> class.
+            </summary>
+        </member>
+        <member name="T:Discord.InteractionCallbackType">
+            <summary>
+            Types of Interaction Responses
+            </summary>
+        </member>
+        <member name="F:Discord.InteractionCallbackType.Pong">
+            <summary>
+            Response for the type of <see cref="F:Discord.InteractionType.Ping"/>
+            </summary>
+        </member>
+        <member name="F:Discord.InteractionCallbackType.ChannelMessageWithSource">
+            <summary>
+            Response for the type of <see cref="F:Discord.InteractionType.ApplicationCommand"/>
+            </summary>
+        </member>
+        <member name="F:Discord.InteractionCallbackType.DeferredChannelMessageWithSource">
+            <summary>
+            Acknowledgement for the type of <see cref="F:Discord.InteractionType.ApplicationCommand"/>
+            </summary>
+        </member>
+        <member name="F:Discord.InteractionCallbackType.DeferredUpdateMessage">
+            <summary>
+            Acknowledgement for the type of <see cref="F:Discord.InteractionType.MessageComponent"/>
+            </summary>
+        </member>
+        <member name="F:Discord.InteractionCallbackType.UpdateMessage">
+            <summary>
+            Response for the type of <see cref="F:Discord.InteractionType.MessageComponent"/>
             </summary>
         </member>
         <member name="T:Discord.InteractionResponseType">
@@ -4935,7 +5094,7 @@
             <param name="value">The default permission value to set.</param>
             <returns>The current builder.</returns>
         </member>
-        <member name="M:Discord.SlashCommandBuilder.AddOption(System.String,Discord.ApplicationCommandOptionType,System.String,System.Boolean,System.Boolean,System.Collections.Generic.List{Discord.SlashCommandOptionBuilder},Discord.ApplicationCommandOptionChoiceProperties[])">
+        <member name="M:Discord.SlashCommandBuilder.AddOption(System.String,Discord.ApplicationCommandOptionType,System.String,System.Boolean,System.Boolean,System.Collections.Generic.List{Discord.SlashCommandOptionBuilder},Discord.ApplicationCommandOptionChoice[])">
             <summary>
                 Adds an option to the current slash command.
             </summary>
@@ -5027,7 +5186,7 @@
             </summary>
             <returns>The built version of this option.</returns>
         </member>
-        <member name="M:Discord.SlashCommandOptionBuilder.AddOption(System.String,Discord.ApplicationCommandOptionType,System.String,System.Boolean,System.Boolean,System.Collections.Generic.List{Discord.SlashCommandOptionBuilder},Discord.ApplicationCommandOptionChoiceProperties[])">
+        <member name="M:Discord.SlashCommandOptionBuilder.AddOption(System.String,Discord.ApplicationCommandOptionType,System.String,System.Boolean,System.Boolean,System.Collections.Generic.List{Discord.SlashCommandOptionBuilder},Discord.ApplicationCommandOptionChoice[])">
             <summary>
                 Adds an option to the current slash command.
             </summary>
@@ -6324,6 +6483,16 @@
             <returns>
                 The width of this attachment if it is a picture; otherwise <c>null</c>.
             </returns>
+        </member>
+        <member name="T:Discord.IDiscordInteractable">
+            <summary>
+            Represents an interacable Message Component
+            </summary>
+        </member>
+        <member name="P:Discord.IDiscordInteractable.CustomId">
+            <summary>
+            Dev-defined unique identifier of the component
+            </summary>
         </member>
         <member name="T:Discord.IEmbed">
             <summary>
@@ -8439,6 +8608,124 @@
                 <see langword="true"/> if this role is the guild's premium subscriber role;
                 otherwise <see langword="false"/>.
             </returns>
+        </member>
+        <member name="T:Discord.IApplicationCommandPermissions">
+            <summary>
+            Contains the permissions data of a <see cref="T:Discord.IApplicationCommand"/>
+            </summary>
+        </member>
+        <member name="P:Discord.IApplicationCommandPermissions.Command">
+            <summary>
+            Command the permissions affect
+            </summary>
+        </member>
+        <member name="P:Discord.IApplicationCommandPermissions.RolePermissions">
+            <summary>
+            The collection of roles with boolean values showing wheter the role is authorized to use the command
+            </summary>
+        </member>
+        <member name="P:Discord.IApplicationCommandPermissions.UserPermissions">
+            <summary>
+            The collection of users with boolean values showing wheter the user is authorized to use the command
+            </summary>
+        </member>
+        <member name="T:Discord.InteractionApplicationCommandCallbackFlags">
+            <summary>
+            Interaction Response flags
+            </summary>
+        </member>
+        <member name="F:Discord.InteractionApplicationCommandCallbackFlags.Ephemeral">
+            <summary>
+            Only the author can see the Interaction Response
+            </summary>
+        </member>
+        <member name="T:Discord.InteractionResponse">
+            <summary>
+            Represents the response for a <see cref="T:Discord.IDiscordInteraction"/>
+            </summary>
+        </member>
+        <member name="P:Discord.InteractionResponse.IsTTS">
+            <summary>
+            Wheter the response body is Text to Speech
+            </summary>
+        </member>
+        <member name="P:Discord.InteractionResponse.Content">
+            <summary>
+            Text content of the response body
+            </summary>
+        </member>
+        <member name="P:Discord.InteractionResponse.CallbackType">
+            <summary>
+            Type of this response
+            </summary>
+        </member>
+        <member name="P:Discord.InteractionResponse.Embeds">
+            <summary>
+            Embeds that are present in the response body
+            </summary>
+        </member>
+        <member name="P:Discord.InteractionResponse.AllowedMentions">
+            <summary>
+            Get the allowed mentions in this response
+            </summary>
+        </member>
+        <member name="P:Discord.InteractionResponse.MessageComponents">
+            <summary>
+            Get the collection of <see cref="T:Discord.MessageComponent"/>s sent with this response
+            </summary>
+        </member>
+        <member name="T:Discord.ISlashCommandContext">
+            <summary>
+            Represents the context of an Interaction
+            </summary>
+        </member>
+        <member name="P:Discord.ISlashCommandContext.Client">
+            <summary>
+            Client that will be used to handle this interaction
+            </summary>
+        </member>
+        <member name="P:Discord.ISlashCommandContext.Guild">
+            <summary>
+            Guild the interaction originated from
+            </summary>
+            <remarks>
+            Will be <see langword="null"/> if the interaction originated from a DM channel
+            </remarks>
+        </member>
+        <member name="P:Discord.ISlashCommandContext.Channel">
+            <summary>
+            Channel the interaction originated from
+            </summary>
+        </member>
+        <member name="P:Discord.ISlashCommandContext.User">
+            <summary>
+            User who invoked the interaction event
+            </summary>
+        </member>
+        <member name="P:Discord.ISlashCommandContext.Interaction">
+            <summary>
+            The underlying interaction
+            </summary>
+        </member>
+        <member name="T:Discord.InteractionParameter">
+            <summary>
+            Represents a parameter recived with a Slash Command Interaction
+            </summary>
+        </member>
+        <member name="P:Discord.InteractionParameter.Name">
+            <summary>
+            Name of the parameter
+            </summary>
+        </member>
+        <member name="P:Discord.InteractionParameter.Value">
+            <summary>
+            Value of the parameter
+            </summary>
+        </member>
+        <member name="P:Discord.InteractionParameter.Type">
+            <summary>
+            Type of the parameter
+            </summary>
         </member>
         <member name="T:Discord.ITeam">
             <summary>
@@ -11042,6 +11329,12 @@
         </member>
         <member name="M:Discord.Preconditions.NotEveryoneRole(System.UInt64[],System.UInt64,System.String)">
             <exception cref="T:System.ArgumentException">The everyone role cannot be assigned to a user.</exception>
+        </member>
+        <member name="M:Discord.Preconditions.SlashCommandName(System.String,System.String,System.String)">
+            <exception cref="T:System.ArgumentException">Application command names must be contain all lower case characters and between 1-32 characters length.</exception>
+        </member>
+        <member name="M:Discord.Preconditions.SlashCommandDescription(System.String,System.String,System.String)">
+            <exception cref="T:System.ArgumentException">Application command descriptions must be longer than 1, shorter than 100 characters.</exception>
         </member>
         <member name="T:Discord.SnowflakeUtils">
             <summary>

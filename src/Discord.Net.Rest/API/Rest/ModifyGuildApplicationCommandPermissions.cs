@@ -13,6 +13,6 @@ namespace Discord.API.Rest
         public ulong Id { get; set; }
 
         [JsonProperty("permissions")]
-        public ApplicationCommandPermissions[] Permissions { get; set; }
+        public ApplicationCommandPermission[] Permissions { get; set; }
     }
 }

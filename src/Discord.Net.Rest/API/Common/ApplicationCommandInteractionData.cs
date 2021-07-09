@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace Discord.API
 {
@@ -17,7 +16,7 @@ namespace Discord.API
         [JsonProperty("custom_id")]
         public string CustomId { get; set; }
         [JsonProperty("component_type")]
-        public MessageComponentType ComponentType { get; set; }
+        public ComponentType ComponentType { get; set; }
         [JsonProperty("values")]
         public Optional<string[]> Values { get; set; }
     }

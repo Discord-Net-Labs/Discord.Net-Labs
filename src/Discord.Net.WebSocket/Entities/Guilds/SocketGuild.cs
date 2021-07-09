@@ -723,30 +723,6 @@ namespace Discord.WebSocket
         public Task<RestGuildIntegration> CreateIntegrationAsync(ulong id, string type, RequestOptions options = null)
             => GuildHelper.CreateIntegrationAsync(this, Discord, id, type, options);
 
-        //Interactions
-        /// <summary>
-        ///     Gets a collection of slash commands created by the current user in this guild.
-        /// </summary>
-        /// <param name="options">The options to be used when sending the request.</param>
-        /// <returns>
-        ///     A task that represents the asynchronous get operation. The task result contains a read-only collection of
-        ///     slash commands created by the current user.
-        /// </returns>
-        public Task<IReadOnlyCollection<RestGuildCommand>> GetSlashCommandsAsync(RequestOptions options = null)
-            => GuildHelper.GetSlashCommandsAsync(this, Discord, options);
-
-        /// <summary>
-        ///     Gets a slash command in the current guild.
-        /// </summary>
-        /// <param name="id">The unique identifier of the slash command.</param>
-        /// <param name="options">The options to be used when sending the request.</param>
-        /// <returns>
-        ///     A task that represents the asynchronous get operation. The task result contains a
-        ///     slash command created by the current user.
-        /// </returns>
-        public Task<RestGuildCommand> GetSlashCommandAsync(ulong id, RequestOptions options = null)
-            => GuildHelper.GetSlashCommandAsync(this, id, Discord, options);
-
         //Invites
         /// <summary>
         ///     Gets a collection of all invites in this guild.
@@ -1009,18 +985,6 @@ namespace Discord.WebSocket
         public Task<IReadOnlyCollection<RestWebhook>> GetWebhooksAsync(RequestOptions options = null)
             => GuildHelper.GetWebhooksAsync(this, Discord, options);
 
-        //Interactions
-        /// <summary>
-        ///     Gets this guilds slash commands commands
-        /// </summary>
-        /// <param name="options">The options to be used when sending the request.</param>
-        /// <returns>
-        ///     A task that represents the asynchronous get operation. The task result contains a read-only collection
-        ///     of application commands found within the guild.
-        /// </returns>
-        public async Task<IReadOnlyCollection<RestApplicationCommand>> GetApplicationCommandsAsync(RequestOptions options = null)
-            => await Discord.Rest.GetGuildApplicationCommands(this.Id, options);
-
         //Emotes
         /// <inheritdoc />
         public Task<IReadOnlyCollection<GuildEmote>> GetEmotesAsync(RequestOptions options = null)
@@ -1231,9 +1195,13 @@ namespace Discord.WebSocket
 
         // Application Commands
 
-        /// <inheritdoc cref="IGuild.GetSlashCommands(RequestOptions)"/>
-        public async Task<IEnumerable<RestApplicationCommand>> GetSlashCommands (RequestOptions options = null) =>
-            await SlashCommandHelper.GetApplicationCommands(Discord, this, options).ConfigureAwait(false);
+        /// <inheritdoc cref="IGuild.GetSlashCommandsAsync(RequestOptions)"/>
+        public async Task<IReadOnlyCollection<RestApplicationCommand>> GetSlashCommandsAsync (RequestOptions options = null) =>
+            ( await SlashCommandHelper.GetApplicationCommands(Discord, this, options).ConfigureAwait(false) ).ToList();
+
+        /// <inheritdoc cref="IGuild.GetSlashCommandAsync(ulong, RequestOptions)"/>
+        public async Task<RestApplicationCommand> GetSlashCommandAsync (ulong commandId, RequestOptions options = null) =>
+            await SlashCommandHelper.GetApplicationCommand(Discord, this, commandId, options).ConfigureAwait(false);
 
         /// <summary>
         ///     Gets the name of the guild.
@@ -1403,8 +1371,11 @@ namespace Discord.WebSocket
         async Task<IReadOnlyCollection<IWebhook>> IGuild.GetWebhooksAsync(RequestOptions options)
             => await GetWebhooksAsync(options).ConfigureAwait(false);
         /// <inheritdoc />
-        async Task<IEnumerable<IApplicationCommand>> IGuild.GetSlashCommands (RequestOptions options = null) =>
-            await GetSlashCommands(options);
+        async Task<IReadOnlyCollection<IApplicationCommand>> IGuild.GetSlashCommandsAsync (RequestOptions options = null) =>
+            await GetSlashCommandsAsync(options);
+        /// <inheritdoc />
+        async Task<IApplicationCommand> IGuild.GetSlashCommandAsync (ulong commandId, RequestOptions options = null) =>
+            await GetSlashCommandAsync(commandId, options);
 
         void IDisposable.Dispose()
         {

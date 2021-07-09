@@ -6,9 +6,9 @@ namespace Discord.API
     internal class MessageComponent
     {
         [JsonProperty("type")]
-        public MessageComponentType Type { get; set; }
+        public ComponentType Type { get; set; }
         [JsonProperty("style")]
-        public Optional<ButtonStyles> Style { get; set; }
+        public Optional<ButtonStyle> Style { get; set; }
         [JsonProperty("label")]
         public Optional<string> Label { get; set; }
         [JsonProperty("emoji")]

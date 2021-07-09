@@ -16,13 +16,13 @@ namespace Discord.WebSocket
         /// <summary>
         /// Type of the component that crated this Interaction
         /// </summary>
-        public MessageComponentType ComponentType { get; private set; }
+        public ComponentType ComponentType { get; private set; }
         /// <summary>
         /// Dev-assigned Custom ID of the Message Component that created this Interaction
         /// </summary>
         public string CustomId { get; private set; }
         /// <summary>
-        /// If the type of the component is <see cref="MessageComponentType.SelectMenu"/>, the values that are selected by the user
+        /// If the type of the component is <see cref="ComponentType.SelectMenu"/>, the values that are selected by the user
         /// </summary>
         public IEnumerable<string> Values { get; private set; }
 
@@ -42,7 +42,7 @@ namespace Discord.WebSocket
                 ComponentType = data.ComponentType;
                 CustomId = data.CustomId;
 
-                if (data.ComponentType == MessageComponentType.SelectMenu)
+                if (data.ComponentType == ComponentType.SelectMenu)
                     Values = data.Values.GetValueOrDefault(null)?.ToList();
             }
         }

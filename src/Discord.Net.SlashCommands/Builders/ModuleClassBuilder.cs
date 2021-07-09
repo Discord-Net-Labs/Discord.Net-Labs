@@ -278,7 +278,7 @@ namespace Discord.SlashCommands.Builders
             return reader;
         }
 
-        private static bool IsValidModuleDefinition (TypeInfo typeInfo)
+        internal static bool IsValidModuleDefinition (TypeInfo typeInfo)
         {
             return ModuleTypeInfo.IsAssignableFrom(typeInfo) &&
                    !typeInfo.IsAbstract &&

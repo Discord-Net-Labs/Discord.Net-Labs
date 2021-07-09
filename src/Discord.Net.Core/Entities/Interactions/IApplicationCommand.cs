@@ -1,46 +1,61 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord
 {
     /// <summary>
-    ///     The base command model that belongs to an application. see <see href="https://discord.com/developers/docs/interactions/slash-commands#applicationcommand"/>
+    /// Represents an Discord Application Command
     /// </summary>
-    public interface IApplicationCommand : ISnowflakeEntity
+    public interface IApplicationCommand : ISnowflakeEntity, IUpdateable, IDeletable
     {
         /// <summary>
-        ///     Gets the unique id of the parent application.
-        /// </summary>
-        ulong ApplicationId { get; }
-
-        /// <summary>
-        ///     The name of the command.
+        /// Get the name of this command
         /// </summary>
         string Name { get; }
-
         /// <summary>
-        ///     The description of the command.
+        /// Get the description of this command
         /// </summary>
         string Description { get; }
-
         /// <summary>
-        ///     Whether the command is enabled by default when the app is added to a guild.
+        /// Get the Snowflake ID of the application this command belongs to
+        /// </summary>
+        ulong ApplicationId { get; }
+        /// <summary>
+        /// Wheter this command is executable by defult
         /// </summary>
         bool DefaultPermission { get; }
+        /// <summary>
+        /// Get the guild this command belongs to if it is a Guild Command
+        /// </summary>
+        /// <remarks>
+        /// Will be <see langword="null"/> if the Command is a Global Command
+        /// </remarks>
+        IGuild Guild { get; }
 
         /// <summary>
-        ///     If the option is a subcommand or subcommand group type, this nested options will be the parameters.
+        /// Contains the information on the options of this command, these may be Sub-Commands, Sub-Command Groups or command parameters
         /// </summary>
-        IReadOnlyCollection<IApplicationCommandOption> Options { get; }
+        IEnumerable<IApplicationCommandOption> Options { get; }
 
         /// <summary>
-        ///     Deletes this command
+        /// Modify this Application Command on Discord
         /// </summary>
+        /// <param name="name"></param>
+        /// <param name="description"></param>
+        /// <param name="defaultPermission"></param>
+        /// <param name="commandOptions"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        Task<IApplicationCommand> Modify (string name, string description, bool defaultPermission, IEnumerable<IApplicationCommandOption> commandOptions,
+            RequestOptions options);
+
+        /// <summary>
+        /// Modify the User and Role permissions for this Application Command
+        /// </summary>
+        /// <param name="userPerms">User and the corresponding clearance values</param>
+        /// <param name="rolePerms">Role and the corresponding clearance values</param>
         /// <param name="options">The options to be used when sending the request.</param>
-        /// <returns>A task that represents the asynchronous delete operation.</returns>
-        Task DeleteAsync(RequestOptions options = null);
+        /// <returns></returns>
+        Task<IApplicationCommandPermissions> ModifyPermissions (IDictionary<IUser, bool> userPerms, IDictionary<IRole, bool> rolePerms, RequestOptions options);
     }
 }

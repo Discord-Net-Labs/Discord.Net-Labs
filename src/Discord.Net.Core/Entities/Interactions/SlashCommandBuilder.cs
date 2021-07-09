@@ -165,7 +165,7 @@ namespace Discord
         /// <param name="choices">The choices of this option.</param>
         /// <returns>The current builder.</returns>
         public SlashCommandBuilder AddOption(string name, ApplicationCommandOptionType type,
-           string description, bool required = true, bool isDefault = false, List<SlashCommandOptionBuilder> options = null, params ApplicationCommandOptionChoiceProperties[] choices)
+           string description, bool required = true, bool isDefault = false, List<SlashCommandOptionBuilder> options = null, params ApplicationCommandOptionChoice[] choices)
         {
             // Make sure the name matches the requirements from discord
             Preconditions.NotNullOrEmpty(name, nameof(name));
@@ -197,7 +197,7 @@ namespace Discord
             option.Default = isDefault;
             option.Options = options;
             option.Type = type;
-            option.Choices = choices != null ? new List<ApplicationCommandOptionChoiceProperties>(choices) : null;
+            option.Choices = choices != null ? new List<ApplicationCommandOptionChoice>(choices) : null;
 
             return AddOption(option);
         }
@@ -343,7 +343,7 @@ namespace Discord
         /// <summary>
         ///     choices for string and int types for the user to pick from.
         /// </summary>
-        public List<ApplicationCommandOptionChoiceProperties> Choices { get; set; }
+        public List<ApplicationCommandOptionChoice> Choices { get; set; }
 
         /// <summary>
         ///     If the option is a subcommand or subcommand group type, this nested options will be the parameters.
@@ -388,7 +388,7 @@ namespace Discord
         /// <param name="choices">The choices of this option.</param>
         /// <returns>The current builder.</returns>
         public SlashCommandOptionBuilder AddOption(string name, ApplicationCommandOptionType type,
-           string description, bool required = true, bool isDefault = false, List<SlashCommandOptionBuilder> options = null, params ApplicationCommandOptionChoiceProperties[] choices)
+           string description, bool required = true, bool isDefault = false, List<SlashCommandOptionBuilder> options = null, params ApplicationCommandOptionChoice[] choices)
         {
             // Make sure the name matches the requirements from discord
             Preconditions.NotNullOrEmpty(name, nameof(name));
@@ -420,7 +420,7 @@ namespace Discord
             option.Default = isDefault;
             option.Options = options;
             option.Type = type;
-            option.Choices = choices != null ? new List<ApplicationCommandOptionChoiceProperties>(choices) : null;
+            option.Choices = choices != null ? new List<ApplicationCommandOptionChoice>(choices) : null;
 
             return AddOption(option);
         }
@@ -453,7 +453,7 @@ namespace Discord
         public SlashCommandOptionBuilder AddChoice(string name, int value)
         {
             if (Choices == null)
-                Choices = new List<ApplicationCommandOptionChoiceProperties>();
+                Choices = new List<ApplicationCommandOptionChoice>();
 
             if (Choices.Count >= MaxChoiceCount)
                 throw new ArgumentOutOfRangeException(nameof(Choices), $"Cannot add more than {MaxChoiceCount} choices!");
@@ -464,7 +464,7 @@ namespace Discord
             Preconditions.AtLeast(name.Length, 1, nameof(name));
             Preconditions.AtMost(name.Length, 100, nameof(name));
 
-            Choices.Add(new ApplicationCommandOptionChoiceProperties()
+            Choices.Add(new ApplicationCommandOptionChoice()
             {
                 Name = name,
                 Value = value
@@ -482,7 +482,7 @@ namespace Discord
         public SlashCommandOptionBuilder AddChoice(string name, string value)
         {
             if (Choices == null)
-                Choices = new List<ApplicationCommandOptionChoiceProperties>();
+                Choices = new List<ApplicationCommandOptionChoice>();
 
             if (Choices.Count >= MaxChoiceCount)
                 throw new ArgumentOutOfRangeException(nameof(Choices), $"Cannot add more than {MaxChoiceCount} choices!");
@@ -499,7 +499,7 @@ namespace Discord
             Preconditions.AtLeast(value.Length, 1, nameof(value));
             Preconditions.AtMost(value.Length, 100, nameof(value));
 
-            Choices.Add(new ApplicationCommandOptionChoiceProperties()
+            Choices.Add(new ApplicationCommandOptionChoice()
             {
                 Name = name,
                 Value = value

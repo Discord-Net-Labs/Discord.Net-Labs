@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord.SlashCommands.Builders
@@ -26,7 +25,7 @@ namespace Discord.SlashCommands.Builders
 
         internal TypeInfo TypeInfo { get; set; }
 
-        internal SlashModuleBuilder(SlashCommandService commandService, SlashModuleBuilder parent = null)
+        internal SlashModuleBuilder (SlashCommandService commandService, SlashModuleBuilder parent = null)
         {
             CommandService = commandService;
             Parent = parent;
@@ -43,26 +42,26 @@ namespace Discord.SlashCommands.Builders
             return this;
         }
 
-        public SlashModuleBuilder WithDescription(string description)
+        public SlashModuleBuilder WithDescription (string description)
         {
             Description = description;
             return this;
         }
 
-        public SlashModuleBuilder WithDefaultPermision(bool permission)
+        public SlashModuleBuilder WithDefaultPermision (bool permission)
         {
             DefaultPermission = permission;
             return this;
         }
 
-        public SlashModuleBuilder AddAttributes(params Attribute[] attributes)
+        public SlashModuleBuilder AddAttributes (params Attribute[] attributes)
         {
             _attributes.AddRange(attributes);
             return this;
         }
 
         public SlashModuleBuilder AddCommand (Action<SlashCommandBuilder> configure, Func<ISlashCommandContext, object[], IServiceProvider,
-            SlashCommandInfo, Task> callback )
+            SlashCommandInfo, Task> callback)
         {
             var command = new SlashCommandBuilder(this, callback);
             configure(command);
@@ -78,7 +77,7 @@ namespace Discord.SlashCommands.Builders
             return this;
         }
 
-        public SlashModuleBuilder AddInteraction(Action<SlashInteractionBuilder> configure)
+        public SlashModuleBuilder AddInteraction (Action<SlashInteractionBuilder> configure)
         {
             var command = new SlashInteractionBuilder(this);
             configure(command);
@@ -86,7 +85,7 @@ namespace Discord.SlashCommands.Builders
             return this;
         }
 
-        public SlashModuleBuilder AddModule ( string name, string description, Action<SlashModuleBuilder> configure)
+        public SlashModuleBuilder AddModule (string name, string description, Action<SlashModuleBuilder> configure)
         {
             var subModule = new SlashModuleBuilder(CommandService, this);
             configure(subModule);
@@ -94,7 +93,7 @@ namespace Discord.SlashCommands.Builders
             return this;
         }
 
-        internal SlashModuleInfo Build ( SlashCommandService commandService = null )
+        internal SlashModuleInfo Build (SlashCommandService commandService = null)
         {
             return new SlashModuleInfo(this, commandService);
         }

@@ -1,4 +1,3 @@
-using Discord.SlashCommands.Builders;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
@@ -51,7 +50,7 @@ namespace Discord.SlashCommands
         /// </summary>
         public IReadOnlyList<Attribute> Attributes { get; }
 
-        internal SlashCommandInfo (SlashCommandBuilder builder, SlashModuleInfo module, SlashCommandService commandService)
+        internal SlashCommandInfo (Builders.SlashCommandBuilder builder, SlashModuleInfo module, SlashCommandService commandService)
         {
             CommandService = commandService;
             Module = module;

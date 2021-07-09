@@ -17,7 +17,7 @@ namespace Discord.SlashCommands
                 Required = parameterInfo.IsRequired,
                 Type = parameterInfo.DiscordOptionType,
                 Choices = parameterInfo.Choices != null ?
-                parameterInfo.Choices.Select(x => new ApplicationCommandOptionChoice
+                parameterInfo.Choices.Select(x => new API.ApplicationCommandOptionChoice
                 {
                     Name = x.Name,
                     Value = x.Value

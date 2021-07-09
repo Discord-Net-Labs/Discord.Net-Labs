@@ -135,6 +135,35 @@ namespace Discord.SlashCommands
             }
         }
 
+        public async Task AddModule<T> (IServiceProvider services)
+        {
+            services = services ?? EmptyServiceProvider.Instance;
+
+            await _lock.WaitAsync().ConfigureAwait(false);
+
+            try
+            {
+                var typeInfo = typeof(T).GetTypeInfo();
+
+                if (_typedModuleDefs.ContainsKey(typeInfo))
+                    throw new ArgumentException("Module definition for this type already exists.");
+
+                var moduleDef = await ModuleClassBuilder.BuildAsync(new List<TypeInfo> { typeof(T).GetTypeInfo() }, this, services).ConfigureAwait(false);
+
+                if (moduleDef[typeof(T)] == default(SlashModuleInfo))
+                    throw new InvalidOperationException($"Could not build the module {typeInfo.FullName}, did you pass an invalid type?");
+
+                if (!_typedModuleDefs.TryAdd(typeof(T), moduleDef[typeof(T)]))
+                    throw new Exception("Cannot initialize this module.");
+
+                LoadModuleInternal(moduleDef[typeof(T)]);
+            }
+            finally
+            {
+                _lock.Release();
+            }
+        }
+
         /// <summary>
         /// Register and update the Application Commands from <see cref="SlashCommandService.Commands"/> while deleting the missing commands
         /// </summary>
@@ -342,6 +371,9 @@ namespace Discord.SlashCommands
         public void ReplaceTypeReader (ApplicationCommandOptionType discordParamType, Func<ISlashCommandContext, InteractionParameter, IServiceProvider, object> reader) =>
             _typeReaders[discordParamType] = reader;
 
-        public void Dispose ( ) => throw new NotImplementedException();
+        public void Dispose ( )
+        {
+            _lock.Dispose();
+        }
     }
 }

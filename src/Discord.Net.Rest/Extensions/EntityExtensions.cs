@@ -220,12 +220,12 @@ namespace Discord.Rest
             {
                 Name = entity.Name,
                 Description = entity.Description,
-                Type = entity.OptionType,
-                Required = entity.IsRequired,
+                Type = entity.Type,
+                Required = (bool)entity.Required,
                 Options = entity.Options?.Select(x => x?.ToModel()).ToArray(),
                 Choices = entity.Choices?.Select(x => new API.ApplicationCommandOptionChoice()
                 {
-                    Name = x.Key,
+                    Name = x.Name,
                     Value = x.Value
                 }).ToArray()
             };
@@ -247,95 +247,6 @@ namespace Discord.Rest
                 model.GuildId = entity.Guild.Id;
 
             return model;
-        }
-        public static API.MessageComponent ToModel (this MessageComponent entity)
-        {
-            switch (entity)
-            {
-                case MessageActionRowComponent actionRow:
-                    {
-                        return new API.MessageComponent
-                        {
-                            Type = MessageComponentType.ActionRow,
-                            Components = actionRow.MessageComponents.Select(x => x.ToModel()).ToArray()
-                        };
-                    }
-                case MessageButtonComponent button:
-                    {
-                        return new API.MessageComponent
-                        {
-                            Type = MessageComponentType.Button,
-                            Label = button.Label,
-                            CustomId = button.CustomId,
-                            Url = button.Url,
-                            Emoji = button.Emoji != null ? new API.Emoji
-                            {
-                                Name = button.Emoji?.Name,
-                                Id = button.Emoji?.Id,
-                                Animated = button.Emoji?.Animated
-                            } : null,
-                            Style = button.Style,
-                            Disabled = button.IsDisabled
-                        };
-                    }
-                case MessageSelectMenuComponent select:
-                    {
-                        return new API.MessageComponent
-                        {
-                            Type = MessageComponentType.SelectMenu,
-                            Placeholder = select.Placeholder,
-                            MaxValues = select.MaxValues,
-                            MinValues = select.MinValues,
-                            Options = select.Options.Select(x => x.ToModel()).ToArray(),
-                            CustomId = select.CustomId
-                        };
-                    }
-                default:
-                    throw new ArgumentException("Not supported message component type.");
-            }
-        }
-
-        public static API.SelectOption ToModel (this SelectOption entity) =>
-            new API.SelectOption
-            {
-                Label = entity.Label,
-                Value = entity.Value,
-                Description = entity.Description,
-                Default = entity.IsDefault,
-                Emoji = entity.Emoji != null ? new API.Emoji
-                {
-                    Name = entity.Emoji?.Name,
-                    Id = entity.Emoji?.Id,
-                    Animated = entity.Emoji?.Animated
-                } : null
-            };
-
-        public static MessageComponent ToEntity (this API.MessageComponent component)
-        {
-            switch (component.Type)
-            {
-                case MessageComponentType.ActionRow:
-                    {
-                        IEnumerable<MessageComponent> children = null;
-                        if (component.Components.IsSpecified)
-                            children = component.Components.Value.Select(x => x.ToEntity());
-
-                        return new MessageActionRowComponent(children);
-                    }
-                case MessageComponentType.Button:
-                    {
-                        string label = component.Label.GetValueOrDefault(null);
-                        string customId = component.CustomId.GetValueOrDefault(null);
-                        var emoji = component.Emoji.GetValueOrDefault(null).ToEntity();
-                        var style = component.Style.GetValueOrDefault();
-                        string url = component.Url.GetValueOrDefault(null);
-                        bool isDisabled = component.Disabled.GetValueOrDefault();
-                        return new MessageButtonComponent(label, customId, url, emoji, style, isDisabled);
-                    }
-                case MessageComponentType.SelectMenu:
-                default:
-                    throw new ArgumentException("Unknown component type");
-            }
         }
     }
 }

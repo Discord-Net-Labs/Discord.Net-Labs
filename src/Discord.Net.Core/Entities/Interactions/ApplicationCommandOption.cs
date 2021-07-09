@@ -68,7 +68,7 @@ namespace Discord
         /// <summary>
         ///     choices for string and int types for the user to pick from.
         /// </summary>
-        public List<ApplicationCommandOptionChoiceProperties> Choices { get; set; }
+        public List<ApplicationCommandOptionChoice> Choices { get; set; }
 
         /// <summary>
         ///     If the option is a subcommand or subcommand group type, this nested options will be the parameters.

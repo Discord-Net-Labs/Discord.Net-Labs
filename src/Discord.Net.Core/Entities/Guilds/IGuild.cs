@@ -893,13 +893,23 @@ namespace Discord
         /// </returns>
         Task DeleteEmoteAsync(GuildEmote emote, RequestOptions options = null);
         /// <summary>
-        ///     Gets the Slash Commands that are registered to this guild
+        ///     Gets a collection of slash commands created by the current user in this guild.
         /// </summary>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
-        ///     A task that represents the asynchronous retrieval operation. The task result contains a collection
-        ///     of Application Commands
+        ///     A task that represents the asynchronous get operation. The task result contains a read-only collection of
+        ///     slash commands created by the current user.
         /// </returns>
-        Task<IEnumerable<IApplicationCommand>> GetSlashCommands (RequestOptions options = null);
+        Task<IReadOnlyCollection<IApplicationCommand>> GetSlashCommandsAsync (RequestOptions options = null);
+        /// <summary>
+        ///     Gets a slash command in the current guild.
+        /// </summary>
+        /// <param name="commandId">The unique identifier of the slash command.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous get operation. The task result contains a
+        ///     slash command created by the current user.
+        /// </returns>
+        Task<IApplicationCommand> GetSlashCommandAsync (ulong commandId, RequestOptions options = null);
     }
 }

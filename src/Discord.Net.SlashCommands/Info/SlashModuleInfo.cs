@@ -65,7 +65,7 @@ namespace Discord.SlashCommands
         {
             var result = new List<SlashCommandInfo>();
 
-            foreach (SlashCommandBuilder commandBuilder in builder.Commands)
+            foreach (var commandBuilder in builder.Commands)
                 result.Add(commandBuilder.Build(this, CommandService));
 
             return result;

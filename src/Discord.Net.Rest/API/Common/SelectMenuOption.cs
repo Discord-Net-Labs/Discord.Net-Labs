@@ -1,9 +1,4 @@
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.API
 {
@@ -24,9 +19,9 @@ namespace Discord.API
         [JsonProperty("default")]
         public Optional<bool> Default { get; set; }
 
-        public SelectMenuOption() { }
+        public SelectMenuOption ( ) { }
 
-        public SelectMenuOption(Discord.SelectMenuOption option)
+        public SelectMenuOption (Discord.SelectMenuOption option)
         {
             this.Label = option.Label;
             this.Value = option.Value;

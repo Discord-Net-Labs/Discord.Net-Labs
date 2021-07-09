@@ -1,77 +1,108 @@
 using Discord.Rest;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Model = Discord.API.Gateway.ApplicationCommandCreatedUpdatedEvent;
+using Model = Discord.API.ApplicationCommand;
 
 namespace Discord.WebSocket
 {
     /// <summary>
-    ///     Represends a Websocket-based <see cref="IApplicationCommand"/> recieved over the gateway.
+    /// Represents a Web-Socket based <see cref="IApplicationCommand"/>
     /// </summary>
     public class SocketApplicationCommand : SocketEntity<ulong>, IApplicationCommand
     {
-        /// <inheritdoc/>
-        public ulong ApplicationId { get; private set; }
-
         /// <inheritdoc/>
         public string Name { get; private set; }
 
         /// <inheritdoc/>
         public string Description { get; private set; }
 
+        /// <inheritdoc cref="IApplicationCommand.ApplicationId"/>
+        public ulong ApplicationId { get; }
+
         /// <inheritdoc/>
         public bool DefaultPermission { get; private set; }
 
-        /// <summary>
-        ///     A collection of <see cref="SocketApplicationCommandOption"/>'s recieved over the gateway.
-        /// </summary>
-        public IReadOnlyCollection<SocketApplicationCommandOption> Options { get; private set; }
-
-        /// <inheritdoc/>
-        public DateTimeOffset CreatedAt
-            => SnowflakeUtils.FromSnowflake(this.Id);
+        /// <inheritdoc cref="IApplicationCommand.Guild"/>
+        public SocketGuild Guild { get; }
 
         /// <summary>
-        ///     The <see cref="SocketGuild"/> where this application was created.
+        /// Wheter this command is a Global Command or a Guild Command
         /// </summary>
-        public SocketGuild Guild
-            => Discord.GetGuild(this.GuildId);
-        private ulong GuildId { get; set; }
+        public bool IsGlobal => Guild == null;
 
-        internal SocketApplicationCommand(DiscordSocketClient client, ulong id)
-            : base(client, id)
+        /// <inheritdoc cref="IApplicationCommand.Options"/>
+        public IReadOnlyList<ApplicationCommandOption> Options { get; private set; }
+
+        /// <inheritdoc/>
+        public DateTimeOffset CreatedAt => SnowflakeUtils.FromSnowflake(Id);
+
+        /// <inheritdoc/>
+        ulong IApplicationCommand.ApplicationId => ApplicationId;
+
+        /// <inheritdoc/>
+        IGuild IApplicationCommand.Guild => Guild;
+
+        /// <inheritdoc/>
+        IEnumerable<IApplicationCommandOption> IApplicationCommand.Options => Options;
+
+        internal SocketApplicationCommand (DiscordSocketClient discord, ulong id, SocketGuild guild, Model model) : base(discord, id)
         {
+            Name = model.Name;
+            Guild = guild;
+            ApplicationId = model.ApplicationId;
 
+            Update(model);
         }
-        internal static SocketApplicationCommand Create(DiscordSocketClient client, Model model)
+
+        internal void Update ( Model model )
         {
-            var entity = new SocketApplicationCommand(client, model.Id);
-            entity.Update(model);
-            return entity;
+            Name = model.Name;
+            Description = model.Description;
+
+            if(model.DefaultPermission.IsSpecified)
+                DefaultPermission = model.DefaultPermission.Value;
+
+            if(model.Options.IsSpecified)
+                Options = model.Options.Value.Select(x => ApplicationCommandOption.Create(x, ApplicationCommandOption.MaxOptionDepth)).ToList();
         }
 
-        internal void Update(Model model)
+        /// <inheritdoc cref="IApplicationCommand.Modify(string, string, bool, IEnumerable{IApplicationCommandOption}, RequestOptions)"/>
+        public async Task<RestApplicationCommand> Modify (string name, string description, bool defaultPermission,
+            IEnumerable<IApplicationCommandOption> commandOptions, RequestOptions options) =>
+            await SlashCommandHelper.ModifyApplicationCommand(Discord, Id, Guild, name, description, defaultPermission, commandOptions, options)
+            .ConfigureAwait(false);
+
+        /// <inheritdoc/>
+        public async Task UpdateAsync (RequestOptions options = null)
         {
-            this.ApplicationId = model.ApplicationId;
-            this.Description = model.Description;
-            this.Name = model.Name;
-            this.GuildId = model.GuildId;
-            this.DefaultPermission = model.DefaultPermission.GetValueOrDefault(true);
+            Model model;
 
+            if (IsGlobal)
+                model = await Discord.ApiClient.GetGlobalApplicationCommand(ApplicationId, Id, options).ConfigureAwait(false);
+            else
+                model = await Discord.ApiClient.GetGuildApplicationCommand(ApplicationId, Guild.Id, Id, options).ConfigureAwait(false);
 
-            this.Options = model.Options.IsSpecified
-                ? model.Options.Value.Select(x => SocketApplicationCommandOption.Create(x)).ToImmutableArray()
-                : new ImmutableArray<SocketApplicationCommandOption>();
+            Update(model);
         }
 
         /// <inheritdoc/>
-        public Task DeleteAsync(RequestOptions options = null)
-            => InteractionHelper.DeleteGuildCommand(Discord, this.GuildId, this, options);
+        public async Task DeleteAsync (RequestOptions options = null) =>
+            await SlashCommandHelper.DeleteApplicationCommand(Discord, Id, Guild, options).ConfigureAwait(false);
 
-        IReadOnlyCollection<IApplicationCommandOption> IApplicationCommand.Options => Options;
+        /// <inheritdoc cref="IApplicationCommand.ModifyPermissions(IDictionary{IUser, bool}, IDictionary{IRole, bool}, RequestOptions)"/>
+        public async Task<ApplicationCommandPermissions> ModifyPermissions (IDictionary<IUser, bool> userPerms = null,
+            IDictionary<IRole, bool> rolePerms = null, RequestOptions options = null) =>
+            await SlashCommandHelper.ModifyCommandPermissions(Discord, this, userPerms, rolePerms, options).ConfigureAwait(false);
+
+        /// <inheritdoc/>
+        async Task<IApplicationCommand> IApplicationCommand.Modify (string name, string description, bool defaultPermission,
+            IEnumerable<IApplicationCommandOption> commandOptions, RequestOptions options) =>
+            await Modify(name, description, defaultPermission, commandOptions, options);
+
+        /// <inheritdoc/>
+        async Task<IApplicationCommandPermissions> IApplicationCommand.ModifyPermissions (IDictionary<IUser, bool> userPerms,
+            IDictionary<IRole, bool> rolePerms, RequestOptions options) => await ModifyPermissions(userPerms, rolePerms, options);
     }
 }

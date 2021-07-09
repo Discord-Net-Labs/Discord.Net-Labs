@@ -1,9 +1,5 @@
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.API
 {
@@ -27,9 +23,9 @@ namespace Discord.API
         [JsonProperty("max_values")]
         public int MaxValues { get; set; }
 
-        public SelectMenuComponent() { }
+        public SelectMenuComponent ( ) { }
 
-        public SelectMenuComponent(Discord.SelectMenu component)
+        public SelectMenuComponent (Discord.SelectMenu component)
         {
             this.Type = component.Type;
             this.CustomId = component.CustomId;

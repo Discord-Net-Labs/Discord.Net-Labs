@@ -1,15 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord
 {
     /// <summary>
     ///     Represents a choice for a <see cref="IApplicationCommandInteractionDataOption"/>. This class is used when making new commands.
     /// </summary>
-    public class ApplicationCommandOptionChoiceProperties
+    public class ApplicationCommandOptionChoice : IApplicationCommandOptionChoice
     {
         private string _name;
         private object _value;
@@ -21,7 +17,7 @@ namespace Discord
             get => _name;
             set
             {
-                if(value?.Length > 100)
+                if (value?.Length > 100)
                     throw new ArgumentException("Name length must be less than or equal to 100");
                 _name = value;
             }
@@ -37,9 +33,9 @@ namespace Discord
             get => _value;
             set
             {
-                if(value != null)
+                if (value != null)
                 {
-                    if(!(value is int) && !(value is string))
+                    if (!( value is int ) && !( value is string ))
                         throw new ArgumentException("The value of a choice must be a string or int!");
                 }
                 _value = value;

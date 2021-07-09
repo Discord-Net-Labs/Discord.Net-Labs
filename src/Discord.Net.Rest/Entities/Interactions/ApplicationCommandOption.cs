@@ -10,32 +10,37 @@ namespace Discord
         /// <inheritdoc/>
         public const int MaxOptionDepth = 4;
         /// <inheritdoc/>
-        public ApplicationCommandOptionType OptionType { get; }
+        public ApplicationCommandOptionType Type { get; }
         /// <inheritdoc/>
         public string Name { get; }
         /// <inheritdoc/>
         public string Description { get; }
         /// <inheritdoc/>
-        public bool IsRequired { get; }
+        public bool? Default { get; }
+        /// <inheritdoc/>
+        public bool? Required { get; }
         /// <inheritdoc cref="IApplicationCommandOption.Choices"/>
-        public IReadOnlyDictionary<string, object> Choices { get; }
+        public IReadOnlyCollection<ApplicationCommandOptionChoice> Choices { get; }
         /// <inheritdoc cref="IApplicationCommandOption.Options"/>
-        public IReadOnlyList<ApplicationCommandOption> Options { get; }
+        public IReadOnlyCollection<ApplicationCommandOption> Options { get; }
 
-        /// <inheritdoc/>
-        IEnumerable<KeyValuePair<string, object>> IApplicationCommandOption.Choices => Choices;
-        /// <inheritdoc/>
-        IEnumerable<IApplicationCommandOption> IApplicationCommandOption.Options => Options;
+        IReadOnlyCollection<IApplicationCommandOptionChoice> IApplicationCommandOption.Choices => Choices;
+
+        IReadOnlyCollection<IApplicationCommandOption> IApplicationCommandOption.Options => Options;
 
         private ApplicationCommandOption ( Model model, IEnumerable<ApplicationCommandOption> options )
         {
             Name = model.Name;
             Description = model.Description;
-            OptionType = model.Type;
+            Type = model.Type;
             if (model.Required.IsSpecified)
-                IsRequired = model.Required.Value;
+                Required = model.Required.Value;
             if (model.Choices.IsSpecified)
-                Choices = model.Choices.Value.ToDictionary(x => x.Name, x => x.Value);
+                Choices = model.Choices.Value.Select(x => new ApplicationCommandOptionChoice
+                {
+                    Name = x.Name,
+                    Value = x.Value
+                }).ToList();
 
             Options = options?.ToList();  
         }

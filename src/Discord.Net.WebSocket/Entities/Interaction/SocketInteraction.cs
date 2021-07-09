@@ -1,167 +1,99 @@
 using Discord.Rest;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Model = Discord.API.Interaction;
 
 namespace Discord.WebSocket
 {
     /// <summary>
-    ///     Represents an Interaction recieved over the gateway.
+    /// Represents a Web-Socket based Discord Interaction
     /// </summary>
     public abstract class SocketInteraction : SocketEntity<ulong>, IDiscordInteraction
     {
-        /// <summary>
-        ///     The <see cref="ISocketMessageChannel"/> this interaction was used in.
-        /// </summary>
-        public ISocketMessageChannel Channel { get; private set; }
-
-        /// <summary>
-        ///     The <see cref="SocketUser"/> who triggered this interaction.
-        /// </summary>
-        public SocketUser User { get; private set; }
-
-        /// <summary>
-        ///     The type of this interaction.
-        /// </summary>
-        public InteractionType Type { get; private set; }
-
-        /// <summary>
-        ///     The token used to respond to this interaction.
-        /// </summary>
-        public string Token { get; private set; }
-
-        /// <summary>
-        ///     The data sent with this interaction.
-        /// </summary>
-        public IDiscordInteractionData Data { get; private set; }
-
-        /// <summary>
-        ///     The version of this interaction.
-        /// </summary>
-        public int Version { get; private set; }
+        /// <inheritdoc cref="IDiscordInteraction.User"/>
+        public SocketUser User { get; }
+        /// <inheritdoc/>
+        public DateTimeOffset CreatedAt => SnowflakeUtils.FromSnowflake(Id);
+        /// <inheritdoc/>
+        public InteractionType InteractionType { get; }
+        /// <inheritdoc cref="IDiscordInteraction.Channel"/>
+        public ISocketMessageChannel Channel { get; }
+        /// <inheritdoc/>
+        public int Version { get; }
+        public bool IsValidToken => CreatedAt + TimeSpan.FromMinutes(15) > DateTimeOffset.Now;
+        /// <inheritdoc cref="IDiscordInteraction.Token"/>
+        internal string Token { get; }
+        /// <inheritdoc cref="IDiscordInteraction.ApplicationId"/>
+        internal ulong ApplicationId { get; }
 
         /// <inheritdoc/>
-        public DateTimeOffset CreatedAt
-            => SnowflakeUtils.FromSnowflake(this.Id);
+        IUser IDiscordInteraction.User => User;
+        /// <inheritdoc/>
+        string IDiscordInteraction.Token => Token;
+        /// <inheritdoc/>
+        IMessageChannel IDiscordInteraction.Channel => Channel;
+        /// <inheritdoc/>
+        ulong IDiscordInteraction.ApplicationId => ApplicationId;
 
-        /// <summary>
-        ///     <see langword="true"/> if the token is valid for replying to, otherwise <see langword="false"/>.
-        /// </summary>
-        public bool IsValidToken
-            => CheckToken();
-
-        private ulong? GuildId { get; set; }
-
-        internal SocketInteraction(DiscordSocketClient client, ulong id, ISocketMessageChannel channel)
-            : base(client, id)
+        internal SocketInteraction (DiscordSocketClient discord, ClientState state, SocketUser user, ISocketMessageChannel channel, Model model)
+            : base(discord, model.Id)
         {
-            this.Channel = channel;
+            User = user;
+            InteractionType = model.Type;
+            Version = model.Version;
+            Channel = channel;
+            Token = model.Token;
+            ApplicationId = model.ApplicationId;
         }
 
-        internal static SocketInteraction Create(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
+        internal static SocketInteraction Create (DiscordSocketClient discord, ClientState state, SocketUser user, ISocketMessageChannel channel, Model model)
         {
             if (model.Type == InteractionType.ApplicationCommand)
-                return SocketSlashCommand.Create(client, model, channel);
-            if (model.Type == InteractionType.MessageComponent)
-                return SocketMessageComponent.Create(client, model, channel);
+                return new SocketCommandInteraction(discord, state, user, channel, model);
+            else if (model.Type == InteractionType.MessageComponent)
+                return new SocketMessageInteraction(discord, state, user, channel, model);
             else
-                return null;
+                throw new ArgumentException("This kind of interaction is not supported.");
         }
 
-        internal virtual void Update(Model model)
-        {
-            this.Data = model.Data.IsSpecified
-                ? model.Data.Value
-                : null;
+        internal abstract void Update (ClientState state, Model model);
 
-            this.GuildId = model.GuildId.ToNullable();
-            this.Token = model.Token;
-            this.Version = model.Version;
-            this.Type = model.Type;
+        /// <inheritdoc/>
+        public async Task AcknowledgeAsync (RequestOptions options = null) =>
+            await SlashCommandHelper.SendAcknowledgement(Discord, this, options).ConfigureAwait(false);
 
-            if (this.User == null)
-            {
-                if (model.Member.IsSpecified && model.GuildId.IsSpecified)
-                {
-                    this.User = SocketGuildUser.Create(Discord.State.GetGuild(this.GuildId.Value), Discord.State, model.Member.Value);
-                }
-                else
-                {
-                    this.User = SocketGlobalUser.Create(this.Discord, this.Discord.State, model.User.Value);
-                }
-            }
-        }
+        /// <inheritdoc/>
+        public async Task PopulateAcknowledgement (string text = null, bool isTTS = false, IEnumerable<Embed> embeds = null, AllowedMentions allowedMentions = null,
+            InteractionApplicationCommandCallbackFlags flags = 0, IEnumerable<MessageComponent> messageComponents = null, RequestOptions options = null) =>
+            await SlashCommandHelper.ModifyInteractionResponse(Discord, this, text, allowedMentions, embeds, messageComponents, options).ConfigureAwait(false);
 
-        /// <summary>
-        ///     Responds to an Interaction.
-        /// <para>
-        ///     If you have <see cref="DiscordSocketConfig.AlwaysAcknowledgeInteractions"/> set to <see langword="true"/>, You should use
-        ///     <see cref="FollowupAsync(string, bool, Embed, bool, InteractionResponseType, AllowedMentions, RequestOptions, MessageComponent)"/> instead.
-        /// </para>
-        /// </summary>
-        /// <param name="text">The text of the message to be sent.</param>
-        /// <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
-        /// <param name="embed">A <see cref="Embed"/> to send with this response.</param>
-        /// <param name="type">The type of response to this Interaction.</param>
-        /// <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
-        /// <param name="allowedMentions">The allowed mentions for this response.</param>
-        /// <param name="options">The request options for this response.</param>
-        /// <param name="component">A <see cref="MessageComponent"/> to be sent with this response</param>
-        /// <exception cref="ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="DiscordConfig.MaxMessageSize"/>.</exception>
-        /// <exception cref="InvalidOperationException">The parameters provided were invalid or the token was invalid.</exception>
+        /// <inheritdoc/>
+        public async Task SendResponse (string text = null, bool isTTS = false, IEnumerable<Embed> embeds = null, AllowedMentions allowedMentions = null,
+            InteractionApplicationCommandCallbackFlags flags = 0, IEnumerable<MessageComponent> messageComponents = null, RequestOptions options = null) =>
+            await SlashCommandHelper.SendInteractionResponse(Discord, this, text, isTTS, embeds, allowedMentions, messageComponents, flags, options).ConfigureAwait(false);
 
-        public abstract Task RespondAsync(string text = null, bool isTTS = false, Embed embed = null, InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
-            bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null);
+        /// <inheritdoc/>
+        public async Task DeleteAsync (RequestOptions options = null) =>
+            await SlashCommandHelper.DeleteInteractionResponse(Discord, this, null).ConfigureAwait(false);
 
-        /// <summary>
-        ///     Sends a followup message for this interaction.
-        /// </summary>
-        /// <param name="text">The text of the message to be sent</param>
-        /// <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
-        /// <param name="embed">A <see cref="Embed"/> to send with this response.</param>
-        /// <param name="type">The type of response to this Interaction.</param>
-        /// /// <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
-        /// <param name="allowedMentions">The allowed mentions for this response.</param>
-        /// <param name="options">The request options for this response.</param>
-        /// <param name="component">A <see cref="MessageComponent"/> to be sent with this response</param>
-        /// <returns>
-        ///     The sent message.
-        /// </returns>
-        public abstract Task<RestFollowupMessage> FollowupAsync(string text = null, bool isTTS = false, Embed embed = null, bool ephemeral = false,
-             InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
-             AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null);
+        /// <inheritdoc cref="IDiscordInteraction.SendFollowupAsync(string, bool, string, string, IEnumerable{Embed}, AllowedMentions, RequestOptions)"/>
+        public async Task<RestMessage> SendFollowupAsync (string text = null, bool isTTS = false, string username = null, string avatarUrl = null, IEnumerable<Embed> embeds = null,
+            AllowedMentions allowedMentions = null, RequestOptions options = null) =>
+            await SlashCommandHelper.SendInteractionFollowup(Discord, this, text, isTTS, embeds, username, avatarUrl, allowedMentions, options).ConfigureAwait(false);
 
-        /// <summary>
-        ///     Gets the original response for this interaction.
-        /// </summary>
-        /// <param name="options">The request options for this async request.</param>
-        /// <returns>A <see cref="RestInteractionMessage"/> that represents the intitial response, or <see langword="null"/> if there is no response.</returns>
-        public Task<RestInteractionMessage> GetOriginalResponseAsync(RequestOptions options = null)
-            => InteractionHelper.GetOriginalResponseAsync(this.Discord, this.Channel, this, options);
+        /// <inheritdoc/>
+        public async Task ModifyFollowup (ulong messageId, string text = null, IEnumerable<Embed> embeds = null, AllowedMentions allowedMentions = null,
+            RequestOptions options = null) =>
+            await SlashCommandHelper.ModifyFollowupMessage(Discord, this, messageId, text, allowedMentions, embeds, options).ConfigureAwait(false);
 
-        /// <summary>
-        ///     Acknowledges this interaction with the <see cref="InteractionResponseType.DeferredChannelMessageWithSource"/>.
-        /// </summary>
-        /// <returns>
-        ///     A task that represents the asynchronous operation of acknowledging the interaction.
-        /// </returns>
-        public virtual Task AcknowledgeAsync(RequestOptions options = null)
-        {
-            var response = new API.InteractionResponse()
-            {
-                Type = InteractionResponseType.DeferredChannelMessageWithSource,
-            };
+        /// <inheritdoc/>
+        public async Task DeleteFollowup (ulong messageId, RequestOptions options = null) =>
+            await SlashCommandHelper.DeleteFollowupMessage(Discord, this, messageId, options).ConfigureAwait(false);
 
-            return Discord.Rest.ApiClient.CreateInteractionResponse(response, this.Id, this.Token, options);
-        }
-
-        private bool CheckToken()
-        {
-            // Tokens last for 15 minutes according to https://discord.com/developers/docs/interactions/slash-commands#responding-to-an-interaction
-            return (DateTime.UtcNow - this.CreatedAt.UtcDateTime).TotalMinutes <= 15d;
-        }
+        /// <inheritdoc/>
+        async Task<IMessage> IDiscordInteraction.SendFollowupAsync (string text, bool isTTS, string username, string avatarUrl,
+            IEnumerable<Embed> embeds, AllowedMentions allowedMentions, RequestOptions options) =>
+            await SendFollowupAsync(text, isTTS, username, avatarUrl, embeds, allowedMentions, options);
     }
 }
