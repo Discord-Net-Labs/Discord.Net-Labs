@@ -1,24 +1,26 @@
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.API.Rest
 {
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     internal class ModifyApplicationCommandParams
     {
         [JsonProperty("name")]
-        public Optional<string> Name { get; set; }
-
+        public string Name { get; set; }
         [JsonProperty("description")]
-        public Optional<string> Description { get; set; }
-
+        public string Description { get; set; }
         [JsonProperty("options")]
-        public Optional<ApplicationCommandOption[]> Options { get; set; }
-
+        public ApplicationCommandOption[]? Options { get; set; }
         [JsonProperty("default_permission")]
-        public Optional<bool> DefaultPermission { get; set; }
+        public bool DefaultPermission { get; set; }
+
+        public ModifyApplicationCommandParams (string name, string description)
+        {
+            Preconditions.SlashCommandName(name, nameof(name));
+            Preconditions.SlashCommandDescription(description, nameof(description));
+
+            Name = name;
+            Description = description;
+        }
     }
 }

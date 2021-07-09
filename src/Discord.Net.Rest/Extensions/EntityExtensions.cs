@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
@@ -44,6 +45,7 @@ namespace Discord.Rest
         public static API.Embed ToModel(this Embed entity)
         {
             if (entity == null) return null;
+
             var model = new API.Embed
             {
                 Type = entity.Type,
@@ -78,7 +80,16 @@ namespace Discord.Rest
                 RepliedUser = entity.MentionRepliedUser ?? Optional.Create<bool>(),
             };
         }
-        public static API.MessageReference ToModel(this MessageReference entity)
+        public static AllowedMentions ToEntity (this API.AllowedMentions model)
+        {
+            return new AllowedMentions()
+            {
+                MentionRepliedUser = model.RepliedUser.IsSpecified ? model.RepliedUser.Value : null,
+                RoleIds = model.Roles.IsSpecified ? model.Roles.Value.ToList() : null,
+                UserIds = model.Users.IsSpecified ? model.Users.Value.ToList() : null,
+            };
+        }
+        public static API.MessageReference ToModel (this MessageReference entity)
         {
             return new API.MessageReference()
             {
@@ -112,7 +123,7 @@ namespace Discord.Rest
         {
             return new API.EmbedField { Name = entity.Name, Value = entity.Value, Inline = entity.Inline };
         }
-        public static EmbedFooter ToEntity(this API.EmbedFooter model)
+        public static EmbedFooter ToEntity (this API.EmbedFooter model)
         {
             return new EmbedFooter(model.Text, model.IconUrl, model.ProxyIconUrl);
         }
@@ -164,9 +175,167 @@ namespace Discord.Rest
             return new API.Image(entity.Stream);
         }
 
-        public static Overwrite ToEntity(this API.Overwrite model)
+        public static Overwrite ToEntity (this API.Overwrite model)
         {
             return new Overwrite(model.TargetId, model.TargetType, new OverwritePermissions(model.Allow, model.Deny));
+        }
+
+        public static InteractionResponse ToEntity (this API.InteractionResponse response)
+        {
+            if (!response.Data.IsSpecified)
+                return new InteractionResponse(response.Type);
+
+            var data = response.Data.Value;
+
+            bool isTTS = false;
+            AllowedMentions allowedMentions = null;
+            Embed[] embeds = null;
+            string content = null;
+            MessageComponent[] messageComponents = null;
+
+            if (data.Content.IsSpecified)
+                content = data.Content.Value;
+            if (data.TTS.IsSpecified)
+                isTTS = data.TTS.Value;
+            if (data.Embeds.IsSpecified)
+                embeds = data.Embeds.Value.Select(x => x.ToEntity()).ToArray();
+            if (data.AllowedMentions.IsSpecified)
+                allowedMentions = data.AllowedMentions.Value.ToEntity();
+            if (data.Components.IsSpecified)
+                messageComponents = data.Components.Value.Select(x => x.ToEntity()).ToArray();
+
+            return new InteractionResponse(response.Type)
+            {
+                IsTTS = isTTS,
+                Content = content,
+                Embeds = embeds,
+                AllowedMentions = allowedMentions,
+                MessageComponents = messageComponents
+            };
+        }
+
+        public static API.ApplicationCommandOption ToModel (this IApplicationCommandOption entity)
+        {
+            return new API.ApplicationCommandOption()
+            {
+                Name = entity.Name,
+                Description = entity.Description,
+                Type = entity.OptionType,
+                Required = entity.IsRequired,
+                Options = entity.Options?.Select(x => x?.ToModel()).ToArray(),
+                Choices = entity.Choices?.Select(x => new API.ApplicationCommandOptionChoice()
+                {
+                    Name = x.Key,
+                    Value = x.Value
+                }).ToArray()
+            };
+        }
+
+        public static API.ApplicationCommand ToModel (this IApplicationCommand entity)
+        {
+            var model = new API.ApplicationCommand
+            {
+                Name = entity.Name,
+                Description = entity.Description,
+                Id = entity.Id,
+                ApplicationId = entity.ApplicationId,
+                DefaultPermission = entity.DefaultPermission,
+                Options = entity.Options.Select(x => x.ToModel()).ToArray()
+            };
+
+            if (entity.Guild != null)
+                model.GuildId = entity.Guild.Id;
+
+            return model;
+        }
+        public static API.MessageComponent ToModel (this MessageComponent entity)
+        {
+            switch (entity)
+            {
+                case MessageActionRowComponent actionRow:
+                    {
+                        return new API.MessageComponent
+                        {
+                            Type = MessageComponentType.ActionRow,
+                            Components = actionRow.MessageComponents.Select(x => x.ToModel()).ToArray()
+                        };
+                    }
+                case MessageButtonComponent button:
+                    {
+                        return new API.MessageComponent
+                        {
+                            Type = MessageComponentType.Button,
+                            Label = button.Label,
+                            CustomId = button.CustomId,
+                            Url = button.Url,
+                            Emoji = button.Emoji != null ? new API.Emoji
+                            {
+                                Name = button.Emoji?.Name,
+                                Id = button.Emoji?.Id,
+                                Animated = button.Emoji?.Animated
+                            } : null,
+                            Style = button.Style,
+                            Disabled = button.IsDisabled
+                        };
+                    }
+                case MessageSelectMenuComponent select:
+                    {
+                        return new API.MessageComponent
+                        {
+                            Type = MessageComponentType.SelectMenu,
+                            Placeholder = select.Placeholder,
+                            MaxValues = select.MaxValues,
+                            MinValues = select.MinValues,
+                            Options = select.Options.Select(x => x.ToModel()).ToArray(),
+                            CustomId = select.CustomId
+                        };
+                    }
+                default:
+                    throw new ArgumentException("Not supported message component type.");
+            }
+        }
+
+        public static API.SelectOption ToModel (this SelectOption entity) =>
+            new API.SelectOption
+            {
+                Label = entity.Label,
+                Value = entity.Value,
+                Description = entity.Description,
+                Default = entity.IsDefault,
+                Emoji = entity.Emoji != null ? new API.Emoji
+                {
+                    Name = entity.Emoji?.Name,
+                    Id = entity.Emoji?.Id,
+                    Animated = entity.Emoji?.Animated
+                } : null
+            };
+
+        public static MessageComponent ToEntity (this API.MessageComponent component)
+        {
+            switch (component.Type)
+            {
+                case MessageComponentType.ActionRow:
+                    {
+                        IEnumerable<MessageComponent> children = null;
+                        if (component.Components.IsSpecified)
+                            children = component.Components.Value.Select(x => x.ToEntity());
+
+                        return new MessageActionRowComponent(children);
+                    }
+                case MessageComponentType.Button:
+                    {
+                        string label = component.Label.GetValueOrDefault(null);
+                        string customId = component.CustomId.GetValueOrDefault(null);
+                        var emoji = component.Emoji.GetValueOrDefault(null).ToEntity();
+                        var style = component.Style.GetValueOrDefault();
+                        string url = component.Url.GetValueOrDefault(null);
+                        bool isDisabled = component.Disabled.GetValueOrDefault();
+                        return new MessageButtonComponent(label, customId, url, emoji, style, isDisabled);
+                    }
+                case MessageComponentType.SelectMenu:
+                default:
+                    throw new ArgumentException("Unknown component type");
+            }
         }
     }
 }

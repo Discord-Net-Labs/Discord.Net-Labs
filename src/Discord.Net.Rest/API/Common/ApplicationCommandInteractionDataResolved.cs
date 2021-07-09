@@ -3,18 +3,16 @@ using System.Collections.Generic;
 
 namespace Discord.API
 {
+    [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
     internal class ApplicationCommandInteractionDataResolved
     {
         [JsonProperty("users")]
-        public Optional<Dictionary<string, User>> Users { get; set; }
-
+        public Optional<IDictionary<ulong, User>> Users { get; set; }
         [JsonProperty("members")]
-        public Optional<Dictionary<string, GuildMember>> Members { get; set; }
-
-        [JsonProperty("channels")]
-        public Optional<Dictionary<string, Channel>> Channels { get; set; }
-
+        public Optional<IDictionary<ulong, GuildMember>> Members { get; set; }
         [JsonProperty("roles")]
-        public Optional<Dictionary<string, Role>> Roles { get; set; }
+        public Optional<IDictionary<ulong, Role>> Roles { get; set; }
+        [JsonProperty("channels")]
+        public Optional<IDictionary<ulong, Channel>> Channels { get; set; }
     }
 }

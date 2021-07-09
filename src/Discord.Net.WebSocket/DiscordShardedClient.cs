@@ -378,7 +378,10 @@ namespace Discord.WebSocket
             client.InviteCreated += (invite) => _inviteCreatedEvent.InvokeAsync(invite);
             client.InviteDeleted += (channel, invite) => _inviteDeletedEvent.InvokeAsync(channel, invite);
 
-            client.InteractionCreated += (interaction) => _interactionCreatedEvent.InvokeAsync(interaction);
+            client.InteractionRecieved += (interaction) => _interactionReceivedEvent.InvokeAsync(interaction);
+            client.ApplicationCommandCreated += (command) => _applicationCommandCreatedEvent.InvokeAsync(command);
+            client.ApplicationCommandUpdated += (command) => _applicationCommandUpdatedEvent.InvokeAsync(command);
+            client.ApplicationCommandDeleted += (command) => _applicationCommandDeletedEvent.InvokeAsync(command);
         }
 
         //IDiscordClient
