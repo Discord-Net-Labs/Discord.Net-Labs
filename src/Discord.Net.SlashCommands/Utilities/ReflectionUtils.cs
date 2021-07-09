@@ -79,59 +79,28 @@ namespace Discord.SlashCommands
             throw new InvalidOperationException($"Failed to create \"{ownerType.FullName}\", dependency \"{memberType.Name}\" was not found.");
         }
 
-        public static T Create<T> (params object[] args)
+        internal static Func<IServiceProvider, T> Create<T>(TypeInfo typeInfo, SlashCommandService commandService)
         {
-            var types = args.Select(p => p.GetType()).ToArray();
-            var ctor = typeof(T).GetConstructor(types);
+            var constructor = GetConstructor(typeInfo);
+            var parameters = constructor.GetParameters();
+            var properties = GetProperties(typeInfo);
 
-            var exnew = Expression.New(ctor);
-            var lambda = Expression.Lambda<T>(exnew);
-            var compiled = lambda.Compile();
-            return compiled;
-        }
+            var pExps = new ParameterExpression[parameters.Length];
+            for (int i = 0; i < parameters.Length; i++)
+                pExps[i] = Expression.Parameter(parameters[i].ParameterType, parameters[i].Name);
 
-        public static object Create(Type type, params object[] args)
-        {
-            var types = args.Select(p => p.GetType()).ToArray();
-            var ctor = type.GetConstructor(types);
+            var createExp = Expression.Lambda(Expression.New(constructor, pExps), pExps);
+            var lambda = createExp.Compile();
 
-            var exnew = Expression.New(ctor);
-            var lambda = Expression.Lambda(exnew);
-            var compiled = lambda.Compile();
-            return compiled;
-        }
-
-        public delegate object ObjectActivator (params object[] args);
-
-        public static object New (this Type input, params object[] args )
-        {
-            var types = args.Select(x => x?.GetType());
-            var constructor = input.GetConstructor(types.ToArray());
-
-            var paramInfo = constructor.GetParameters();
-            var paramex = Expression.Parameter(typeof(object[]), "args");
-
-            var argex = new Expression[paramInfo.Length];
-            for(var i = 0; i < paramInfo.Length; i++)
+            return (services) =>
             {
-                var index = Expression.Constant(i);
-                var paramType = paramInfo[i].ParameterType;
-                var accessor = Expression.ArrayIndex(paramex, index);
-                var cast = Expression.Convert(accessor, paramType);
-                argex[i] = cast;
-            }
+                var args = new object[parameters.Length];
 
-            var newex = Expression.New(constructor, argex);
-            var lambda = Expression.Lambda(typeof(ObjectActivator), newex, paramex);
-            var result = (ObjectActivator)lambda.Compile();
-            return result(args);
-        }
-        public class Type<T>
-        {
-            public static T New (params object[] args)
-            {
-                return (T)typeof(T).New(args);
-            }
+                for (int i = 0; i < parameters.Length; i++)
+                    args[i] = GetMember(commandService, services, parameters[i].ParameterType, typeInfo);
+
+                return (T)lambda.DynamicInvoke(args);
+            };
         }
     }
 }
