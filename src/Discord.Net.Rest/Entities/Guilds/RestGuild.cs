@@ -805,11 +805,11 @@ namespace Discord.Rest
 
         /// <inheritdoc cref="IGuild.GetSlashCommandsAsync(RequestOptions)"/>
         public async Task<IReadOnlyCollection<RestApplicationCommand>> GetSlashCommandsAsync (RequestOptions options = null) =>
-            (await SlashCommandHelper.GetApplicationCommands(Discord, this, options).ConfigureAwait(false)).ToList();
+            (await InteractionHelper.GetApplicationCommands(Discord, this, options).ConfigureAwait(false)).ToList();
 
         /// <inheritdoc cref="IGuild.GetSlashCommandAsync(ulong, RequestOptions)"/>
         public async Task<RestApplicationCommand> GetSlashCommandAsync (ulong commandId, RequestOptions options = null) =>
-            await SlashCommandHelper.GetApplicationCommand(Discord, this, commandId, options).ConfigureAwait(false);
+            await InteractionHelper.GetApplicationCommand(Discord, commandId, this, options).ConfigureAwait(false);
 
         //IGuild
         /// <inheritdoc />

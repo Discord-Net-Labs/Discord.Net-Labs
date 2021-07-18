@@ -42,7 +42,6 @@ namespace Discord.SlashCommands
         private readonly SlashCommandMap<SlashInteractionInfo> _interactionCommandMap;
         private readonly HashSet<SlashModuleInfo> _moduleDefs;
         private readonly SemaphoreSlim _lock;
-        private readonly ulong _applicationId;
         private readonly ConcurrentDictionary<ApplicationCommandOptionType, Func<ISlashCommandContext, InteractionParameter, IServiceProvider, object>> _typeReaders;
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
@@ -97,7 +96,6 @@ namespace Discord.SlashCommands
             _interactionCommandMap = new SlashCommandMap<SlashInteractionInfo>(this);
 
             Client = discord;
-            _applicationId = Client.GetApplicationInfoAsync().GetAwaiter().GetResult().Id;
 
             _runAsync = config.RunAsync;
             _throwOnError = config.ThrowOnError;
@@ -193,14 +191,14 @@ namespace Discord.SlashCommands
 
             if (deleteMissing)
             {
-                var existing = await Rest.SlashCommandHelper.GetApplicationCommands(Client, guild, null);
+                var existing = await Rest.InteractionHelper.GetApplicationCommands(Client, guild, null);
 
                 var missing = existing.Where(x => !creationParams.Any(y => y.Name == x.Name));
 
                 if (missing != null)
                     foreach (var command in missing)
                     {
-                        await Rest.SlashCommandHelper.DeleteApplicationCommand(Client, command.Id, guild, null).ConfigureAwait(false);
+                        await Rest.InteractionHelper.DeleteApplicationCommand(Client, command.Id, guild, null).ConfigureAwait(false);
                         existing.ToList().Remove(command);
                     }
             }
@@ -210,9 +208,9 @@ namespace Discord.SlashCommands
                 ApplicationCommand result;
 
                 if (guild != null)
-                    result = await restClient.CreateGuildApplicationCommand(_applicationId, guild.Id, args).ConfigureAwait(false);
+                    result = await restClient.CreateGuildApplicationCommand( guild.Id, args).ConfigureAwait(false);
                 else
-                    result = await restClient.CreateGlobalApplicationCommand(_applicationId, args).ConfigureAwait(false);
+                    result = await restClient.CreateGlobalApplicationCommand( args).ConfigureAwait(false);
 
                 if (result == null)
                     await _cmdLogger.WarningAsync($"Command could not be registered ({args.Name})").ConfigureAwait(false);
@@ -236,7 +234,7 @@ namespace Discord.SlashCommands
 
             foreach (var com in commands)
             {
-                ApplicationCommand result = await Client.ApiClient.CreateGuildApplicationCommand(_applicationId, guild.Id,
+                ApplicationCommand result = await Client.ApiClient.CreateGuildApplicationCommand( guild.Id,
                     com.ParseApplicationCommandParams(), null);
 
                 if (result == null)
@@ -259,7 +257,7 @@ namespace Discord.SlashCommands
             {
                 if (module.TryParseApplicationCommandParams(out var args))
                 {
-                    ApplicationCommand result = await Client.ApiClient.CreateGuildApplicationCommand(_applicationId, guild.Id, args, null);
+                    ApplicationCommand result = await Client.ApiClient.CreateGuildApplicationCommand( guild.Id, args, null);
 
                     if (result == null)
                         await _cmdLogger.WarningAsync($"Module could not be registered ({module.Name})").ConfigureAwait(false);

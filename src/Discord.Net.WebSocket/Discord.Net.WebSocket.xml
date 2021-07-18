@@ -691,69 +691,66 @@
                 </para>
             </remarks>
         </member>
-        <member name="E:Discord.WebSocket.BaseSocketClient.InteractionCreated">
+        <member name="E:Discord.WebSocket.BaseSocketClient.InteractionRecieved">
             <summary>
-                Fired when an Interaction is created.
+            Fired when an interaction is recieved
             </summary>
             <remarks>
                 <para>
-                    This event is fired when an interaction is created. The event handler must return a
+                    This event is fired when an interaction is recieved. The event handler must return a
                     <see cref="T:System.Threading.Tasks.Task"/> and accept a <see cref="T:Discord.WebSocket.SocketInteraction"/> as its parameter.
                 </para>
                 <para>
-                    The interaction created will be passed into the <see cref="T:Discord.WebSocket.SocketInteraction"/> parameter.
+                    The message that is sent to the client is passed into the event handler parameter as
+                    <see cref="T:Discord.WebSocket.SocketInteraction"/>. This message may be a Slash Command interaction (i.e.
+                    <see cref="T:Discord.WebSocket.SocketCommandInteraction"/>) or a Message Component interaction (i.e. <see cref="T:Discord.WebSocket.SocketMessageInteraction"/>. See the
+                    derived classes of <see cref="T:Discord.WebSocket.SocketInteraction"/> for more details.
                 </para>
             </remarks>
         </member>
         <member name="E:Discord.WebSocket.BaseSocketClient.ApplicationCommandCreated">
-             <summary>
-                 Fired when a guild application command is created.
-            </summary>
-            <remarks>
-                 <para>
-                     This event is fired when an application command is created. The event handler must return a
-                     <see cref="T:System.Threading.Tasks.Task"/> and accept a <see cref="T:Discord.WebSocket.SocketApplicationCommand"/> as its parameter.
-                 </para>
-                 <para>
-                     The command that was deleted will be passed into the <see cref="T:Discord.WebSocket.SocketApplicationCommand"/> parameter.
-                 </para>
-                 <note>
-                     <b>This event is an undocumented discord event and may break at any time, its not recommended to rely on this event</b>
-                 </note>
-             </remarks>
-        </member>
-        <member name="E:Discord.WebSocket.BaseSocketClient.ApplicationCommandUpdated">
             <summary>
-                 Fired when a guild application command is updated.
+            Fired when a new Slash Command is created
             </summary>
             <remarks>
                 <para>
-                    This event is fired when an application command is updated. The event handler must return a
+                    This event is fired when an interaction is recieved. The event handler must return a
                     <see cref="T:System.Threading.Tasks.Task"/> and accept a <see cref="T:Discord.WebSocket.SocketApplicationCommand"/> as its parameter.
                 </para>
                 <para>
-                    The command that was deleted will be passed into the <see cref="T:Discord.WebSocket.SocketApplicationCommand"/> parameter.
+                    The message that is sent to the client is passed into the event handler parameter as
+                    <see cref="T:Discord.WebSocket.SocketApplicationCommand"/>.
                 </para>
-                <note>
-                    <b>This event is an undocumented discord event and may break at any time, its not recommended to rely on this event</b>
-                </note>
+            </remarks>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.ApplicationCommandUpdated">
+            <summary>
+            Fired when an existing Slash Command is modified
+            </summary>
+            <remarks>
+                <para>
+                    This event is fired when an interaction is recieved. The event handler must return a
+                    <see cref="T:System.Threading.Tasks.Task"/> and accept a <see cref="T:Discord.WebSocket.SocketApplicationCommand"/> as its parameter.
+                </para>
+                <para>
+                    The message that is sent to the client is passed into the event handler parameter as
+                    <see cref="T:Discord.WebSocket.SocketApplicationCommand"/>.
+                </para>
             </remarks>
         </member>
         <member name="E:Discord.WebSocket.BaseSocketClient.ApplicationCommandDeleted">
             <summary>
-                 Fired when a guild application command is deleted.
+            Fired when a Slash Command is deleted
             </summary>
             <remarks>
                 <para>
-                    This event is fired when an application command is deleted. The event handler must return a
+                    This event is fired when an interaction is recieved. The event handler must return a
                     <see cref="T:System.Threading.Tasks.Task"/> and accept a <see cref="T:Discord.WebSocket.SocketApplicationCommand"/> as its parameter.
                 </para>
                 <para>
-                    The command that was deleted will be passed into the <see cref="T:Discord.WebSocket.SocketApplicationCommand"/> parameter.
+                    The message that is sent to the client is passed into the event handler parameter as
+                    <see cref="T:Discord.WebSocket.SocketApplicationCommand"/>.
                 </para>
-                <note>
-                    <b>This event is an undocumented discord event and may break at any time, its not recommended to rely on this event</b>
-                </note>
             </remarks>
         </member>
         <member name="P:Discord.WebSocket.DiscordShardedClient.Latency">
@@ -2843,27 +2840,6 @@
                 voice regions the guild can access.
             </returns>
         </member>
-        <member name="M:Discord.WebSocket.SocketGuild.GetSlashCommandsAsync(Discord.RequestOptions)">
-            <summary>
-                Gets a collection of slash commands created by the current user in this guild.
-            </summary>
-            <param name="options">The options to be used when sending the request.</param>
-            <returns>
-                A task that represents the asynchronous get operation. The task result contains a read-only collection of
-                slash commands created by the current user.
-            </returns>
-        </member>
-        <member name="M:Discord.WebSocket.SocketGuild.GetSlashCommandAsync(System.UInt64,Discord.RequestOptions)">
-            <summary>
-                Gets a slash command in the current guild.
-            </summary>
-            <param name="id">The unique identifier of the slash command.</param>
-            <param name="options">The options to be used when sending the request.</param>
-            <returns>
-                A task that represents the asynchronous get operation. The task result contains a
-                slash command created by the current user.
-            </returns>
-        </member>
         <member name="M:Discord.WebSocket.SocketGuild.GetInvitesAsync(Discord.RequestOptions)">
             <summary>
                 Gets a collection of all invites in this guild.
@@ -3002,16 +2978,6 @@
                 of webhooks found within the guild.
             </returns>
         </member>
-        <member name="M:Discord.WebSocket.SocketGuild.GetApplicationCommandsAsync(Discord.RequestOptions)">
-            <summary>
-                Gets this guilds slash commands commands
-            </summary>
-            <param name="options">The options to be used when sending the request.</param>
-            <returns>
-                A task that represents the asynchronous get operation. The task result contains a read-only collection
-                of application commands found within the guild.
-            </returns>
-        </member>
         <member name="M:Discord.WebSocket.SocketGuild.GetEmotesAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
@@ -3027,6 +2993,12 @@
         </member>
         <member name="M:Discord.WebSocket.SocketGuild.DeleteEmoteAsync(Discord.GuildEmote,Discord.RequestOptions)">
             <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.GetSlashCommandsAsync(Discord.RequestOptions)">
+            <inheritdoc cref="M:Discord.IGuild.GetSlashCommandsAsync(Discord.RequestOptions)"/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.GetSlashCommandAsync(System.UInt64,Discord.RequestOptions)">
+            <inheritdoc cref="M:Discord.IGuild.GetSlashCommandAsync(System.UInt64,Discord.RequestOptions)"/>
         </member>
         <member name="M:Discord.WebSocket.SocketGuild.ToString">
             <summary>
@@ -3177,86 +3149,41 @@
         <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetWebhooksAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="T:Discord.WebSocket.SocketMessageComponent">
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetSlashCommandsAsync(Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetSlashCommandAsync(System.UInt64,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="T:Discord.WebSocket.SocketMessageInteraction">
             <summary>
-                Represents a Websocket-based interaction type for Message Components.
+            Represents a Web-Socket based <see cref="T:Discord.IDiscordInteraction"/> that is created by a <see cref="T:Discord.IMessageComponent"/> interaction
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketMessageComponent.Data">
+        <member name="P:Discord.WebSocket.SocketMessageInteraction.Message">
             <summary>
-                The data received with this interaction, contains the button that was clicked.
+            The message that encapsulates the Interaction Event invoker
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketMessageComponent.Message">
+        <member name="P:Discord.WebSocket.SocketMessageInteraction.ComponentType">
             <summary>
-                The message that contained the trigger for this interaction.
+            Type of the component that crated this Interaction
             </summary>
         </member>
-        <member name="M:Discord.WebSocket.SocketMessageComponent.RespondAsync(System.String,System.Boolean,Discord.Embed,Discord.InteractionResponseType,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
+        <member name="P:Discord.WebSocket.SocketMessageInteraction.CustomId">
             <summary>
-                Responds to an Interaction.
-            <para>
-                If you have <see cref="P:Discord.WebSocket.DiscordSocketConfig.AlwaysAcknowledgeInteractions"/> set to <see langword="true"/>, You should use
-                <see cref="!:FollowupAsync(string, bool, Embed, InteractionResponseType, AllowedMentions, RequestOptions)"/> instead.
-            </para>
-            </summary>
-            <param name="text">The text of the message to be sent.</param>
-            <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
-            <param name="embed">A <see cref="T:Discord.Embed"/> to send with this response.</param>
-            <param name="type">The type of response to this Interaction.</param>
-            <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
-            <param name="allowedMentions">The allowed mentions for this response.</param>
-            <param name="options">The request options for this response.</param>
-            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response</param>
-            <returns>
-                The <see cref="T:Discord.IMessage"/> sent as the response. If this is the first acknowledgement, it will return null.
-            </returns>
-            <exception cref="T:System.ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="F:Discord.DiscordConfig.MaxMessageSize"/>.</exception>
-            <exception cref="T:System.InvalidOperationException">The parameters provided were invalid or the token was invalid.</exception>
-        </member>
-        <member name="M:Discord.WebSocket.SocketMessageComponent.FollowupAsync(System.String,System.Boolean,Discord.Embed,System.Boolean,Discord.InteractionResponseType,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
-            <summary>
-                Sends a followup message for this interaction.
-            </summary>
-            <param name="text">The text of the message to be sent</param>
-            <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
-            <param name="embed">A <see cref="T:Discord.Embed"/> to send with this response.</param>
-            <param name="type">The type of response to this Interaction.</param>
-            /// <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
-            <param name="allowedMentions">The allowed mentions for this response.</param>
-            <param name="options">The request options for this response.</param>
-            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response</param>
-            <returns>
-                The sent message.
-            </returns>
-        </member>
-        <member name="T:Discord.WebSocket.SocketMessageComponentData">
-            <summary>
-                Represents the data sent with a <see cref="F:Discord.InteractionType.MessageComponent"/>.
+            Dev-assigned Custom ID of the Message Component that created this Interaction
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketMessageComponentData.CustomId">
+        <member name="P:Discord.WebSocket.SocketMessageInteraction.Values">
             <summary>
-                The components Custom Id that was clicked
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketMessageComponentData.Type">
-            <summary>
-                The type of the component clicked
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketMessageComponentData.Values">
-            <summary>
-                The value(s) of a <see cref="T:Discord.SelectMenu"/> interaction response.
+            If the type of the component is <see cref="F:Discord.ComponentType.SelectMenu"/>, the values that are selected by the user
             </summary>
         </member>
         <member name="T:Discord.WebSocket.SocketApplicationCommand">
             <summary>
-                Represends a Websocket-based <see cref="T:Discord.IApplicationCommand"/> recieved over the gateway.
+            Represents a Web-Socket based <see cref="T:Discord.IApplicationCommand"/>
             </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommand.ApplicationId">
-            <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommand.Name">
             <inheritdoc/>
@@ -3264,206 +3191,129 @@
         <member name="P:Discord.WebSocket.SocketApplicationCommand.Description">
             <inheritdoc/>
         </member>
+        <member name="P:Discord.WebSocket.SocketApplicationCommand.ApplicationId">
+            <inheritdoc cref="P:Discord.IApplicationCommand.ApplicationId"/>
+        </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommand.DefaultPermission">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommand.Options">
+        <member name="P:Discord.WebSocket.SocketApplicationCommand.Guild">
+            <inheritdoc cref="P:Discord.IApplicationCommand.Guild"/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketApplicationCommand.IsGlobal">
             <summary>
-                A collection of <see cref="T:Discord.WebSocket.SocketApplicationCommandOption"/>'s recieved over the gateway.
+            Wheter this command is a Global Command or a Guild Command
             </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketApplicationCommand.Options">
+            <inheritdoc cref="P:Discord.IApplicationCommand.Options"/>
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommand.CreatedAt">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommand.Guild">
-            <summary>
-                The <see cref="T:Discord.WebSocket.SocketGuild"/> where this application was created.
-            </summary>
+        <member name="P:Discord.WebSocket.SocketApplicationCommand.Discord#IApplicationCommand#ApplicationId">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketApplicationCommand.Discord#IApplicationCommand#Guild">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketApplicationCommand.Discord#IApplicationCommand#Options">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketApplicationCommand.Modify(System.String,System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.IApplicationCommandOption},Discord.RequestOptions)">
+            <inheritdoc cref="M:Discord.IApplicationCommand.Modify(System.String,System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.IApplicationCommandOption},Discord.RequestOptions)"/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketApplicationCommand.UpdateAsync(Discord.RequestOptions)">
+            <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.SocketApplicationCommand.DeleteAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
-        <member name="T:Discord.WebSocket.SocketApplicationCommandChoice">
+        <member name="M:Discord.WebSocket.SocketApplicationCommand.ModifyPermissions(System.Collections.Generic.IEnumerable{Discord.ApplicationCommandPermission},Discord.RequestOptions)">
+            <inheritdoc cref="M:Discord.IApplicationCommand.ModifyPermissions(System.Collections.Generic.IEnumerable{Discord.ApplicationCommandPermission},Discord.RequestOptions)"/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketApplicationCommand.Discord#IApplicationCommand#Modify(System.String,System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.IApplicationCommandOption},Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketApplicationCommand.Discord#IApplicationCommand#ModifyPermissions(System.Collections.Generic.IEnumerable{Discord.ApplicationCommandPermission},Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.WebSocket.SocketCommandInteraction">
             <summary>
-                Represents a choice for a <see cref="T:Discord.WebSocket.SocketApplicationCommandOption"/>.
+            Represents a Web-Socket based <see cref="T:Discord.IDiscordInteraction"/> that originated from a Slash Command
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandChoice.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandChoice.Value">
-            <inheritdoc/>
-        </member>
-        <member name="T:Discord.WebSocket.SocketApplicationCommandOption">
+        <member name="P:Discord.WebSocket.SocketCommandInteraction.Command">
             <summary>
-                Represents an option for a <see cref="T:Discord.WebSocket.SocketApplicationCommand"/>.
+            Name of the nested commands, with the order: Command, Sub-Command Group, Sub-Command
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Type">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Description">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Default">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Required">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Choices">
+        <member name="P:Discord.WebSocket.SocketCommandInteraction.Data">
             <summary>
-                Choices for string and int types for the user to pick from.
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Options">
-            <summary>
-                If the option is a subcommand or subcommand group type, this nested options will be the parameters.
-            </summary>
-        </member>
-        <member name="T:Discord.WebSocket.SocketSlashCommand">
-            <summary>
-                Represents a Websocket-based slash command received over the gateway.
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommand.Data">
-            <summary>
-                The data associated with this interaction.
-            </summary>
-        </member>
-        <member name="M:Discord.WebSocket.SocketSlashCommand.RespondAsync(System.String,System.Boolean,Discord.Embed,Discord.InteractionResponseType,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Discord.WebSocket.SocketSlashCommand.FollowupAsync(System.String,System.Boolean,Discord.Embed,System.Boolean,Discord.InteractionResponseType,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
-            <inheritdoc/>
-        </member>
-        <member name="T:Discord.WebSocket.SocketSlashCommandData">
-            <summary>
-                Represents the data tied with the <see cref="T:Discord.WebSocket.SocketSlashCommand"/> interaction.
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandData.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandData.Options">
-            <summary>
-                The <see cref="T:Discord.WebSocket.SocketSlashCommandDataOption"/>'s received with this interaction.
-            </summary>
-        </member>
-        <member name="T:Discord.WebSocket.SocketSlashCommandDataOption">
-            <summary>
-                Represents a Websocket-based <see cref="T:Discord.IApplicationCommandInteractionDataOption"/> recieved by the gateway
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Value">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Type">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Options">
-            <summary>
-                 The sub command options received for this sub command group.
+            Parameter values input by the user while invoking the command
             </summary>
         </member>
         <member name="T:Discord.WebSocket.SocketInteraction">
             <summary>
-                Represents an Interaction recieved over the gateway.
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketInteraction.Channel">
-            <summary>
-                The <see cref="T:Discord.WebSocket.ISocketMessageChannel"/> this interaction was used in.
+            Represents a Web-Socket based Discord Interaction
             </summary>
         </member>
         <member name="P:Discord.WebSocket.SocketInteraction.User">
-            <summary>
-                The <see cref="T:Discord.WebSocket.SocketUser"/> who triggered this interaction.
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketInteraction.Type">
-            <summary>
-                The type of this interaction.
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketInteraction.Token">
-            <summary>
-                The token used to respond to this interaction.
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketInteraction.Data">
-            <summary>
-                The data sent with this interaction.
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketInteraction.Version">
-            <summary>
-                The version of this interaction.
-            </summary>
+            <inheritdoc cref="P:Discord.IDiscordInteraction.User"/>
         </member>
         <member name="P:Discord.WebSocket.SocketInteraction.CreatedAt">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketInteraction.IsValidToken">
-            <summary>
-                <see langword="true"/> if the token is valid for replying to, otherwise <see langword="false"/>.
-            </summary>
+        <member name="P:Discord.WebSocket.SocketInteraction.InteractionType">
+            <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketInteraction.RespondAsync(System.String,System.Boolean,Discord.Embed,Discord.InteractionResponseType,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
-            <summary>
-                Responds to an Interaction.
-            <para>
-                If you have <see cref="P:Discord.WebSocket.DiscordSocketConfig.AlwaysAcknowledgeInteractions"/> set to <see langword="true"/>, You should use
-                <see cref="M:Discord.WebSocket.SocketInteraction.FollowupAsync(System.String,System.Boolean,Discord.Embed,System.Boolean,Discord.InteractionResponseType,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)"/> instead.
-            </para>
-            </summary>
-            <param name="text">The text of the message to be sent.</param>
-            <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
-            <param name="embed">A <see cref="T:Discord.Embed"/> to send with this response.</param>
-            <param name="type">The type of response to this Interaction.</param>
-            <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
-            <param name="allowedMentions">The allowed mentions for this response.</param>
-            <param name="options">The request options for this response.</param>
-            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response</param>
-            <exception cref="T:System.ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="F:Discord.DiscordConfig.MaxMessageSize"/>.</exception>
-            <exception cref="T:System.InvalidOperationException">The parameters provided were invalid or the token was invalid.</exception>
+        <member name="P:Discord.WebSocket.SocketInteraction.Channel">
+            <inheritdoc cref="P:Discord.IDiscordInteraction.Channel"/>
         </member>
-        <member name="M:Discord.WebSocket.SocketInteraction.FollowupAsync(System.String,System.Boolean,Discord.Embed,System.Boolean,Discord.InteractionResponseType,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
-            <summary>
-                Sends a followup message for this interaction.
-            </summary>
-            <param name="text">The text of the message to be sent</param>
-            <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
-            <param name="embed">A <see cref="T:Discord.Embed"/> to send with this response.</param>
-            <param name="type">The type of response to this Interaction.</param>
-            /// <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
-            <param name="allowedMentions">The allowed mentions for this response.</param>
-            <param name="options">The request options for this response.</param>
-            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response</param>
-            <returns>
-                The sent message.
-            </returns>
+        <member name="P:Discord.WebSocket.SocketInteraction.Version">
+            <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketInteraction.GetOriginalResponseAsync(Discord.RequestOptions)">
-            <summary>
-                Gets the original response for this interaction.
-            </summary>
-            <param name="options">The request options for this async request.</param>
-            <returns>A <see cref="T:Discord.Rest.RestInteractionMessage"/> that represents the intitial response, or <see langword="null"/> if there is no response.</returns>
+        <member name="P:Discord.WebSocket.SocketInteraction.Token">
+            <inheritdoc cref="P:Discord.IDiscordInteraction.Token"/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketInteraction.ApplicationId">
+            <inheritdoc cref="P:Discord.IDiscordInteraction.ApplicationId"/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketInteraction.Discord#IDiscordInteraction#User">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketInteraction.Discord#IDiscordInteraction#Token">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketInteraction.Discord#IDiscordInteraction#Channel">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketInteraction.Discord#IDiscordInteraction#ApplicationId">
+            <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.SocketInteraction.AcknowledgeAsync(Discord.RequestOptions)">
-            <summary>
-                Acknowledges this interaction with the <see cref="F:Discord.InteractionResponseType.DeferredChannelMessageWithSource"/>.
-            </summary>
-            <returns>
-                A task that represents the asynchronous operation of acknowledging the interaction.
-            </returns>
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketInteraction.PopulateAcknowledgement(System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.InteractionApplicationCommandCallbackFlags,Discord.MessageComponent,Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketInteraction.SendResponse(System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.InteractionApplicationCommandCallbackFlags,Discord.MessageComponent,Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketInteraction.DeleteAsync(Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketInteraction.SendFollowupAsync(System.String,System.Boolean,System.String,System.String,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.RequestOptions)">
+            <inheritdoc cref="M:Discord.IDiscordInteraction.SendFollowupAsync(System.String,System.Boolean,System.String,System.String,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.RequestOptions)"/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketInteraction.ModifyFollowup(System.UInt64,System.String,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketInteraction.DeleteFollowup(System.UInt64,Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketInteraction.Discord#IDiscordInteraction#SendFollowupAsync(System.String,System.Boolean,System.String,System.String,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.RequestOptions)">
+            <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketInvite.ChannelId">
             <inheritdoc />
@@ -4671,6 +4521,78 @@
         </member>
         <member name="M:Discord.Net.WebSockets.DefaultWebSocketProvider.Create(System.Net.IWebProxy)">
             <exception cref="T:System.PlatformNotSupportedException">The default WebSocketProvider is not supported on this platform.</exception>
+        </member>
+        <member name="T:Discord.SlashCommands.ShardedSlashCommandContext">
+            <summary>
+            The sharded variant of <see cref="T:Discord.SlashCommands.SocketSlashCommandContext"/>
+            </summary>
+        </member>
+        <member name="P:Discord.SlashCommands.ShardedSlashCommandContext.Client">
+            <summary>
+            Get the <see cref="T:Discord.WebSocket.DiscordSocketClient"/> that the command will be executed with
+            </summary>
+        </member>
+        <member name="M:Discord.SlashCommands.ShardedSlashCommandContext.#ctor(Discord.WebSocket.DiscordShardedClient,Discord.WebSocket.SocketInteraction)">
+            <summary>
+            Initializes a <see cref="T:Discord.SlashCommands.ShardedSlashCommandContext"/>
+            </summary>
+            <param name="client">The underlying client.</param>
+            <param name="interaction">The underlying interaction</param>
+        </member>
+        <member name="T:Discord.SlashCommands.SocketSlashCommandContext">
+            <summary>
+            Represents a Web-Socket based context of an Application Command
+            </summary>
+        </member>
+        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Client">
+            <summary>
+            Get the <see cref="T:Discord.WebSocket.DiscordSocketClient"/> that the command will be executed with
+            </summary>
+        </member>
+        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Guild">
+            <summary>
+            Get the <see cref="T:Discord.WebSocket.SocketGuild"/> the command originated from
+            </summary>
+            <remarks>
+            Will be null if the command is from a DM Channel
+            </remarks>
+        </member>
+        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Channel">
+            <summary>
+            Get the <see cref="T:Discord.WebSocket.ISocketMessageChannel"/> the command originated from
+            </summary>
+        </member>
+        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.User">
+            <summary>
+            Get the <see cref="T:Discord.WebSocket.SocketUser"/> who executed the command
+            </summary>
+        </member>
+        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Interaction">
+            <summary>
+            Get the <see cref="T:Discord.WebSocket.SocketInteraction"/> the command was recieved with
+            </summary>
+        </member>
+        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Discord#ISlashCommandContext#Client">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Discord#ISlashCommandContext#Guild">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Discord#ISlashCommandContext#Channel">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Discord#ISlashCommandContext#User">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Discord#ISlashCommandContext#Interaction">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.SlashCommands.SocketSlashCommandContext.#ctor(Discord.WebSocket.DiscordSocketClient,Discord.WebSocket.SocketInteraction)">
+            <summary>
+            Initializes a new <see cref="T:Discord.SlashCommands.SocketSlashCommandContext"/> 
+            </summary>
+            <param name="client">The underlying client</param>
+            <param name="interaction">The underlying interaction</param>
         </member>
     </members>
 </doc>

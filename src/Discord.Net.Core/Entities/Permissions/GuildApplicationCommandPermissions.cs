@@ -9,18 +9,12 @@ namespace Discord
     /// <summary>
     ///     Returned when fetching the permissions for a command in a guild.
     /// </summary>
-    public class GuildApplicationCommandPermission
-
+    public class GuildApplicationCommandPermission : IApplicationCommandPermission
     {
         /// <summary>
         ///     The id of the command.
         /// </summary>
-        public ulong CommandId { get; }
-
-        /// <summary>
-        ///     The id of the application the command belongs to.
-        /// </summary>
-        public ulong ApplicationId { get; }
+        public IApplicationCommand Command { get; }
 
         /// <summary>
         ///     The id of the guild.
@@ -32,12 +26,11 @@ namespace Discord
         /// </summary>
         public IReadOnlyCollection<ApplicationCommandPermission> Permissions { get; }
 
-        internal GuildApplicationCommandPermission(ulong commandId, ulong appId, ulong guildId, ApplicationCommandPermission[] permissions)
+        internal GuildApplicationCommandPermission(IApplicationCommand command, ulong guildId, ApplicationCommandPermission[] permissions)
         {
-            this.CommandId = commandId;
-            this.ApplicationId = appId;
-            this.GuildId = guildId;
-            this.Permissions = permissions;
+            Command = command;
+            GuildId = guildId;
+            Permissions = permissions;
         }
     }
 }

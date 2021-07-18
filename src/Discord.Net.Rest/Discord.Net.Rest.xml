@@ -2740,27 +2740,6 @@
         <member name="M:Discord.Rest.RestGuild.LeaveAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.Rest.RestGuild.GetSlashCommandsAsync(Discord.RequestOptions)">
-            <summary>
-                Gets a collection of slash commands created by the current user in this guild.
-            </summary>
-            <param name="options">The options to be used when sending the request.</param>
-            <returns>
-                A task that represents the asynchronous get operation. The task result contains a read-only collection of
-                slash commands created by the current user.
-            </returns>
-        </member>
-        <member name="M:Discord.Rest.RestGuild.GetSlashCommandAsync(System.UInt64,Discord.RequestOptions)">
-            <summary>
-                Gets a slash command in the current guild.
-            </summary>
-            <param name="id">The unique identifier of the slash command.</param>
-            <param name="options">The options to be used when sending the request.</param>
-            <returns>
-                A task that represents the asynchronous get operation. The task result contains a
-                slash command created by the current user.
-            </returns>
-        </member>
         <member name="M:Discord.Rest.RestGuild.GetBansAsync(Discord.RequestOptions)">
             <summary>
                 Gets a collection of all users banned in this guild.
@@ -3190,6 +3169,12 @@
         <member name="M:Discord.Rest.RestGuild.DeleteEmoteAsync(Discord.GuildEmote,Discord.RequestOptions)">
             <inheritdoc />
         </member>
+        <member name="M:Discord.Rest.RestGuild.GetSlashCommandsAsync(Discord.RequestOptions)">
+            <inheritdoc cref="M:Discord.IGuild.GetSlashCommandsAsync(Discord.RequestOptions)"/>
+        </member>
+        <member name="M:Discord.Rest.RestGuild.GetSlashCommandAsync(System.UInt64,Discord.RequestOptions)">
+            <inheritdoc cref="M:Discord.IGuild.GetSlashCommandAsync(System.UInt64,Discord.RequestOptions)"/>
+        </member>
         <member name="P:Discord.Rest.RestGuild.Discord#IGuild#Available">
             <inheritdoc />
         </member>
@@ -3311,6 +3296,12 @@
         <member name="M:Discord.Rest.RestGuild.Discord#IGuild#GetWebhooksAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
+        <member name="M:Discord.Rest.RestGuild.Discord#IGuild#GetSlashCommandsAsync(Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.RestGuild.Discord#IGuild#GetSlashCommandAsync(System.UInt64,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
         <member name="P:Discord.Rest.RestGuildIntegration.Name">
             <inheritdoc />
         </member>
@@ -3387,11 +3378,8 @@
         </member>
         <member name="T:Discord.Rest.RestApplicationCommand">
             <summary>
-                Represents a Rest-based implementation of the <see cref="T:Discord.IApplicationCommand"/>.
+            Represents a REST-based Application Command
             </summary>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommand.ApplicationId">
-            <inheritdoc/>
         </member>
         <member name="P:Discord.Rest.RestApplicationCommand.Name">
             <inheritdoc/>
@@ -3399,153 +3387,49 @@
         <member name="P:Discord.Rest.RestApplicationCommand.Description">
             <inheritdoc/>
         </member>
+        <member name="P:Discord.Rest.RestApplicationCommand.ApplicationId">
+            <inheritdoc/>
+        </member>
         <member name="P:Discord.Rest.RestApplicationCommand.DefaultPermission">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.Rest.RestApplicationCommand.Options">
+        <member name="P:Discord.Rest.RestApplicationCommand.Guild">
+            <inheritdoc cref="P:Discord.IApplicationCommand.Guild"/>
+        </member>
+        <member name="P:Discord.Rest.RestApplicationCommand.IsGlobal">
             <summary>
-                The options of this command.
+            Wheter the command is a Global Command or a Guild Command
             </summary>
         </member>
-        <member name="P:Discord.Rest.RestApplicationCommand.CommandType">
-            <summary>
-                The type of this rest application command.
-            </summary>
+        <member name="P:Discord.Rest.RestApplicationCommand.Options">
+            <inheritdoc cref="P:Discord.IApplicationCommand.Options"/>
         </member>
         <member name="P:Discord.Rest.RestApplicationCommand.CreatedAt">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Rest.RestApplicationCommand.Discord#IApplicationCommand#Options">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Rest.RestApplicationCommand.Discord#IApplicationCommand#Guild">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Rest.RestApplicationCommand.UpdateAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
         <member name="M:Discord.Rest.RestApplicationCommand.DeleteAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
-        <member name="T:Discord.Rest.RestApplicationCommandChoice">
-            <summary>
-                Represents a Rest-based implementation of <see cref="T:Discord.IApplicationCommandOptionChoice"/>.
-            </summary>
+        <member name="M:Discord.Rest.RestApplicationCommand.Modify(System.String,System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.IApplicationCommandOption},Discord.RequestOptions)">
+            <inheritdoc cref="M:Discord.IApplicationCommand.Modify(System.String,System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.IApplicationCommandOption},Discord.RequestOptions)"/>
         </member>
-        <member name="P:Discord.Rest.RestApplicationCommandChoice.Name">
+        <member name="M:Discord.Rest.RestApplicationCommand.ModifyPermissions(System.Collections.Generic.IEnumerable{Discord.ApplicationCommandPermission},Discord.RequestOptions)">
+            <inheritdoc cref="M:Discord.IApplicationCommand.ModifyPermissions(System.Collections.Generic.IEnumerable{Discord.ApplicationCommandPermission},Discord.RequestOptions)"/>
+        </member>
+        <member name="M:Discord.Rest.RestApplicationCommand.Discord#IApplicationCommand#Modify(System.String,System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.IApplicationCommandOption},Discord.RequestOptions)">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.Rest.RestApplicationCommandChoice.Value">
+        <member name="M:Discord.Rest.RestApplicationCommand.Discord#IApplicationCommand#ModifyPermissions(System.Collections.Generic.IEnumerable{Discord.ApplicationCommandPermission},Discord.RequestOptions)">
             <inheritdoc/>
-        </member>
-        <member name="T:Discord.Rest.RestApplicationCommandOption">
-            <summary>
-                Represents a Rest-based implementation of <see cref="T:Discord.IApplicationCommandOption"/>.
-            </summary>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Type">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Description">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Default">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Required">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Choices">
-            <summary>
-                A collection of <see cref="T:Discord.Rest.RestApplicationCommandChoice"/>'s for this command.
-            </summary>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Options">
-            <summary>
-                A collection of <see cref="T:Discord.Rest.RestApplicationCommandOption"/>'s for this command.
-            </summary>
-        </member>
-        <member name="T:Discord.Rest.RestApplicationCommandType">
-            <summary>
-                Represents a type of Rest-based command.
-            </summary>
-        </member>
-        <member name="F:Discord.Rest.RestApplicationCommandType.GlobalCommand">
-            <summary>
-                Specifies that this command is a Global command.
-            </summary>
-        </member>
-        <member name="F:Discord.Rest.RestApplicationCommandType.GuildCommand">
-            <summary>
-                Specifies that this command is a Guild specific command.
-            </summary>
-        </member>
-        <member name="T:Discord.Rest.RestGlobalCommand">
-            <summary>
-                Represents a global Slash command.
-            </summary>
-        </member>
-        <member name="M:Discord.Rest.RestGlobalCommand.DeleteAsync(Discord.RequestOptions)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Discord.Rest.RestGlobalCommand.ModifyAsync(System.Action{Discord.ApplicationCommandProperties},Discord.RequestOptions)">
-            <summary>
-                Modifies this <see cref="T:Discord.Rest.RestApplicationCommand"/>.
-            </summary>
-            <param name="func">The delegate containing the properties to modify the command with.</param>
-            <param name="options">The options to be used when sending the request.</param>
-            <returns>
-                The modified command.
-            </returns>
-        </member>
-        <member name="T:Discord.Rest.RestGuildCommand">
-            <summary>
-                Represents a Rest-based guild command.
-            </summary>
-        </member>
-        <member name="P:Discord.Rest.RestGuildCommand.GuildId">
-            <summary>
-                The guild Id where this command originates.
-            </summary>
-        </member>
-        <member name="M:Discord.Rest.RestGuildCommand.DeleteAsync(Discord.RequestOptions)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Discord.Rest.RestGuildCommand.ModifyAsync(System.Action{Discord.ApplicationCommandProperties},Discord.RequestOptions)">
-            <summary>
-                Modifies this <see cref="T:Discord.Rest.RestApplicationCommand"/>.
-            </summary>
-            <param name="func">The delegate containing the properties to modify the command with.</param>
-            <param name="options">The options to be used when sending the request.</param>
-            <returns>
-                The modified command
-            </returns>
-        </member>
-        <member name="M:Discord.Rest.RestGuildCommand.GetCommandPermission(Discord.RequestOptions)">
-            <summary>
-                Gets this commands permissions inside of the current guild.
-            </summary>
-            <param name="options">The options to be used when sending the request.</param>
-            <returns>
-                A task that represents the asynchronous get operation. The task result contains a
-                <see cref="T:Discord.GuildApplicationCommandPermission"/> object defining the permissions of the current slash command.
-            </returns>
-        </member>
-        <member name="M:Discord.Rest.RestGuildCommand.ModifyCommandPermissions(Discord.ApplicationCommandPermission[],Discord.RequestOptions)">
-            <summary>
-                Modifies the current command permissions for this guild command.
-            </summary>
-            <param name="permissions">The permissions to overwrite.</param>
-            <param name="options">The options to be used when sending the request.</param>
-            <returns>
-                 A task that represents the asynchronous modification operation. The task result contains a
-                <see cref="T:Discord.GuildApplicationCommandPermission"/> object containing the modified permissions.
-            </returns>
-        </member>
-        <member name="M:Discord.Rest.RestGuildCommand.GetGuild(System.Boolean,Discord.RequestOptions)">
-            <summary>
-                Gets the guild that this slash command resides in.
-            </summary>
-            <param name="withCounts"><see langword="true"/> if you want the approximate member and presence counts for the guild, otherwise <see langword="false"/>.</param>
-            <param name="options">The options to be used when sending the request.</param>
-            <returns>
-                A task that represents the asynchronous get operation. The task result contains a
-                <see cref="T:Discord.Rest.RestGuild"/>.
-            </returns>
         </member>
         <member name="P:Discord.Rest.RestInvite.ChannelName">
             <inheritdoc />
@@ -3637,6 +3521,11 @@
                 Represents a REST-based follow up message sent by a bot responding to a slash command.
             </summary>
         </member>
+        <member name="P:Discord.Rest.RestFollowupMessage.Interaction">
+            <summary>
+            The interaction this message belongs to
+            </summary>
+        </member>
         <member name="M:Discord.Rest.RestFollowupMessage.DeleteAsync">
             <summary>
                 Deletes this object and all of it's childern.
@@ -3668,6 +3557,11 @@
         <member name="T:Discord.Rest.RestInteractionMessage">
             <summary>
                 Represents the initial REST-based response to a slash command.
+            </summary>
+        </member>
+        <member name="P:Discord.Rest.RestInteractionMessage.Interaction">
+            <summary>
+            The interaction this message belongs to
             </summary>
         </member>
         <member name="M:Discord.Rest.RestInteractionMessage.DeleteAsync">
@@ -4432,6 +4326,33 @@
             <param name="accessToken">The OAuth2 access token for the user, requested with the guilds.join scope.</param>
             <param name="func">The delegate containing the properties to be applied to the user upon being added to the guild.</param>
             <param name="options">The options to be used when sending the request.</param>
+        </member>
+        <member name="T:Discord.ApplicationCommandOption">
+            <inheritdoc cref="T:Discord.IApplicationCommandOption"/>
+        </member>
+        <member name="F:Discord.ApplicationCommandOption.MaxOptionDepth">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.ApplicationCommandOption.Type">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.ApplicationCommandOption.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.ApplicationCommandOption.Description">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.ApplicationCommandOption.Default">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.ApplicationCommandOption.Required">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.ApplicationCommandOption.Choices">
+            <inheritdoc cref="P:Discord.IApplicationCommandOption.Choices"/>
+        </member>
+        <member name="P:Discord.ApplicationCommandOption.Options">
+            <inheritdoc cref="P:Discord.IApplicationCommandOption.Options"/>
         </member>
         <member name="T:Discord.Attachment">
             <inheritdoc cref="T:Discord.IAttachment"/>

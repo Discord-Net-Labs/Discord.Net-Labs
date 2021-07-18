@@ -4047,7 +4047,7 @@
             <param name="options"></param>
             <returns></returns>
         </member>
-        <member name="M:Discord.IApplicationCommand.ModifyPermissions(System.Collections.Generic.IDictionary{Discord.IUser,System.Boolean},System.Collections.Generic.IDictionary{Discord.IRole,System.Boolean},Discord.RequestOptions)">
+        <member name="M:Discord.IApplicationCommand.ModifyPermissions(System.Collections.Generic.IEnumerable{Discord.ApplicationCommandPermission},Discord.RequestOptions)">
             <summary>
             Modify the User and Role permissions for this Application Command
             </summary>
@@ -4203,7 +4203,7 @@
             <param name="options"></param>
             <returns></returns>
         </member>
-        <member name="M:Discord.IDiscordInteraction.PopulateAcknowledgement(System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.InteractionApplicationCommandCallbackFlags,System.Collections.Generic.IEnumerable{Discord.MessageComponent},Discord.RequestOptions)">
+        <member name="M:Discord.IDiscordInteraction.PopulateAcknowledgement(System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.InteractionApplicationCommandCallbackFlags,Discord.MessageComponent,Discord.RequestOptions)">
             <summary>
             Send a response that will remove the thinking animation from the original acknowledgement and displayed to the user
             </summary>
@@ -4217,7 +4217,7 @@
             <param name="options">The options to be used when sending the request</param>
             <returns></returns>
         </member>
-        <member name="M:Discord.IDiscordInteraction.SendResponse(System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.InteractionApplicationCommandCallbackFlags,System.Collections.Generic.IEnumerable{Discord.MessageComponent},Discord.RequestOptions)">
+        <member name="M:Discord.IDiscordInteraction.SendResponse(System.String,System.Boolean,System.Collections.Generic.IEnumerable{Discord.Embed},Discord.AllowedMentions,Discord.InteractionApplicationCommandCallbackFlags,Discord.MessageComponent,Discord.RequestOptions)">
             <summary>
             Send a response that will be directly shown to the user without displaying the "Thinking" animation
             </summary>
@@ -7727,14 +7727,9 @@
                 Returned when fetching the permissions for a command in a guild.
             </summary>
         </member>
-        <member name="P:Discord.GuildApplicationCommandPermission.CommandId">
+        <member name="P:Discord.GuildApplicationCommandPermission.Command">
             <summary>
                 The id of the command.
-            </summary>
-        </member>
-        <member name="P:Discord.GuildApplicationCommandPermission.ApplicationId">
-            <summary>
-                The id of the application the command belongs to.
             </summary>
         </member>
         <member name="P:Discord.GuildApplicationCommandPermission.GuildId">
@@ -8609,24 +8604,19 @@
                 otherwise <see langword="false"/>.
             </returns>
         </member>
-        <member name="T:Discord.IApplicationCommandPermissions">
+        <member name="T:Discord.IApplicationCommandPermission">
             <summary>
             Contains the permissions data of a <see cref="T:Discord.IApplicationCommand"/>
             </summary>
         </member>
-        <member name="P:Discord.IApplicationCommandPermissions.Command">
+        <member name="P:Discord.IApplicationCommandPermission.Command">
             <summary>
             Command the permissions affect
             </summary>
         </member>
-        <member name="P:Discord.IApplicationCommandPermissions.RolePermissions">
+        <member name="P:Discord.IApplicationCommandPermission.Permissions">
             <summary>
             The collection of roles with boolean values showing wheter the role is authorized to use the command
-            </summary>
-        </member>
-        <member name="P:Discord.IApplicationCommandPermissions.UserPermissions">
-            <summary>
-            The collection of users with boolean values showing wheter the user is authorized to use the command
             </summary>
         </member>
         <member name="T:Discord.InteractionApplicationCommandCallbackFlags">
