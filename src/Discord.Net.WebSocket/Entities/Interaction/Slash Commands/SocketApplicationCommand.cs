@@ -71,7 +71,7 @@ namespace Discord.WebSocket
         /// <inheritdoc cref="IApplicationCommand.Modify(string, string, bool, IEnumerable{IApplicationCommandOption}, RequestOptions)"/>
         public async Task<RestApplicationCommand> Modify (string name, string description, bool defaultPermission,
             IEnumerable<IApplicationCommandOption> commandOptions, RequestOptions options) =>
-            await SlashCommandHelper.ModifyApplicationCommand(Discord, Id, Guild, name, description, defaultPermission, commandOptions, options)
+            await InteractionHelper.ModifyApplicationCommand(Discord, Id, Guild, name, description, defaultPermission, commandOptions, options)
             .ConfigureAwait(false);
 
         /// <inheritdoc/>
@@ -80,21 +80,20 @@ namespace Discord.WebSocket
             Model model;
 
             if (IsGlobal)
-                model = await Discord.ApiClient.GetGlobalApplicationCommand(ApplicationId, Id, options).ConfigureAwait(false);
+                model = await Discord.ApiClient.GetGlobalApplicationCommand( Id, options).ConfigureAwait(false);
             else
-                model = await Discord.ApiClient.GetGuildApplicationCommand(ApplicationId, Guild.Id, Id, options).ConfigureAwait(false);
+                model = await Discord.ApiClient.GetGuildApplicationCommand( Guild.Id, Id, options).ConfigureAwait(false);
 
             Update(model);
         }
 
         /// <inheritdoc/>
         public async Task DeleteAsync (RequestOptions options = null) =>
-            await SlashCommandHelper.DeleteApplicationCommand(Discord, Id, Guild, options).ConfigureAwait(false);
+            await InteractionHelper.DeleteApplicationCommand(Discord, Id, Guild, options).ConfigureAwait(false);
 
-        /// <inheritdoc cref="IApplicationCommand.ModifyPermissions(IDictionary{IUser, bool}, IDictionary{IRole, bool}, RequestOptions)"/>
-        public async Task<ApplicationCommandPermissions> ModifyPermissions (IDictionary<IUser, bool> userPerms = null,
-            IDictionary<IRole, bool> rolePerms = null, RequestOptions options = null) =>
-            await SlashCommandHelper.ModifyCommandPermissions(Discord, this, userPerms, rolePerms, options).ConfigureAwait(false);
+        /// <inheritdoc cref="IApplicationCommand.ModifyPermissions(IEnumerable{ApplicationCommandPermission}, RequestOptions)"/>
+        public async Task<GuildApplicationCommandPermission> ModifyPermissions (IEnumerable<ApplicationCommandPermission> perms, RequestOptions options = null) =>
+            await InteractionHelper.ModifyCommandPermissions(Discord, this, perms, options).ConfigureAwait(false);
 
         /// <inheritdoc/>
         async Task<IApplicationCommand> IApplicationCommand.Modify (string name, string description, bool defaultPermission,
@@ -102,7 +101,7 @@ namespace Discord.WebSocket
             await Modify(name, description, defaultPermission, commandOptions, options);
 
         /// <inheritdoc/>
-        async Task<IApplicationCommandPermissions> IApplicationCommand.ModifyPermissions (IDictionary<IUser, bool> userPerms,
-            IDictionary<IRole, bool> rolePerms, RequestOptions options) => await ModifyPermissions(userPerms, rolePerms, options);
+        async Task<IApplicationCommandPermission> IApplicationCommand.ModifyPermissions (IEnumerable<ApplicationCommandPermission> perms, RequestOptions options) =>
+            await ModifyPermissions(perms, options);
     }
 }
