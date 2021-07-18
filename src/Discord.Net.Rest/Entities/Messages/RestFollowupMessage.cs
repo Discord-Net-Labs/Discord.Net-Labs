@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Model = Discord.API.Message;
 
@@ -13,23 +10,25 @@ namespace Discord.Rest
     /// </summary>
     public class RestFollowupMessage : RestUserMessage
     {
-        // Token used to delete/modify this followup message
-        internal string Token { get; }
+        /// <summary>
+        /// The interaction this message belongs to
+        /// </summary>
+        public IDiscordInteraction Interaction { get; }
 
-        internal RestFollowupMessage(BaseDiscordClient discord, ulong id, IUser author, string token, IMessageChannel channel)
+        internal RestFollowupMessage (BaseDiscordClient discord, ulong id, IUser author, IDiscordInteraction interaction, IMessageChannel channel)
             : base(discord, id, channel, author, MessageSource.Bot)
         {
-            this.Token = token;
+            Interaction = interaction;
         }
 
-        internal static RestFollowupMessage Create(BaseDiscordClient discord, Model model, string token, IMessageChannel channel)
+        internal static RestFollowupMessage Create (BaseDiscordClient discord, Model model, IDiscordInteraction interaction, IMessageChannel channel)
         {
-            var entity = new RestFollowupMessage(discord, model.Id, model.Author.IsSpecified ? RestUser.Create(discord, model.Author.Value) : discord.CurrentUser, token, channel);
+            var entity = new RestFollowupMessage(discord, model.Id, model.Author.IsSpecified ? RestUser.Create(discord, model.Author.Value) : discord.CurrentUser, interaction, channel);
             entity.Update(model);
             return entity;
         }
 
-        internal new void Update(Model model)
+        internal new void Update (Model model)
         {
             base.Update(model);
         }
@@ -38,8 +37,8 @@ namespace Discord.Rest
         ///     Deletes this object and all of it's childern.
         /// </summary>
         /// <returns>A task that represents the asynchronous delete operation.</returns>
-        public Task DeleteAsync()
-            => InteractionHelper.DeleteFollowupMessage(Discord, this);
+        public async Task DeleteAsync ( )
+            => await InteractionHelper.DeleteFollowupMessage(Discord, Interaction, Id, null).ConfigureAwait(false);
 
         /// <summary>
         ///     Modifies this interaction followup message.
@@ -61,16 +60,21 @@ namespace Discord.Rest
         /// </returns>
         /// <exception cref="InvalidOperationException">The token used to modify/delete this message expired.</exception>
         /// /// <exception cref="Discord.Net.HttpException">Somthing went wrong during the request.</exception>
-        public new async Task ModifyAsync(Action<MessageProperties> func, RequestOptions options = null)
+        public new async Task ModifyAsync (Action<MessageProperties> func, RequestOptions options = null)
         {
+            if (!Interaction.IsValidToken)
+                throw new InvalidOperationException("The token of this message has expired!");
+
             try
             {
-                var model = await InteractionHelper.ModifyFollowupMessage(Discord, this, func, options).ConfigureAwait(false);
-                this.Update(model);
+                var props = new MessageProperties();
+                func(props);
+                var model = await MessageHelper.ModifyFollowupMessage(Discord, Interaction, this, func, options).ConfigureAwait(false);
+                Update(model);
             }
             catch (Discord.Net.HttpException x)
             {
-                if(x.HttpCode == System.Net.HttpStatusCode.NotFound)
+                if (x.HttpCode == System.Net.HttpStatusCode.NotFound)
                 {
                     throw new InvalidOperationException("The token of this message has expired!", x);
                 }
