@@ -61,35 +61,35 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         public async Task AcknowledgeAsync (RequestOptions options = null) =>
-            await SlashCommandHelper.SendAcknowledgement(Discord, this, options).ConfigureAwait(false);
+            await InteractionHelper.SendAcknowledgement(Discord, this, options).ConfigureAwait(false);
 
         /// <inheritdoc/>
         public async Task PopulateAcknowledgement (string text = null, bool isTTS = false, IEnumerable<Embed> embeds = null, AllowedMentions allowedMentions = null,
-            InteractionApplicationCommandCallbackFlags flags = 0, IEnumerable<MessageComponent> messageComponents = null, RequestOptions options = null) =>
-            await SlashCommandHelper.ModifyInteractionResponse(Discord, this, text, allowedMentions, embeds, messageComponents, options).ConfigureAwait(false);
+            InteractionApplicationCommandCallbackFlags flags = 0, MessageComponent messageComponent = null, RequestOptions options = null) =>
+            await InteractionHelper.ModifyInteractionResponse(Discord, this, text, allowedMentions, embeds, messageComponent, options).ConfigureAwait(false);
 
         /// <inheritdoc/>
         public async Task SendResponse (string text = null, bool isTTS = false, IEnumerable<Embed> embeds = null, AllowedMentions allowedMentions = null,
-            InteractionApplicationCommandCallbackFlags flags = 0, IEnumerable<MessageComponent> messageComponents = null, RequestOptions options = null) =>
-            await SlashCommandHelper.SendInteractionResponse(Discord, this, text, isTTS, embeds, allowedMentions, messageComponents, flags, options).ConfigureAwait(false);
+            InteractionApplicationCommandCallbackFlags flags = 0, MessageComponent messageComponent = null, RequestOptions options = null) =>
+            await InteractionHelper.SendInteractionResponse(Discord, this, text, isTTS, embeds, allowedMentions, messageComponent, flags, options).ConfigureAwait(false);
 
         /// <inheritdoc/>
         public async Task DeleteAsync (RequestOptions options = null) =>
-            await SlashCommandHelper.DeleteInteractionResponse(Discord, this, null).ConfigureAwait(false);
+            await InteractionHelper.DeleteInteractionResponse(Discord, this, null).ConfigureAwait(false);
 
         /// <inheritdoc cref="IDiscordInteraction.SendFollowupAsync(string, bool, string, string, IEnumerable{Embed}, AllowedMentions, RequestOptions)"/>
         public async Task<RestMessage> SendFollowupAsync (string text = null, bool isTTS = false, string username = null, string avatarUrl = null, IEnumerable<Embed> embeds = null,
             AllowedMentions allowedMentions = null, RequestOptions options = null) =>
-            await SlashCommandHelper.SendInteractionFollowup(Discord, this, text, isTTS, embeds, username, avatarUrl, allowedMentions, options).ConfigureAwait(false);
+            await InteractionHelper.SendInteractionFollowup(Discord, this, text, isTTS, embeds, username, avatarUrl, allowedMentions, options).ConfigureAwait(false);
 
         /// <inheritdoc/>
         public async Task ModifyFollowup (ulong messageId, string text = null, IEnumerable<Embed> embeds = null, AllowedMentions allowedMentions = null,
             RequestOptions options = null) =>
-            await SlashCommandHelper.ModifyFollowupMessage(Discord, this, messageId, text, allowedMentions, embeds, options).ConfigureAwait(false);
+            await InteractionHelper.ModifyFollowupMessage(Discord, this, messageId, text, allowedMentions, embeds, options).ConfigureAwait(false);
 
         /// <inheritdoc/>
         public async Task DeleteFollowup (ulong messageId, RequestOptions options = null) =>
-            await SlashCommandHelper.DeleteFollowupMessage(Discord, this, messageId, options).ConfigureAwait(false);
+            await InteractionHelper.DeleteFollowupMessage(Discord, this, messageId, options).ConfigureAwait(false);
 
         /// <inheritdoc/>
         async Task<IMessage> IDiscordInteraction.SendFollowupAsync (string text, bool isTTS, string username, string avatarUrl,
