@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Discord.Rest
@@ -107,26 +108,6 @@ namespace Discord.Rest
         public Task<RestWebhook> GetWebhookAsync(ulong id, RequestOptions options = null)
             => ClientHelper.GetWebhookAsync(this, id, options);
 
-        public Task<RestGlobalCommand> CreateGlobalCommand(SlashCommandCreationProperties properties, RequestOptions options = null)
-            => InteractionHelper.CreateGlobalCommand(this, properties, options);
-        public Task<RestGlobalCommand> CreateGlobalCommand(Action<SlashCommandCreationProperties> func, RequestOptions options = null)
-            => InteractionHelper.CreateGlobalCommand(this, func, options);
-        public Task<RestGuildCommand> CreateGuildCommand(SlashCommandCreationProperties properties, ulong guildId, RequestOptions options = null)
-            => InteractionHelper.CreateGuildCommand(this, guildId, properties, options);
-        public Task<RestGuildCommand> CreateGuildCommand(Action<SlashCommandCreationProperties> func, ulong guildId, RequestOptions options = null)
-            => InteractionHelper.CreateGuildCommand(this, guildId, func, options);
-        public Task<IReadOnlyCollection<RestGlobalCommand>> GetGlobalApplicationCommands(RequestOptions options = null)
-            => ClientHelper.GetGlobalApplicationCommands(this, options);
-        public Task<IReadOnlyCollection<RestGuildCommand>> GetGuildApplicationCommands(ulong guildId, RequestOptions options = null)
-            => ClientHelper.GetGuildApplicationCommands(this, guildId, options);
-        public Task<IReadOnlyCollection<RestGlobalCommand>> BulkOverwriteGlobalCommands(SlashCommandCreationProperties[] commandProperties, RequestOptions options = null)
-            => InteractionHelper.BulkOverwriteGlobalCommands(this, commandProperties, options);
-        public Task<IReadOnlyCollection<RestGuildCommand>> BulkOverwriteGuildCommands(SlashCommandCreationProperties[] commandProperties, ulong guildId, RequestOptions options = null)
-            => InteractionHelper.BulkOverwriteGuildCommands(this, guildId, commandProperties, options);
-        public Task<IReadOnlyCollection<GuildApplicationCommandPermission>> BatchEditGuildCommandPermissions(ulong guildId, IDictionary<ulong, ApplicationCommandPermission[]> permissions, RequestOptions options = null)
-            => InteractionHelper.BatchEditGuildCommandPermissionsAsync(this, guildId, permissions, options);
-
-
         public Task AddRoleAsync(ulong guildId, ulong userId, ulong roleId)
             => ClientHelper.AddRoleAsync(this, guildId, userId, roleId);
         public Task RemoveRoleAsync(ulong guildId, ulong userId, ulong roleId)
@@ -224,5 +205,42 @@ namespace Discord.Rest
         /// <inheritdoc />
         async Task<IWebhook> IDiscordClient.GetWebhookAsync(ulong id, RequestOptions options)
             => await GetWebhookAsync(id, options).ConfigureAwait(false);
+
+        public async Task<RestApplicationCommand> CreateGlobalCommand (Action<SlashCommandCreationProperties> func, RequestOptions options = null) =>
+            await InteractionHelper.CreateGlobalCommand(this, func, options).ConfigureAwait(false);
+
+        public async Task<RestApplicationCommand> CreateGuildCommand (Action<SlashCommandCreationProperties> func, ulong guildId, RequestOptions options = null)
+        {
+            var guild = await GetGuildAsync(guildId, options).ConfigureAwait(false);
+            if (guild != null)
+                return await InteractionHelper.CreateGuildCommand(this, guild, func, options).ConfigureAwait(false);
+            else
+                throw new ArgumentException("Invalid Guild Id", nameof(guildId));
+        }
+
+        public async Task<IReadOnlyCollection<RestApplicationCommand>> GetGlobalCommands (RequestOptions options = null) =>
+            await InteractionHelper.GetApplicationCommands(this, null, options).ConfigureAwait(false);
+
+        public async Task<IReadOnlyCollection<RestApplicationCommand>> GetGuildCommands (ulong guildId, RequestOptions options = null)
+        {
+            var guild = await GetGuildAsync(guildId, options).ConfigureAwait(false);
+            if(guild != null)
+                return await InteractionHelper.GetApplicationCommands(this, guild, options).ConfigureAwait(false);
+            else
+                throw new ArgumentException("Invalid Guild Id", nameof(guildId));
+        }
+
+        public async Task<IReadOnlyCollection<RestApplicationCommand>> BulkOverwriteGlobalCommands (IEnumerable<SlashCommandCreationProperties> properties, RequestOptions options = null) =>
+            await InteractionHelper.BulkOverwriteApplicationCommands(this, properties.ToArray(), options: options).ConfigureAwait(false);
+
+        public async Task<IReadOnlyCollection<RestApplicationCommand>> BulkOverwriteGuildCommands (IEnumerable<SlashCommandCreationProperties> properties,
+            ulong guildId, RequestOptions options = null)
+        {
+            var guild = await GetGuildAsync(guildId, options).ConfigureAwait(false);
+            if (guild != null)
+                return await InteractionHelper.BulkOverwriteApplicationCommands(this, properties.ToArray(), guild, options).ConfigureAwait(false);
+            else
+                throw new ArgumentException("Invalid Guild Id", nameof(guildId));
+        }
     }
 }

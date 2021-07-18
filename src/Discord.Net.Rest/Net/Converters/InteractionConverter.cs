@@ -48,15 +48,15 @@ namespace Discord.Net.Converters
                         break;
                     case InteractionType.MessageComponent:
                         {
-                            var messageComponent = new API.MessageComponentInteractionData();
+                            IDiscordInteractionData messageComponent = new API.MessageComponentInteractionData();
                             serializer.Populate(result.CreateReader(), messageComponent);
-                            interaction.Data = messageComponent;
+                            interaction.Data = messageComponent as API.ApplicationCommandInteractionData;
                         }
                         break;
                 }
             }
             else
-                interaction.Data = Optional<IDiscordInteractionData>.Unspecified;
+                interaction.Data = Optional<API.ApplicationCommandInteractionData>.Unspecified;
 
             return interaction;
         }
