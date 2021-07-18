@@ -16,6 +16,6 @@ namespace Discord.API
         [JsonProperty("flags")]
         public Optional<InteractionApplicationCommandCallbackFlags> Flags { get; set; }
         [JsonProperty("components")]
-        public Optional<MessageComponent[]> Components { get; set; }
+        public Optional<ActionRowComponent[]> Components { get; set; }
     }
 }

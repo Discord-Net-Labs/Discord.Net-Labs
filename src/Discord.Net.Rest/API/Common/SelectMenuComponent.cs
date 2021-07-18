@@ -22,17 +22,5 @@ namespace Discord.API
 
         [JsonProperty("max_values")]
         public int MaxValues { get; set; }
-
-        public SelectMenuComponent ( ) { }
-
-        public SelectMenuComponent (Discord.SelectMenu component)
-        {
-            this.Type = component.Type;
-            this.CustomId = component.CustomId;
-            this.Options = component.Options.Select(x => new SelectMenuOption(x)).ToArray();
-            this.Placeholder = component.Placeholder;
-            this.MinValues = component.MinValues;
-            this.MaxValues = component.MaxValues;
-        }
     }
 }

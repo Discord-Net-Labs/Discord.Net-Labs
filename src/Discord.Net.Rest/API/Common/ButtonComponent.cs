@@ -1,9 +1,4 @@
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.API
 {
@@ -29,38 +24,5 @@ namespace Discord.API
 
         [JsonProperty("disabled")]
         public Optional<bool> Disabled { get; set; }
-
-
-        public ButtonComponent() { }
-
-        public ButtonComponent(Discord.ButtonComponent c)
-        {
-            this.Type = c.Type;
-            this.Style = c.Style;
-            this.Label = c.Label;
-            this.CustomId = c.CustomId;
-            this.Url = c.Url;
-            this.Disabled = c.Disabled;
-
-            if (c.Emote != null)
-            {
-                if (c.Emote is Emote e)
-                {
-                    this.Emote = new Emoji()
-                    {
-                        Name = e.Name,
-                        Animated = e.Animated,
-                        Id = e.Id,
-                    };
-                }
-                else
-                {
-                    this.Emote = new Emoji()
-                    {
-                        Name = c.Emote.Name
-                    };
-                }
-            }
-        }
     }
 }
