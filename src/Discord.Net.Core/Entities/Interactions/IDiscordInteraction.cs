@@ -39,6 +39,8 @@ namespace Discord
         /// </summary>
         internal ulong ApplicationId { get; }
 
+        bool IsValidToken { get; }
+
         /// <summary>
         /// Send an acknowledgement to verify the handoff
         /// </summary>
@@ -59,7 +61,7 @@ namespace Discord
         /// <param name="options">The options to be used when sending the request</param>
         /// <returns></returns>
         Task PopulateAcknowledgement (string text, bool isTTS, IEnumerable<Embed> embeds, AllowedMentions allowedMentions,
-            InteractionApplicationCommandCallbackFlags flags, IEnumerable<MessageComponent> messageComponents, RequestOptions options);
+            InteractionApplicationCommandCallbackFlags flags, MessageComponent messageComponent, RequestOptions options);
 
         /// <summary>
         /// Send a response that will be directly shown to the user without displaying the "Thinking" animation
@@ -78,7 +80,7 @@ namespace Discord
         /// <param name="options">The options to be used when sending the request</param>
         /// <returns></returns>
         Task SendResponse (string text, bool isTTS, IEnumerable<Embed> embeds, AllowedMentions allowedMentions,
-            InteractionApplicationCommandCallbackFlags flags, IEnumerable<MessageComponent> messageComponents, RequestOptions options);
+            InteractionApplicationCommandCallbackFlags flags, MessageComponent messageComponent, RequestOptions options);
 
         /// <summary>
         /// Delete the Interaction Response
