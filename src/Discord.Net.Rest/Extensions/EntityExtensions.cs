@@ -180,40 +180,6 @@ namespace Discord.Rest
             return new Overwrite(model.TargetId, model.TargetType, new OverwritePermissions(model.Allow, model.Deny));
         }
 
-        public static InteractionResponse ToEntity (this API.InteractionResponse response)
-        {
-            if (!response.Data.IsSpecified)
-                return new InteractionResponse(response.Type);
-
-            var data = response.Data.Value;
-
-            bool isTTS = false;
-            AllowedMentions allowedMentions = null;
-            Embed[] embeds = null;
-            string content = null;
-            MessageComponent[] messageComponents = null;
-
-            if (data.Content.IsSpecified)
-                content = data.Content.Value;
-            if (data.TTS.IsSpecified)
-                isTTS = data.TTS.Value;
-            if (data.Embeds.IsSpecified)
-                embeds = data.Embeds.Value.Select(x => x.ToEntity()).ToArray();
-            if (data.AllowedMentions.IsSpecified)
-                allowedMentions = data.AllowedMentions.Value.ToEntity();
-            if (data.Components.IsSpecified)
-                messageComponents = data.Components.Value.Select(x => x.ToEntity()).ToArray();
-
-            return new InteractionResponse(response.Type)
-            {
-                IsTTS = isTTS,
-                Content = content,
-                Embeds = embeds,
-                AllowedMentions = allowedMentions,
-                MessageComponents = messageComponents
-            };
-        }
-
         public static API.ApplicationCommandOption ToModel (this IApplicationCommandOption entity)
         {
             return new API.ApplicationCommandOption()
@@ -247,6 +213,133 @@ namespace Discord.Rest
                 model.GuildId = entity.Guild.Id;
 
             return model;
+        }
+
+        public static API.ApplicationCommandPermission ToModel(this ApplicationCommandPermission entity)
+        {
+            return new API.ApplicationCommandPermission
+            {
+                Id = entity.TargetId,
+                Permission = entity.Permission,
+                Type = entity.TargetType
+            };
+        }
+
+        public static ApplicationCommandPermission ToEntity(this API.ApplicationCommandPermission model)
+        {
+            return new ApplicationCommandPermission(model.Id, model.Type, model.Permission);
+        }
+
+        public static API.SelectMenuComponent ToModel (this SelectMenu entity) =>
+            new API.SelectMenuComponent
+            {
+                CustomId = entity.CustomId,
+                MaxValues = entity.MaxValues,
+                MinValues = entity.MinValues,
+                Placeholder = entity.Placeholder,
+                Options = entity.Options.Select(x => x.ToModel()).ToArray(),
+                Type = entity.Type
+            };
+
+        public static API.SelectMenuOption ToModel(this SelectMenuOption entity)
+        {
+            var model = new API.SelectMenuOption
+            {
+                Label = entity.Label,
+                Value = entity.Value,
+                Description = entity.Description,
+                Default = entity.Default.HasValue ? entity.Default.Value : Optional<bool>.Unspecified
+            };
+
+            if (entity.Emote != null)
+            {
+                if (entity.Emote is Emote e)
+                {
+                    model.Emoji = new API.Emoji()
+                    {
+                        Name = e.Name,
+                        Animated = e.Animated,
+                        Id = e.Id,
+                    };
+                }
+                else
+                {
+                    model.Emoji = new API.Emoji()
+                    {
+                        Name = entity.Emote.Name
+                    };
+                }
+            }
+            return model;
+        }
+
+        public static API.ButtonComponent ToModel(this ButtonComponent entity)
+        {
+            var model = new API.ButtonComponent
+            {
+                Type = entity.Type,
+                Style = entity.Style,
+                Label = entity.Label,
+                CustomId = entity.CustomId,
+                Url = entity.Url,
+                Disabled = entity.Disabled
+            };
+
+            if (entity.Emote != null)
+            {
+                if (entity.Emote is Emote e)
+                {
+                    model.Emote = new API.Emoji()
+                    {
+                        Name = e.Name,
+                        Animated = e.Animated,
+                        Id = e.Id,
+                    };
+                }
+                else
+                {
+                    model.Emote = new API.Emoji()
+                    {
+                        Name = entity.Emote.Name
+                    };
+                }
+            }
+            return model;
+        }
+
+        public static API.ActionRowComponent ToModel(this ActionRowComponent entity) =>
+            new API.ActionRowComponent
+            {
+                Components = entity.Components?.Select<IMessageComponent, IMessageComponent>(x =>
+                {
+                    switch (x.Type)
+                    {
+                        case ComponentType.SelectMenu:
+                            return ( x as SelectMenu )?.ToModel();
+                        case ComponentType.Button:
+                            return ( x as ButtonComponent )?.ToModel();
+                        default:
+                            return null;
+                    }
+                }).ToArray(),
+                Type = entity.Type
+            };
+
+        public static API.ApplicationCommandOption ToModel (this ApplicationCommandOptionProperties props)
+        {
+            return new API.ApplicationCommandOption
+            {
+                Name = props.Name,
+                Description = props.Description,
+                Required = (bool)props.Required,
+                Type = props.Type,
+                Choices = props.Choices.Select(x => new API.ApplicationCommandOptionChoice
+                {
+                    Name = x.Name,
+                    Value = x.Value
+                }).ToArray(),
+                Options = props.Options.Select(x => x.ToModel()).ToArray()
+            };
         }
     }
 }

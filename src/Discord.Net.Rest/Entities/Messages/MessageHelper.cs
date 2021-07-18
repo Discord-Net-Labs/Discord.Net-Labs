@@ -65,7 +65,7 @@ namespace Discord.Rest
             {
                 Content = args.Content,
                 Embed = args.Embed.IsSpecified ? args.Embed.Value.ToModel() : Optional.Create<API.Embed>(),
-                Components = args.Components.IsSpecified ? args.Components.Value?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() : Optional<API.ActionRowComponent[]>.Unspecified,
+                Components = args.Components.IsSpecified ? args.Components.Value?.Components.Select(x => x.ToModel()).ToArray() : Optional<API.ActionRowComponent[]>.Unspecified,
                 Flags = args.Flags.IsSpecified ? args.Flags.Value : Optional.Create<MessageFlags?>(),
                 AllowedMentions = args.AllowedMentions.IsSpecified ? args.AllowedMentions.Value.ToModel() : Optional.Create<API.AllowedMentions>(),
             };
@@ -112,6 +112,38 @@ namespace Discord.Rest
                 AllowedMentions = args.AllowedMentions.IsSpecified ? args.AllowedMentions.Value.ToModel() : Optional.Create<API.AllowedMentions>(),
             };
             return await client.ApiClient.ModifyMessageAsync(channelId, msgId, apiArgs, options).ConfigureAwait(false);
+        }
+
+        public static async Task<Model> ModifyFollowupMessage (BaseDiscordClient discord, IDiscordInteraction interaction, IUserMessage message,
+            Action<MessageProperties> func, RequestOptions options)
+        {
+            var props = new MessageProperties();
+            func(props);
+
+            var apiArgs = new ModifyWebhookMessageParams
+            {
+                AllowedMentions = props.AllowedMentions.IsSpecified ? props.AllowedMentions.Value.ToModel() : Optional.Create<API.AllowedMentions>(),
+                Embeds = props.Embed.IsSpecified ? new API.Embed[] { props.Embed.Value.ToModel() } : Optional.Create<API.Embed[]>(),
+                Content = props.Content.IsSpecified ? props.Content.Value : Optional.Create<string>()
+            };
+
+            return await discord.ApiClient.ModifyFollowupMessage(interaction.Token, message.Id, apiArgs, options).ConfigureAwait(false);
+        }
+
+        public static async Task<Model> ModifyInteractionResponse(BaseDiscordClient discord, IDiscordInteraction interaction, Action<MessageProperties> func,
+            RequestOptions options)
+        {
+            var props = new MessageProperties();
+            func(props);
+
+            var apiArgs = new ModifyInteractionResponseParams
+            {
+                Content = props.Content.IsSpecified ? props.Content.Value : Optional.Create<string>(),
+                Embeds = props.Embed.IsSpecified ? new API.Embed[] { props.Embed.Value.ToModel() } : Optional.Create<API.Embed[]>(),
+                AllowedMentions = props.AllowedMentions.IsSpecified ? props.AllowedMentions.Value.ToModel() : Optional.Create<API.AllowedMentions>()
+            };
+
+            return await discord.ApiClient.ModifyOriginalInteraction(interaction.Token, apiArgs, options).ConfigureAwait(false);
         }
 
         public static Task DeleteAsync(IMessage msg, BaseDiscordClient client, RequestOptions options)
