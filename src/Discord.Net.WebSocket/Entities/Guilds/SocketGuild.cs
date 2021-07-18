@@ -1201,7 +1201,7 @@ namespace Discord.WebSocket
 
         /// <inheritdoc cref="IGuild.GetSlashCommandAsync(ulong, RequestOptions)"/>
         public async Task<RestApplicationCommand> GetSlashCommandAsync (ulong commandId, RequestOptions options = null) =>
-            await InteractionHelper.GetApplicationCommand(Discord, this, commandId, options).ConfigureAwait(false);
+            await InteractionHelper.GetApplicationCommand(Discord, commandId, this, options).ConfigureAwait(false);
 
         /// <summary>
         ///     Gets the name of the guild.
