@@ -2170,12 +2170,6 @@
                 A string that resolves to <see cref="P:Discord.Emoji.Name"/>.
             </returns>
         </member>
-        <member name="M:Discord.Emoji.#ctor(System.String)">
-            <summary>
-                Initializes a new <see cref="T:Discord.Emoji"/> class with the provided Unicode.
-            </summary>
-            <param name="unicode">The pure UTF-8 encoding of an emoji.</param>
-        </member>
         <member name="M:Discord.Emoji.Equals(System.Object)">
             <summary>
                 Determines whether the specified emoji is equal to the current one.
@@ -2184,7 +2178,7 @@
         </member>
         <member name="M:Discord.Emoji.TryParse(System.String,Discord.Emoji@)">
             <summary> Tries to parse an <see cref="T:Discord.Emoji"/> from its raw format. </summary>
-            <param name="text">The raw encoding of an emoji. For example: <code>:heart: or ❤</code></param>
+            <param name="text">The raw encoding of an emoji. For example <c>:heart:</c> or <c>❤</c></param>
             <param name="result">An emoji.</param>
         </member>
         <member name="M:Discord.Emoji.GetHashCode">
@@ -2743,7 +2737,7 @@
                 A role object that represents an <c>@everyone</c> role in this guild.
             </returns>
         </member>
-        <member name="P:Discord.IGuild.Emotes">
+        <member name="P:Discord.IGuild.Emojis">
             <summary>
                 Gets a collection of all custom emotes for this guild.
             </summary>

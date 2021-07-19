@@ -2735,7 +2735,7 @@
                 Gets a collection of all roles in this guild.
             </summary>
         </member>
-        <member name="P:Discord.Rest.RestGuild.Emotes">
+        <member name="P:Discord.Rest.RestGuild.Emojis">
             <inheritdoc />
         </member>
         <member name="P:Discord.Rest.RestGuild.Features">

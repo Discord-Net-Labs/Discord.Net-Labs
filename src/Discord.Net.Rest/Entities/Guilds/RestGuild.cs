@@ -109,7 +109,7 @@ namespace Discord.Rest
         /// </summary>
         public IReadOnlyCollection<RestRole> Roles => _roles.ToReadOnlyCollection();
         /// <inheritdoc />
-        public IReadOnlyCollection<GuildCustomEmoji> Emotes => _emotes;
+        public IReadOnlyCollection<GuildCustomEmoji> Emojis => _emotes;
         /// <inheritdoc />
         public IReadOnlyCollection<string> Features => _features;
 
@@ -817,7 +817,7 @@ namespace Discord.Rest
         public override string ToString() => Name;
         private string DebuggerDisplay => $"{Name} ({Id})";
 
-        //Emotes
+        //Emojis
         /// <inheritdoc />
         public Task<IReadOnlyCollection<GuildCustomEmoji>> GetEmojisAsync(RequestOptions options = null)
             => GuildHelper.GetEmotesAsync(this, Discord, options);

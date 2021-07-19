@@ -197,7 +197,7 @@ namespace Discord
         /// <returns>
         ///     A read-only collection of all custom emotes for this guild.
         /// </returns>
-        IReadOnlyCollection<GuildCustomEmoji> Emotes { get; }
+        IReadOnlyCollection<GuildCustomEmoji> Emojis { get; }
         /// <summary>
         ///     Gets a collection of all extra features added to this guild.
         /// </summary>

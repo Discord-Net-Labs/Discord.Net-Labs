@@ -36,7 +36,7 @@ namespace Discord.WebSocket
         private ConcurrentDictionary<ulong, SocketGuildUser> _members;
         private ConcurrentDictionary<ulong, SocketRole> _roles;
         private ConcurrentDictionary<ulong, SocketVoiceState> _voiceStates;
-        private ImmutableArray<GuildCustomEmoji> _emotes;
+        private ImmutableArray<GuildCustomEmoji> _emojis;
         private ImmutableArray<string> _features;
         private AudioClient _audioClient;
 #pragma warning restore IDISP002, IDISP006
@@ -303,7 +303,7 @@ namespace Discord.WebSocket
             }
         }
         /// <inheritdoc />
-        public IReadOnlyCollection<GuildCustomEmoji> Emotes => _emotes;
+        public IReadOnlyCollection<GuildCustomEmoji> Emojis => _emojis;
         /// <inheritdoc />
         public IReadOnlyCollection<string> Features => _features;
         /// <summary>
@@ -340,7 +340,7 @@ namespace Discord.WebSocket
             : base(client, id)
         {
             _audioLock = new SemaphoreSlim(1, 1);
-            _emotes = ImmutableArray.Create<GuildCustomEmoji>();
+            _emojis = ImmutableArray.Create<GuildCustomEmoji>();
             _features = ImmutableArray.Create<string>();
         }
         internal static SocketGuild Create(DiscordSocketClient discord, ClientState state, ExtendedModel model)
@@ -462,10 +462,10 @@ namespace Discord.WebSocket
                 var emojis = ImmutableArray.CreateBuilder<GuildCustomEmoji>(model.Emojis.Length);
                 for (int i = 0; i < model.Emojis.Length; i++)
                     emojis.Add(model.Emojis[i].ToEntity());
-                _emotes = emojis.ToImmutable();
+                _emojis = emojis.ToImmutable();
             }
             else
-                _emotes = ImmutableArray.Create<GuildCustomEmoji>();
+                _emojis = ImmutableArray.Create<GuildCustomEmoji>();
 
             if (model.Features != null)
                 _features = model.Features.ToImmutableArray();
@@ -512,7 +512,7 @@ namespace Discord.WebSocket
             var emotes = ImmutableArray.CreateBuilder<GuildCustomEmoji>(model.Emojis.Length);
             for (int i = 0; i < model.Emojis.Length; i++)
                 emotes.Add(model.Emojis[i].ToEntity());
-            _emotes = emotes.ToImmutable();
+            _emojis = emotes.ToImmutable();
         }
 
         //General
@@ -1031,7 +1031,7 @@ namespace Discord.WebSocket
         public async Task<IReadOnlyCollection<RestApplicationCommand>> GetApplicationCommandsAsync(RequestOptions options = null)
             => await Discord.Rest.GetGuildApplicationCommands(this.Id, options);
 
-        //Emotes
+        //Emojis
         /// <inheritdoc />
         public Task<IReadOnlyCollection<GuildCustomEmoji>> GetEmojisAsync(RequestOptions options = null)
             => GuildHelper.GetEmotesAsync(this, Discord, options);
