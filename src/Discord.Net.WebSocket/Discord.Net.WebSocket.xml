@@ -580,19 +580,19 @@
         </member>
         <member name="E:Discord.WebSocket.BaseSocketClient.ReactionsRemovedForEmote">
             <summary>
-                Fired when all reactions to a message with a specific emote are removed.
+                Fired when all reactions to a message with a specific emoji are removed.
             </summary>
             <remarks>
                 <para>
-                    This event is fired when all reactions to a message with a specific emote are removed.
+                    This event is fired when all reactions to a message with a specific emoji are removed.
                     The event handler must return a <see cref="T:System.Threading.Tasks.Task"/> and accept a <see cref="T:Discord.WebSocket.ISocketMessageChannel"/> and
-                    a <see cref="T:Discord.IEmote"/> as its parameters.
+                    a <see cref="T:Discord.IEmoji"/> as its parameters.
                 </para>
                 <para>
                     The channel where this message was sent will be passed into the <see cref="T:Discord.WebSocket.ISocketMessageChannel"/> parameter.
                 </para>
                 <para>
-                    The emoji that all reactions had and were removed will be passed into the <see cref="T:Discord.IEmote"/> parameter.
+                    The emoji that all reactions had and were removed will be passed into the <see cref="T:Discord.IEmoji"/> parameter.
                 </para>
             </remarks>
         </member>
@@ -3043,20 +3043,20 @@
                 of application commands found within the guild.
             </returns>
         </member>
-        <member name="M:Discord.WebSocket.SocketGuild.GetEmotesAsync(Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketGuild.GetEmojisAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketGuild.GetEmoteAsync(System.UInt64,Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketGuild.GetEmojiAsync(System.UInt64,Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketGuild.CreateEmoteAsync(System.String,Discord.Image,Discord.Optional{System.Collections.Generic.IEnumerable{Discord.IRole}},Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketGuild.CreateEmojiAsync(System.String,Discord.Image,Discord.Optional{System.Collections.Generic.IEnumerable{Discord.IRole}},Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketGuild.ModifyEmoteAsync(Discord.GuildEmote,System.Action{Discord.EmoteProperties},Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketGuild.ModifyEmojiAsync(Discord.GuildCustomEmoji,System.Action{Discord.EmojiProperties},Discord.RequestOptions)">
             <inheritdoc />
             <exception cref="T:System.ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         </member>
-        <member name="M:Discord.WebSocket.SocketGuild.DeleteEmoteAsync(Discord.GuildEmote,Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketGuild.DeleteEmojiAsync(Discord.GuildCustomEmoji,Discord.RequestOptions)">
             <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.SocketGuild.ToString">
@@ -3781,22 +3781,22 @@
         <member name="P:Discord.WebSocket.SocketMessage.Discord#IMessage#Stickers">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketMessage.AddReactionAsync(Discord.IEmote,Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketMessage.AddReactionAsync(Discord.IEmoji,Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketMessage.RemoveReactionAsync(Discord.IEmote,Discord.IUser,Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketMessage.RemoveReactionAsync(Discord.IEmoji,Discord.IUser,Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketMessage.RemoveReactionAsync(Discord.IEmote,System.UInt64,Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketMessage.RemoveReactionAsync(Discord.IEmoji,System.UInt64,Discord.RequestOptions)">
             <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.SocketMessage.RemoveAllReactionsAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketMessage.RemoveAllReactionsForEmoteAsync(Discord.IEmote,Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketMessage.RemoveAllReactionsForEmoteAsync(Discord.IEmoji,Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketMessage.GetReactionUsersAsync(Discord.IEmote,System.Int32,Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketMessage.GetReactionUsersAsync(Discord.IEmoji,System.Int32,Discord.RequestOptions)">
             <inheritdoc />
         </member>
         <member name="T:Discord.WebSocket.SocketReaction">
@@ -3863,7 +3863,7 @@
                 A WebSocket-based message channel.
             </returns>
         </member>
-        <member name="P:Discord.WebSocket.SocketReaction.Emote">
+        <member name="P:Discord.WebSocket.SocketReaction.Emoji">
             <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.SocketReaction.Equals(System.Object)">

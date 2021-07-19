@@ -240,27 +240,27 @@ namespace Discord.WebSocket
         }
         internal readonly AsyncEvent<Func<Cacheable<IUserMessage, ulong>, Cacheable<IMessageChannel, ulong>, Task>> _reactionsClearedEvent = new AsyncEvent<Func<Cacheable<IUserMessage, ulong>, Cacheable<IMessageChannel, ulong>, Task>>();
         /// <summary>
-        ///     Fired when all reactions to a message with a specific emote are removed.
+        ///     Fired when all reactions to a message with a specific emoji are removed.
         /// </summary>
         /// <remarks>
         ///     <para>
-        ///         This event is fired when all reactions to a message with a specific emote are removed.
+        ///         This event is fired when all reactions to a message with a specific emoji are removed.
         ///         The event handler must return a <see cref="Task"/> and accept a <see cref="ISocketMessageChannel"/> and
-        ///         a <see cref="IEmote"/> as its parameters.
+        ///         a <see cref="IEmoji"/> as its parameters.
         ///     </para>
         ///     <para>
         ///         The channel where this message was sent will be passed into the <see cref="ISocketMessageChannel"/> parameter.
         ///     </para>
         ///     <para>
-        ///         The emoji that all reactions had and were removed will be passed into the <see cref="IEmote"/> parameter.
+        ///         The emoji that all reactions had and were removed will be passed into the <see cref="IEmoji"/> parameter.
         ///     </para>
         /// </remarks>
-        public event Func<Cacheable<IUserMessage, ulong>, Cacheable<IMessageChannel, ulong>, IEmote, Task> ReactionsRemovedForEmote
+        public event Func<Cacheable<IUserMessage, ulong>, Cacheable<IMessageChannel, ulong>, IEmoji, Task> ReactionsRemovedForEmote
         {
             add { _reactionsRemovedForEmoteEvent.Add(value); }
             remove { _reactionsRemovedForEmoteEvent.Remove(value); }
         }
-        internal readonly AsyncEvent<Func<Cacheable<IUserMessage, ulong>, Cacheable<IMessageChannel, ulong>, IEmote, Task>> _reactionsRemovedForEmoteEvent = new AsyncEvent<Func<Cacheable<IUserMessage, ulong>, Cacheable<IMessageChannel, ulong>, IEmote, Task>>();
+        internal readonly AsyncEvent<Func<Cacheable<IUserMessage, ulong>, Cacheable<IMessageChannel, ulong>, IEmoji, Task>> _reactionsRemovedForEmoteEvent = new AsyncEvent<Func<Cacheable<IUserMessage, ulong>, Cacheable<IMessageChannel, ulong>, IEmoji, Task>>();
 
         //Roles
         /// <summary> Fired when a role is created. </summary>

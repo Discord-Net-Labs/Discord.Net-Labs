@@ -32,9 +32,9 @@ namespace Discord.API
             this.Value = option.Value;
             this.Description = option.Description;
 
-            if (option.Emote != null)
+            if (option.Emoji != null)
             {
-                if (option.Emote is Emote e)
+                if (option.Emoji is CustomEmoji e)
                 {
                     this.Emoji = new Emoji()
                     {
@@ -47,7 +47,7 @@ namespace Discord.API
                 {
                     this.Emoji = new Emoji()
                     {
-                        Name = option.Emote.Name
+                        Name = option.Emoji.Name
                     };
                 }
             }

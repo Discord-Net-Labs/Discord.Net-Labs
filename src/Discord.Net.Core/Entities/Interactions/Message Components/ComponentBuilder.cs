@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord
 {
@@ -54,18 +52,19 @@ namespace Discord
         /// <param name="placeholder">The placeholder of the menu.</param>
         /// <param name="minValues">The min values of the placeholder.</param>
         /// <param name="maxValues">The max values of the placeholder.</param>
+        /// <param name="disabled">Whether or not the menu is disabled.</param>
         /// <param name="row">The row to add the menu to.</param>
         /// <returns></returns>
         public ComponentBuilder WithSelectMenu(string label, string customId, List<SelectMenuOptionBuilder> options,
-            string placeholder = null, int minValues = 1, int maxValues = 1, int row = 0)
+            string placeholder = null, int minValues = 1, int maxValues = 1, bool disabled = false, int row = 0)
         {
             return WithSelectMenu(new SelectMenuBuilder()
-                .WithLabel(label)
                 .WithCustomId(customId)
                 .WithOptions(options)
                 .WithPlaceholder(placeholder)
                 .WithMaxValues(maxValues)
-                .WithMinValues(minValues),
+                .WithMinValues(minValues)
+                .WithDisabled(disabled),
                 row);
         }
 
@@ -127,7 +126,7 @@ namespace Discord
         /// </summary>
         /// <param name="label">The label text for the newly added button.</param>
         /// <param name="style">The style of this newly added button.</param>
-        /// <param name="emote">A <see cref="IEmote"/> to be used with this button.</param>
+        /// <param name="emoji">A <see cref="IEmoji"/> to be used with this button.</param>
         /// <param name="customId">The custom id of the newly added button.</param>
         /// <param name="url">A URL to be used only if the <see cref="ButtonStyle"/> is a Link.</param>
         /// <param name="disabled">Whether or not the newly created button is disabled.</param>
@@ -137,7 +136,7 @@ namespace Discord
             string label,
             string customId,
             ButtonStyle style = ButtonStyle.Primary,
-            IEmote emote = null,
+            IEmoji emoji = null,
             string url = null,
             bool disabled = false,
             int row = 0)
@@ -145,7 +144,7 @@ namespace Discord
             var button = new ButtonBuilder()
                 .WithLabel(label)
                 .WithStyle(style)
-                .WithEmote(emote)
+                .WithEmote(emoji)
                 .WithCustomId(customId)
                 .WithUrl(url)
                 .WithDisabled(disabled);
@@ -349,9 +348,9 @@ namespace Discord
         public ButtonStyle Style { get; set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="IEmote"/> of the current button.
+        ///     Gets or sets the <see cref="IEmoji"/> of the current button.
         /// </summary>
-        public IEmote Emote { get; set; }
+        public IEmoji Emoji { get; set; }
 
         /// <summary>
         ///     Gets or sets the url of the current button.
@@ -470,13 +469,13 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Sets the current buttons emote.
+        ///     Sets the current buttons emoji.
         /// </summary>
-        /// <param name="emote">The emote to use for the current button.</param>
+        /// <param name="emoji">The emoji to use for the current button.</param>
         /// <returns>The current builder.</returns>
-        public ButtonBuilder WithEmote(IEmote emote)
+        public ButtonBuilder WithEmote(IEmoji emoji)
         {
-            this.Emote = emote;
+            this.Emoji = emoji;
             return this;
         }
 
@@ -518,11 +517,11 @@ namespace Discord
         /// </summary>
         /// <returns>A <see cref="ButtonComponent"/> to be used in a <see cref="ComponentBuilder"/>.</returns>
         /// <exception cref="InvalidOperationException">A button cannot contain a URL and a CustomId.</exception>
-        /// <exception cref="ArgumentException">A button must have an Emote or a label.</exception>
+        /// <exception cref="ArgumentException">A button must have an CustomEmoji or a label.</exception>
         public ButtonComponent Build()
         {
-            if (string.IsNullOrEmpty(this.Label) && this.Emote == null)
-                throw new ArgumentException("A button must have an Emote or a label!");
+            if (string.IsNullOrEmpty(this.Label) && this.Emoji == null)
+                throw new ArgumentException("A button must have an CustomEmoji or a label!");
 
             if (!string.IsNullOrEmpty(this.Url) && !string.IsNullOrEmpty(this.CustomId))
                 throw new InvalidOperationException("A button cannot contain a URL and a CustomId");
@@ -533,7 +532,7 @@ namespace Discord
             else if (this.Style != ButtonStyle.Link && !string.IsNullOrEmpty(this.Url)) // Thanks 𝑴𝒓𝑪𝒂𝒌𝒆𝑺𝒍𝒂𝒚𝒆𝒓 :D
                 this.Url = null;
 
-            return new ButtonComponent(this.Style, this.Label, this.Emote, this.CustomId, this.Url, this.Disabled);
+            return new ButtonComponent(this.Style, this.Label, this.Emoji, this.CustomId, this.Url, this.Disabled);
         }
     }
 
@@ -556,22 +555,6 @@ namespace Discord
         ///     The maximum number of options a <see cref="SelectMenu"/> can have.
         /// </summary>
         public const int MaxOptionCount = 25;
-
-        /// <summary>
-        ///     Gets or sets the label of the current select menu.
-        /// </summary>
-        public string Label
-        {
-            get => _label;
-            set
-            {
-                if (value != null)
-                    if (value.Length > ComponentBuilder.MaxLabelLength)
-                        throw new ArgumentException(message: $"Button label must be {ComponentBuilder.MaxLabelLength} characters or less!", paramName: nameof(Label));
-
-                _label = value;
-            }
-        }
 
         /// <summary>
         ///     Gets or sets the custom id of the current select menu.
@@ -608,11 +591,11 @@ namespace Discord
         /// </summary>
         public int MinValues
         {
-            get => _minvalues;
+            get => _minValues;
             set
             {
                 Preconditions.LessThan(value, MaxValuesCount, nameof(MinValues));
-                _minvalues = value;
+                _minValues = value;
             }
         }
 
@@ -621,11 +604,11 @@ namespace Discord
         /// </summary>
         public int MaxValues
         {
-            get => _maxvalues;
+            get => _maxValues;
             set
             {
                 Preconditions.LessThan(value, MaxValuesCount, nameof(MaxValues));
-                _maxvalues = value;
+                _maxValues = value;
             }
         }
 
@@ -644,9 +627,14 @@ namespace Discord
             }
         }
 
+        /// <summary>
+        ///     Gets or sets whether the current menu is disabled.
+        /// </summary>
+        public bool Disabled { get; set; }
+
         private List<SelectMenuOptionBuilder> _options;
-        private int _minvalues = 1;
-        private int _maxvalues = 1;
+        private int _minValues = 1;
+        private int _maxValues = 1;
         private string _placeholder;
         private string _label;
         private string _customId;
@@ -665,19 +653,6 @@ namespace Discord
         {
             this.CustomId = customId;
             this.Options = options;
-        }
-
-        /// <summary>
-        ///     Sets the field label.
-        /// </summary>
-        /// <param name="label">The value to set the field label to.</param>
-        /// <returns>
-        ///     The current builder.
-        /// </returns>
-        public SelectMenuBuilder WithLabel(string label)
-        {
-            this.Label = label;
-            return this;
         }
 
         /// <summary>
@@ -746,14 +721,27 @@ namespace Discord
         }
 
         /// <summary>
+        ///     Sets whether the current menu is disabled.
+        /// </summary>
+        /// <param name="disabled">Whether the current menu is disabled or not.</param>
+        /// <returns>
+        ///     The current builder.
+        /// </returns>
+        public SelectMenuBuilder WithDisabled(bool disabled)
+        {
+            this.Disabled = disabled;
+            return this;
+        }
+
+        /// <summary>
         ///     Builds a <see cref="SelectMenu"/>
         /// </summary>
         /// <returns>The newly built <see cref="SelectMenu"/></returns>
         public SelectMenu Build()
         {
-            var opt = this.Options?.Select(x => x.Build()).ToList();
+            var options = this.Options?.Select(x => x.Build()).ToList();
 
-            return new SelectMenu(this.CustomId, opt, this.Placeholder, this.MinValues, this.MaxValues);
+            return new SelectMenu(this.CustomId, options, this.Placeholder, this.MinValues, this.MaxValues, this.Disabled);
         }
     }
 
@@ -814,9 +802,9 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Gets or sets the emote of this option.
+        ///     Gets or sets the emoji of this option.
         /// </summary>
-        public IEmote Emote { get; set; }
+        public IEmoji Emoji { get; set; }
 
         /// <summary>
         ///     Gets or sets the whether or not this option will render selected by default.
@@ -883,15 +871,15 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Sets the field emote.
+        ///     Sets the field emoji.
         /// </summary>
-        /// <param name="emote">The value to set the field emote to.</param>
+        /// <param name="emoji">The value to set the field emoji to.</param>
         /// <returns>
         ///     The current builder.
         /// </returns>
-        public SelectMenuOptionBuilder WithEmote(IEmote emote)
+        public SelectMenuOptionBuilder WithEmote(IEmoji emoji)
         {
-            this.Emote = emote;
+            this.Emoji = emoji;
             return this;
         }
 
@@ -914,7 +902,7 @@ namespace Discord
         /// <returns>The newly built <see cref="SelectMenuOption"/>.</returns>
         public SelectMenuOption Build()
         {
-            return new SelectMenuOption(this.Label, this.Value, this.Description, this.Emote, this.Default);
+            return new SelectMenuOption(this.Label, this.Value, this.Description, this.Emoji, this.Default);
         }
     }
 }

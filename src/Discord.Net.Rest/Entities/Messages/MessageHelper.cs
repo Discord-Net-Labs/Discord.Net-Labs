@@ -123,24 +123,24 @@ namespace Discord.Rest
             await client.ApiClient.DeleteMessageAsync(channelId, msgId, options).ConfigureAwait(false);
         }
 
-        public static async Task AddReactionAsync(ulong channelId, ulong messageId, IEmote emote, BaseDiscordClient client, RequestOptions options)
+        public static async Task AddReactionAsync(ulong channelId, ulong messageId, IEmoji emoji, BaseDiscordClient client, RequestOptions options)
         {
-            await client.ApiClient.AddReactionAsync(channelId, messageId, emote is Emote e ? $"{e.Name}:{e.Id}" : UrlEncode(emote.Name), options).ConfigureAwait(false);
+            await client.ApiClient.AddReactionAsync(channelId, messageId, emoji is CustomEmoji e ? $"{e.Name}:{e.Id}" : UrlEncode(emoji.Name), options).ConfigureAwait(false);
         }
 
-        public static async Task AddReactionAsync(IMessage msg, IEmote emote, BaseDiscordClient client, RequestOptions options)
+        public static async Task AddReactionAsync(IMessage msg, IEmoji emoji, BaseDiscordClient client, RequestOptions options)
         {
-            await client.ApiClient.AddReactionAsync(msg.Channel.Id, msg.Id, emote is Emote e ? $"{e.Name}:{e.Id}" : UrlEncode(emote.Name), options).ConfigureAwait(false);
+            await client.ApiClient.AddReactionAsync(msg.Channel.Id, msg.Id, emoji is CustomEmoji e ? $"{e.Name}:{e.Id}" : UrlEncode(emoji.Name), options).ConfigureAwait(false);
         }
 
-        public static async Task RemoveReactionAsync(ulong channelId, ulong messageId, ulong userId, IEmote emote, BaseDiscordClient client, RequestOptions options)
+        public static async Task RemoveReactionAsync(ulong channelId, ulong messageId, ulong userId, IEmoji emoji, BaseDiscordClient client, RequestOptions options)
         {
-            await client.ApiClient.RemoveReactionAsync(channelId, messageId, userId, emote is Emote e ? $"{e.Name}:{e.Id}" : UrlEncode(emote.Name), options).ConfigureAwait(false);
+            await client.ApiClient.RemoveReactionAsync(channelId, messageId, userId, emoji is CustomEmoji e ? $"{e.Name}:{e.Id}" : UrlEncode(emoji.Name), options).ConfigureAwait(false);
         }
 
-        public static async Task RemoveReactionAsync(IMessage msg, ulong userId, IEmote emote, BaseDiscordClient client, RequestOptions options)
+        public static async Task RemoveReactionAsync(IMessage msg, ulong userId, IEmoji emoji, BaseDiscordClient client, RequestOptions options)
         {
-            await client.ApiClient.RemoveReactionAsync(msg.Channel.Id, msg.Id, userId, emote is Emote e ? $"{e.Name}:{e.Id}" : UrlEncode(emote.Name), options).ConfigureAwait(false);
+            await client.ApiClient.RemoveReactionAsync(msg.Channel.Id, msg.Id, userId, emoji is CustomEmoji e ? $"{e.Name}:{e.Id}" : UrlEncode(emoji.Name), options).ConfigureAwait(false);
         }
 
         public static async Task RemoveAllReactionsAsync(ulong channelId, ulong messageId, BaseDiscordClient client, RequestOptions options)
@@ -153,21 +153,21 @@ namespace Discord.Rest
             await client.ApiClient.RemoveAllReactionsAsync(msg.Channel.Id, msg.Id, options).ConfigureAwait(false);
         }
 
-        public static async Task RemoveAllReactionsForEmoteAsync(ulong channelId, ulong messageId, IEmote emote, BaseDiscordClient client, RequestOptions options)
+        public static async Task RemoveAllReactionsForEmoteAsync(ulong channelId, ulong messageId, IEmoji emoji, BaseDiscordClient client, RequestOptions options)
         {
-            await client.ApiClient.RemoveAllReactionsForEmoteAsync(channelId, messageId, emote is Emote e ? $"{e.Name}:{e.Id}" : UrlEncode(emote.Name), options).ConfigureAwait(false);
+            await client.ApiClient.RemoveAllReactionsForEmoteAsync(channelId, messageId, emoji is CustomEmoji e ? $"{e.Name}:{e.Id}" : UrlEncode(emoji.Name), options).ConfigureAwait(false);
         }
 
-        public static async Task RemoveAllReactionsForEmoteAsync(IMessage msg, IEmote emote, BaseDiscordClient client, RequestOptions options)
+        public static async Task RemoveAllReactionsForEmoteAsync(IMessage msg, IEmoji emoji, BaseDiscordClient client, RequestOptions options)
         {
-            await client.ApiClient.RemoveAllReactionsForEmoteAsync(msg.Channel.Id, msg.Id, emote is Emote e ? $"{e.Name}:{e.Id}" : UrlEncode(emote.Name), options).ConfigureAwait(false);
+            await client.ApiClient.RemoveAllReactionsForEmoteAsync(msg.Channel.Id, msg.Id, emoji is CustomEmoji e ? $"{e.Name}:{e.Id}" : UrlEncode(emoji.Name), options).ConfigureAwait(false);
         }
 
-        public static IAsyncEnumerable<IReadOnlyCollection<IUser>> GetReactionUsersAsync(IMessage msg, IEmote emote,
+        public static IAsyncEnumerable<IReadOnlyCollection<IUser>> GetReactionUsersAsync(IMessage msg, IEmoji emoji,
             int? limit, BaseDiscordClient client, RequestOptions options)
         {
-            Preconditions.NotNull(emote, nameof(emote));
-            var emoji = (emote is Emote e ? $"{e.Name}:{e.Id}" : UrlEncode(emote.Name));
+            Preconditions.NotNull(emoji, nameof(emoji));
+            string emojiStr = emoji is CustomEmoji e ? $"{e.Name}:{e.Id}" : UrlEncode(emoji.Name);
 
             return new PagedAsyncEnumerable<IUser>(
                 DiscordConfig.MaxUserReactionsPerBatch,
@@ -181,7 +181,7 @@ namespace Discord.Rest
                     if (info.Position != null)
                         args.AfterUserId = info.Position.Value;
 
-                    var models = await client.ApiClient.GetReactionUsersAsync(msg.Channel.Id, msg.Id, emoji, args, options).ConfigureAwait(false);
+                    var models = await client.ApiClient.GetReactionUsersAsync(msg.Channel.Id, msg.Id, emojiStr, args, options).ConfigureAwait(false);
                     return models.Select(x => RestUser.Create(client, x)).ToImmutableArray();
                 },
                 nextPage: (info, lastPage) =>
@@ -298,8 +298,8 @@ namespace Discord.Rest
                         mentionedRole = guild.GetRole(id);
                     tags.Add(new Tag<IRole>(TagType.RoleMention, index, content.Length, id, mentionedRole));
                 }
-                else if (Emote.TryParse(content, out var emoji))
-                    tags.Add(new Tag<Emote>(TagType.Emoji, index, content.Length, emoji.Id, emoji));
+                else if (CustomEmoji.TryParse(content, out var emoji))
+                    tags.Add(new Tag<CustomEmoji>(TagType.Emoji, index, content.Length, emoji.Id, emoji));
                 else //Bad Tag
                 {
                     index = index + 1;

@@ -28,8 +28,8 @@ namespace Discord
         /// </remarks>
         /// <example>
         /// <code language="cs">
-        /// IEmote A = new Emoji("🅰");
-        /// IEmote B = new Emoji("🅱");
+        /// IEmoji A = new Emoji("🅰");
+        /// IEmoji B = new Emoji("🅱");
         /// await msg.AddReactionsAsync(new[] { A, B });
         /// </code>
         /// </example>
@@ -39,9 +39,9 @@ namespace Discord
         /// <returns>
         ///     A task that represents the asynchronous operation for adding a reaction to this message.
         /// </returns>
-        /// <seealso cref="IMessage.AddReactionAsync(IEmote, RequestOptions)"/>
-        /// <seealso cref="IEmote"/>
-        public static async Task AddReactionsAsync(this IUserMessage msg, IEmote[] reactions, RequestOptions options = null)
+        /// <seealso cref="IMessage.AddReactionAsync(IEmoji, RequestOptions)"/>
+        /// <seealso cref="IEmoji"/>
+        public static async Task AddReactionsAsync(this IUserMessage msg, IEmoji[] reactions, RequestOptions options = null)
         {
             foreach (var rxn in reactions)
                 await msg.AddReactionAsync(rxn, options).ConfigureAwait(false);
@@ -64,9 +64,9 @@ namespace Discord
         /// <returns>
         ///     A task that represents the asynchronous operation for removing a reaction to this message.
         /// </returns>
-        /// <seealso cref="IMessage.RemoveReactionAsync(IEmote, IUser, RequestOptions)"/>
-        /// <seealso cref="IEmote"/>
-        public static async Task RemoveReactionsAsync(this IUserMessage msg, IUser user, IEmote[] reactions, RequestOptions options = null)
+        /// <seealso cref="IMessage.RemoveReactionAsync(IEmoji, IUser, RequestOptions)"/>
+        /// <seealso cref="IEmoji"/>
+        public static async Task RemoveReactionsAsync(this IUserMessage msg, IUser user, IEmoji[] reactions, RequestOptions options = null)
         {
             foreach (var rxn in reactions)
                 await msg.RemoveReactionAsync(rxn, user, options).ConfigureAwait(false);

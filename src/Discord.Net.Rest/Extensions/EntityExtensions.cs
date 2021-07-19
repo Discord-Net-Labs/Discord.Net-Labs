@@ -6,15 +6,15 @@ namespace Discord.Rest
 {
     internal static class EntityExtensions
     {
-        public static IEmote ToIEmote(this API.Emoji model)
+        public static IEmoji ToIEmote(this API.Emoji model)
         {
             if (model.Id.HasValue)
                 return model.ToEntity();
             return new Emoji(model.Name);
         }
 
-        public static GuildEmote ToEntity(this API.Emoji model)
-            => new GuildEmote(model.Id.Value,
+        public static GuildCustomEmoji ToEntity(this API.Emoji model)
+            => new GuildCustomEmoji(model.Id.Value,
                 model.Name,
                 model.Animated.GetValueOrDefault(),
                 model.Managed,

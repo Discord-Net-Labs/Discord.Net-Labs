@@ -19,7 +19,7 @@ namespace Discord.Net.Examples.WebSocket
         {
             var message = await cachedMessage.GetOrDownloadAsync();
             if (message != null && reaction.User.IsSpecified)
-                Console.WriteLine($"{reaction.User.Value} just added a reaction '{reaction.Emote}' " +
+                Console.WriteLine($"{reaction.User.Value} just added a reaction '{reaction.Emoji}' " +
                                   $"to {message.Author}'s message ({message.Id}).");
         }
 

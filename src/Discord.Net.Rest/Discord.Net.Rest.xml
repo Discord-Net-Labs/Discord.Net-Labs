@@ -2582,7 +2582,7 @@
         <member name="M:Discord.Rest.GuildHelper.CreateRoleAsync(Discord.IGuild,Discord.Rest.BaseDiscordClient,System.String,System.Nullable{Discord.GuildPermissions},System.Nullable{Discord.Color},System.Boolean,System.Boolean,Discord.RequestOptions)">
             <exception cref="T:System.ArgumentNullException"><paramref name="name"/> is <c>null</c>.</exception>
         </member>
-        <member name="M:Discord.Rest.GuildHelper.ModifyEmoteAsync(Discord.IGuild,Discord.Rest.BaseDiscordClient,System.UInt64,System.Action{Discord.EmoteProperties},Discord.RequestOptions)">
+        <member name="M:Discord.Rest.GuildHelper.ModifyEmoteAsync(Discord.IGuild,Discord.Rest.BaseDiscordClient,System.UInt64,System.Action{Discord.EmojiProperties},Discord.RequestOptions)">
             <exception cref="T:System.ArgumentNullException"><paramref name="func"/> is <c>null</c>.</exception>
         </member>
         <member name="T:Discord.Rest.RestBan">
@@ -3222,20 +3222,20 @@
                 The name of the guild.
             </returns>
         </member>
-        <member name="M:Discord.Rest.RestGuild.GetEmotesAsync(Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestGuild.GetEmojisAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.Rest.RestGuild.GetEmoteAsync(System.UInt64,Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestGuild.GetEmojiAsync(System.UInt64,Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.Rest.RestGuild.CreateEmoteAsync(System.String,Discord.Image,Discord.Optional{System.Collections.Generic.IEnumerable{Discord.IRole}},Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestGuild.CreateEmojiAsync(System.String,Discord.Image,Discord.Optional{System.Collections.Generic.IEnumerable{Discord.IRole}},Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.Rest.RestGuild.ModifyEmoteAsync(Discord.GuildEmote,System.Action{Discord.EmoteProperties},Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestGuild.ModifyEmojiAsync(Discord.GuildCustomEmoji,System.Action{Discord.EmojiProperties},Discord.RequestOptions)">
             <inheritdoc />
             <exception cref="T:System.ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         </member>
-        <member name="M:Discord.Rest.RestGuild.DeleteEmoteAsync(Discord.GuildEmote,Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestGuild.DeleteEmojiAsync(Discord.GuildCustomEmoji,Discord.RequestOptions)">
             <inheritdoc />
         </member>
         <member name="P:Discord.Rest.RestGuild.Discord#IGuild#Available">
@@ -3863,22 +3863,22 @@
         <member name="P:Discord.Rest.RestMessage.Reactions">
             <inheritdoc />
         </member>
-        <member name="M:Discord.Rest.RestMessage.AddReactionAsync(Discord.IEmote,Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestMessage.AddReactionAsync(Discord.IEmoji,Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.Rest.RestMessage.RemoveReactionAsync(Discord.IEmote,Discord.IUser,Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestMessage.RemoveReactionAsync(Discord.IEmoji,Discord.IUser,Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.Rest.RestMessage.RemoveReactionAsync(Discord.IEmote,System.UInt64,Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestMessage.RemoveReactionAsync(Discord.IEmoji,System.UInt64,Discord.RequestOptions)">
             <inheritdoc />
         </member>
         <member name="M:Discord.Rest.RestMessage.RemoveAllReactionsAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.Rest.RestMessage.RemoveAllReactionsForEmoteAsync(Discord.IEmote,Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestMessage.RemoveAllReactionsForEmoteAsync(Discord.IEmoji,Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.Rest.RestMessage.GetReactionUsersAsync(Discord.IEmote,System.Int32,Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestMessage.GetReactionUsersAsync(Discord.IEmoji,System.Int32,Discord.RequestOptions)">
             <inheritdoc />
         </member>
         <member name="T:Discord.Rest.RestReaction">
@@ -3886,7 +3886,7 @@
                 Represents a REST reaction object.
             </summary>
         </member>
-        <member name="P:Discord.Rest.RestReaction.Emote">
+        <member name="P:Discord.Rest.RestReaction.Emoji">
             <inheritdoc />
         </member>
         <member name="P:Discord.Rest.RestReaction.Count">

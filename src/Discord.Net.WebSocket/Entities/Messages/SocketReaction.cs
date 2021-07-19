@@ -62,25 +62,25 @@ namespace Discord.WebSocket
         /// </returns>
         public ISocketMessageChannel Channel { get; }
         /// <inheritdoc />
-        public IEmote Emote { get; }
+        public IEmoji Emoji { get; }
 
-        internal SocketReaction(ISocketMessageChannel channel, ulong messageId, Optional<SocketUserMessage> message, ulong userId, Optional<IUser> user, IEmote emoji)
+        internal SocketReaction(ISocketMessageChannel channel, ulong messageId, Optional<SocketUserMessage> message, ulong userId, Optional<IUser> user, IEmoji emoji)
         {
             Channel = channel;
             MessageId = messageId;
             Message = message;
             UserId = userId;
             User = user;
-            Emote = emoji;
+            Emoji = emoji;
         }
         internal static SocketReaction Create(Model model, ISocketMessageChannel channel, Optional<SocketUserMessage> message, Optional<IUser> user)
         {
-            IEmote emote;
+            IEmoji emoji;
             if (model.Emoji.Id.HasValue)
-                emote = new Emote(model.Emoji.Id.Value, model.Emoji.Name, model.Emoji.Animated.GetValueOrDefault());
+                emoji = new CustomEmoji(model.Emoji.Id.Value, model.Emoji.Name, model.Emoji.Animated.GetValueOrDefault());
             else
-                emote = new Emoji(model.Emoji.Name);
-            return new SocketReaction(channel, model.MessageId, message, model.UserId, user, emote);
+                emoji = new Emoji(model.Emoji.Name);
+            return new SocketReaction(channel, model.MessageId, message, model.UserId, user, emoji);
         }
 
         /// <inheritdoc />
@@ -92,7 +92,7 @@ namespace Discord.WebSocket
             var otherReaction = other as SocketReaction;
             if (otherReaction == null) return false;
 
-            return UserId == otherReaction.UserId && MessageId == otherReaction.MessageId && Emote.Equals(otherReaction.Emote);
+            return UserId == otherReaction.UserId && MessageId == otherReaction.MessageId && Emoji.Equals(otherReaction.Emoji);
         }
 
         /// <inheritdoc />
@@ -102,7 +102,7 @@ namespace Discord.WebSocket
             {
                 var hashCode = UserId.GetHashCode();
                 hashCode = (hashCode * 397) ^ MessageId.GetHashCode();
-                hashCode = (hashCode * 397) ^ Emote.GetHashCode();
+                hashCode = (hashCode * 397) ^ Emoji.GetHashCode();
                 return hashCode;
             }
         }

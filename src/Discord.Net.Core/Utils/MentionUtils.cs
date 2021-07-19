@@ -291,7 +291,7 @@ namespace Discord
         {
             if (mode != TagHandling.Remove)
             {
-                Emote emoji = (Emote)tag.Value;
+                CustomEmoji emoji = (CustomEmoji)tag.Value;
 
                 //Remove if its name contains any bad chars (prevents a few tag exploits)
                 for (int i = 0; i < emoji.Name.Length; i++)

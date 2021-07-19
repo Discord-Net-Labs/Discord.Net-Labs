@@ -119,7 +119,7 @@ namespace Discord
         /// <param name="emojiId">The emoji snowflake identifier.</param>
         /// <param name="animated">Whether this emoji is animated.</param>
         /// <returns>
-        ///     A URL pointing to the custom emote.
+        ///     A URL pointing to the custom emoji.
         /// </returns>
         public static string GetEmojiUrl(ulong emojiId, bool animated)
             => $"{DiscordConfig.CDNUrl}emojis/{emojiId}.{(animated ? "gif" : "png")}";

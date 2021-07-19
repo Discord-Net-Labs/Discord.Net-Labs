@@ -17,7 +17,7 @@ namespace Discord.WebSocket
                     Type = ActivityType.CustomStatus,
                     Name = model.Name,
                     State = model.State.IsSpecified ? model.State.Value : null,
-                    Emote = model.Emoji.IsSpecified ? model.Emoji.Value.ToIEmote() : null,
+                    Emoji = model.Emoji.IsSpecified ? model.Emoji.Value.ToIEmote() : null,
                     CreatedAt = DateTimeOffset.FromUnixTimeMilliseconds(model.CreatedAt.Value),
                 };
             }

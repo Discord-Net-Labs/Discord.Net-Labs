@@ -150,7 +150,7 @@ namespace Discord.Rest
                                     parsed.Label.GetValueOrDefault(),
                                     parsed.Emote.IsSpecified
                                         ? parsed.Emote.Value.Id.HasValue
-                                            ? new Emote(parsed.Emote.Value.Id.Value, parsed.Emote.Value.Name, parsed.Emote.Value.Animated.GetValueOrDefault())
+                                            ? new CustomEmoji(parsed.Emote.Value.Id.Value, parsed.Emote.Value.Name, parsed.Emote.Value.Animated.GetValueOrDefault())
                                             : new Emoji(parsed.Emote.Value.Name)
                                         : null,
                                     parsed.CustomId.GetValueOrDefault(),
@@ -168,13 +168,14 @@ namespace Discord.Rest
                                         z.Description.GetValueOrDefault(),
                                         z.Emoji.IsSpecified
                                         ? z.Emoji.Value.Id.HasValue
-                                            ? new Emote(z.Emoji.Value.Id.Value, z.Emoji.Value.Name, z.Emoji.Value.Animated.GetValueOrDefault())
+                                            ? new CustomEmoji(z.Emoji.Value.Id.Value, z.Emoji.Value.Name, z.Emoji.Value.Animated.GetValueOrDefault())
                                             : new Emoji(z.Emoji.Value.Name)
                                         : null,
                                         z.Default.ToNullable())).ToList(),
                                     parsed.Placeholder.GetValueOrDefault(),
                                     parsed.MinValues,
-                                    parsed.MaxValues
+                                    parsed.MaxValues,
+                                    parsed.Disabled
                                     );
                             }
                         default:
@@ -230,7 +231,7 @@ namespace Discord.Rest
         IReadOnlyCollection<IEmbed> IMessage.Embeds => Embeds;
         /// <inheritdoc />
         IReadOnlyCollection<ulong> IMessage.MentionedUserIds => MentionedUsers.Select(x => x.Id).ToImmutableArray();
-        
+
         /// <inheritdoc/>
         IReadOnlyCollection<IMessageComponent> IMessage.Components => Components;
 
@@ -238,25 +239,25 @@ namespace Discord.Rest
         IReadOnlyCollection<ISticker> IMessage.Stickers => Stickers;
 
         /// <inheritdoc />
-        public IReadOnlyDictionary<IEmote, ReactionMetadata> Reactions => _reactions.ToDictionary(x => x.Emote, x => new ReactionMetadata { ReactionCount = x.Count, IsMe = x.Me });
+        public IReadOnlyDictionary<IEmoji, ReactionMetadata> Reactions => _reactions.ToDictionary(x => x.Emoji, x => new ReactionMetadata { ReactionCount = x.Count, IsMe = x.Me });
 
         /// <inheritdoc />
-        public Task AddReactionAsync(IEmote emote, RequestOptions options = null)
-            => MessageHelper.AddReactionAsync(this, emote, Discord, options);
+        public Task AddReactionAsync(IEmoji emoji, RequestOptions options = null)
+            => MessageHelper.AddReactionAsync(this, emoji, Discord, options);
         /// <inheritdoc />
-        public Task RemoveReactionAsync(IEmote emote, IUser user, RequestOptions options = null)
-            => MessageHelper.RemoveReactionAsync(this, user.Id, emote, Discord, options);
+        public Task RemoveReactionAsync(IEmoji emoji, IUser user, RequestOptions options = null)
+            => MessageHelper.RemoveReactionAsync(this, user.Id, emoji, Discord, options);
         /// <inheritdoc />
-        public Task RemoveReactionAsync(IEmote emote, ulong userId, RequestOptions options = null)
-            => MessageHelper.RemoveReactionAsync(this, userId, emote, Discord, options);
+        public Task RemoveReactionAsync(IEmoji emoji, ulong userId, RequestOptions options = null)
+            => MessageHelper.RemoveReactionAsync(this, userId, emoji, Discord, options);
         /// <inheritdoc />
         public Task RemoveAllReactionsAsync(RequestOptions options = null)
             => MessageHelper.RemoveAllReactionsAsync(this, Discord, options);
         /// <inheritdoc />
-        public Task RemoveAllReactionsForEmoteAsync(IEmote emote, RequestOptions options = null)
-            => MessageHelper.RemoveAllReactionsForEmoteAsync(this, emote, Discord, options);
+        public Task RemoveAllReactionsForEmoteAsync(IEmoji emoji, RequestOptions options = null)
+            => MessageHelper.RemoveAllReactionsForEmoteAsync(this, emoji, Discord, options);
         /// <inheritdoc />
-        public IAsyncEnumerable<IReadOnlyCollection<IUser>> GetReactionUsersAsync(IEmote emote, int limit, RequestOptions options = null)
-            => MessageHelper.GetReactionUsersAsync(this, emote, limit, Discord, options);
+        public IAsyncEnumerable<IReadOnlyCollection<IUser>> GetReactionUsersAsync(IEmoji emoji, int limit, RequestOptions options = null)
+            => MessageHelper.GetReactionUsersAsync(this, emoji, limit, Discord, options);
     }
 }

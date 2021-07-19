@@ -490,17 +490,17 @@ namespace Discord.Rest
         }
 
         //Emotes
-        public static async Task<IReadOnlyCollection<GuildEmote>> GetEmotesAsync(IGuild guild, BaseDiscordClient client, RequestOptions options)
+        public static async Task<IReadOnlyCollection<GuildCustomEmoji>> GetEmotesAsync(IGuild guild, BaseDiscordClient client, RequestOptions options)
         {
             var models = await client.ApiClient.GetGuildEmotesAsync(guild.Id, options).ConfigureAwait(false);
             return models.Select(x => x.ToEntity()).ToImmutableArray();
         }
-        public static async Task<GuildEmote> GetEmoteAsync(IGuild guild, BaseDiscordClient client, ulong id, RequestOptions options)
+        public static async Task<GuildCustomEmoji> GetEmoteAsync(IGuild guild, BaseDiscordClient client, ulong id, RequestOptions options)
         {
             var emote = await client.ApiClient.GetGuildEmoteAsync(guild.Id, id, options).ConfigureAwait(false);
             return emote.ToEntity();
         }
-        public static async Task<GuildEmote> CreateEmoteAsync(IGuild guild, BaseDiscordClient client, string name, Image image, Optional<IEnumerable<IRole>> roles,
+        public static async Task<GuildCustomEmoji> CreateEmoteAsync(IGuild guild, BaseDiscordClient client, string name, Image image, Optional<IEnumerable<IRole>> roles,
             RequestOptions options)
         {
             var apiargs = new CreateGuildEmoteParams
@@ -515,12 +515,12 @@ namespace Discord.Rest
             return emote.ToEntity();
         }
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <c>null</c>.</exception>
-        public static async Task<GuildEmote> ModifyEmoteAsync(IGuild guild, BaseDiscordClient client, ulong id, Action<EmoteProperties> func,
+        public static async Task<GuildCustomEmoji> ModifyEmoteAsync(IGuild guild, BaseDiscordClient client, ulong id, Action<EmojiProperties> func,
             RequestOptions options)
         {
             if (func == null) throw new ArgumentNullException(paramName: nameof(func));
 
-            var props = new EmoteProperties();
+            var props = new EmojiProperties();
             func(props);
 
             var apiargs = new ModifyGuildEmoteParams
