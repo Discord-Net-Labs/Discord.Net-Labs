@@ -4459,7 +4459,7 @@
             <param name="components">The list of components to add.</param>
             <returns>The current builder.</returns>
         </member>
-        <member name="M:Discord.ActionRowBuilder.WithComponent(Discord.IMessageComponent)">
+        <member name="M:Discord.ActionRowBuilder.AddComponent(Discord.IMessageComponent)">
             <summary>
                 Adds a component at the end of the current row.
             </summary>
