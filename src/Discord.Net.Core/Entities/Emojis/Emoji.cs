@@ -20,7 +20,11 @@ namespace Discord
         /// </returns>
         public override string ToString() => Name;
 
-        internal Emoji(string unicode)
+        /// <summary>
+        ///     Initializes a new <see cref="Emoji"/> class with the provided Unicode.
+        /// </summary>
+        /// <param name="unicode">The pure UTF-8 encoding of an emoji.</param>
+        public Emoji(string unicode)
         {
             Name = unicode;
         }
@@ -41,7 +45,7 @@ namespace Discord
         }
 
         /// <summary> Tries to parse an <see cref="Emoji"/> from its raw format. </summary>
-        /// <param name="text">The raw encoding of an emoji. For example <c>:heart:</c> or <c>❤</c></param>
+        /// <param name="text">The raw encoding of an emoji. For example: <code>:heart: or ❤</code></param>
         /// <param name="result">An emoji.</param>
         public static bool TryParse(string text, out Emoji result)
         {
@@ -58,6 +62,10 @@ namespace Discord
             return result != null;
         }
 
+        /// <summary> Parse an <see cref="Emoji"/> from its raw format. </summary>
+        /// <param name="text">The raw encoding of an emoji. For example: <c>:heart: or ❤</c></param>
+        /// <param name="result">An emoji.</param>
+        /// <exception cref="FormatException">String is not emoji or unicode!</exception>
         public static Emoji Parse(string emojiStr)
         {
             if (!TryParse(emojiStr, out var emoji))
