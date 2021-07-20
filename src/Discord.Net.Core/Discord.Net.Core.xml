@@ -4755,6 +4755,20 @@
                 The current builder.
             </returns>
         </member>
+        <member name="M:Discord.SelectMenuBuilder.AddOption(System.String,System.String,System.String,Discord.IEmote,System.Nullable{System.Boolean})">
+            <summary>
+                Add one option to menu options.
+            </summary>
+            <param name="label">The label for this option.</param>
+            <param name="value">The value of this option.</param>
+            <param name="description">The description of this option.</param>
+            <param name="emote">The emote of this option.</param>
+            <param name="default">Render this option as selected by default or not.</param>
+            <exception cref="T:System.InvalidOperationException">Options count reached <see cref="F:Discord.SelectMenuBuilder.MaxOptionCount"/>.</exception>
+            <returns>
+                The current builder.
+            </returns>
+        </member>
         <member name="M:Discord.SelectMenuBuilder.WithDisabled(System.Boolean)">
             <summary>
                 Sets whether the current menu is disabled.
