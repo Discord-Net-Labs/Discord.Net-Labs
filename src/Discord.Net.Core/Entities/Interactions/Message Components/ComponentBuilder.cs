@@ -775,6 +775,10 @@ namespace Discord
         /// <param name="description">The description of this option.</param>
         /// <param name="emote">The emote of this option.</param>
         /// <param name="default">Render this option as selected by default or not.</param>
+        /// <exception cref="InvalidOperationException">Options count reached <see cref="MaxOptionCount"/>.</exception>
+        /// <returns>
+        ///     The current builder.
+        /// </returns>
         public SelectMenuBuilder AddOption(string label, string value, string description = null, IEmote emote = null, bool? @default = null)
         {
             AddOption(new SelectMenuOptionBuilder(label, value, description, emote, @default));
