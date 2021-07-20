@@ -18,7 +18,7 @@ namespace Discord.Rest
     public class RestGuild : RestEntity<ulong>, IGuild, IUpdateable
     {
         private ImmutableDictionary<ulong, RestRole> _roles;
-        private ImmutableArray<GuildCustomEmoji> _emotes;
+        private ImmutableArray<GuildEmote> _emotes;
         private ImmutableArray<string> _features;
 
         /// <inheritdoc />
@@ -109,7 +109,7 @@ namespace Discord.Rest
         /// </summary>
         public IReadOnlyCollection<RestRole> Roles => _roles.ToReadOnlyCollection();
         /// <inheritdoc />
-        public IReadOnlyCollection<GuildCustomEmoji> Emotes => _emotes;
+        public IReadOnlyCollection<GuildEmote> Emotes => _emotes;
         /// <inheritdoc />
         public IReadOnlyCollection<string> Features => _features;
 
@@ -166,13 +166,13 @@ namespace Discord.Rest
 
             if (model.Emojis != null)
             {
-                var emotes = ImmutableArray.CreateBuilder<GuildCustomEmoji>(model.Emojis.Length);
+                var emotes = ImmutableArray.CreateBuilder<GuildEmote>(model.Emojis.Length);
                 for (int i = 0; i < model.Emojis.Length; i++)
                     emotes.Add(model.Emojis[i].ToEntity());
                 _emotes = emotes.ToImmutableArray();
             }
             else
-                _emotes = ImmutableArray.Create<GuildCustomEmoji>();
+                _emotes = ImmutableArray.Create<GuildEmote>();
 
             if (model.Features != null)
                 _features = model.Features.ToImmutableArray();
@@ -819,21 +819,21 @@ namespace Discord.Rest
 
         //Emotes
         /// <inheritdoc />
-        public Task<IReadOnlyCollection<GuildCustomEmoji>> GetEmojisAsync(RequestOptions options = null)
+        public Task<IReadOnlyCollection<GuildEmote>> GetEmotesAsync(RequestOptions options = null)
             => GuildHelper.GetEmotesAsync(this, Discord, options);
         /// <inheritdoc />
-        public Task<GuildCustomEmoji> GetEmojiAsync(ulong id, RequestOptions options = null)
+        public Task<GuildEmote> GetEmoteAsync(ulong id, RequestOptions options = null)
             => GuildHelper.GetEmoteAsync(this, Discord, id, options);
         /// <inheritdoc />
-        public Task<GuildCustomEmoji> CreateEmojiAsync(string name, Image image, Optional<IEnumerable<IRole>> roles = default(Optional<IEnumerable<IRole>>), RequestOptions options = null)
+        public Task<GuildEmote> CreateEmoteAsync(string name, Image image, Optional<IEnumerable<IRole>> roles = default(Optional<IEnumerable<IRole>>), RequestOptions options = null)
             => GuildHelper.CreateEmoteAsync(this, Discord, name, image, roles, options);
         /// <inheritdoc />
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
-        public Task<GuildCustomEmoji> ModifyEmojiAsync(GuildCustomEmoji customEmoji, Action<EmojiProperties> func, RequestOptions options = null)
-            => GuildHelper.ModifyEmoteAsync(this, Discord, customEmoji.Id, func, options);
+        public Task<GuildEmote> ModifyEmoteAsync(GuildEmote emote, Action<EmoteProperties> func, RequestOptions options = null)
+            => GuildHelper.ModifyEmoteAsync(this, Discord, emote.Id, func, options);
         /// <inheritdoc />
-        public Task DeleteEmojiAsync(GuildCustomEmoji customEmoji, RequestOptions options = null)
-            => GuildHelper.DeleteEmoteAsync(this, Discord, customEmoji.Id, options);
+        public Task DeleteEmoteAsync(GuildEmote emote, RequestOptions options = null)
+            => GuildHelper.DeleteEmoteAsync(this, Discord, emote.Id, options);
 
         //IGuild
         /// <inheritdoc />

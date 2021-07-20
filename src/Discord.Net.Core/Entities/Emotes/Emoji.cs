@@ -7,7 +7,7 @@ namespace Discord
     /// <summary>
     ///     A Unicode emoji.
     /// </summary>
-    public class Emoji : IEmoji
+    public class Emoji : IEmote
     {
         /// <inheritdoc />
         public string Name { get; }

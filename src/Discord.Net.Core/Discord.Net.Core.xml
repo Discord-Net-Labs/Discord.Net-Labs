@@ -167,7 +167,7 @@
             <param name="emojiId">The emoji snowflake identifier.</param>
             <param name="animated">Whether this emoji is animated.</param>
             <returns>
-                A URL pointing to the custom emoji.
+                A URL pointing to the custom emote.
             </returns>
         </member>
         <member name="M:Discord.CDN.GetRichAssetUrl(System.UInt64,System.String,System.UInt16,Discord.ImageFormat)">
@@ -481,12 +481,12 @@
                 A user's activity for their custom status.
             </summary>
         </member>
-        <member name="P:Discord.CustomStatusGame.Emoji">
+        <member name="P:Discord.CustomStatusGame.Emote">
             <summary>
-                Gets the emoji, if it is set.
+                Gets the emote, if it is set.
             </summary>
             <returns>
-                An <see cref="T:Discord.IEmoji"/> containing the <see cref="T:Discord.Emoji"/> or <see cref="T:Discord.GuildCustomEmoji"/> set by the user.
+                An <see cref="T:Discord.IEmote"/> containing the <see cref="T:Discord.Emoji"/> or <see cref="T:Discord.GuildEmote"/> set by the user.
             </returns>
         </member>
         <member name="P:Discord.CustomStatusGame.CreatedAt">
@@ -2096,64 +2096,6 @@
                 Gets or sets the maximum number of users that can be present in a channel, or <c>null</c> if none.
             </summary>
         </member>
-        <member name="T:Discord.CustomEmoji">
-            <summary>
-                A custom image-based emoji.
-            </summary>
-        </member>
-        <member name="P:Discord.CustomEmoji.Name">
-            <inheritdoc />
-        </member>
-        <member name="P:Discord.CustomEmoji.Id">
-            <inheritdoc />
-        </member>
-        <member name="P:Discord.CustomEmoji.Animated">
-            <summary>
-                Gets whether this emoji is animated.
-            </summary>
-            <returns>
-                A boolean that determines whether or not this emoji is an animated one.
-            </returns>
-        </member>
-        <member name="P:Discord.CustomEmoji.CreatedAt">
-            <inheritdoc />
-        </member>
-        <member name="P:Discord.CustomEmoji.Url">
-            <summary>
-                Gets the image URL of this emoji.
-            </summary>
-            <returns>
-                A string that points to the URL of this emoji.
-            </returns>
-        </member>
-        <member name="M:Discord.CustomEmoji.Equals(System.Object)">
-            <summary>
-                Determines whether the specified emoji is equal to the current emoji.
-            </summary>
-            <param name="other">The object to compare with the current object.</param>
-        </member>
-        <member name="M:Discord.CustomEmoji.GetHashCode">
-            <inheritdoc />
-        </member>
-        <member name="M:Discord.CustomEmoji.Parse(System.String)">
-            <summary> Parses an <see cref="T:Discord.CustomEmoji"/> from its raw format. </summary>
-            <param name="text">The raw encoding of an emoji (e.g. <c>&lt;:dab:277855270321782784&gt;</c>).</param>
-            <returns>An emoji.</returns>
-            <exception cref="T:System.ArgumentException">Invalid emoji format.</exception>
-        </member>
-        <member name="M:Discord.CustomEmoji.TryParse(System.String,Discord.CustomEmoji@)">
-            <summary> Tries to parse an <see cref="T:Discord.CustomEmoji"/> from its raw format. </summary>
-            <param name="text">The raw encoding of an emoji; for example, &lt;:dab:277855270321782784&gt;.</param>
-            <param name="result">An emoji.</param>
-        </member>
-        <member name="M:Discord.CustomEmoji.ToString">
-            <summary>
-                Returns the raw representation of the emoji.
-            </summary>
-            <returns>
-                A string representing the raw presentation of the emoji (e.g. <c>&lt;:thonkang:282745590985523200&gt;</c>).
-            </returns>
-        </member>
         <member name="T:Discord.Emoji">
             <summary>
                 A Unicode emoji.
@@ -2187,47 +2129,111 @@
             <param name="text">The raw encoding of an emoji. For example: <code>:heart: or ❤</code></param>
             <param name="result">An emoji.</param>
         </member>
+        <member name="M:Discord.Emoji.Parse(System.String)">
+            <summary> Parse an <see cref="T:Discord.Emoji"/> from its raw format. </summary>
+            <param name="text">The raw encoding of an emoji. For example: <c>:heart: or ❤</c></param>
+            <param name="result">An emoji.</param>
+            <exception cref="T:System.FormatException">String is not emoji or unicode!</exception>
+        </member>
         <member name="M:Discord.Emoji.GetHashCode">
             <inheritdoc />
         </member>
-        <member name="T:Discord.EmojiProperties">
+        <member name="T:Discord.Emote">
             <summary>
-                Provides properties that are used to modify an <see cref="T:Discord.CustomEmoji" /> with the specified changes.
-            </summary>
-            <seealso cref="M:Discord.IGuild.ModifyEmojiAsync(Discord.GuildCustomEmoji,System.Action{Discord.EmojiProperties},Discord.RequestOptions)"/>
-        </member>
-        <member name="P:Discord.EmojiProperties.Name">
-            <summary>
-                Gets or sets the name of the <see cref="T:Discord.CustomEmoji"/>.
+                A custom image-based emote.
             </summary>
         </member>
-        <member name="P:Discord.EmojiProperties.Roles">
+        <member name="P:Discord.Emote.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.Emote.Id">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.Emote.Animated">
             <summary>
-                Gets or sets the roles that can access this <see cref="T:Discord.CustomEmoji"/>.
+                Gets whether this emote is animated.
+            </summary>
+            <returns>
+                A boolean that determines whether or not this emote is an animated one.
+            </returns>
+        </member>
+        <member name="P:Discord.Emote.CreatedAt">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.Emote.Url">
+            <summary>
+                Gets the image URL of this emote.
+            </summary>
+            <returns>
+                A string that points to the URL of this emote.
+            </returns>
+        </member>
+        <member name="M:Discord.Emote.Equals(System.Object)">
+            <summary>
+                Determines whether the specified emote is equal to the current emote.
+            </summary>
+            <param name="other">The object to compare with the current object.</param>
+        </member>
+        <member name="M:Discord.Emote.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Emote.Parse(System.String)">
+            <summary> Parses an <see cref="T:Discord.Emote"/> from its raw format. </summary>
+            <param name="text">The raw encoding of an emote (e.g. <c>&lt;:dab:277855270321782784&gt;</c>).</param>
+            <returns>An emote.</returns>
+            <exception cref="T:System.ArgumentException">Invalid emote format.</exception>
+        </member>
+        <member name="M:Discord.Emote.TryParse(System.String,Discord.Emote@)">
+            <summary> Tries to parse an <see cref="T:Discord.Emote"/> from its raw format. </summary>
+            <param name="text">The raw encoding of an emote; for example, &lt;:dab:277855270321782784&gt;.</param>
+            <param name="result">An emote.</param>
+        </member>
+        <member name="M:Discord.Emote.ToString">
+            <summary>
+                Returns the raw representation of the emote.
+            </summary>
+            <returns>
+                A string representing the raw presentation of the emote (e.g. <c>&lt;:thonkang:282745590985523200&gt;</c>).
+            </returns>
+        </member>
+        <member name="T:Discord.EmoteProperties">
+            <summary>
+                Provides properties that are used to modify an <see cref="T:Discord.Emote" /> with the specified changes.
+            </summary>
+            <seealso cref="M:Discord.IGuild.ModifyEmoteAsync(Discord.GuildEmote,System.Action{Discord.EmoteProperties},Discord.RequestOptions)"/>
+        </member>
+        <member name="P:Discord.EmoteProperties.Name">
+            <summary>
+                Gets or sets the name of the <see cref="T:Discord.Emote"/>.
             </summary>
         </member>
-        <member name="T:Discord.GuildCustomEmoji">
+        <member name="P:Discord.EmoteProperties.Roles">
             <summary>
-                An image-based emoji that is attached to a guild.
+                Gets or sets the roles that can access this <see cref="T:Discord.Emote"/>.
             </summary>
         </member>
-        <member name="P:Discord.GuildCustomEmoji.IsManaged">
+        <member name="T:Discord.GuildEmote">
+            <summary>
+                An image-based emote that is attached to a guild.
+            </summary>
+        </member>
+        <member name="P:Discord.GuildEmote.IsManaged">
             <summary>
                 Gets whether this emoji is managed by an integration.
             </summary>
             <returns>
-                A boolean that determines whether or not this emoji is managed by a Twitch integration.
+                A boolean that determines whether or not this emote is managed by a Twitch integration.
             </returns>
         </member>
-        <member name="P:Discord.GuildCustomEmoji.RequireColons">
+        <member name="P:Discord.GuildEmote.RequireColons">
             <summary>
                 Gets whether this emoji must be wrapped in colons.
             </summary>
             <returns>
-                A boolean that determines whether or not this emoji requires the use of colons in chat to be used.
+                A boolean that determines whether or not this emote requires the use of colons in chat to be used.
             </returns>
         </member>
-        <member name="P:Discord.GuildCustomEmoji.RoleIds">
+        <member name="P:Discord.GuildEmote.RoleIds">
             <summary>
                 Gets the roles that are allowed to use this emoji.
             </summary>
@@ -2235,7 +2241,7 @@
                 A read-only list containing snowflake identifiers for roles that are allowed to use this emoji.
             </returns>
         </member>
-        <member name="P:Discord.GuildCustomEmoji.CreatorId">
+        <member name="P:Discord.GuildEmote.CreatorId">
             <summary>
                 Gets the user ID associated with the creation of this emoji.
             </summary>
@@ -2244,25 +2250,25 @@
                 <c>null</c> if unknown.
             </returns>
         </member>
-        <member name="M:Discord.GuildCustomEmoji.ToString">
+        <member name="M:Discord.GuildEmote.ToString">
             <summary>
-                Gets the raw representation of the emoji.
+                Gets the raw representation of the emote.
             </summary>
             <returns>
-                A string representing the raw presentation of the emoji (e.g. <c>&lt;:thonkang:282745590985523200&gt;</c>).
+                A string representing the raw presentation of the emote (e.g. <c>&lt;:thonkang:282745590985523200&gt;</c>).
             </returns>
         </member>
-        <member name="T:Discord.IEmoji">
+        <member name="T:Discord.IEmote">
             <summary>
-                Represents a general container for any type of emoji in a message.
+                Represents a general container for any type of emote in a message.
             </summary>
         </member>
-        <member name="P:Discord.IEmoji.Name">
+        <member name="P:Discord.IEmote.Name">
             <summary>
-                Gets the display name or Unicode representation of this emoji.
+                Gets the display name or Unicode representation of this emote.
             </summary>
             <returns>
-                A string representing the display name or the Unicode representation (e.g. <c>🤔</c>) of this emoji.
+                A string representing the display name or the Unicode representation (e.g. <c>🤔</c>) of this emote.
             </returns>
         </member>
         <member name="T:Discord.BotGateway">
@@ -3436,7 +3442,7 @@
                 of webhooks found within the guild.
             </returns>
         </member>
-        <member name="M:Discord.IGuild.GetEmojisAsync(Discord.RequestOptions)">
+        <member name="M:Discord.IGuild.GetEmotesAsync(Discord.RequestOptions)">
             <summary>
                 Gets a collection of emotes from this guild.
             </summary>
@@ -3446,46 +3452,46 @@
                 of emotes found within the guild.
             </returns>
         </member>
-        <member name="M:Discord.IGuild.GetEmojiAsync(System.UInt64,Discord.RequestOptions)">
+        <member name="M:Discord.IGuild.GetEmoteAsync(System.UInt64,Discord.RequestOptions)">
             <summary>
-                Gets a specific customEmoji from this guild.
+                Gets a specific emote from this guild.
             </summary>
-            <param name="id">The snowflake identifier for the guild customEmoji.</param>
+            <param name="id">The snowflake identifier for the guild emote.</param>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
-                A task that represents the asynchronous get operation. The task result contains the customEmoji found with the
+                A task that represents the asynchronous get operation. The task result contains the emote found with the
                 specified <paramref name="id"/>; <see langword="null" /> if none is found.
             </returns>
         </member>
-        <member name="M:Discord.IGuild.CreateEmojiAsync(System.String,Discord.Image,Discord.Optional{System.Collections.Generic.IEnumerable{Discord.IRole}},Discord.RequestOptions)">
+        <member name="M:Discord.IGuild.CreateEmoteAsync(System.String,Discord.Image,Discord.Optional{System.Collections.Generic.IEnumerable{Discord.IRole}},Discord.RequestOptions)">
             <summary>
-                Creates a new <see cref="T:Discord.GuildCustomEmoji"/> in this guild.
+                Creates a new <see cref="T:Discord.GuildEmote"/> in this guild.
             </summary>
-            <param name="name">The name of the guild customEmoji.</param>
-            <param name="image">The image of the new customEmoji.</param>
-            <param name="roles">The roles to limit the customEmoji usage to.</param>
+            <param name="name">The name of the guild emote.</param>
+            <param name="image">The image of the new emote.</param>
+            <param name="roles">The roles to limit the emote usage to.</param>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
-                A task that represents the asynchronous creation operation. The task result contains the created customEmoji.
+                A task that represents the asynchronous creation operation. The task result contains the created emote.
             </returns>
         </member>
-        <member name="M:Discord.IGuild.ModifyEmojiAsync(Discord.GuildCustomEmoji,System.Action{Discord.EmojiProperties},Discord.RequestOptions)">
+        <member name="M:Discord.IGuild.ModifyEmoteAsync(Discord.GuildEmote,System.Action{Discord.EmoteProperties},Discord.RequestOptions)">
             <summary>
-                Modifies an existing <see cref="T:Discord.GuildCustomEmoji"/> in this guild.
+                Modifies an existing <see cref="T:Discord.GuildEmote"/> in this guild.
             </summary>
-            <param name="customEmoji">The customEmoji to be modified.</param>
-            <param name="func">The delegate containing the properties to modify the customEmoji with.</param>
+            <param name="emote">The emote to be modified.</param>
+            <param name="func">The delegate containing the properties to modify the emote with.</param>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
                 A task that represents the asynchronous modification operation. The task result contains the modified
-                customEmoji.
+                emote.
             </returns>
         </member>
-        <member name="M:Discord.IGuild.DeleteEmojiAsync(Discord.GuildCustomEmoji,Discord.RequestOptions)">
+        <member name="M:Discord.IGuild.DeleteEmoteAsync(Discord.GuildEmote,Discord.RequestOptions)">
             <summary>
-                Deletes an existing <see cref="T:Discord.GuildCustomEmoji"/> from this guild.
+                Deletes an existing <see cref="T:Discord.GuildEmote"/> from this guild.
             </summary>
-            <param name="customEmoji">The customEmoji to delete.</param>
+            <param name="emote">The emote to delete.</param>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
                 A task that represents the asynchronous removal operation.
@@ -4288,9 +4294,9 @@
                 The label of the button, this is the text that is shown.
             </summary>
         </member>
-        <member name="P:Discord.ButtonComponent.Emoji">
+        <member name="P:Discord.ButtonComponent.Emote">
             <summary>
-                A <see cref="T:Discord.IEmoji"/> that will be displayed with this button.
+                A <see cref="T:Discord.IEmote"/> that will be displayed with this button.
             </summary>
         </member>
         <member name="P:Discord.ButtonComponent.CustomId">
@@ -4397,13 +4403,13 @@
             <param name="row">The row to attempt to add this component on.</param>
             <returns>The current builder.</returns>
         </member>
-        <member name="M:Discord.ComponentBuilder.WithButton(System.String,System.String,Discord.ButtonStyle,Discord.IEmoji,System.String,System.Boolean,System.Int32)">
+        <member name="M:Discord.ComponentBuilder.WithButton(System.String,System.String,Discord.ButtonStyle,Discord.IEmote,System.String,System.Boolean,System.Int32)">
             <summary>
                 Adds a button to the specified row.
             </summary>
             <param name="label">The label text for the newly added button.</param>
             <param name="style">The style of this newly added button.</param>
-            <param name="emoji">A <see cref="T:Discord.IEmoji"/> to be used with this button.</param>
+            <param name="emote">A <see cref="T:Discord.IEmote"/> to be used with this button.</param>
             <param name="customId">The custom id of the newly added button.</param>
             <param name="url">A URL to be used only if the <see cref="T:Discord.ButtonStyle"/> is a Link.</param>
             <param name="disabled">Whether or not the newly created button is disabled.</param>
@@ -4488,9 +4494,9 @@
                 Gets or sets the <see cref="T:Discord.ButtonStyle"/> of the current button.
             </summary>
         </member>
-        <member name="P:Discord.ButtonBuilder.Emoji">
+        <member name="P:Discord.ButtonBuilder.Emote">
             <summary>
-                Gets or sets the <see cref="T:Discord.IEmoji"/> of the current button.
+                Gets or sets the <see cref="T:Discord.IEmote"/> of the current button.
             </summary>
         </member>
         <member name="P:Discord.ButtonBuilder.Url">
@@ -4557,11 +4563,11 @@
             <param name="style">The style for this builders button.</param>
             <returns>The current builder.</returns>
         </member>
-        <member name="M:Discord.ButtonBuilder.WithEmote(Discord.IEmoji)">
+        <member name="M:Discord.ButtonBuilder.WithEmote(Discord.IEmote)">
             <summary>
-                Sets the current buttons emoji.
+                Sets the current buttons emote.
             </summary>
-            <param name="emoji">The emoji to use for the current button.</param>
+            <param name="emote">The emote to use for the current button.</param>
             <returns>The current builder.</returns>
         </member>
         <member name="M:Discord.ButtonBuilder.WithUrl(System.String)">
@@ -4591,7 +4597,7 @@
             </summary>
             <returns>A <see cref="T:Discord.ButtonComponent"/> to be used in a <see cref="T:Discord.ComponentBuilder"/>.</returns>
             <exception cref="T:System.InvalidOperationException">A button cannot contain a URL and a CustomId.</exception>
-            <exception cref="T:System.ArgumentException">A button must have an CustomEmoji or a label.</exception>
+            <exception cref="T:System.ArgumentException">A button must have an Emote or a label.</exception>
         </member>
         <member name="T:Discord.SelectMenuBuilder">
             <summary>
@@ -4740,9 +4746,9 @@
                 Gets or sets this menu options description.
             </summary>
         </member>
-        <member name="P:Discord.SelectMenuOptionBuilder.Emoji">
+        <member name="P:Discord.SelectMenuOptionBuilder.Emote">
             <summary>
-                Gets or sets the emoji of this option.
+                Gets or sets the emote of this option.
             </summary>
         </member>
         <member name="P:Discord.SelectMenuOptionBuilder.Default">
@@ -4789,11 +4795,11 @@
                 The current builder.
             </returns>
         </member>
-        <member name="M:Discord.SelectMenuOptionBuilder.WithEmote(Discord.IEmoji)">
+        <member name="M:Discord.SelectMenuOptionBuilder.WithEmote(Discord.IEmote)">
             <summary>
-                Sets the field emoji.
+                Sets the field emote.
             </summary>
-            <param name="emoji">The value to set the field emoji to.</param>
+            <param name="emote">The value to set the field emote to.</param>
             <returns>
                 The current builder.
             </returns>
@@ -4911,9 +4917,9 @@
                 An additional description of the option, max 50 characters.
             </summary>
         </member>
-        <member name="P:Discord.SelectMenuOption.Emoji">
+        <member name="P:Discord.SelectMenuOption.Emote">
             <summary>
-                A <see cref="T:Discord.IEmoji"/> that will be displayed with this menu option.
+                A <see cref="T:Discord.IEmote"/> that will be displayed with this menu option.
             </summary>
         </member>
         <member name="P:Discord.SelectMenuOption.Default">
@@ -6688,7 +6694,7 @@
                 A message's flags, if any is associated.
             </returns>
         </member>
-        <member name="M:Discord.IMessage.AddReactionAsync(Discord.IEmoji,Discord.RequestOptions)">
+        <member name="M:Discord.IMessage.AddReactionAsync(Discord.IEmote,Discord.RequestOptions)">
             <summary>
                 Adds a reaction to this message.
             </summary>
@@ -6698,14 +6704,14 @@
                 await msg.AddReactionAsync(new Emoji("\U0001f495"));
                 </code>
             </example>
-            <param name="emoji">The emoji used to react to this message.</param>
+            <param name="emote">The emoji used to react to this message.</param>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
                 A task that represents the asynchronous operation for adding a reaction to this message.
             </returns>
-            <seealso cref="T:Discord.IEmoji"/>
+            <seealso cref="T:Discord.IEmote"/>
         </member>
-        <member name="M:Discord.IMessage.RemoveReactionAsync(Discord.IEmoji,Discord.IUser,Discord.RequestOptions)">
+        <member name="M:Discord.IMessage.RemoveReactionAsync(Discord.IEmote,Discord.IUser,Discord.RequestOptions)">
             <summary>
                 Removes a reaction from message.
             </summary>
@@ -6715,15 +6721,15 @@
                 await msg.RemoveReactionAsync(new Emoji("\U0001f495"), msg.Author);
                 </code>
             </example>
-            <param name="emoji">The emoji used to react to this message.</param>
+            <param name="emote">The emoji used to react to this message.</param>
             <param name="user">The user that added the emoji.</param>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
                 A task that represents the asynchronous operation for removing a reaction to this message.
             </returns>
-            <seealso cref="T:Discord.IEmoji"/>
+            <seealso cref="T:Discord.IEmote"/>
         </member>
-        <member name="M:Discord.IMessage.RemoveReactionAsync(Discord.IEmoji,System.UInt64,Discord.RequestOptions)">
+        <member name="M:Discord.IMessage.RemoveReactionAsync(Discord.IEmote,System.UInt64,Discord.RequestOptions)">
             <summary>
                 Removes a reaction from message.
             </summary>
@@ -6733,13 +6739,13 @@
                 await msg.RemoveReactionAsync(new Emoji("\U0001f495"), 84291986575613952);
                 </code>
             </example>
-            <param name="emoji">The emoji used to react to this message.</param>
+            <param name="emote">The emoji used to react to this message.</param>
             <param name="userId">The ID of the user that added the emoji.</param>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
                 A task that represents the asynchronous operation for removing a reaction to this message.
             </returns>
-            <seealso cref="T:Discord.IEmoji"/>
+            <seealso cref="T:Discord.IEmote"/>
         </member>
         <member name="M:Discord.IMessage.RemoveAllReactionsAsync(Discord.RequestOptions)">
             <summary>
@@ -6750,19 +6756,19 @@
                 A task that represents the asynchronous removal operation.
             </returns>
         </member>
-        <member name="M:Discord.IMessage.RemoveAllReactionsForEmoteAsync(Discord.IEmoji,Discord.RequestOptions)">
+        <member name="M:Discord.IMessage.RemoveAllReactionsForEmoteAsync(Discord.IEmote,Discord.RequestOptions)">
             <summary>
                 Removes all reactions with a specific emoji from this message.
             </summary>
-            <param name="emoji">The emoji used to react to this message.</param>
+            <param name="emote">The emoji used to react to this message.</param>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
                 A task that represents the asynchronous removal operation.
             </returns>
         </member>
-        <member name="M:Discord.IMessage.GetReactionUsersAsync(Discord.IEmoji,System.Int32,Discord.RequestOptions)">
+        <member name="M:Discord.IMessage.GetReactionUsersAsync(Discord.IEmote,System.Int32,Discord.RequestOptions)">
             <summary>
-                Gets all users that reacted to a message with a given emoji.
+                Gets all users that reacted to a message with a given emote.
             </summary>
             <remarks>
                 <note type="important">
@@ -6800,9 +6806,9 @@
                 Represents a generic reaction object.
             </summary>
         </member>
-        <member name="P:Discord.IReaction.Emoji">
+        <member name="P:Discord.IReaction.Emote">
             <summary>
-                The <see cref="T:Discord.IEmoji" /> used in the reaction.
+                The <see cref="T:Discord.IEmote" /> used in the reaction.
             </summary>
         </member>
         <member name="T:Discord.ISticker">
@@ -9663,7 +9669,7 @@
                 A string that contains a URL for jumping to the message in chat.
             </returns>
         </member>
-        <member name="M:Discord.MessageExtensions.AddReactionsAsync(Discord.IUserMessage,Discord.IEmoji[],Discord.RequestOptions)">
+        <member name="M:Discord.MessageExtensions.AddReactionsAsync(Discord.IUserMessage,Discord.IEmote[],Discord.RequestOptions)">
             <summary>
                 Add multiple reactions to a message.
             </summary>
@@ -9672,8 +9678,8 @@
             </remarks>
             <example>
             <code language="cs">
-            IEmoji A = new Emoji("🅰");
-            IEmoji B = new Emoji("🅱");
+            IEmote A = new Emoji("🅰");
+            IEmote B = new Emoji("🅱");
             await msg.AddReactionsAsync(new[] { A, B });
             </code>
             </example>
@@ -9683,10 +9689,10 @@
             <returns>
                 A task that represents the asynchronous operation for adding a reaction to this message.
             </returns>
-            <seealso cref="M:Discord.IMessage.AddReactionAsync(Discord.IEmoji,Discord.RequestOptions)"/>
-            <seealso cref="T:Discord.IEmoji"/>
+            <seealso cref="M:Discord.IMessage.AddReactionAsync(Discord.IEmote,Discord.RequestOptions)"/>
+            <seealso cref="T:Discord.IEmote"/>
         </member>
-        <member name="M:Discord.MessageExtensions.RemoveReactionsAsync(Discord.IUserMessage,Discord.IUser,Discord.IEmoji[],Discord.RequestOptions)">
+        <member name="M:Discord.MessageExtensions.RemoveReactionsAsync(Discord.IUserMessage,Discord.IUser,Discord.IEmote[],Discord.RequestOptions)">
             <summary>
                 Remove multiple reactions from a message.
             </summary>
@@ -9705,8 +9711,8 @@
             <returns>
                 A task that represents the asynchronous operation for removing a reaction to this message.
             </returns>
-            <seealso cref="M:Discord.IMessage.RemoveReactionAsync(Discord.IEmoji,Discord.IUser,Discord.RequestOptions)"/>
-            <seealso cref="T:Discord.IEmoji"/>
+            <seealso cref="M:Discord.IMessage.RemoveReactionAsync(Discord.IEmote,Discord.IUser,Discord.RequestOptions)"/>
+            <seealso cref="T:Discord.IEmote"/>
         </member>
         <member name="M:Discord.MessageExtensions.ReplyAsync(Discord.IUserMessage,System.String,System.Boolean,Discord.Embed,Discord.AllowedMentions,Discord.RequestOptions)">
             <summary>

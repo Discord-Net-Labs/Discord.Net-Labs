@@ -126,7 +126,7 @@ namespace Discord
         /// </summary>
         /// <param name="label">The label text for the newly added button.</param>
         /// <param name="style">The style of this newly added button.</param>
-        /// <param name="emoji">A <see cref="IEmoji"/> to be used with this button.</param>
+        /// <param name="emote">A <see cref="IEmote"/> to be used with this button.</param>
         /// <param name="customId">The custom id of the newly added button.</param>
         /// <param name="url">A URL to be used only if the <see cref="ButtonStyle"/> is a Link.</param>
         /// <param name="disabled">Whether or not the newly created button is disabled.</param>
@@ -136,7 +136,7 @@ namespace Discord
             string label,
             string customId,
             ButtonStyle style = ButtonStyle.Primary,
-            IEmoji emoji = null,
+            IEmote emote = null,
             string url = null,
             bool disabled = false,
             int row = 0)
@@ -144,7 +144,7 @@ namespace Discord
             var button = new ButtonBuilder()
                 .WithLabel(label)
                 .WithStyle(style)
-                .WithEmote(emoji)
+                .WithEmote(emote)
                 .WithCustomId(customId)
                 .WithUrl(url)
                 .WithDisabled(disabled);
@@ -348,9 +348,9 @@ namespace Discord
         public ButtonStyle Style { get; set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="IEmoji"/> of the current button.
+        ///     Gets or sets the <see cref="IEmote"/> of the current button.
         /// </summary>
-        public IEmoji Emoji { get; set; }
+        public IEmote Emote { get; set; }
 
         /// <summary>
         ///     Gets or sets the url of the current button.
@@ -469,13 +469,13 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Sets the current buttons emoji.
+        ///     Sets the current buttons emote.
         /// </summary>
-        /// <param name="emoji">The emoji to use for the current button.</param>
+        /// <param name="emote">The emote to use for the current button.</param>
         /// <returns>The current builder.</returns>
-        public ButtonBuilder WithEmote(IEmoji emoji)
+        public ButtonBuilder WithEmote(IEmote emote)
         {
-            this.Emoji = emoji;
+            this.Emote = emote;
             return this;
         }
 
@@ -517,11 +517,11 @@ namespace Discord
         /// </summary>
         /// <returns>A <see cref="ButtonComponent"/> to be used in a <see cref="ComponentBuilder"/>.</returns>
         /// <exception cref="InvalidOperationException">A button cannot contain a URL and a CustomId.</exception>
-        /// <exception cref="ArgumentException">A button must have an CustomEmoji or a label.</exception>
+        /// <exception cref="ArgumentException">A button must have an Emote or a label.</exception>
         public ButtonComponent Build()
         {
-            if (string.IsNullOrEmpty(this.Label) && this.Emoji == null)
-                throw new ArgumentException("A button must have an CustomEmoji or a label!");
+            if (string.IsNullOrEmpty(this.Label) && this.Emote == null)
+                throw new ArgumentException("A button must have an Emote or a label!");
 
             if (!string.IsNullOrEmpty(this.Url) && !string.IsNullOrEmpty(this.CustomId))
                 throw new InvalidOperationException("A button cannot contain a URL and a CustomId");
@@ -532,7 +532,7 @@ namespace Discord
             else if (this.Style != ButtonStyle.Link && !string.IsNullOrEmpty(this.Url)) // Thanks 𝑴𝒓𝑪𝒂𝒌𝒆𝑺𝒍𝒂𝒚𝒆𝒓 :D
                 this.Url = null;
 
-            return new ButtonComponent(this.Style, this.Label, this.Emoji, this.CustomId, this.Url, this.Disabled);
+            return new ButtonComponent(this.Style, this.Label, this.Emote, this.CustomId, this.Url, this.Disabled);
         }
     }
 
@@ -636,7 +636,6 @@ namespace Discord
         private int _minValues = 1;
         private int _maxValues = 1;
         private string _placeholder;
-        private string _label;
         private string _customId;
 
         /// <summary>
@@ -802,9 +801,9 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Gets or sets the emoji of this option.
+        ///     Gets or sets the emote of this option.
         /// </summary>
-        public IEmoji Emoji { get; set; }
+        public IEmote Emote { get; set; }
 
         /// <summary>
         ///     Gets or sets the whether or not this option will render selected by default.
@@ -871,15 +870,15 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Sets the field emoji.
+        ///     Sets the field emote.
         /// </summary>
-        /// <param name="emoji">The value to set the field emoji to.</param>
+        /// <param name="emote">The value to set the field emote to.</param>
         /// <returns>
         ///     The current builder.
         /// </returns>
-        public SelectMenuOptionBuilder WithEmote(IEmoji emoji)
+        public SelectMenuOptionBuilder WithEmote(IEmote emote)
         {
-            this.Emoji = emoji;
+            this.Emote = emote;
             return this;
         }
 
@@ -902,7 +901,7 @@ namespace Discord
         /// <returns>The newly built <see cref="SelectMenuOption"/>.</returns>
         public SelectMenuOption Build()
         {
-            return new SelectMenuOption(this.Label, this.Value, this.Description, this.Emoji, this.Default);
+            return new SelectMenuOption(this.Label, this.Value, this.Description, this.Emote, this.Default);
         }
     }
 }

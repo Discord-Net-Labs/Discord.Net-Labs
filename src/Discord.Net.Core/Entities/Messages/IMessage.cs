@@ -162,7 +162,7 @@ namespace Discord
         /// <summary>
         ///     Gets all reactions included in this message.
         /// </summary>
-        IReadOnlyDictionary<IEmoji, ReactionMetadata> Reactions { get; }
+        IReadOnlyDictionary<IEmote, ReactionMetadata> Reactions { get; }
 
         /// <summary>
         ///     The <see cref="IMessageComponent"/>'s attached to this message
@@ -196,13 +196,13 @@ namespace Discord
         ///     await msg.AddReactionAsync(new Emoji("\U0001f495"));
         ///     </code>
         /// </example>
-        /// <param name="emoji">The emoji used to react to this message.</param>
+        /// <param name="emote">The emoji used to react to this message.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
         ///     A task that represents the asynchronous operation for adding a reaction to this message.
         /// </returns>
-        /// <seealso cref="IEmoji"/>
-        Task AddReactionAsync(IEmoji emoji, RequestOptions options = null);
+        /// <seealso cref="IEmote"/>
+        Task AddReactionAsync(IEmote emote, RequestOptions options = null);
         /// <summary>
         ///     Removes a reaction from message.
         /// </summary>
@@ -212,14 +212,14 @@ namespace Discord
         ///     await msg.RemoveReactionAsync(new Emoji("\U0001f495"), msg.Author);
         ///     </code>
         /// </example>
-        /// <param name="emoji">The emoji used to react to this message.</param>
+        /// <param name="emote">The emoji used to react to this message.</param>
         /// <param name="user">The user that added the emoji.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
         ///     A task that represents the asynchronous operation for removing a reaction to this message.
         /// </returns>
-        /// <seealso cref="IEmoji"/>
-        Task RemoveReactionAsync(IEmoji emoji, IUser user, RequestOptions options = null);
+        /// <seealso cref="IEmote"/>
+        Task RemoveReactionAsync(IEmote emote, IUser user, RequestOptions options = null);
         /// <summary>
         ///     Removes a reaction from message.
         /// </summary>
@@ -229,14 +229,14 @@ namespace Discord
         ///     await msg.RemoveReactionAsync(new Emoji("\U0001f495"), 84291986575613952);
         ///     </code>
         /// </example>
-        /// <param name="emoji">The emoji used to react to this message.</param>
+        /// <param name="emote">The emoji used to react to this message.</param>
         /// <param name="userId">The ID of the user that added the emoji.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
         ///     A task that represents the asynchronous operation for removing a reaction to this message.
         /// </returns>
-        /// <seealso cref="IEmoji"/>
-        Task RemoveReactionAsync(IEmoji emoji, ulong userId, RequestOptions options = null);
+        /// <seealso cref="IEmote"/>
+        Task RemoveReactionAsync(IEmote emote, ulong userId, RequestOptions options = null);
         /// <summary>
         ///     Removes all reactions from this message.
         /// </summary>
@@ -248,15 +248,15 @@ namespace Discord
         /// <summary>
         ///     Removes all reactions with a specific emoji from this message.
         /// </summary>
-        /// <param name="emoji">The emoji used to react to this message.</param>
+        /// <param name="emote">The emoji used to react to this message.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
         ///     A task that represents the asynchronous removal operation.
         /// </returns>
-        Task RemoveAllReactionsForEmoteAsync(IEmoji emoji, RequestOptions options = null);
+        Task RemoveAllReactionsForEmoteAsync(IEmote emote, RequestOptions options = null);
 
         /// <summary>
-        ///     Gets all users that reacted to a message with a given emoji.
+        ///     Gets all users that reacted to a message with a given emote.
         /// </summary>
         /// <remarks>
         ///     <note type="important">
@@ -288,6 +288,6 @@ namespace Discord
         /// <returns>
         ///      Paged collection of users.
         /// </returns>
-        IAsyncEnumerable<IReadOnlyCollection<IUser>> GetReactionUsersAsync(IEmoji emoji, int limit, RequestOptions options = null);
+        IAsyncEnumerable<IReadOnlyCollection<IUser>> GetReactionUsersAsync(IEmote emoji, int limit, RequestOptions options = null);
     }
 }

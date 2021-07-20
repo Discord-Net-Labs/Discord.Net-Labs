@@ -6,8 +6,8 @@ namespace Discord
     public interface IReaction
     {
         /// <summary>
-        ///     The <see cref="IEmoji" /> used in the reaction.
+        ///     The <see cref="IEmote" /> used in the reaction.
         /// </summary>
-        IEmoji Emoji { get; }
+        IEmote Emote { get; }
     }
 }

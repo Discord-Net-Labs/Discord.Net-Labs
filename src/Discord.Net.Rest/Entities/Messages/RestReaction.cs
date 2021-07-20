@@ -8,7 +8,7 @@ namespace Discord.Rest
     public class RestReaction : IReaction
     {
         /// <inheritdoc />
-        public IEmoji Emoji { get; }
+        public IEmote Emote { get; }
         /// <summary>
         ///     Gets the number of reactions added.
         /// </summary>
@@ -18,20 +18,20 @@ namespace Discord.Rest
         /// </summary>
         public bool Me { get; }
 
-        internal RestReaction(IEmoji emoji, int count, bool me)
+        internal RestReaction(IEmote emote, int count, bool me)
         {
-            Emoji = emoji;
+            Emote = emote;
             Count = count;
             Me = me;
         }
         internal static RestReaction Create(Model model)
         {
-            IEmoji emoji;
+            IEmote emote;
             if (model.Emoji.Id.HasValue)
-                emoji = new CustomEmoji(model.Emoji.Id.Value, model.Emoji.Name, model.Emoji.Animated.GetValueOrDefault());
+                emote = new Emote(model.Emoji.Id.Value, model.Emoji.Name, model.Emoji.Animated.GetValueOrDefault());
             else
-                emoji = new Emoji(model.Emoji.Name);
-            return new RestReaction(emoji, model.Count, model.Me);
+                emote = new Emoji(model.Emoji.Name);
+            return new RestReaction(emote, model.Count, model.Me);
         }
     }
 }

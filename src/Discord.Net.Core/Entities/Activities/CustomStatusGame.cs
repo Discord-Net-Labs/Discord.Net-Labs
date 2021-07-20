@@ -12,12 +12,12 @@ namespace Discord
         internal CustomStatusGame() { }
 
         /// <summary>
-        ///     Gets the emoji, if it is set.
+        ///     Gets the emote, if it is set.
         /// </summary>
         /// <returns>
-        ///     An <see cref="IEmoji"/> containing the <see cref="Discord.Emoji"/> or <see cref="GuildCustomEmoji"/> set by the user.
+        ///     An <see cref="IEmote"/> containing the <see cref="Emoji"/> or <see cref="GuildEmote"/> set by the user.
         /// </returns>
-        public IEmoji Emoji { get; internal set; }
+        public IEmote Emote { get; internal set; }
 
         /// <summary>
         ///     Gets the timestamp of when this status was created.
@@ -33,7 +33,7 @@ namespace Discord
         public string State { get; internal set; }
 
         public override string ToString()
-            => $"{Emoji} {State}";
+            => $"{Emote} {State}";
 
         private string DebuggerDisplay => $"{Name}";
     }

@@ -42,9 +42,9 @@ namespace Discord.API
             this.Url = c.Url;
             this.Disabled = c.Disabled;
 
-            if (c.Emoji != null)
+            if (c.Emote != null)
             {
-                if (c.Emoji is CustomEmoji e)
+                if (c.Emote is Emote e)
                 {
                     this.Emote = new Emoji()
                     {
@@ -57,7 +57,7 @@ namespace Discord.API
                 {
                     this.Emote = new Emoji()
                     {
-                        Name = c.Emoji.Name
+                        Name = c.Emote.Name
                     };
                 }
             }

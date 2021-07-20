@@ -26,9 +26,9 @@ namespace Discord
         public string Label { get; }
 
         /// <summary>
-        ///     A <see cref="IEmoji"/> that will be displayed with this button.
+        ///     A <see cref="IEmote"/> that will be displayed with this button.
         /// </summary>
-        public IEmoji Emoji { get; }
+        public IEmote Emote { get; }
 
         /// <summary>
         ///     A unique id that will be sent with a <see cref="IDiscordInteraction"/>. This is how you know what button was pressed.
@@ -48,11 +48,11 @@ namespace Discord
         /// </summary>
         public bool Disabled { get; }
 
-        internal ButtonComponent(ButtonStyle style, string label, IEmoji emoji, string customId, string url, bool disabled)
+        internal ButtonComponent(ButtonStyle style, string label, IEmote emote, string customId, string url, bool disabled)
         {
             this.Style = style;
             this.Label = label;
-            this.Emoji = emoji;
+            this.Emote = emote;
             this.CustomId = customId;
             this.Url = url;
             this.Disabled = disabled;

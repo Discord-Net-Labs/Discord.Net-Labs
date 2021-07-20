@@ -27,21 +27,21 @@ namespace Discord
         public string Description { get; }
 
         /// <summary>
-        ///     A <see cref="IEmoji"/> that will be displayed with this menu option.
+        ///     A <see cref="IEmote"/> that will be displayed with this menu option.
         /// </summary>
-        public IEmoji Emoji { get; }
+        public IEmote Emote { get; }
 
         /// <summary>
         ///     Will render this option as selected by default.
         /// </summary>
         public bool? Default { get; }
 
-        internal SelectMenuOption(string label, string value, string description, IEmoji emoji, bool? defaultValue)
+        internal SelectMenuOption(string label, string value, string description, IEmote emote, bool? defaultValue)
         {
             this.Label = label;
             this.Value = value;
             this.Description = description;
-            this.Emoji = emoji;
+            this.Emote = emote;
             this.Default = defaultValue;
         }
     }

@@ -197,7 +197,7 @@ namespace Discord
         /// <returns>
         ///     A read-only collection of all custom emotes for this guild.
         /// </returns>
-        IReadOnlyCollection<GuildCustomEmoji> Emotes { get; }
+        IReadOnlyCollection<GuildEmote> Emotes { get; }
         /// <summary>
         ///     Gets a collection of all extra features added to this guild.
         /// </summary>
@@ -849,48 +849,48 @@ namespace Discord
         ///     A task that represents the asynchronous get operation. The task result contains a read-only collection
         ///     of emotes found within the guild.
         /// </returns>
-        Task<IReadOnlyCollection<GuildCustomEmoji>> GetEmojisAsync(RequestOptions options = null);
+        Task<IReadOnlyCollection<GuildEmote>> GetEmotesAsync(RequestOptions options = null);
         /// <summary>
-        ///     Gets a specific customEmoji from this guild.
+        ///     Gets a specific emote from this guild.
         /// </summary>
-        /// <param name="id">The snowflake identifier for the guild customEmoji.</param>
+        /// <param name="id">The snowflake identifier for the guild emote.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
-        ///     A task that represents the asynchronous get operation. The task result contains the customEmoji found with the
+        ///     A task that represents the asynchronous get operation. The task result contains the emote found with the
         ///     specified <paramref name="id"/>; <see langword="null" /> if none is found.
         /// </returns>
-        Task<GuildCustomEmoji> GetEmojiAsync(ulong id, RequestOptions options = null);
+        Task<GuildEmote> GetEmoteAsync(ulong id, RequestOptions options = null);
         /// <summary>
-        ///     Creates a new <see cref="GuildCustomEmoji"/> in this guild.
+        ///     Creates a new <see cref="GuildEmote"/> in this guild.
         /// </summary>
-        /// <param name="name">The name of the guild customEmoji.</param>
-        /// <param name="image">The image of the new customEmoji.</param>
-        /// <param name="roles">The roles to limit the customEmoji usage to.</param>
+        /// <param name="name">The name of the guild emote.</param>
+        /// <param name="image">The image of the new emote.</param>
+        /// <param name="roles">The roles to limit the emote usage to.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
-        ///     A task that represents the asynchronous creation operation. The task result contains the created customEmoji.
+        ///     A task that represents the asynchronous creation operation. The task result contains the created emote.
         /// </returns>
-        Task<GuildCustomEmoji> CreateEmojiAsync(string name, Image image, Optional<IEnumerable<IRole>> roles = default, RequestOptions options = null);
+        Task<GuildEmote> CreateEmoteAsync(string name, Image image, Optional<IEnumerable<IRole>> roles = default(Optional<IEnumerable<IRole>>), RequestOptions options = null);
 
         /// <summary>
-        ///     Modifies an existing <see cref="GuildCustomEmoji"/> in this guild.
+        ///     Modifies an existing <see cref="GuildEmote"/> in this guild.
         /// </summary>
-        /// <param name="customEmoji">The customEmoji to be modified.</param>
-        /// <param name="func">The delegate containing the properties to modify the customEmoji with.</param>
+        /// <param name="emote">The emote to be modified.</param>
+        /// <param name="func">The delegate containing the properties to modify the emote with.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
         ///     A task that represents the asynchronous modification operation. The task result contains the modified
-        ///     customEmoji.
+        ///     emote.
         /// </returns>
-        Task<GuildCustomEmoji> ModifyEmojiAsync(GuildCustomEmoji customEmoji, Action<EmojiProperties> func, RequestOptions options = null);
+        Task<GuildEmote> ModifyEmoteAsync(GuildEmote emote, Action<EmoteProperties> func, RequestOptions options = null);
         /// <summary>
-        ///     Deletes an existing <see cref="GuildCustomEmoji"/> from this guild.
+        ///     Deletes an existing <see cref="GuildEmote"/> from this guild.
         /// </summary>
-        /// <param name="customEmoji">The customEmoji to delete.</param>
+        /// <param name="emote">The emote to delete.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
         ///     A task that represents the asynchronous removal operation.
         /// </returns>
-        Task DeleteEmojiAsync(GuildCustomEmoji customEmoji, RequestOptions options = null);
+        Task DeleteEmoteAsync(GuildEmote emote, RequestOptions options = null);
     }
 }
