@@ -2666,7 +2666,7 @@
                 A read-only collection of generic channels found within this guild.
             </returns>
         </member>
-        <member name="P:Discord.WebSocket.SocketGuild.Emojis">
+        <member name="P:Discord.WebSocket.SocketGuild.Emotes">
             <inheritdoc />
         </member>
         <member name="P:Discord.WebSocket.SocketGuild.Features">

@@ -489,7 +489,7 @@ namespace Discord.Rest
             return models.Select(x => RestWebhook.Create(client, guild, x)).ToImmutableArray();
         }
 
-        //Emojis
+        //Emotes
         public static async Task<IReadOnlyCollection<GuildCustomEmoji>> GetEmotesAsync(IGuild guild, BaseDiscordClient client, RequestOptions options)
         {
             var models = await client.ApiClient.GetGuildEmotesAsync(guild.Id, options).ConfigureAwait(false);
