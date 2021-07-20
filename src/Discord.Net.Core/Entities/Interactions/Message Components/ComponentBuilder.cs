@@ -768,6 +768,20 @@ namespace Discord
         }
 
         /// <summary>
+        ///     Add one option to menu options.
+        /// </summary>
+        /// <param name="label">The label for this option.</param>
+        /// <param name="value">The value of this option.</param>
+        /// <param name="description">The description of this option.</param>
+        /// <param name="emote">The emote of this option.</param>
+        /// <param name="default">Render this option as selected by default or not.</param>
+        public SelectMenuBuilder AddOption(string label, string value, string description = null, IEmote emote = null, bool? @default = null)
+        {
+            AddOption(new SelectMenuOptionBuilder(label, value, description, emote, @default));
+            return this;
+        }
+
+        /// <summary>
         ///     Sets whether the current menu is disabled.
         /// </summary>
         /// <param name="disabled">Whether the current menu is disabled or not.</param>
