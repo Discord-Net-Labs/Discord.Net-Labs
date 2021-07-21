@@ -4376,8 +4376,8 @@
         </member>
         <member name="M:Discord.ComponentBuilder.WithSelectMenu(System.String,System.String,System.Collections.Generic.List{Discord.SelectMenuOptionBuilder},System.String,System.Int32,System.Int32,System.Boolean,System.Int32)">
             <summary>
-                Adds a <see cref="T:Discord.SelectMenuBuilder"/> to the first row, if the first row cannot
-                accept the component then it will add it to a row that can
+                Adds a <see cref="T:Discord.SelectMenuBuilder"/> to the <see cref="T:Discord.ComponentBuilder"/> at the specific row.
+                If the row cannot accept the component then it will add it to a row that can.
             </summary>
             <param name="label">The label of the menu.</param>
             <param name="customId">The custom id of the menu.</param>
@@ -4391,13 +4391,12 @@
         </member>
         <member name="M:Discord.ComponentBuilder.WithSelectMenu(Discord.SelectMenuBuilder,System.Int32)">
             <summary>
-                Adds a <see cref="T:Discord.SelectMenuBuilder"/> to the current builder at the specific row.
-                By default first row, if the first row cannot
-                accept the component then it will add it to a row that can.
+                Adds a <see cref="T:Discord.SelectMenuBuilder"/> to the <see cref="T:Discord.ComponentBuilder"/> at the specific row.
+                If the row cannot accept the component then it will add it to a row that can.
             </summary>
             <param name="menu">The menu to add.</param>
             <param name="row">The row to attempt to add this component on.</param>
-            <exception cref="T:System.Exception">There is no more row to add a menu</exception>
+            <exception cref="T:System.InvalidOperationException">There is no more row to add a menu</exception>
             <exception cref="T:System.ArgumentException"><paramref name="row"/> must be less than <see cref="F:Discord.ComponentBuilder.MaxActionRowCount"/></exception>
             <returns>The current builder.</returns>
         </member>

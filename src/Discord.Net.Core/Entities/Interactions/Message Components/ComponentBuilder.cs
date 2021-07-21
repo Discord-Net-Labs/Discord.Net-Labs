@@ -45,8 +45,8 @@ namespace Discord
         private List<ActionRowBuilder> _actionRows { get; set; }
 
         /// <summary>
-        ///     Adds a <see cref="SelectMenuBuilder"/> to the first row, if the first row cannot
-        ///     accept the component then it will add it to a row that can
+        ///     Adds a <see cref="SelectMenuBuilder"/> to the <see cref="ComponentBuilder"/> at the specific row.
+        ///     If the row cannot accept the component then it will add it to a row that can.
         /// </summary>
         /// <param name="label">The label of the menu.</param>
         /// <param name="customId">The custom id of the menu.</param>
@@ -71,13 +71,12 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Adds a <see cref="SelectMenuBuilder"/> to the current builder at the specific row.
-        ///     By default first row, if the first row cannot
-        ///     accept the component then it will add it to a row that can.
+        ///     Adds a <see cref="SelectMenuBuilder"/> to the <see cref="ComponentBuilder"/> at the specific row.
+        ///     If the row cannot accept the component then it will add it to a row that can.
         /// </summary>
         /// <param name="menu">The menu to add.</param>
         /// <param name="row">The row to attempt to add this component on.</param>
-        /// <exception cref="Exception">There is no more row to add a menu</exception>
+        /// <exception cref="InvalidOperationException">There is no more row to add a menu</exception>
         /// <exception cref="ArgumentException"><paramref name="row"/> must be less than <see cref="MaxActionRowCount"/></exception>
         /// <returns>The current builder.</returns>
         public ComponentBuilder WithSelectMenu(SelectMenuBuilder menu, int row = 0)
@@ -113,7 +112,7 @@ namespace Discord
                     else if (row < MaxActionRowCount)
                         WithSelectMenu(menu, row + 1);
                     else
-                        throw new Exception($"There is no more row to add a {nameof(builtMenu)}");
+                        throw new InvalidOperationException($"There is no more row to add a {nameof(builtMenu)}");
                 }
             }
 
