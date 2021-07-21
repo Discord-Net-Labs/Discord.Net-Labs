@@ -5,7 +5,7 @@ namespace Discord.SlashCommands
     /// <summary>
     /// Use to change the default name and description of an Application Command element
     /// </summary>
-    public class DescriptionAttribute : Attribute
+    public class SummaryAttribute : Attribute
     {
         /// <summary>
         /// Custom name of the element
@@ -21,7 +21,7 @@ namespace Discord.SlashCommands
         /// </summary>
         /// <param name="name">Name of the element</param>
         /// <param name="description">Description of the element</param>
-        public DescriptionAttribute (string name, string description = null)
+        public SummaryAttribute (string name = null, string description = null)
         {
             Name = name;
             Description = description;

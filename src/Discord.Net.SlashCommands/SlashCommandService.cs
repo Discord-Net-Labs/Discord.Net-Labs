@@ -106,11 +106,11 @@ namespace Discord.SlashCommands
         }
 
         /// <summary>
-        /// Discover and load <see cref="CommandBase{T}"/> from a given assembly
+        /// Discover and load <see cref="SlashModuleBase{T}"/> from a given assembly
         /// </summary>
         /// <param name="assembly"><see cref="Assembly"/> the command modules are defined in</param>
         /// <param name="services"><see cref="IServiceProvider"/> to be used when instantiating a command module</param>
-        /// <returns>Module information for the <see cref="CommandBase{T}"/> types that are loaded to <see cref="SlashCommandService"/></returns>
+        /// <returns>Module information for the <see cref="SlashModuleBase{T}"/> types that are loaded to <see cref="SlashCommandService"/></returns>
         public async Task<IEnumerable<SlashModuleInfo>> AddModules (Assembly assembly, IServiceProvider services)
         {
             services = services ?? EmptyServiceProvider.Instance;
@@ -272,7 +272,7 @@ namespace Discord.SlashCommands
         /// <summary>
         /// Remove a loaded module from <see cref="SlashCommandService.Modules"/>
         /// </summary>
-        /// <param name="type"><see cref="CommandBase{T}"/> that will be removed</param>
+        /// <param name="type"><see cref="SlashModuleBase{T}"/> that will be removed</param>
         /// <returns></returns>
         public async Task<bool> RemoveModuleAsync (Type type)
         {

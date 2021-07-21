@@ -242,7 +242,7 @@ namespace Discord.SlashCommands.Builders
             {
                 switch (attribute)
                 {
-                    case DescriptionAttribute description:
+                    case SummaryAttribute description:
                         {
                             if (!string.IsNullOrEmpty(description.Name))
                                 builder.Name = description.Name;

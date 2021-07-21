@@ -7,7 +7,7 @@ namespace Discord.SlashCommands
     /// Base class for any Slash command handling modules
     /// </summary>
     /// <typeparam name="T">Type of slash command context to be injected into the module</typeparam>
-    public abstract class CommandBase<T> : ISlashModuleBase where T : class, ISlashCommandContext
+    public abstract class SlashModuleBase<T> : ISlashModuleBase where T : class, ISlashCommandContext
     {
         /// <summary>
         /// Command execution context for an user interaction.
