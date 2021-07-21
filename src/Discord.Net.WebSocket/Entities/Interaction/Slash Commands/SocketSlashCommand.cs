@@ -1,6 +1,7 @@
 using Discord.Rest;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataModel = Discord.API.ApplicationCommandInteractionData;
@@ -13,6 +14,7 @@ namespace Discord.WebSocket
     /// </summary>
     public class SocketSlashCommand : SocketInteraction
     {
+        public string[] Command { get; }
         /// <summary>
         ///     The data associated with this interaction.
         /// </summary>
@@ -30,6 +32,18 @@ namespace Discord.WebSocket
                 guildId = guildChannel.Guild.Id;
 
             Data = SocketSlashCommandData.Create(client, dataModel, model.Id, guildId);
+
+            var command = new List<string> { Data.Name };
+
+            var child = Data.Options?.ElementAt(0);
+
+            while (child?.Type == ApplicationCommandOptionType.SubCommandGroup || child?.Type == ApplicationCommandOptionType.SubCommand)
+            {
+                command.Add(child.Name);
+                child = child.Options.ElementAt(0);
+            }
+
+            Command = command.ToArray();
         }
 
         new internal static SocketInteraction Create(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
