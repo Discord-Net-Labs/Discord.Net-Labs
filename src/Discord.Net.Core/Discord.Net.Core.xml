@@ -4415,7 +4415,8 @@
         </member>
         <member name="M:Discord.ComponentBuilder.WithButton(Discord.ButtonBuilder,System.Int32)">
             <summary>
-                Adds a button to the specified row. (by default first row)
+                Adds a <see cref="T:Discord.ButtonBuilder"/> to the <see cref="T:Discord.ComponentBuilder"/> at the specific row.
+                If the row cannot accept the component then it will add it to a row that can.
             </summary>
             <param name="button">The button to add.</param>
             <param name="row">The row to add the button.</param>

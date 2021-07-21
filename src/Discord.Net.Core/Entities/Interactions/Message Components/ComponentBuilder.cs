@@ -151,7 +151,8 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Adds a button to the specified row. (by default first row)
+        ///     Adds a <see cref="ButtonBuilder"/> to the <see cref="ComponentBuilder"/> at the specific row.
+        ///     If the row cannot accept the component then it will add it to a row that can.
         /// </summary>
         /// <param name="button">The button to add.</param>
         /// <param name="row">The row to add the button.</param>
