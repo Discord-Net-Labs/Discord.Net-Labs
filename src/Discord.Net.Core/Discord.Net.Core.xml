@@ -4371,8 +4371,8 @@
             <summary>
                 Gets or sets the Action Rows for this Component Builder.
             </summary>
-            <exception cref="T:System.ArgumentNullException" accessor="set">Cannot set an component builder's components collection to null.</exception>
-            <exception cref="T:System.ArgumentException" accessor="set">Rows count exceeds <see cref="F:Discord.ComponentBuilder.MaxActionRowCount"/>.</exception>
+            <exception cref="T:System.ArgumentNullException" accessor="set"><see cref="P:Discord.ComponentBuilder.ActionRows"/> cannot be null.</exception>
+            <exception cref="T:System.ArgumentException" accessor="set"><see cref="P:Discord.ComponentBuilder.ActionRows"/> count exceeds <see cref="F:Discord.ComponentBuilder.MaxActionRowCount"/>.</exception>
         </member>
         <member name="M:Discord.ComponentBuilder.WithSelectMenu(System.String,System.String,System.Collections.Generic.List{Discord.SelectMenuOptionBuilder},System.String,System.Int32,System.Int32,System.Boolean,System.Int32)">
             <summary>
@@ -4396,8 +4396,8 @@
             </summary>
             <param name="menu">The menu to add.</param>
             <param name="row">The row to attempt to add this component on.</param>
-            <exception cref="T:System.InvalidOperationException">There is no more row to add a menu</exception>
-            <exception cref="T:System.ArgumentException"><paramref name="row"/> must be less than <see cref="F:Discord.ComponentBuilder.MaxActionRowCount"/></exception>
+            <exception cref="T:System.InvalidOperationException">There is no more row to add a menu.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="row"/> must be less than <see cref="F:Discord.ComponentBuilder.MaxActionRowCount"/>.</exception>
             <returns>The current builder.</returns>
         </member>
         <member name="M:Discord.ComponentBuilder.WithButton(System.String,System.String,Discord.ButtonStyle,Discord.IEmote,System.String,System.Boolean,System.Int32)">
@@ -4420,15 +4420,15 @@
             </summary>
             <param name="button">The button to add.</param>
             <param name="row">The row to add the button.</param>
-            <exception cref="T:System.Exception">There is no more row to add a menu</exception>
-            <exception cref="T:System.ArgumentException"><paramref name="row"/> must be less than <see cref="F:Discord.ComponentBuilder.MaxActionRowCount"/></exception>
+            <exception cref="T:System.InvalidOperationException">There is no more row to add a menu.</exception>
+            <exception cref="T:System.ArgumentException"><paramref name="row"/> must be less than <see cref="F:Discord.ComponentBuilder.MaxActionRowCount"/>.</exception>
             <returns>The current builder.</returns>
         </member>
         <member name="M:Discord.ComponentBuilder.Build">
             <summary>
                 Builds this builder into a <see cref="T:Discord.MessageComponent"/> used to send your components.
             </summary>
-            <returns>A <see cref="T:Discord.MessageComponent"/> that can be sent with <see cref="M:Discord.IMessageChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)"/></returns>
+            <returns>A <see cref="T:Discord.MessageComponent"/> that can be sent with <see cref="M:Discord.IMessageChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)"/>.</returns>
         </member>
         <member name="T:Discord.ActionRowBuilder">
             <summary>
@@ -4444,13 +4444,15 @@
             <summary>
                 Gets or sets the components inside this row.
             </summary>
-            <exception cref="T:System.ArgumentException">Components count exceeds <see cref="F:Discord.ActionRowBuilder.MaxChildCount"/></exception>
+            <exception cref="T:System.ArgumentNullException" accessor="set"><see cref="P:Discord.ActionRowBuilder.Components"/> cannot be null.</exception>
+            <exception cref="T:System.ArgumentException" accessor="set"><see cref="P:Discord.ActionRowBuilder.Components"/> count exceeds <see cref="F:Discord.ActionRowBuilder.MaxChildCount"/>.</exception>
         </member>
         <member name="M:Discord.ActionRowBuilder.WithComponents(System.Collections.Generic.List{Discord.IMessageComponent})">
             <summary>
                 Adds a list of components to the current row.
             </summary>
             <param name="components">The list of components to add.</param>
+            <inheritdoc cref="P:Discord.ActionRowBuilder.Components"/>
             <returns>The current builder.</returns>
         </member>
         <member name="M:Discord.ActionRowBuilder.AddComponent(Discord.IMessageComponent)">
@@ -4458,6 +4460,7 @@
                 Adds a component at the end of the current row.
             </summary>
             <param name="component">The component to add.</param>
+            <exception cref="T:System.InvalidOperationException">Components count reached <see cref="F:Discord.ActionRowBuilder.MaxChildCount"/></exception>
             <returns>The current builder.</returns>
         </member>
         <member name="M:Discord.ActionRowBuilder.Build">
@@ -4465,8 +4468,6 @@
                 Builds the current builder to a <see cref="T:Discord.ActionRowComponent"/> that can be used within a <see cref="T:Discord.ComponentBuilder"/>
             </summary>
             <returns>A <see cref="T:Discord.ActionRowComponent"/> that can be used within a <see cref="T:Discord.ComponentBuilder"/></returns>
-            <exception cref="T:System.InvalidOperationException"><see cref="P:Discord.ActionRowBuilder.Components"/> cannot be null.</exception>
-            <exception cref="T:System.InvalidOperationException">There must be at least 1 component in a row.</exception>
         </member>
         <member name="T:Discord.ButtonBuilder">
             <summary>
@@ -4477,13 +4478,13 @@
             <summary>
                 Gets or sets the label of the current button.
             </summary>
-            <exception cref="T:System.ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="F:Discord.ComponentBuilder.MaxLabelLength"/></exception>
+            <exception cref="T:System.ArgumentException" accessor="set"><see cref="P:Discord.ButtonBuilder.Label"/> length exceeds <see cref="F:Discord.ComponentBuilder.MaxLabelLength"/>.</exception>
         </member>
         <member name="P:Discord.ButtonBuilder.CustomId">
             <summary>
                 Gets or sets the custom id of the current button.
             </summary>
-            <exception cref="T:System.ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="F:Discord.ComponentBuilder.MaxCustomIdLength"/></exception>
+            <exception cref="T:System.ArgumentException" accessor="set"><see cref="P:Discord.ButtonBuilder.CustomId"/> length exceeds <see cref="F:Discord.ComponentBuilder.MaxCustomIdLength"/></exception>
         </member>
         <member name="P:Discord.ButtonBuilder.Style">
             <summary>
@@ -4642,32 +4643,32 @@
             <summary>
                 Gets or sets the custom id of the current select menu.
             </summary>
-            <exception cref="T:System.ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="F:Discord.ComponentBuilder.MaxCustomIdLength"/></exception>
+            <exception cref="T:System.ArgumentException" accessor="set"><see cref="P:Discord.SelectMenuBuilder.CustomId"/> length exceeds <see cref="F:Discord.ComponentBuilder.MaxCustomIdLength"/>.</exception>
         </member>
         <member name="P:Discord.SelectMenuBuilder.Placeholder">
             <summary>
                 Gets or sets the placeholder text of the current select menu.
             </summary>
-            <exception cref="T:System.ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="F:Discord.SelectMenuBuilder.MaxPlaceholderLength"/></exception>
+            <exception cref="T:System.ArgumentException" accessor="set"><see cref="P:Discord.SelectMenuBuilder.Placeholder"/> length exceeds <see cref="F:Discord.SelectMenuBuilder.MaxPlaceholderLength"/>.</exception>
         </member>
         <member name="P:Discord.SelectMenuBuilder.MinValues">
             <summary>
                 Gets or sets the minimum values of the current select menu.
             </summary>
-            <exception cref="T:System.ArgumentException" accessor="set"><paramref name="value"/> exceeds <see cref="F:Discord.SelectMenuBuilder.MaxValuesCount"/></exception>
+            <exception cref="T:System.ArgumentException" accessor="set"><see cref="P:Discord.SelectMenuBuilder.MinValues"/> exceeds <see cref="F:Discord.SelectMenuBuilder.MaxValuesCount"/>.</exception>
         </member>
         <member name="P:Discord.SelectMenuBuilder.MaxValues">
             <summary>
                 Gets or sets the maximum values of the current select menu.
             </summary>
-            <exception cref="T:System.ArgumentException" accessor="set"><paramref name="value"/> exceeds <see cref="F:Discord.SelectMenuBuilder.MaxValuesCount"/></exception>
+            <exception cref="T:System.ArgumentException" accessor="set"><see cref="P:Discord.SelectMenuBuilder.MaxValues"/> exceeds <see cref="F:Discord.SelectMenuBuilder.MaxValuesCount"/>.</exception>
         </member>
         <member name="P:Discord.SelectMenuBuilder.Options">
             <summary>
                 Gets or sets a collection of <see cref="T:Discord.SelectMenuOptionBuilder"/> for this current select menu.
             </summary>
-            <exception cref="T:System.ArgumentException" accessor="set">Options count exceeds <see cref="F:Discord.SelectMenuBuilder.MaxOptionCount"/></exception>
-            <exception cref="T:System.ArgumentNullException" accessor="set"><paramref name="value"/> is null</exception>
+            <exception cref="T:System.ArgumentException" accessor="set"><see cref="P:Discord.SelectMenuBuilder.Options"/> count exceeds <see cref="F:Discord.SelectMenuBuilder.MaxOptionCount"/>.</exception>
+            <exception cref="T:System.ArgumentNullException" accessor="set"><see cref="P:Discord.SelectMenuBuilder.Options"/> is null.</exception>
         </member>
         <member name="P:Discord.SelectMenuBuilder.Disabled">
             <summary>
@@ -4798,19 +4799,19 @@
             <summary>
                 Gets or sets the label of the current select menu.
             </summary>
-            <exception cref="T:System.ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="F:Discord.ComponentBuilder.MaxLabelLength"/></exception>
+            <exception cref="T:System.ArgumentException" accessor="set"><see cref="P:Discord.SelectMenuOptionBuilder.Label"/> length exceeds <see cref="F:Discord.ComponentBuilder.MaxLabelLength"/></exception>
         </member>
         <member name="P:Discord.SelectMenuOptionBuilder.Value">
             <summary>
                 Gets or sets the custom id of the current select menu.
             </summary>
-            <exception cref="T:System.ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="F:Discord.ComponentBuilder.MaxCustomIdLength"/></exception>
+            <exception cref="T:System.ArgumentException" accessor="set"><see cref="P:Discord.SelectMenuOptionBuilder.Value"/> length exceeds <see cref="F:Discord.ComponentBuilder.MaxCustomIdLength"/>.</exception>
         </member>
         <member name="P:Discord.SelectMenuOptionBuilder.Description">
             <summary>
                 Gets or sets this menu options description.
             </summary>
-            <exception cref="T:System.ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="F:Discord.SelectMenuOptionBuilder.MaxDescriptionLength"/></exception>
+            <exception cref="T:System.ArgumentException" accessor="set"><see cref="P:Discord.SelectMenuOptionBuilder.Description"/> length exceeds <see cref="F:Discord.SelectMenuOptionBuilder.MaxDescriptionLength"/>.</exception>
         </member>
         <member name="P:Discord.SelectMenuOptionBuilder.Emote">
             <summary>

@@ -27,8 +27,8 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the Action Rows for this Component Builder.
         /// </summary>
-        /// <exception cref="ArgumentNullException" accessor="set">Cannot set an component builder's components collection to null.</exception>
-        /// <exception cref="ArgumentException" accessor="set">Rows count exceeds <see cref="MaxActionRowCount"/>.</exception>
+        /// <exception cref="ArgumentNullException" accessor="set"><see cref="ActionRows"/> cannot be null.</exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="ActionRows"/> count exceeds <see cref="MaxActionRowCount"/>.</exception>
         public List<ActionRowBuilder> ActionRows
         {
             get => _actionRows;
@@ -76,8 +76,8 @@ namespace Discord
         /// </summary>
         /// <param name="menu">The menu to add.</param>
         /// <param name="row">The row to attempt to add this component on.</param>
-        /// <exception cref="InvalidOperationException">There is no more row to add a menu</exception>
-        /// <exception cref="ArgumentException"><paramref name="row"/> must be less than <see cref="MaxActionRowCount"/></exception>
+        /// <exception cref="InvalidOperationException">There is no more row to add a menu.</exception>
+        /// <exception cref="ArgumentException"><paramref name="row"/> must be less than <see cref="MaxActionRowCount"/>.</exception>
         /// <returns>The current builder.</returns>
         public ComponentBuilder WithSelectMenu(SelectMenuBuilder menu, int row = 0)
         {
@@ -156,8 +156,8 @@ namespace Discord
         /// </summary>
         /// <param name="button">The button to add.</param>
         /// <param name="row">The row to add the button.</param>
-        /// <exception cref="Exception">There is no more row to add a menu</exception>
-        /// <exception cref="ArgumentException"><paramref name="row"/> must be less than <see cref="MaxActionRowCount"/></exception>
+        /// <exception cref="InvalidOperationException">There is no more row to add a menu.</exception>
+        /// <exception cref="ArgumentException"><paramref name="row"/> must be less than <see cref="MaxActionRowCount"/>.</exception>
         /// <returns>The current builder.</returns>
         public ComponentBuilder WithButton(ButtonBuilder button, int row = 0)
         {
@@ -190,7 +190,7 @@ namespace Discord
                     else if (row < MaxActionRowCount)
                         WithButton(button, row + 1);
                     else
-                        throw new Exception($"There is no more row to add a {nameof(button)}");
+                        throw new InvalidOperationException($"There is no more row to add a {nameof(button)}");
                 }
             }
 
@@ -200,7 +200,7 @@ namespace Discord
         /// <summary>
         ///     Builds this builder into a <see cref="MessageComponent"/> used to send your components.
         /// </summary>
-        /// <returns>A <see cref="MessageComponent"/> that can be sent with <see cref="IMessageChannel.SendMessageAsync(string, bool, Embed, RequestOptions, AllowedMentions, MessageReference, MessageComponent)"/></returns>
+        /// <returns>A <see cref="MessageComponent"/> that can be sent with <see cref="IMessageChannel.SendMessageAsync(string, bool, Embed, RequestOptions, AllowedMentions, MessageReference, MessageComponent)"/>.</returns>
         public MessageComponent Build()
         {
             if (this._actionRows != null)
@@ -223,14 +223,22 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the components inside this row.
         /// </summary>
-        /// <exception cref="ArgumentException">Components count exceeds <see cref="MaxChildCount"/></exception>
+        /// <exception cref="ArgumentNullException" accessor="set"><see cref="Components"/> cannot be null.</exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Components"/> count exceeds <see cref="MaxChildCount"/>.</exception>
         public List<IMessageComponent> Components
         {
             get => _components;
             set
             {
-                if (value != null && value.Count > MaxChildCount)
+                if (value == null)
+                    throw new ArgumentNullException(message: "Action row components cannot be null!", paramName: nameof(Components));
+
+                if (value.Count <= 0)
+                    throw new ArgumentException(message: "There must be at least 1 component in a row", paramName: nameof(Components));
+
+                if (value.Count > MaxChildCount)
                     throw new ArgumentException(message: $"Action row can only contain {MaxChildCount} child components!", paramName: nameof(Components));
+
                 _components = value;
             }
         }
@@ -241,6 +249,7 @@ namespace Discord
         ///     Adds a list of components to the current row.
         /// </summary>
         /// <param name="components">The list of components to add.</param>
+        /// <inheritdoc cref="Components"/>
         /// <returns>The current builder.</returns>
         public ActionRowBuilder WithComponents(List<IMessageComponent> components)
         {
@@ -252,11 +261,12 @@ namespace Discord
         ///     Adds a component at the end of the current row.
         /// </summary>
         /// <param name="component">The component to add.</param>
+        /// <exception cref="InvalidOperationException">Components count reached <see cref="MaxChildCount"/></exception>
         /// <returns>The current builder.</returns>
         public ActionRowBuilder AddComponent(IMessageComponent component)
         {
-            if (this.Components == null)
-                this.Components = new List<IMessageComponent>();
+            if (this.Components.Count >= MaxChildCount)
+                throw new InvalidOperationException($"Components count reached {MaxChildCount}");
 
             this.Components.Add(component);
             return this;
@@ -266,16 +276,8 @@ namespace Discord
         ///     Builds the current builder to a <see cref="ActionRowComponent"/> that can be used within a <see cref="ComponentBuilder"/>
         /// </summary>
         /// <returns>A <see cref="ActionRowComponent"/> that can be used within a <see cref="ComponentBuilder"/></returns>
-        /// <exception cref="InvalidOperationException"><see cref="Components"/> cannot be null.</exception>
-        /// <exception cref="InvalidOperationException">There must be at least 1 component in a row.</exception>
         public ActionRowComponent Build()
         {
-            if (this.Components == null)
-                throw new InvalidOperationException($"{nameof(Components)} cannot be null!");
-
-            if (this.Components.Count == 0)
-                throw new InvalidOperationException("There must be at least 1 component in a row");
-
             return new ActionRowComponent(this._components);
         }
 
@@ -306,7 +308,7 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the label of the current button.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="ComponentBuilder.MaxLabelLength"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Label"/> length exceeds <see cref="ComponentBuilder.MaxLabelLength"/>.</exception>
         public string Label
         {
             get => _label;
@@ -322,7 +324,7 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the custom id of the current button.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="ComponentBuilder.MaxCustomIdLength"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="CustomId"/> length exceeds <see cref="ComponentBuilder.MaxCustomIdLength"/></exception>
         public string CustomId
         {
             get => _customId;
@@ -555,7 +557,7 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the custom id of the current select menu.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="ComponentBuilder.MaxCustomIdLength"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="CustomId"/> length exceeds <see cref="ComponentBuilder.MaxCustomIdLength"/>.</exception>
         public string CustomId
         {
             get => _customId;
@@ -570,7 +572,7 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the placeholder text of the current select menu.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="MaxPlaceholderLength"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Placeholder"/> length exceeds <see cref="MaxPlaceholderLength"/>.</exception>
         public string Placeholder
         {
             get => _placeholder;
@@ -586,7 +588,7 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the minimum values of the current select menu.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set"><paramref name="value"/> exceeds <see cref="MaxValuesCount"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="MinValues"/> exceeds <see cref="MaxValuesCount"/>.</exception>
         public int MinValues
         {
             get => _minValues;
@@ -600,7 +602,7 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the maximum values of the current select menu.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set"><paramref name="value"/> exceeds <see cref="MaxValuesCount"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="MaxValues"/> exceeds <see cref="MaxValuesCount"/>.</exception>
         public int MaxValues
         {
             get => _maxValues;
@@ -614,8 +616,8 @@ namespace Discord
         /// <summary>
         ///     Gets or sets a collection of <see cref="SelectMenuOptionBuilder"/> for this current select menu.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set">Options count exceeds <see cref="MaxOptionCount"/></exception>
-        /// <exception cref="ArgumentNullException" accessor="set"><paramref name="value"/> is null</exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Options"/> count exceeds <see cref="MaxOptionCount"/>.</exception>
+        /// <exception cref="ArgumentNullException" accessor="set"><see cref="Options"/> is null.</exception>
         public List<SelectMenuOptionBuilder> Options
         {
             get => _options;
@@ -823,7 +825,7 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the label of the current select menu.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="ComponentBuilder.MaxLabelLength"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Label"/> length exceeds <see cref="ComponentBuilder.MaxLabelLength"/></exception>
         public string Label
         {
             get => _label;
@@ -840,7 +842,7 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the custom id of the current select menu.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="ComponentBuilder.MaxCustomIdLength"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Value"/> length exceeds <see cref="ComponentBuilder.MaxCustomIdLength"/>.</exception>
         public string Value
         {
             get => _value;
@@ -855,7 +857,7 @@ namespace Discord
         /// <summary>
         ///     Gets or sets this menu options description.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set"><paramref name="value"/> length exceeds <see cref="MaxDescriptionLength"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Description"/> length exceeds <see cref="MaxDescriptionLength"/>.</exception>
         public string Description
         {
             get => _description;
