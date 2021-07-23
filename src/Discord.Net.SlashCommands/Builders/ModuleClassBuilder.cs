@@ -45,17 +45,18 @@ namespace Discord.SlashCommands.Builders
 
             var result = new Dictionary<Type, SlashModuleInfo>();
 
-            foreach (var type in validTypes)
+            foreach (var type in topLevelGroups)
             {
                 var builder = new SlashModuleBuilder(commandService);
 
                 BuildModule(builder, type, commandService, services);
+                BuildSubModules(builder, type.DeclaredNestedTypes, built, commandService, services);
                 built.Add(type);
 
                 result.Add(type.AsType(), builder.Build());
             }
 
-            await commandService._cmdLogger.DebugAsync($"Successfully built {built.Count} slash command modules.").ConfigureAwait(false);
+            await commandService._cmdLogger.DebugAsync($"Successfully built {built.Count} Slash Command modules.").ConfigureAwait(false);
 
             return result;
         }
@@ -63,6 +64,7 @@ namespace Discord.SlashCommands.Builders
         private static void BuildModule (SlashModuleBuilder builder, TypeInfo typeInfo, SlashCommandService commandService,
             IServiceProvider services)
         {
+            builder.Name = typeInfo.Name;
             var attributes = typeInfo.GetCustomAttributes();
             builder.TypeInfo = typeInfo;
 
@@ -73,7 +75,7 @@ namespace Discord.SlashCommands.Builders
                     case SlashGroupAttribute group:
                         {
                             if (!string.IsNullOrEmpty(group.Name))
-                                builder.Name = group.Name;
+                                builder.SlashGroupName = group.Name;
                             if (!string.IsNullOrEmpty(group.Description))
                                 builder.Description = group.Description;
                         }
@@ -91,13 +93,37 @@ namespace Discord.SlashCommands.Builders
 
             var methods = typeInfo.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             var validCommands = methods.Where(IsValidCommandDefinition);
-            var validInternalCommands = methods.Where(IsValidInteractionDefinition);
+            var validInteractions = methods.Where(IsValidInteractionDefinition);
 
             foreach (var method in validCommands)
                 builder.AddCommand(x => BuildCommand(x, typeInfo, method, commandService, services));
 
-            foreach (var method in validInternalCommands)
+            foreach (var method in validInteractions)
                 builder.AddInteraction(x => BuildInteraction(x, typeInfo, method, commandService, services));
+        }
+
+        private static void BuildSubModules ( SlashModuleBuilder parent, IEnumerable<TypeInfo> subModules, IList<TypeInfo> builtTypes, SlashCommandService commandService,
+            IServiceProvider services, int slashGroupDepth = 0)
+        {
+            foreach(var submodule in subModules.Where(IsValidModuleDefinition))
+            {
+                if (builtTypes.Contains(submodule))
+                    continue;
+
+                parent.AddModule((builder) =>
+                {
+                    BuildModule(builder, submodule, commandService, services);
+
+                    if (parent.IsSlashGroup)
+                        slashGroupDepth++;
+
+                    if (slashGroupDepth >= 2)
+                        throw new InvalidOperationException("Slash Commands only support 2 command prefixes for sub-commands");
+
+                    BuildSubModules(builder, submodule.DeclaredNestedTypes, builtTypes, commandService, services, builder.Name != null ? ++slashGroupDepth : slashGroupDepth);
+                });
+                builtTypes.Add(submodule);
+            }
         }
 
         private static void BuildCommand (SlashCommandBuilder builder, TypeInfo typeInfo, MethodInfo methodInfo,
@@ -142,7 +168,7 @@ namespace Discord.SlashCommands.Builders
             foreach (var parameter in parameters)
                 builder.AddParameter(x => BuildParameter(x, parameter, commandService, services));
 
-            var createInstance = ReflectionUtils.CreateBuilder<ISlashModuleBase>(typeInfo, commandService);
+            var createInstance = ReflectionUtils.CreateLambdaBuilder<ISlashModuleBase>(typeInfo, commandService);
 
             async Task<IResult> ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, SlashCommandInfo commandInfo)
             {
@@ -276,6 +302,7 @@ namespace Discord.SlashCommands.Builders
 
             if (reader == null)
                 throw new InvalidOperationException($"There is no registered type reader for type {nameof(type)}");
+
             return reader;
         }
 

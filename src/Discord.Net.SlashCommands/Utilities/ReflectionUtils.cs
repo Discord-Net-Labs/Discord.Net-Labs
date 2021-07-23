@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 
 namespace Discord.SlashCommands
 {
@@ -14,7 +13,7 @@ namespace Discord.SlashCommands
         internal static T CreateObject<T> (TypeInfo typeInfo, SlashCommandService commandService, IServiceProvider services = null) =>
             CreateBuilder<T>(typeInfo, commandService)(services);
 
-        internal static Func<IServiceProvider, T> CreateBuilder<T>(TypeInfo typeInfo, SlashCommandService commandService)
+        internal static Func<IServiceProvider, T> CreateBuilder<T> (TypeInfo typeInfo, SlashCommandService commandService)
         {
             var constructor = GetConstructor(typeInfo);
             var parameters = constructor.GetParameters();
@@ -79,7 +78,7 @@ namespace Discord.SlashCommands
             throw new InvalidOperationException($"Failed to create \"{ownerType.FullName}\", dependency \"{memberType.Name}\" was not found.");
         }
 
-        internal static Func<IServiceProvider, T> Create<T>(TypeInfo typeInfo, SlashCommandService commandService)
+        internal static Func<IServiceProvider, T> CreateLambdaBuilder<T> (TypeInfo typeInfo, SlashCommandService commandService)
         {
             var constructor = GetConstructor(typeInfo);
             var parameters = constructor.GetParameters();
@@ -99,7 +98,11 @@ namespace Discord.SlashCommands
                 for (int i = 0; i < parameters.Length; i++)
                     args[i] = GetMember(commandService, services, parameters[i].ParameterType, typeInfo);
 
-                return (T)lambda.DynamicInvoke(args);
+                var instance = (T)lambda.DynamicInvoke(args);
+                foreach (var property in properties)
+                    property.SetValue(instance, GetMember(commandService, services, property.PropertyType, typeInfo));
+
+                return instance;
             };
         }
     }

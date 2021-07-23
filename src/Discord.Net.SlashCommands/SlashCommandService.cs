@@ -1,6 +1,7 @@
 using Discord.API;
 using Discord.API.Rest;
 using Discord.Logging;
+using Discord.Rest;
 using Discord.SlashCommands.Builders;
 using Discord.WebSocket;
 using System;
@@ -19,13 +20,13 @@ namespace Discord.SlashCommands
     public class SlashCommandService : IDisposable
     {
         /// <summary>
-        /// Occurs when a Slash Command related information is recived
+        /// Occurs when a Slash Command related information is recieved
         /// </summary>
         public event Func<LogMessage, Task> Log { add { _logEvent.Add(value); } remove { _logEvent.Remove(value); } }
         internal readonly AsyncEvent<Func<LogMessage, Task>> _logEvent = new AsyncEvent<Func<LogMessage, Task>>();
 
         /// <summary>
-        /// Occur when a Slash Command is executed
+        /// Occurs when a Slash Command is executed
         /// </summary>
         public event Func<Optional<SlashCommandInfo>, ISlashCommandContext, IResult, Task> CommandExecuted { add { _commandExecutedEvent.Add(value); } remove { _commandExecutedEvent.Remove(value); } }
         internal readonly AsyncEvent<Func<Optional<SlashCommandInfo>, ISlashCommandContext, IResult, Task>> _commandExecutedEvent = new AsyncEvent<Func<Optional<SlashCommandInfo>, ISlashCommandContext, IResult, Task>>();
@@ -42,7 +43,6 @@ namespace Discord.SlashCommands
         private readonly SlashCommandMap<SlashInteractionInfo> _interactionCommandMap;
         private readonly HashSet<SlashModuleInfo> _moduleDefs;
         private readonly SemaphoreSlim _lock;
-        private readonly ulong _applicationId;
         private readonly ConcurrentDictionary<ApplicationCommandOptionType, Func<ISlashCommandContext, SocketSlashCommandDataOption, IServiceProvider, object>> _typeReaders;
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
@@ -89,15 +89,14 @@ namespace Discord.SlashCommands
             _moduleDefs = new HashSet<SlashModuleInfo>();
             _typeReaders = new ConcurrentDictionary<ApplicationCommandOptionType, Func<ISlashCommandContext, SocketSlashCommandDataOption, IServiceProvider, object>>();
 
-            _logManager = new LogManager(LogSeverity.Debug);
+            _logManager = new LogManager(config.LogLevel);
             _logManager.Message += async msg => await _logEvent.InvokeAsync(msg).ConfigureAwait(false);
             _cmdLogger = _logManager.CreateLogger("Command");
 
             _commandMap = new SlashCommandMap<SlashCommandInfo>(this);
-            _interactionCommandMap = new SlashCommandMap<SlashInteractionInfo>(this);
+            _interactionCommandMap = new SlashCommandMap<SlashInteractionInfo>(this, config.InteractionCustomIdDelimiters);
 
             Client = discord;
-            _applicationId = Client.GetApplicationInfoAsync().GetAwaiter().GetResult().Id;
 
             _runAsync = config.RunAsync;
             _throwOnError = config.ThrowOnError;
@@ -171,29 +170,33 @@ namespace Discord.SlashCommands
         /// registered as global commands</param>
         /// <param name="deleteMissing">If true, delete all of the commands that are not registered in the <see cref="SlashCommandService"/></param>
         /// <returns></returns>
-        public async Task SyncCommands (IGuild guild = null, bool deleteMissing = true, RequestOptions options = null)
+        public async Task SyncCommands (IGuild guild = null, bool deleteMissing = true)
         {
             DiscordRestApiClient restClient = Client.ApiClient;
 
-            var creationParams = new List<CreateApplicationCommandParams>();
-
-            foreach (var module in Modules)
-            {
-                if (string.IsNullOrEmpty(module.Name))
-                {
-                    var args = module.Commands.AsEnumerable().GroupParseApplicationCommandParams();
-                    creationParams.AddRange(args);
-                }
-                else
-                {
-                    if (module.TryParseApplicationCommandParams(out var args))
-                        creationParams.Add(args);
-                }
-            }
+            var creationParams = Modules.SelectMany(x => x.ToModel());
 
             if (deleteMissing)
             {
-                // Implement Delete Missing
+                IEnumerable<RestApplicationCommand> existing;
+
+                if (guild != null)
+                    existing = await ClientHelper.GetGuildApplicationCommands(Client, guild.Id, null).ConfigureAwait(false);
+                else
+                    existing = await ClientHelper.GetGlobalApplicationCommands(Client, null).ConfigureAwait(false);
+
+                var missing = existing.Where(x => !creationParams.Any(y => y.Name == x.Name));
+
+                if (missing != null)
+                    foreach (var command in missing)
+                    {
+                        if (command is RestGlobalCommand global)
+                            await InteractionHelper.DeleteGlobalCommand(Client, global).ConfigureAwait(false);
+                        else
+                            await InteractionHelper.DeleteGuildCommand(Client, guild.Id, command).ConfigureAwait(false);
+
+                        existing.ToList().Remove(command);
+                    }
             }
 
             foreach (var args in creationParams)
@@ -201,9 +204,9 @@ namespace Discord.SlashCommands
                 ApplicationCommand result;
 
                 if (guild != null)
-                    result = await restClient.CreateGuildApplicationCommandAsync( args, guild.Id, options).ConfigureAwait(false);
+                    result = await restClient.CreateGuildApplicationCommandAsync( args, guild.Id).ConfigureAwait(false);
                 else
-                    result = await restClient.CreateGlobalApplicationCommandAsync(args, options).ConfigureAwait(false);
+                    result = await restClient.CreateGlobalApplicationCommandAsync(args).ConfigureAwait(false);
 
                 if (result == null)
                     await _cmdLogger.WarningAsync($"Command could not be registered ({args.Name})").ConfigureAwait(false);
@@ -246,15 +249,17 @@ namespace Discord.SlashCommands
             if (guild == null)
                 throw new ArgumentException($"{nameof(guild)} cannot be null to call this function.");
 
-            foreach (var module in Modules)
-            {
-                if (module.TryParseApplicationCommandParams(out var args))
-                {
-                    ApplicationCommand result = await Client.ApiClient.CreateGuildApplicationCommandAsync(args, guild.Id);
+            var args = new List<CreateApplicationCommandParams>();
 
-                    if (result == null)
-                        await _cmdLogger.WarningAsync($"Module could not be registered ({module.Name})").ConfigureAwait(false);
-                }
+            foreach (var module in Modules)
+                args.AddRange(module.ToModel());
+
+            foreach(var commandArg in args)
+            {
+                ApplicationCommand result = await Client.ApiClient.CreateGuildApplicationCommandAsync(commandArg, guild.Id);
+
+                if (result == null)
+                    await _cmdLogger.WarningAsync($"Module could not be registered ({commandArg.Name})").ConfigureAwait(false);
             }
         }
 
@@ -265,8 +270,11 @@ namespace Discord.SlashCommands
             foreach (var command in module.Commands)
                 _commandMap.AddCommand(command);
 
-            foreach (var internalCommand in module.Interactions)
-                _interactionCommandMap.AddCommand(internalCommand);
+            foreach (var interaction in module.Interactions)
+                _interactionCommandMap.AddCommand(interaction);
+
+            foreach (var subModule in module.SubModules)
+                LoadModuleInternal(subModule);
         }
 
         /// <summary>
@@ -317,15 +325,16 @@ namespace Discord.SlashCommands
         {
             services = services ?? EmptyServiceProvider.Instance;
 
-            var command = _commandMap.GetCommands(string.Join(" ", input)).First();
+            var result = _commandMap.GetCommand(input);
 
-            if (command == null)
+            if (!result.IsSuccess)
             {
                 await _cmdLogger.DebugAsync($"Unknown slash command, skipping execution ({string.Join(" ", input).ToUpper()})");
-                //await context.Interaction.DeleteAsync();
+                var originalResponse = await InteractionHelper.GetOriginalResponseAsync(Client, context.Channel, context.Interaction).ConfigureAwait(false);
+                await InteractionHelper.DeletedInteractionResponse(Client, originalResponse).ConfigureAwait(false);
                 return;
             }
-            await command.ExecuteAsync(context, services).ConfigureAwait(false);
+            await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -342,15 +351,16 @@ namespace Discord.SlashCommands
         {
             services = services ?? EmptyServiceProvider.Instance;
 
-            var command = _interactionCommandMap.GetCommands(input).First();
+            var result = _interactionCommandMap.GetCommand(input);
 
-            if (command == null)
+            if (!result.IsSuccess)
             {
                 await _cmdLogger.DebugAsync($"Unknown custom interaction id, skipping execution ({input.ToUpper()})");
-                //await context.Interaction.DeleteAsync();
+                var originalResponse = await InteractionHelper.GetOriginalResponseAsync(Client, context.Channel, context.Interaction).ConfigureAwait(false);
+                await InteractionHelper.DeletedInteractionResponse(Client, originalResponse).ConfigureAwait(false);
                 return;
             }
-            await command.ExecuteAsync(context, services).ConfigureAwait(false);
+            await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
         }
 
         /// <summary>

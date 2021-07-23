@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Discord
 {
@@ -292,6 +294,24 @@ namespace Discord
                 if (roles[i] == guildId)
                     throw new ArgumentException(message: "The everyone role cannot be assigned to a user.", paramName: name);
             }
+        }
+
+        /// <exception cref="ArgumentException">Application command names must be contain all lower case characters and between 1-32 characters length.</exception>
+        public static void SlashCommandName (string value, string name, string msg = null)
+        {
+            msg ??= "Application command names must be contain all lower case characters and between 1-32 characters length.";
+
+            if (!Regex.IsMatch(name, @"^[\w-]{1,32}$") || value.Any(char.IsUpper))
+                throw new ArgumentException(message: msg, paramName: name);
+        }
+
+        /// <exception cref="ArgumentException">Application command descriptions must be longer than 1, shorter than 100 characters.</exception>
+        public static void SlashCommandDescription (string value, string name, string msg = null)
+        {
+            msg ??= "Application command descriptions must be longer than 1, shorter than 100 characters.";
+
+            if (value.Length < 1 || value.Length > 100)
+                throw new ArgumentException(message: msg, paramName: name);
         }
     }
 }

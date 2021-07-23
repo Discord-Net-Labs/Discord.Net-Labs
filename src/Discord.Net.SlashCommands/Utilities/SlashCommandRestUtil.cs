@@ -32,21 +32,6 @@ namespace Discord.SlashCommands
         }
 
         // Commmands
-        public static bool TryParseApplicationCommandParams (this SlashCommandInfo commandInfo, out CreateApplicationCommandParams commandParams)
-        {
-            if (!string.IsNullOrEmpty(commandInfo.Module?.Name))
-            {
-                commandParams = null;
-                return false;
-            }
-
-            commandParams = ParseApplicationCommandParams(commandInfo);
-
-            if (!commandParams.Options.IsSpecified)
-                commandParams.Options = null;
-
-            return true;
-        }
 
         public static CreateApplicationCommandParams ParseApplicationCommandParams(this SlashCommandInfo commandInfo)
         {
@@ -55,18 +40,6 @@ namespace Discord.SlashCommands
                 DefaultPermission = commandInfo.DefaultPermission,
                 Options = commandInfo.Parameters?.Select(x => x.ParseApplicationCommandOption()).ToArray()
             };
-        }
-
-        public static bool TryParseApplicationCommandOption (this SlashCommandInfo commandInfo, out API.ApplicationCommandOption commandOption)
-        {
-            if (commandInfo.Module == null)
-            {
-                commandOption = null;
-                return false;
-            }
-
-            commandOption = commandInfo.ParseApplicationCommandOption();
-            return true;
         }
 
         public static API.ApplicationCommandOption ParseApplicationCommandOption (this SlashCommandInfo commandInfo)
@@ -86,99 +59,62 @@ namespace Discord.SlashCommands
 
             return option;
         }
-        public static IEnumerable<API.ApplicationCommandOption> GroupParseApplicationCommandOption (this IEnumerable<SlashCommandInfo> commands)
-        {
-            var standalones = commands.Where(x => x.Group == null);
-            var subCommands = commands.Where(x => x.Group != null);
-
-            var result = new List<API.ApplicationCommandOption>();
-
-
-            foreach (var standalone in standalones)
-                result.Add(standalone.ParseApplicationCommandOption());
-
-            var grouped = subCommands.GroupBy(x => x.Group?.Name);
-
-            foreach (var group in grouped)
-            {
-                if(group.Key != null)
-                {
-                    var description = group.First(x => !string.IsNullOrEmpty(x.Group?.Description)).Description;
-
-                    var current = new API.ApplicationCommandOption()
-                    {
-                        Name = group.Key.ToLower(),
-                        Description = description.ToLower(),
-                        Type = ApplicationCommandOptionType.SubCommandGroup,
-                        Options = group.Select(x => x.ParseApplicationCommandOption()).ToArray(),
-                        Choices = null,
-                        Required = false
-                    };
-
-                    if (!current.Options.IsSpecified)
-                        current.Options = null;
-
-                    result.Add(current);
-                }
-            }
-
-            return result;
-        }
-
-        public static IEnumerable<CreateApplicationCommandParams> GroupParseApplicationCommandParams (this IEnumerable<SlashCommandInfo> commands)
-        {
-            var standalones = commands.Where(x => string.IsNullOrEmpty(x.Group?.Name));
-            var subCommands = commands.Where(x => !string.IsNullOrEmpty(x.Group?.Name));
-
-            var result = new List<CreateApplicationCommandParams>();
-
-            foreach (var standalone in standalones)
-                if (standalone.TryParseApplicationCommandParams(out var commandParams))
-                    result.Add(commandParams);
-
-            var grouped = commands.GroupBy(x => x.Group?.Name);
-
-            foreach (var group in grouped)
-            {
-                if(group.Key != null)
-                {
-                    var description = group.First(x => !string.IsNullOrEmpty(x.Group?.Description)).Group.Description;
-                    var options = group.Select(x => x.ParseApplicationCommandOption()).ToArray();
-
-                    var module = new CreateApplicationCommandParams(group.Key.ToLower(), description)
-                    {
-                        Options = options,
-                        DefaultPermission = true
-                    };
-
-                    if (!module.Options.IsSpecified)
-                        module.Options = null;
-
-                    result.Add(module);
-                }
-            }
-            return result;
-        }
 
         // Modules
-        public static bool TryParseApplicationCommandParams (this SlashModuleInfo moduleInfo, out CreateApplicationCommandParams commandParams)
+
+        public static IReadOnlyCollection<CreateApplicationCommandParams> ToModel(this SlashModuleInfo moduleInfo)
         {
-            if (moduleInfo.Name == null)
+            var args = new List<CreateApplicationCommandParams>();
+
+            ParseModuleModel(args, moduleInfo);
+            return args;
+        }
+
+        private static void ParseModuleModel(List<CreateApplicationCommandParams> args, SlashModuleInfo moduleInfo)
+        {
+            if (string.IsNullOrEmpty(moduleInfo.SlashGroupName))
             {
-                commandParams = null;
-                return false;
+                args.AddRange(moduleInfo.Commands.Select(x => x.ParseApplicationCommandParams()));
+
+                foreach (var submodule in moduleInfo.SubModules)
+                    ParseModuleModel(args, submodule);
             }
-
-            var options = new List<API.ApplicationCommandOption>();
-
-            options.AddRange(moduleInfo.Commands.GroupParseApplicationCommandOption().ToArray());
-
-            commandParams = new CreateApplicationCommandParams(moduleInfo.Name, moduleInfo.Description)
+            else
             {
-                DefaultPermission = moduleInfo.DefaultPermission,
-                Options = options.ToArray()
-            };
-            return true;
+                var options = new List<ApplicationCommandOption>();
+
+                options.AddRange(moduleInfo.Commands.Select(x => x.ParseApplicationCommandOption()));
+                options.AddRange(moduleInfo.SubModules.SelectMany(x => x.ParseSubModule()));
+
+                args.Add(new CreateApplicationCommandParams
+                {
+                    Name = moduleInfo.SlashGroupName,
+                    Description = moduleInfo.Description,
+                    DefaultPermission = moduleInfo.DefaultPermission,
+                    Options = options.ToArray()
+                });
+            }
+        }
+
+        private static IReadOnlyCollection<ApplicationCommandOption> ParseSubModule(this SlashModuleInfo module)
+        {
+            var options = new List<ApplicationCommandOption>();
+
+            options.AddRange(module.Commands.Select(x => x.ParseApplicationCommandOption()));
+            options.AddRange(module.SubModules.SelectMany(x => x.ParseSubModule()));
+
+            if (string.IsNullOrEmpty(module.SlashGroupName))
+                return options;
+            else
+                return new List<ApplicationCommandOption>() {
+                    new ApplicationCommandOption
+                    {
+                        Name = module.SlashGroupName,
+                        Description = module.Description,
+                        Type = ApplicationCommandOptionType.SubCommandGroup,
+                        Options = options.ToArray()
+                    }
+                };
         }
     }
 }

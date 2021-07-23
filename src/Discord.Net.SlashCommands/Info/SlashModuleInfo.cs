@@ -14,13 +14,15 @@ namespace Discord.SlashCommands
         /// Command service this module belongs to
         /// </summary>
         public SlashCommandService CommandService { get; }
+        public string Name { get; }
         /// <summary>
         /// Get the name of this module that will be displayed on Discord
         /// </summary>
         /// <remarks>
         /// This value may be missing if the commands are registered as standalone
         /// </remarks>
-        public string Name { get; }
+        public string SlashGroupName { get; }
+        public bool IsSlashGroup => !string.IsNullOrEmpty(SlashGroupName);
         /// <summary>
         /// Description of this module
         /// </summary>
@@ -32,7 +34,6 @@ namespace Discord.SlashCommands
         /// Check if the Application Command for this module can be executed by default
         /// </summary>
         public bool DefaultPermission { get; }
-        [Obsolete]
         public IReadOnlyList<SlashModuleInfo> SubModules { get; }
         /// <summary>
         /// Get the information list of the Commands that belong to this module
@@ -42,23 +43,42 @@ namespace Discord.SlashCommands
         /// Get the information list of the Interactions that belong to this module
         /// </summary>
         public IReadOnlyCollection<SlashInteractionInfo> Interactions { get; }
-        [Obsolete]
         public SlashModuleInfo Parent { get; }
+        public bool IsSubModule => Parent != null;
         /// <summary>
         /// Get a list of the attributes of this module
         /// </summary>
         public IReadOnlyList<Attribute> Attributes { get; }
 
-        internal SlashModuleInfo (SlashModuleBuilder builder, SlashCommandService commandService = null)
+        internal SlashModuleInfo (SlashModuleBuilder builder, SlashCommandService commandService = null,  SlashModuleInfo parent = null)
         {
             CommandService = commandService ?? builder.CommandService;
 
             Name = builder.Name;
+            SlashGroupName = builder.SlashGroupName;
             Description = builder.Description;
+            Parent = parent;
             DefaultPermission = builder.DefaultPermission;
             Commands = BuildCommands(builder).ToImmutableArray();
             Interactions = BuildInteractions(builder).ToImmutableArray();
+            SubModules = BuildSubModules(builder).ToImmutableArray();;
             Attributes = BuildAttributes(builder).ToImmutableArray();
+
+            if (IsSlashGroup)
+            {
+                Preconditions.SlashCommandName(SlashGroupName, nameof(SlashGroupName));
+                Preconditions.SlashCommandDescription(Description, nameof(Description));
+            }
+        }
+
+        private IEnumerable<SlashModuleInfo> BuildSubModules(SlashModuleBuilder builder, SlashCommandService commandService = null)
+        {
+            var result = new List<SlashModuleInfo>();
+
+            foreach (Builders.SlashModuleBuilder moduleBuilder in builder.SubModules)
+                result.Add(moduleBuilder.Build(commandService, this));
+
+            return result;
         }
 
         private IEnumerable<SlashCommandInfo> BuildCommands (SlashModuleBuilder builder)

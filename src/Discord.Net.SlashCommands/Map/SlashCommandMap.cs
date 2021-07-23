@@ -1,74 +1,55 @@
-using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-
 namespace Discord.SlashCommands
 {
     internal class SlashCommandMap<T> where T : class, IExecutableInfo
     {
-        private static readonly char[] Delimiters = { ' ', '\n', '\r', ',' };
+        private readonly char[] Seperators = { ' ', '\n', '\r', ',' };
 
-        private readonly ConcurrentDictionary<string, T> _map;
-        private readonly object _lockObj = new object();
+        private readonly SlashCommandMapNode<T> _root = new SlashCommandMapNode<T>(null);
 
-        public SlashCommandMap (SlashCommandService commandService)
+        public SlashCommandMap (SlashCommandService commandService, char[] seperators = null)
         {
-            _map = new ConcurrentDictionary<string, T>();
+            if (seperators != null)
+                foreach (var seperator in seperators)
+                    Seperators[Seperators.Length] = seperator;
         }
 
-        public bool AddCommand (T command)
+        public void AddCommand (T command)
         {
-            string key = ParseCommandName(command);
+            string[] key = ParseCommandName(command);
 
-            return _map.TryAdd(key, command);
+            _root.AddCommand(key, 0, command);
         }
 
-        public bool RemoveCommand (T command)
+        public void RemoveCommand (T command)
         {
-            string key = ParseCommandName(command);
+            string[] key = ParseCommandName(command);
 
-            return _map.TryRemove(key, out var _);
+            _root.RemoveCommand(key, 0);
         }
 
-        public IEnumerable<T> GetCommands (string input)
-        {
-            var result = new List<T>();
+        public SearchResult<T> GetCommand (string input) =>
+            GetCommand(input.Split(Seperators));
 
-            lock (_lockObj)
+        public SearchResult<T> GetCommand (string[] input) =>
+            _root.GetCommand(input, 0);
+
+        private string[] ParseCommandName (T command)
+        {
+            var keywords = new List<string>() { command.Name };
+
+            var currentParent = command.Module;
+
+            while (currentParent != null)
             {
-                foreach (var pair in _map)
-                {
-                    if (CompareCommands(pair.Key, input))
-                        result.Add(pair.Value);
-                }
+                if(!string.IsNullOrEmpty(currentParent.SlashGroupName))
+                    keywords.Add(currentParent.SlashGroupName);
+                currentParent = currentParent.Parent;
             }
-            return result;
-        }
 
-        private bool CompareCommands (string first, string second)
-        {
-            var dissectedFirst = first.Split(Delimiters, StringSplitOptions.RemoveEmptyEntries);
-            var dissectedSecond = second.Split(Delimiters, StringSplitOptions.RemoveEmptyEntries);
+            keywords.Reverse();
 
-            if (dissectedFirst.Length != dissectedSecond.Length)
-                return false;
-
-            for (var i = 0; i < dissectedFirst.Length; i++)
-                if (!string.Equals(dissectedFirst[i], dissectedSecond[i], StringComparison.OrdinalIgnoreCase))
-                    return false;
-
-            return true;
-        }
-
-        private static string ParseCommandName (T command)
-        {
-            string groupName = command.Group?.Name;
-            string commandName = command.Name;
-            string moduleName = command.Module?.Name;
-
-            string delimiter = Delimiters[0].ToString();
-
-            return string.Join(delimiter, moduleName, groupName, commandName);
+            return keywords.ToArray();
         }
     }
 }

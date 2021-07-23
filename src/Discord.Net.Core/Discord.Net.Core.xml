@@ -11237,6 +11237,12 @@
         <member name="M:Discord.Preconditions.NotEveryoneRole(System.UInt64[],System.UInt64,System.String)">
             <exception cref="T:System.ArgumentException">The everyone role cannot be assigned to a user.</exception>
         </member>
+        <member name="M:Discord.Preconditions.SlashCommandName(System.String,System.String,System.String)">
+            <exception cref="T:System.ArgumentException">Application command names must be contain all lower case characters and between 1-32 characters length.</exception>
+        </member>
+        <member name="M:Discord.Preconditions.SlashCommandDescription(System.String,System.String,System.String)">
+            <exception cref="T:System.ArgumentException">Application command descriptions must be longer than 1, shorter than 100 characters.</exception>
+        </member>
         <member name="T:Discord.SnowflakeUtils">
             <summary>
                 Provides a series of helper methods for handling snowflake identifiers.

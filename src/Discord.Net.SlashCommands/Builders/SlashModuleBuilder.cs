@@ -16,6 +16,8 @@ namespace Discord.SlashCommands.Builders
         public SlashCommandService CommandService { get; }
         public SlashModuleBuilder Parent { get; }
         public string Name { get; set; }
+        public string SlashGroupName { get; set; }
+        public bool IsSlashGroup => !string.IsNullOrEmpty(SlashGroupName);
         public string Description { get; set; }
         public bool DefaultPermission { get; set; } = true;
 
@@ -37,9 +39,9 @@ namespace Discord.SlashCommands.Builders
             _interactions = new List<SlashInteractionBuilder>();
         }
 
-        public SlashModuleBuilder WithName (string name)
+        public SlashModuleBuilder WithGroupName (string name)
         {
-            Name = name;
+            SlashGroupName = name;
             return this;
         }
 
@@ -86,7 +88,7 @@ namespace Discord.SlashCommands.Builders
             return this;
         }
 
-        public SlashModuleBuilder AddModule ( string name, string description, Action<SlashModuleBuilder> configure)
+        public SlashModuleBuilder AddModule ( Action<SlashModuleBuilder> configure)
         {
             var subModule = new SlashModuleBuilder(CommandService, this);
             configure(subModule);
@@ -94,9 +96,9 @@ namespace Discord.SlashCommands.Builders
             return this;
         }
 
-        internal SlashModuleInfo Build ( SlashCommandService commandService = null )
+        internal SlashModuleInfo Build ( SlashCommandService commandService = null, SlashModuleInfo parent = null )
         {
-            return new SlashModuleInfo(this, commandService);
+            return new SlashModuleInfo(this, commandService, parent);
         }
     }
 }

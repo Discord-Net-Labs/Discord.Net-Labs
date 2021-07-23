@@ -18,6 +18,6 @@ namespace Discord.SlashCommands
         /// <summary>
         /// Delimiter that will be used to seperate group names and the method name when a Message Component Interaction is recieved
         /// </summary>
-        public char InteractionCustomIdDelimiter = ',';
+        public char[] InteractionCustomIdDelimiters { get; set; } = null;
     }
 }
