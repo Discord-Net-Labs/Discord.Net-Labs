@@ -4032,6 +4032,21 @@
                 Whether the command is enabled by default when the app is added to a guild. Default is <see langword="true"/>
             </summary>
         </member>
+        <member name="T:Discord.Rest.ApplicationCommandType">
+            <summary>
+                Represents a type of Rest-based command.
+            </summary>
+        </member>
+        <member name="F:Discord.Rest.ApplicationCommandType.GlobalCommand">
+            <summary>
+                Specifies that this command is a Global command.
+            </summary>
+        </member>
+        <member name="F:Discord.Rest.ApplicationCommandType.GuildCommand">
+            <summary>
+                Specifies that this command is a Guild specific command.
+            </summary>
+        </member>
         <member name="T:Discord.IApplicationCommand">
             <summary>
                 The base command model that belongs to an application. see <see href="https://discord.com/developers/docs/interactions/slash-commands#applicationcommand"/>
@@ -4074,12 +4089,12 @@
                 Represents data of an Interaction Command, see <see href="https://discord.com/developers/docs/interactions/slash-commands#interaction-applicationcommandinteractiondata"/>.
             </summary>
         </member>
-        <member name="P:Discord.IApplicationCommandInteractionData.Id">
+        <member name="P:Discord.IApplicationCommandInteractionData.CommandId">
             <summary>
                 The snowflake id of this command.
             </summary>
         </member>
-        <member name="P:Discord.IApplicationCommandInteractionData.Name">
+        <member name="P:Discord.IApplicationCommandInteractionData.CommandName">
             <summary>
                 The name of this command.
             </summary>

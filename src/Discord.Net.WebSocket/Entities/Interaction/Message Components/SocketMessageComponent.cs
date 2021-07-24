@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Model = Discord.API.Interaction;
-using DataModel = Discord.API.MessageComponentInteractionData;
-using Newtonsoft.Json.Linq;
 using Discord.Rest;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using DataModel = Discord.API.MessageComponentInteractionData;
+using Model = Discord.API.Interaction;
 
 namespace Discord.WebSocket
 {
@@ -18,31 +15,31 @@ namespace Discord.WebSocket
         /// <summary>
         ///     The data received with this interaction, contains the button that was clicked.
         /// </summary>
-        new public SocketMessageComponentData Data { get; }
+        new public MessageComponentData Data { get; }
 
         /// <summary>
         ///     The message that contained the trigger for this interaction.
         /// </summary>
         public SocketUserMessage Message { get; private set; }
 
-        internal SocketMessageComponent(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
+        internal SocketMessageComponent (DiscordSocketClient client, Model model, ISocketMessageChannel channel)
             : base(client, model.Id, channel)
         {
             var dataModel = model.Data.IsSpecified ?
                 (DataModel)model.Data.Value
                 : null;
 
-            this.Data = new SocketMessageComponentData(dataModel);
+            this.Data = new MessageComponentData(dataModel);
         }
 
-        new internal static SocketMessageComponent Create(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
+        new internal static SocketMessageComponent Create (DiscordSocketClient client, Model model, ISocketMessageChannel channel)
         {
             var entity = new SocketMessageComponent(client, model, channel);
             entity.Update(model);
             return entity;
         }
 
-        internal override void Update(Model model)
+        internal override void Update (Model model)
         {
             base.Update(model);
 
@@ -59,7 +56,7 @@ namespace Discord.WebSocket
                             author = channel.Guild.GetUser(model.Message.Value.Author.Value.Id);
                     }
                     else if (model.Message.Value.Author.IsSpecified)
-                        author = (this.Channel as SocketChannel).GetUser(model.Message.Value.Author.Value.Id);
+                        author = ( this.Channel as SocketChannel ).GetUser(model.Message.Value.Author.Value.Id);
 
                     this.Message = SocketUserMessage.Create(this.Discord, this.Discord.State, author, this.Channel, model.Message.Value);
                 }
@@ -71,7 +68,7 @@ namespace Discord.WebSocket
         }
 
         /// <inheritdoc/>
-        public override async Task RespondAsync(Embed[] embeds = null, string text = null, bool isTTS = false, InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
+        public override async Task RespondAsync (Embed[] embeds = null, string text = null, bool isTTS = false, InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
             bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null)
         {
             if (type == InteractionResponseType.Pong)
@@ -128,7 +125,7 @@ namespace Discord.WebSocket
         }
 
         /// <inheritdoc/>
-        public override async Task<RestFollowupMessage> FollowupAsync(Embed[] embeds = null, string text = null, bool isTTS = false, bool ephemeral = false,
+        public override async Task<RestFollowupMessage> FollowupAsync (Embed[] embeds = null, string text = null, bool isTTS = false, bool ephemeral = false,
             InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
             AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null)
         {
@@ -164,7 +161,7 @@ namespace Discord.WebSocket
         /// <returns>
         ///     A task that represents the asynchronous operation of acknowledging the interaction.
         /// </returns>
-        public override Task AcknowledgeAsync(RequestOptions options = null)
+        public override Task AcknowledgeAsync (RequestOptions options = null)
         {
             var response = new API.InteractionResponse()
             {

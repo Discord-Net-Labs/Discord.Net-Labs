@@ -8,15 +8,17 @@ namespace Discord.WebSocket
     /// <summary>
     ///     Represents the data tied with the <see cref="SocketSlashCommand"/> interaction.
     /// </summary>
-    public class SocketSlashCommandData : SocketEntity<ulong>, IApplicationCommandInteractionData
+    public class SlashCommandData : IApplicationCommandInteractionData
     {
         /// <inheritdoc/>
-        public string Name { get; private set; }
+        public ulong CommandId { get; private set; }
+        /// <inheritdoc/>
+        public string CommandName { get; private set; }
 
         /// <summary>
         ///     The <see cref="SocketSlashCommandDataOption"/>'s received with this interaction.
         /// </summary>
-        public IReadOnlyCollection<SocketSlashCommandDataOption> Options { get; private set; }
+        public IReadOnlyCollection<SlashCommandDataOption> Options { get; private set; }
 
         internal Dictionary<ulong, SocketGuildUser> guildMembers { get; private set; }
             = new Dictionary<ulong, SocketGuildUser>();
@@ -29,14 +31,13 @@ namespace Discord.WebSocket
 
         private ulong? guildId;
 
-        internal SocketSlashCommandData(DiscordSocketClient client, Model model, ulong? guildId)
-            : base(client, model.Id)
+        internal SlashCommandData(DiscordSocketClient client, Model model, ulong? guildId)
         {
             this.guildId = guildId;
 
             if (model.Resolved.IsSpecified)
             {
-                var guild = this.guildId.HasValue ? Discord.GetGuild(this.guildId.Value) : null;
+                var guild = this.guildId.HasValue ? client.GetGuild(this.guildId.Value) : null;
 
                 var resolved = model.Resolved.Value;
 
@@ -44,7 +45,7 @@ namespace Discord.WebSocket
                 {
                     foreach (var user in resolved.Users.Value)
                     {
-                        var socketUser = Discord.GetOrCreateUser(this.Discord.State, user.Value);
+                        var socketUser = client.GetOrCreateUser(client.State, user.Value);
 
                         this.users.Add(ulong.Parse(user.Key), socketUser);
                     }
@@ -56,20 +57,20 @@ namespace Discord.WebSocket
                     {
                         SocketChannel socketChannel = guild != null
                             ? guild.GetChannel(channel.Value.Id)
-                            : Discord.GetChannel(channel.Value.Id);
+                            : client.GetChannel(channel.Value.Id);
 
                         if (socketChannel == null)
                         {
                             var channelModel = guild != null
-                                ? Discord.Rest.ApiClient.GetChannelAsync(guild.Id, channel.Value.Id).ConfigureAwait(false).GetAwaiter().GetResult()
-                                : Discord.Rest.ApiClient.GetChannelAsync(channel.Value.Id).ConfigureAwait(false).GetAwaiter().GetResult();
+                                ? client.Rest.ApiClient.GetChannelAsync(guild.Id, channel.Value.Id).ConfigureAwait(false).GetAwaiter().GetResult()
+                                : client.Rest.ApiClient.GetChannelAsync(channel.Value.Id).ConfigureAwait(false).GetAwaiter().GetResult();
 
                             socketChannel = guild != null
-                                ? SocketGuildChannel.Create(guild, Discord.State, channelModel)
-                                : (SocketChannel)SocketChannel.CreatePrivate(Discord, Discord.State, channelModel);
-                        }    
+                                ? SocketGuildChannel.Create(guild, client.State, channelModel)
+                                : (SocketChannel)SocketChannel.CreatePrivate(client, client.State, channelModel);
+                        }
 
-                        Discord.State.AddChannel(socketChannel);
+                        client.State.AddChannel(socketChannel);
                         this.channels.Add(ulong.Parse(channel.Key), socketChannel);
                     }
                 }
@@ -95,18 +96,19 @@ namespace Discord.WebSocket
             }
         }
 
-        internal static SocketSlashCommandData Create(DiscordSocketClient client, Model model, ulong id, ulong? guildId)
+        internal static SlashCommandData Create(DiscordSocketClient client, Model model, ulong id, ulong? guildId)
         {
-            var entity = new SocketSlashCommandData(client, model, guildId);
+            var entity = new SlashCommandData(client, model, guildId);
             entity.Update(model);
             return entity;
         }
         internal void Update(Model model)
         {
-            this.Name = model.Name;
+            CommandId = model.Id;
+            this.CommandName = model.Name;
 
             this.Options = model.Options.IsSpecified
-                ? model.Options.Value.Select(x => new SocketSlashCommandDataOption(this, x)).ToImmutableArray()
+                ? model.Options.Value.Select(x => new SlashCommandDataOption(this, x)).ToImmutableArray()
                 : null;
         }
 

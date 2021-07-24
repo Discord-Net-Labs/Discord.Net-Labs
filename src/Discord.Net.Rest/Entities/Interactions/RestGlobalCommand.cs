@@ -15,7 +15,7 @@ namespace Discord.Rest
         internal RestGlobalCommand(BaseDiscordClient client, ulong id)
             : base(client, id)
         {
-            this.CommandType = RestApplicationCommandType.GlobalCommand;
+            this.CommandType = ApplicationCommandType.GlobalCommand;
         }
 
         internal static RestGlobalCommand Create(BaseDiscordClient client, Model model)

@@ -3433,6 +3433,47 @@
         <member name="P:Discord.Rest.RestVoiceRegion.IsCustom">
             <inheritdoc />
         </member>
+        <member name="T:Discord.Rest.ApplicationCommandChoice">
+            <summary>
+                Represents a Rest-based implementation of <see cref="T:Discord.IApplicationCommandOptionChoice"/>.
+            </summary>
+        </member>
+        <member name="P:Discord.Rest.ApplicationCommandChoice.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Rest.ApplicationCommandChoice.Value">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Rest.ApplicationCommandOption">
+            <summary>
+                Represents a Rest-based implementation of <see cref="T:Discord.IApplicationCommandOption"/>.
+            </summary>
+        </member>
+        <member name="P:Discord.Rest.ApplicationCommandOption.Type">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Rest.ApplicationCommandOption.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Rest.ApplicationCommandOption.Description">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Rest.ApplicationCommandOption.Default">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Rest.ApplicationCommandOption.Required">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Rest.ApplicationCommandOption.Choices">
+            <summary>
+                A collection of <see cref="T:Discord.Rest.ApplicationCommandChoice"/>'s for this command.
+            </summary>
+        </member>
+        <member name="P:Discord.Rest.ApplicationCommandOption.Options">
+            <summary>
+                A collection of <see cref="T:Discord.Rest.ApplicationCommandOption"/>'s for this command.
+            </summary>
+        </member>
         <member name="T:Discord.Rest.RestApplicationCommand">
             <summary>
                 Represents a Rest-based implementation of the <see cref="T:Discord.IApplicationCommand"/>.
@@ -3465,62 +3506,6 @@
         </member>
         <member name="M:Discord.Rest.RestApplicationCommand.DeleteAsync(Discord.RequestOptions)">
             <inheritdoc/>
-        </member>
-        <member name="T:Discord.Rest.RestApplicationCommandChoice">
-            <summary>
-                Represents a Rest-based implementation of <see cref="T:Discord.IApplicationCommandOptionChoice"/>.
-            </summary>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandChoice.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandChoice.Value">
-            <inheritdoc/>
-        </member>
-        <member name="T:Discord.Rest.RestApplicationCommandOption">
-            <summary>
-                Represents a Rest-based implementation of <see cref="T:Discord.IApplicationCommandOption"/>.
-            </summary>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Type">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Description">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Default">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Required">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Choices">
-            <summary>
-                A collection of <see cref="T:Discord.Rest.RestApplicationCommandChoice"/>'s for this command.
-            </summary>
-        </member>
-        <member name="P:Discord.Rest.RestApplicationCommandOption.Options">
-            <summary>
-                A collection of <see cref="T:Discord.Rest.RestApplicationCommandOption"/>'s for this command.
-            </summary>
-        </member>
-        <member name="T:Discord.Rest.RestApplicationCommandType">
-            <summary>
-                Represents a type of Rest-based command.
-            </summary>
-        </member>
-        <member name="F:Discord.Rest.RestApplicationCommandType.GlobalCommand">
-            <summary>
-                Specifies that this command is a Global command.
-            </summary>
-        </member>
-        <member name="F:Discord.Rest.RestApplicationCommandType.GuildCommand">
-            <summary>
-                Specifies that this command is a Guild specific command.
-            </summary>
         </member>
         <member name="T:Discord.Rest.RestGlobalCommand">
             <summary>

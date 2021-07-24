@@ -8,7 +8,8 @@ namespace Discord.WebSocket
     /// <summary>
     ///     Represents a Websocket-based <see cref="IApplicationCommandInteractionDataOption"/> recieved by the gateway
     /// </summary>
-    public class SocketSlashCommandDataOption : IApplicationCommandInteractionDataOption
+    public class SlashCommandDataOption
+        : IApplicationCommandInteractionDataOption
     {
         /// <inheritdoc/>
         public string Name { get; private set; }
@@ -22,10 +23,10 @@ namespace Discord.WebSocket
         /// <summary>
         ///      The sub command options received for this sub command group.
         /// </summary>
-        public IReadOnlyCollection<SocketSlashCommandDataOption> Options { get; private set; }
+        public IReadOnlyCollection<SlashCommandDataOption> Options { get; private set; }
 
-        internal SocketSlashCommandDataOption() { }
-        internal SocketSlashCommandDataOption(SocketSlashCommandData data, Model model)
+        internal SlashCommandDataOption() { }
+        internal SlashCommandDataOption(SlashCommandData data, Model model)
         {
             this.Name = model.Name;
             this.Type = model.Type;
@@ -105,16 +106,16 @@ namespace Discord.WebSocket
             }
 
             this.Options = model.Options.IsSpecified
-                ? model.Options.Value.Select(x => new SocketSlashCommandDataOption(data, x)).ToImmutableArray()
+                ? model.Options.Value.Select(x => new SlashCommandDataOption(data, x)).ToImmutableArray()
                 : null;
         }
 
         // Converters
-        public static explicit operator bool(SocketSlashCommandDataOption option)
+        public static explicit operator bool(SlashCommandDataOption option)
             => (bool)option.Value;
-        public static explicit operator int(SocketSlashCommandDataOption option)
+        public static explicit operator int(SlashCommandDataOption option)
             => (int)option.Value;
-        public static explicit operator string(SocketSlashCommandDataOption option)
+        public static explicit operator string(SlashCommandDataOption option)
             => option.Value.ToString();
 
         IReadOnlyCollection<IApplicationCommandInteractionDataOption> IApplicationCommandInteractionDataOption.Options => this.Options;

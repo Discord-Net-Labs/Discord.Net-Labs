@@ -1,8 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord
 {
@@ -14,12 +10,12 @@ namespace Discord
         /// <summary>
         ///     The snowflake id of this command.
         /// </summary>
-        ulong Id { get; }
+        ulong CommandId { get; }
 
         /// <summary>
         ///     The name of this command.
         /// </summary>
-        string Name { get; }
+        string CommandName { get; }
 
         /// <summary>
         ///     The params + values from the user.

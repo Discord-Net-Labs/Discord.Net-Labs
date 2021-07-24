@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Model = Discord.API.ApplicationCommandOption;
 
 namespace Discord.Rest
@@ -11,7 +8,7 @@ namespace Discord.Rest
     /// <summary>
     ///     Represents a Rest-based implementation of <see cref="IApplicationCommandOption"/>.
     /// </summary>
-    public class RestApplicationCommandOption : IApplicationCommandOption
+    public class ApplicationCommandOption : IApplicationCommandOption
     {
         /// <inheritdoc/>
         public ApplicationCommandOptionType Type { get; private set; }
@@ -29,25 +26,25 @@ namespace Discord.Rest
         public bool? Required { get; private set; }
 
         /// <summary>
-        ///     A collection of <see cref="RestApplicationCommandChoice"/>'s for this command.
+        ///     A collection of <see cref="ApplicationCommandChoice"/>'s for this command.
         /// </summary>
-        public IReadOnlyCollection<RestApplicationCommandChoice> Choices { get; private set; }
+        public IReadOnlyCollection<ApplicationCommandChoice> Choices { get; private set; }
 
         /// <summary>
-        ///     A collection of <see cref="RestApplicationCommandOption"/>'s for this command.
+        ///     A collection of <see cref="ApplicationCommandOption"/>'s for this command.
         /// </summary>
-        public IReadOnlyCollection<RestApplicationCommandOption> Options { get; private set; }
+        public IReadOnlyCollection<ApplicationCommandOption> Options { get; private set; }
 
-        internal RestApplicationCommandOption() { }
+        internal ApplicationCommandOption ( ) { }
 
-        internal static RestApplicationCommandOption Create(Model model)
+        internal static ApplicationCommandOption Create (Model model)
         {
-            var options = new RestApplicationCommandOption();
+            var options = new ApplicationCommandOption();
             options.Update(model);
             return options;
         }
 
-        internal void Update(Model model)
+        internal void Update (Model model)
         {
             this.Type = model.Type;
             this.Name = model.Name;
@@ -64,7 +61,7 @@ namespace Discord.Rest
                 : null;
 
             this.Choices = model.Choices.IsSpecified
-                ? model.Choices.Value.Select(x => new RestApplicationCommandChoice(x)).ToImmutableArray()
+                ? model.Choices.Value.Select(x => new ApplicationCommandChoice(x)).ToImmutableArray()
                 : null;
         }
 

@@ -3208,6 +3208,26 @@
         <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetWebhooksAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
+        <member name="T:Discord.WebSocket.MessageComponentData">
+            <summary>
+                Represents the data sent with a <see cref="F:Discord.InteractionType.MessageComponent"/>.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.MessageComponentData.CustomId">
+            <summary>
+                The components Custom Id that was clicked
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.MessageComponentData.Type">
+            <summary>
+                The type of the component clicked
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.MessageComponentData.Values">
+            <summary>
+                The value(s) of a <see cref="T:Discord.SelectMenu"/> interaction response.
+            </summary>
+        </member>
         <member name="T:Discord.WebSocket.SocketMessageComponent">
             <summary>
                 Represents a Websocket-based interaction type for Message Components.
@@ -3237,24 +3257,39 @@
                 A task that represents the asynchronous operation of acknowledging the interaction.
             </returns>
         </member>
-        <member name="T:Discord.WebSocket.SocketMessageComponentData">
+        <member name="T:Discord.WebSocket.SlashCommandData">
             <summary>
-                Represents the data sent with a <see cref="F:Discord.InteractionType.MessageComponent"/>.
+                Represents the data tied with the <see cref="T:Discord.WebSocket.SocketSlashCommand"/> interaction.
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketMessageComponentData.CustomId">
+        <member name="P:Discord.WebSocket.SlashCommandData.CommandId">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SlashCommandData.CommandName">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SlashCommandData.Options">
             <summary>
-                The components Custom Id that was clicked
+                The <see cref="!:SocketSlashCommandDataOption"/>'s received with this interaction.
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketMessageComponentData.Type">
+        <member name="T:Discord.WebSocket.SlashCommandDataOption">
             <summary>
-                The type of the component clicked
+                Represents a Websocket-based <see cref="T:Discord.IApplicationCommandInteractionDataOption"/> recieved by the gateway
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketMessageComponentData.Values">
+        <member name="P:Discord.WebSocket.SlashCommandDataOption.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SlashCommandDataOption.Value">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SlashCommandDataOption.Type">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SlashCommandDataOption.Options">
             <summary>
-                The value(s) of a <see cref="T:Discord.SelectMenu"/> interaction response.
+                 The sub command options received for this sub command group.
             </summary>
         </member>
         <member name="T:Discord.WebSocket.SocketApplicationCommand">
@@ -3276,7 +3311,7 @@
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommand.Options">
             <summary>
-                A collection of <see cref="T:Discord.WebSocket.SocketApplicationCommandOption"/>'s recieved over the gateway.
+                A collection of <see cref="T:Discord.Rest.ApplicationCommandOption"/>'s recieved over the gateway.
             </summary>
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommand.CreatedAt">
@@ -3289,47 +3324,6 @@
         </member>
         <member name="M:Discord.WebSocket.SocketApplicationCommand.DeleteAsync(Discord.RequestOptions)">
             <inheritdoc/>
-        </member>
-        <member name="T:Discord.WebSocket.SocketApplicationCommandChoice">
-            <summary>
-                Represents a choice for a <see cref="T:Discord.WebSocket.SocketApplicationCommandOption"/>.
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandChoice.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandChoice.Value">
-            <inheritdoc/>
-        </member>
-        <member name="T:Discord.WebSocket.SocketApplicationCommandOption">
-            <summary>
-                Represents an option for a <see cref="T:Discord.WebSocket.SocketApplicationCommand"/>.
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Type">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Description">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Default">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Required">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Choices">
-            <summary>
-                Choices for string and int types for the user to pick from.
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Options">
-            <summary>
-                If the option is a subcommand or subcommand group type, this nested options will be the parameters.
-            </summary>
         </member>
         <member name="T:Discord.WebSocket.SocketSlashCommand">
             <summary>
@@ -3349,38 +3343,6 @@
         </member>
         <member name="M:Discord.WebSocket.SocketSlashCommand.AcknowledgeAsync(Discord.RequestOptions)">
             <inheritdoc/>
-        </member>
-        <member name="T:Discord.WebSocket.SocketSlashCommandData">
-            <summary>
-                Represents the data tied with the <see cref="T:Discord.WebSocket.SocketSlashCommand"/> interaction.
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandData.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandData.Options">
-            <summary>
-                The <see cref="T:Discord.WebSocket.SocketSlashCommandDataOption"/>'s received with this interaction.
-            </summary>
-        </member>
-        <member name="T:Discord.WebSocket.SocketSlashCommandDataOption">
-            <summary>
-                Represents a Websocket-based <see cref="T:Discord.IApplicationCommandInteractionDataOption"/> recieved by the gateway
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Value">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Type">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Options">
-            <summary>
-                 The sub command options received for this sub command group.
-            </summary>
         </member>
         <member name="T:Discord.WebSocket.SocketInteraction">
             <summary>

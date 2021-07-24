@@ -16,7 +16,7 @@ namespace Discord.WebSocket
         /// <summary>
         ///     The data associated with this interaction.
         /// </summary>
-        new public SocketSlashCommandData Data { get; private set; }
+        new public SlashCommandData Data { get; private set; }
 
         internal SocketSlashCommand(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
             : base(client, model.Id, channel)
@@ -29,7 +29,7 @@ namespace Discord.WebSocket
             if (this.Channel is SocketGuildChannel guildChannel)
                 guildId = guildChannel.Guild.Id;
 
-            Data = SocketSlashCommandData.Create(client, dataModel, model.Id, guildId);
+            Data = SlashCommandData.Create(client, dataModel, model.Id, guildId);
         }
 
         new internal static SocketInteraction Create(DiscordSocketClient client, Model model, ISocketMessageChannel channel)

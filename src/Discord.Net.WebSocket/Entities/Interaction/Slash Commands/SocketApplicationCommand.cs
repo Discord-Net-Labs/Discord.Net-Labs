@@ -27,9 +27,9 @@ namespace Discord.WebSocket
         public bool DefaultPermission { get; private set; }
 
         /// <summary>
-        ///     A collection of <see cref="SocketApplicationCommandOption"/>'s recieved over the gateway.
+        ///     A collection of <see cref="ApplicationCommandOption"/>'s recieved over the gateway.
         /// </summary>
-        public IReadOnlyCollection<SocketApplicationCommandOption> Options { get; private set; }
+        public IReadOnlyCollection<ApplicationCommandOption> Options { get; private set; }
 
         /// <inheritdoc/>
         public DateTimeOffset CreatedAt
@@ -64,8 +64,8 @@ namespace Discord.WebSocket
 
 
             this.Options = model.Options.IsSpecified
-                ? model.Options.Value.Select(x => SocketApplicationCommandOption.Create(x)).ToImmutableArray()
-                : new ImmutableArray<SocketApplicationCommandOption>();
+                ? model.Options.Value.Select(x => ApplicationCommandOption.Create(x)).ToImmutableArray()
+                : new ImmutableArray<ApplicationCommandOption>();
         }
 
         /// <inheritdoc/>

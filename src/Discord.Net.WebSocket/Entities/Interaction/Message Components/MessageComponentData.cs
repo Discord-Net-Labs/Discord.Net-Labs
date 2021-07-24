@@ -1,8 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Model = Discord.API.MessageComponentInteractionData;
 
 namespace Discord.WebSocket
@@ -10,7 +6,7 @@ namespace Discord.WebSocket
     /// <summary>
     ///     Represents the data sent with a <see cref="InteractionType.MessageComponent"/>.
     /// </summary>
-    public class SocketMessageComponentData
+    public class MessageComponentData
     {
         /// <summary>
         ///     The components Custom Id that was clicked
@@ -27,7 +23,7 @@ namespace Discord.WebSocket
         /// </summary>
         public IReadOnlyCollection<string> Values { get; }
 
-        internal SocketMessageComponentData(Model model)
+        internal MessageComponentData (Model model)
         {
             this.CustomId = model.CustomId;
             this.Type = model.ComponentType;

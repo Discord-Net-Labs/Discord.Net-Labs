@@ -28,12 +28,12 @@ namespace Discord.Rest
         /// <summary>
         ///     The options of this command.
         /// </summary>
-        public IReadOnlyCollection<RestApplicationCommandOption> Options { get; private set; }
+        public IReadOnlyCollection<ApplicationCommandOption> Options { get; private set; }
 
         /// <summary>
         ///     The type of this rest application command.
         /// </summary>
-        public RestApplicationCommandType CommandType { get; internal set; }
+        public ApplicationCommandType CommandType { get; internal set; }
 
         /// <inheritdoc/>
         public DateTimeOffset CreatedAt
@@ -45,12 +45,12 @@ namespace Discord.Rest
 
         }
 
-        internal static RestApplicationCommand Create(BaseDiscordClient client, Model model, RestApplicationCommandType type, ulong guildId = 0)
+        internal static RestApplicationCommand Create(BaseDiscordClient client, Model model, ApplicationCommandType type, ulong guildId = 0)
         {
-            if (type == RestApplicationCommandType.GlobalCommand)
+            if (type == ApplicationCommandType.GlobalCommand)
                 return RestGlobalCommand.Create(client, model);
 
-            if (type == RestApplicationCommandType.GuildCommand)
+            if (type == ApplicationCommandType.GuildCommand)
                 return RestGuildCommand.Create(client, model, guildId);
 
             return null;
@@ -64,7 +64,7 @@ namespace Discord.Rest
             this.DefaultPermission = model.DefaultPermissions.GetValueOrDefault(true);
 
             this.Options = model.Options.IsSpecified
-                ? model.Options.Value.Select(x => RestApplicationCommandOption.Create(x)).ToImmutableArray()
+                ? model.Options.Value.Select(x => ApplicationCommandOption.Create(x)).ToImmutableArray()
                 : null;
         }
 
