@@ -123,7 +123,7 @@ namespace Discord.WebSocket
             if (ephemeral)
                 response.Data.Value.Flags = 64;
 
-            await InteractionHelper.SendInteractionResponse(this.Discord, this.Channel, response, this.Id, Token, options);
+            await InteractionHelper.SendInteractionResponse(this.Discord, response, this.Id, Token, options);
         }
 
         /// <summary>
@@ -133,31 +133,36 @@ namespace Discord.WebSocket
         /// <param name="options">The request options for this async request.</param>
         public async Task UpdateAsync(Action<MessageProperties> func, RequestOptions options = null)
         {
-            var modifiedProps = new MessageProperties();
-            func(modifiedProps);
-            var allowedMentions = modifiedProps.AllowedMentions.Value;
-            var embeds = modifiedProps.Embeds.Value;
+            var args = new MessageProperties();
+            func(args);
 
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
-            Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions), "A max of 100 role Ids are allowed.");
-            Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions), "A max of 100 user Ids are allowed.");
-            Preconditions.AtMost(embeds?.Length ?? 0, 10, nameof(embeds), "A max of 10 embeds are allowed.");
+            if (args.AllowedMentions.IsSpecified)
+            {
+               var allowedMentions = args.AllowedMentions.Value;
+               Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions), "A max of 100 role Ids are allowed.");
+               Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions), "A max of 100 user Ids are allowed.");
+            }
+
+            if (args.Embeds.IsSpecified)
+                Preconditions.AtMost(args.Embeds.Value?.Length ?? 0, 10, nameof(args.Embeds), "A max of 10 embeds are allowed.");
 
             // check that user flag and user Id list are exclusive, same with role flag and role Id list
-            if (allowedMentions != null && allowedMentions.AllowedTypes.HasValue)
+            if (args.AllowedMentions.IsSpecified && args.AllowedMentions.Value != null && args.AllowedMentions.Value.AllowedTypes.HasValue)
             {
+                var allowedMentions = args.AllowedMentions.Value;
                 if (allowedMentions.AllowedTypes.Value.HasFlag(AllowedMentionTypes.Users)
                 && allowedMentions.UserIds != null && allowedMentions.UserIds.Count > 0)
                 {
-                    throw new ArgumentException("The Users flag is mutually exclusive with the list of User Ids.", nameof(modifiedProps.AllowedMentions));
+                    throw new ArgumentException("The Users flag is mutually exclusive with the list of User Ids.", nameof(args.AllowedMentions));
                 }
 
                 if (allowedMentions.AllowedTypes.Value.HasFlag(AllowedMentionTypes.Roles)
                 && allowedMentions.RoleIds != null && allowedMentions.RoleIds.Count > 0)
                 {
-                    throw new ArgumentException("The Roles flag is mutually exclusive with the list of Role Ids.", nameof(modifiedProps.AllowedMentions));
+                    throw new ArgumentException("The Roles flag is mutually exclusive with the list of Role Ids.", nameof(args.AllowedMentions));
                 }
             }
 
@@ -166,17 +171,17 @@ namespace Discord.WebSocket
                 Type = InteractionResponseType.UpdateMessage,
                 Data = new API.InteractionCallbackData
                 {
-                    Content = modifiedProps.Content,
-                    AllowedMentions = allowedMentions?.ToModel(),
-                    Embeds = embeds?.Select(x => x.ToModel()).ToArray() ?? Optional<API.Embed[]>.Unspecified,
-                    Components = modifiedProps.Components.IsSpecified
-                        ? modifiedProps.Components.Value.Components.Select(x => new API.ActionRowComponent(x)).ToArray()
+                    Content = args.Content,
+                    AllowedMentions = args.AllowedMentions.IsSpecified ? args.AllowedMentions.Value?.ToModel() : Optional<API.AllowedMentions>.Unspecified,
+                    Embeds = args.Embeds.IsSpecified ? args.Embeds.Value?.Select(x => x.ToModel()).ToArray() : Optional<API.Embed[]>.Unspecified,
+                    Components = args.Components.IsSpecified
+                        ? args.Components.Value?.Components.Select(x => new API.ActionRowComponent(x)).ToArray()
                         : Optional<API.ActionRowComponent[]>.Unspecified,
-                    Flags = modifiedProps.Flags.IsSpecified ? (int)modifiedProps.Flags.Value : Optional<int>.Unspecified
+                    Flags = args.Flags.IsSpecified ? (int?)args.Flags.Value ?? Optional<int>.Unspecified : Optional<int>.Unspecified
                 }
             };
 
-            await InteractionHelper.SendInteractionResponse(this.Discord, this.Channel, response, this.Id, this.Token, options);
+            await InteractionHelper.SendInteractionResponse(this.Discord, response, this.Id, this.Token, options);
         }
 
         /// <inheritdoc/>

@@ -3438,39 +3438,6 @@
                 <see langword="true"/> if the token is valid for replying to, otherwise <see langword="false"/>.
             </summary>
         </member>
-        <member name="M:Discord.WebSocket.SocketInteraction.RespondAsync(System.String,System.Boolean,Discord.Embed,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
-            <summary>
-                Responds to an Interaction with type <see cref="F:Discord.InteractionResponseType.ChannelMessageWithSource"/>.
-            <para>
-                If you have <see cref="P:Discord.WebSocket.DiscordSocketConfig.AlwaysAcknowledgeInteractions"/> set to <see langword="true"/>, You should use
-                <see cref="M:Discord.WebSocket.SocketInteraction.FollowupAsync(Discord.Embed[],System.String,System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)"/> instead.
-            </para>
-            </summary>
-            <param name="text">The text of the message to be sent.</param>
-            <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
-            <param name="embed">A <see cref="T:Discord.Embed"/> to send with this response.</param>
-            <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
-            <param name="allowedMentions">The allowed mentions for this response.</param>
-            <param name="options">The request options for this response.</param>
-            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response</param>
-            <exception cref="T:System.ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="F:Discord.DiscordConfig.MaxMessageSize"/>.</exception>
-            <exception cref="T:System.InvalidOperationException">The parameters provided were invalid or the token was invalid.</exception>
-        </member>
-        <member name="M:Discord.WebSocket.SocketInteraction.FollowupAsync(System.String,System.Boolean,Discord.Embed,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
-            <summary>
-                Sends a followup message for this interaction.
-            </summary>
-            <param name="text">The text of the message to be sent</param>
-            <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
-            <param name="embed">A <see cref="T:Discord.Embed"/> to send with this response</param>
-            <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
-            <param name="allowedMentions">The allowed mentions for this response.</param>
-            <param name="options">The request options for this response.</param>
-            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response</param>
-            <returns>
-                The sent message.
-            </returns>
-        </member>
         <member name="M:Discord.WebSocket.SocketInteraction.RespondAsync(Discord.Embed[],System.String,System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
             <summary>
                 Responds to an Interaction with type <see cref="F:Discord.InteractionResponseType.ChannelMessageWithSource"/>.

@@ -108,7 +108,6 @@ namespace Discord.WebSocket
         /// <param name="component">A <see cref="MessageComponent"/> to be sent with this response</param>
         /// <exception cref="ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="DiscordConfig.MaxMessageSize"/>.</exception>
         /// <exception cref="InvalidOperationException">The parameters provided were invalid or the token was invalid.</exception>
-
         public abstract Task RespondAsync(Embed[] embeds = null, string text = null, bool isTTS = false,
             bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null);
 

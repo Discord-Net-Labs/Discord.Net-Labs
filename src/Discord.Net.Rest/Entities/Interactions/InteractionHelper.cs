@@ -20,7 +20,7 @@ namespace Discord.Rest
             return client.ApiClient.BulkOverwriteGlobalApplicationCommands(new CreateApplicationCommandParams[0], options);
         }
 
-        public static Task SendInteractionResponse(BaseDiscordClient client, IMessageChannel channel, InteractionResponse response,
+        public static Task SendInteractionResponse(BaseDiscordClient client, InteractionResponse response,
             ulong interactionId, string interactionToken, RequestOptions options = null)
         {
             return client.ApiClient.CreateInteractionResponse(response, interactionId, interactionToken, options);
@@ -324,8 +324,8 @@ namespace Discord.Rest
             var apiArgs = new ModifyInteractionResponseParams
             {
                 Content = args.Content,
-                Embeds = args.Embeds.IsSpecified ? args.Embeds.Value.Select(x => x.ToModel()).ToArray() : Optional<API.Embed[]>.Unspecified,
-                AllowedMentions = args.AllowedMentions.IsSpecified ? args.AllowedMentions.Value.ToModel() : Optional<API.AllowedMentions>.Unspecified,
+                Embeds = args.Embeds.IsSpecified ? args.Embeds.Value?.Select(x => x.ToModel()).ToArray() : Optional<API.Embed[]>.Unspecified,
+                AllowedMentions = args.AllowedMentions.IsSpecified ? args.AllowedMentions.Value?.ToModel() : Optional<API.AllowedMentions>.Unspecified,
                 Components = args.Components.IsSpecified ? args.Components.Value?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() : Optional<API.ActionRowComponent[]>.Unspecified,
             };
 
