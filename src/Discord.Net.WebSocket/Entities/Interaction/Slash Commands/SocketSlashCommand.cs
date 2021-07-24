@@ -51,26 +51,28 @@ namespace Discord.WebSocket
         }
 
         /// <inheritdoc/>
-        public override async Task RespondAsync(Embed[] embeds = null, string text = null, bool isTTS = false, InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
-            bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null)
+        public override async Task RespondAsync(
+            Embed[] embeds = null,
+            string text = null,
+            bool isTTS = false,
+            bool ephemeral = false,
+            AllowedMentions allowedMentions = null,
+            RequestOptions options = null,
+            MessageComponent component = null)
         {
-            if (type == InteractionResponseType.Pong)
-                throw new InvalidOperationException($"Cannot use {Type} on a send message function");
-
-            if(type == InteractionResponseType.DeferredUpdateMessage || type == InteractionResponseType.UpdateMessage)
-                throw new InvalidOperationException($"Cannot use {Type} on a slash command!");
-
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
             if (Discord.AlwaysAcknowledgeInteractions)
             {
-                await FollowupAsync(embeds, text, isTTS, ephemeral, type, allowedMentions, options, component);
+                await FollowupAsync(embeds, text, isTTS, ephemeral, allowedMentions, options, component);
                 return;
             }
 
-            Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
-            Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
+            Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds),
+                "A max of 100 role Ids are allowed.");
+            Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds),
+                "A max of 100 user Ids are allowed.");
             Preconditions.AtMost(embeds?.Length ?? 0, 10, nameof(embeds), "A max of 10 embeds are allowed.");
 
             // check that user flag and user Id list are exclusive, same with role flag and role Id list
@@ -92,14 +94,15 @@ namespace Discord.WebSocket
 
             var response = new API.InteractionResponse
             {
-                Type = type,
+                Type = InteractionResponseType.ChannelMessageWithSource,
                 Data = new API.InteractionCallbackData
                 {
-                    Content = text ?? Optional<string>.Unspecified,
-                    AllowedMentions = allowedMentions?.ToModel(),
+                    Content = text,
+                    AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
                     Embeds = embeds?.Select(x => x.ToModel()).ToArray() ?? Optional<API.Embed[]>.Unspecified,
                     TTS = isTTS ? true : Optional<bool>.Unspecified,
-                    Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified
+                    Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ??
+                                 Optional<API.ActionRowComponent[]>.Unspecified
                 }
             };
 
@@ -110,13 +113,15 @@ namespace Discord.WebSocket
         }
 
         /// <inheritdoc/>
-        public override async Task<RestFollowupMessage> FollowupAsync(Embed[] embeds = null, string text = null, bool isTTS = false, bool ephemeral = false,
-            InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
-            AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null)
+        public override async Task<RestFollowupMessage> FollowupAsync(
+            Embed[] embeds = null,
+            string text = null,
+            bool isTTS = false,
+            bool ephemeral = false,
+            AllowedMentions allowedMentions = null,
+            RequestOptions options = null,
+            MessageComponent component = null)
         {
-            if (type == InteractionResponseType.DeferredChannelMessageWithSource || type == InteractionResponseType.DeferredChannelMessageWithSource || type == InteractionResponseType.Pong || type == InteractionResponseType.DeferredUpdateMessage || type == InteractionResponseType.UpdateMessage)
-                throw new InvalidOperationException($"Cannot use {type} on a slash command!");
-
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
@@ -124,13 +129,12 @@ namespace Discord.WebSocket
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
             Preconditions.AtMost(embeds?.Length ?? 0, 10, nameof(embeds), "A max of 10 embeds are allowed.");
 
-            var args = new API.Rest.CreateWebhookMessageParams(text)
+            var args = new API.Rest.CreateWebhookMessageParams
             {
-                AllowedMentions = allowedMentions?.ToModel(),
+                Content = text,
+                AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
                 IsTTS = isTTS,
-                Embeds = embeds != null
-                        ? embeds.Select(x => x.ToModel()).ToArray()
-                        : Optional<API.Embed[]>.Unspecified,
+                Embeds = embeds?.Select(x => x.ToModel()).ToArray() ?? Optional<API.Embed[]>.Unspecified,
                 Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified
             };
 
@@ -140,10 +144,15 @@ namespace Discord.WebSocket
             return await InteractionHelper.SendFollowupAsync(Discord.Rest, args, Token, Channel, options);
         }
 
-        /// <inheritdoc/>
-        public override Task AcknowledgeAsync(RequestOptions options = null)
+        /// <summary>
+        ///     Acknowledges this interaction with the <see cref="InteractionResponseType.DeferredChannelMessageWithSource"/>.
+        /// </summary>
+        /// <returns>
+        ///     A task that represents the asynchronous operation of acknowledging the interaction.
+        /// </returns>
+        public override Task DeferAsync(RequestOptions options = null)
         {
-            var response = new API.InteractionResponse()
+            var response = new API.InteractionResponse
             {
                 Type = InteractionResponseType.DeferredChannelMessageWithSource,
             };

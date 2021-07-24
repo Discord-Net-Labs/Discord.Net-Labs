@@ -8,10 +8,10 @@ namespace Discord.API.Rest
     {
         [JsonProperty("content")]
         public Optional<string> Content { get; set; }
-        [JsonProperty("embed")]
-        public Optional<Embed> Embed { get; set; }
+        [JsonProperty("embeds")]
+        public Optional<Embed[]> Embeds { get; set; }
         [JsonProperty("components")]
-        public Optional<API.ActionRowComponent[]> Components { get; set; }
+        public Optional<ActionRowComponent[]> Components { get; set; }
         [JsonProperty("flags")]
         public Optional<MessageFlags?> Flags { get; set; }
         [JsonProperty("allowed_mentions")]

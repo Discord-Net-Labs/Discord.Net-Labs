@@ -298,14 +298,14 @@ namespace Discord.Rest
             func(args);
 
             bool hasText = args.Content.IsSpecified ? !string.IsNullOrEmpty(args.Content.Value) : !string.IsNullOrEmpty(message.Content);
-            bool hasEmbed = args.Embed.IsSpecified ? args.Embed.Value != null : message.Embeds.Any();
+            bool hasEmbed = args.Embeds.IsSpecified ? args.Embeds.Value != null : message.Embeds.Any();
             if (!hasText && !hasEmbed)
                 Preconditions.NotNullOrEmpty(args.Content.IsSpecified ? args.Content.Value : string.Empty, nameof(args.Content));
 
             var apiArgs = new API.Rest.ModifyInteractionResponseParams
             {
                 Content = args.Content,
-                Embeds = args.Embed.IsSpecified ? new API.Embed[] { args.Embed.Value.ToModel() } : Optional.Create<API.Embed[]>(),
+                Embeds = args.Embeds.IsSpecified ? args.Embeds.Value.Select(x => x.ToModel()).ToArray() : Optional.Create<API.Embed[]>(),
                 AllowedMentions = args.AllowedMentions.IsSpecified ? args.AllowedMentions.Value.ToModel() : Optional<API.AllowedMentions>.Unspecified,
                 Components = args.Components.IsSpecified ? args.Components.Value?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() : Optional<API.ActionRowComponent[]>.Unspecified,
             };
@@ -316,26 +316,21 @@ namespace Discord.Rest
         public static async Task DeleteFollowupMessage(BaseDiscordClient client, RestFollowupMessage message, RequestOptions options = null)
             => await client.ApiClient.DeleteInteractionFollowupMessage(message.Id, message.Token, options);
 
-        public static async Task<Discord.API.Message> ModifyInteractionResponse(BaseDiscordClient client, RestInteractionMessage message, Action<MessageProperties> func,
+        public static async Task<Message> ModifyInteractionResponse(BaseDiscordClient client, string token, Action<MessageProperties> func,
            RequestOptions options = null)
         {
             var args = new MessageProperties();
             func(args);
 
-            bool hasText = args.Content.IsSpecified ? !string.IsNullOrEmpty(args.Content.Value) : !string.IsNullOrEmpty(message.Content);
-            bool hasEmbed = args.Embed.IsSpecified ? args.Embed.Value != null : message.Embeds.Any();
-            if (!hasText && !hasEmbed)
-                Preconditions.NotNullOrEmpty(args.Content.IsSpecified ? args.Content.Value : string.Empty, nameof(args.Content));
-
-            var apiArgs = new API.Rest.ModifyInteractionResponseParams
+            var apiArgs = new ModifyInteractionResponseParams
             {
                 Content = args.Content,
-                Embeds = args.Embed.IsSpecified ? new API.Embed[] { args.Embed.Value.ToModel() } : Optional.Create<API.Embed[]>(),
+                Embeds = args.Embeds.IsSpecified ? args.Embeds.Value.Select(x => x.ToModel()).ToArray() : Optional<API.Embed[]>.Unspecified,
                 AllowedMentions = args.AllowedMentions.IsSpecified ? args.AllowedMentions.Value.ToModel() : Optional<API.AllowedMentions>.Unspecified,
                 Components = args.Components.IsSpecified ? args.Components.Value?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() : Optional<API.ActionRowComponent[]>.Unspecified,
             };
 
-            return await client.ApiClient.ModifyInteractionResponse(apiArgs, message.Token, options).ConfigureAwait(false);
+            return await client.ApiClient.ModifyInteractionResponse(apiArgs, token, options).ConfigureAwait(false);
         }
 
         public static async Task DeletedInteractionResponse(BaseDiscordClient client, RestInteractionMessage message, RequestOptions options = null)
