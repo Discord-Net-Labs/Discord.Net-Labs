@@ -1,4 +1,3 @@
-using Discord.API;
 using Discord.Rest;
 using System;
 using System.Threading.Tasks;
