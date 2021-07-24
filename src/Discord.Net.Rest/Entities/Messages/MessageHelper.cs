@@ -66,7 +66,7 @@ namespace Discord.Rest
                 Content = args.Content,
                 Embeds = args.Embeds.IsSpecified ? args.Embeds.Value.Select(x => x.ToModel()).ToArray() : Optional<API.Embed[]>.Unspecified,
                 Components = args.Components.IsSpecified ? args.Components.Value?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() : Optional<API.ActionRowComponent[]>.Unspecified,
-                Flags = args.Flags.IsSpecified ? args.Flags.Value : Optional<MessageFlags?>.Unspecified,
+                Flags = args.Flags,
                 AllowedMentions = args.AllowedMentions.IsSpecified ? args.AllowedMentions.Value.ToModel() : Optional<API.AllowedMentions>.Unspecified,
             };
             return await client.ApiClient.ModifyMessageAsync(msg.Channel.Id, msg.Id, apiArgs, options).ConfigureAwait(false);
