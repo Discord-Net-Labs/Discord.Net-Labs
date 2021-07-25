@@ -3223,7 +3223,7 @@
                 The message that contained the trigger for this interaction.
             </summary>
         </member>
-        <member name="M:Discord.WebSocket.SocketMessageComponent.RespondAsync(Discord.Embed[],System.String,System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketMessageComponent.RespondAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
             <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.SocketMessageComponent.UpdateAsync(System.Action{Discord.MessageProperties},Discord.RequestOptions)">
@@ -3233,7 +3233,7 @@
             <param name="func">A delegate containing the properties to modify the message with.</param>
             <param name="options">The request options for this async request.</param>
         </member>
-        <member name="M:Discord.WebSocket.SocketMessageComponent.FollowupAsync(Discord.Embed[],System.String,System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketMessageComponent.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
             <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.SocketMessageComponent.DeferAsync(Discord.RequestOptions)">
@@ -3349,10 +3349,10 @@
                 The data associated with this interaction.
             </summary>
         </member>
-        <member name="M:Discord.WebSocket.SocketSlashCommand.RespondAsync(Discord.Embed[],System.String,System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketSlashCommand.RespondAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketSlashCommand.FollowupAsync(Discord.Embed[],System.String,System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketSlashCommand.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
             <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.SocketSlashCommand.DeferAsync(Discord.RequestOptions)">
@@ -3438,17 +3438,17 @@
                 <see langword="true"/> if the token is valid for replying to, otherwise <see langword="false"/>.
             </summary>
         </member>
-        <member name="M:Discord.WebSocket.SocketInteraction.RespondAsync(Discord.Embed[],System.String,System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketInteraction.RespondAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
             <summary>
                 Responds to an Interaction with type <see cref="F:Discord.InteractionResponseType.ChannelMessageWithSource"/>.
             <para>
                 If you have <see cref="P:Discord.WebSocket.DiscordSocketConfig.AlwaysAcknowledgeInteractions"/> set to <see langword="true"/>, You should use
-                <see cref="M:Discord.WebSocket.SocketInteraction.FollowupAsync(Discord.Embed[],System.String,System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)"/> instead.
+                <see cref="!:FollowupAsync(Discord.Embed[],string,bool,bool,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)"/> instead.
             </para>
             </summary>
             <param name="text">The text of the message to be sent.</param>
-            <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
             <param name="embeds">A array of embeds to send with this response. Max 10</param>
+            <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
             <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
             <param name="allowedMentions">The allowed mentions for this response.</param>
             <param name="options">The request options for this response.</param>
@@ -3456,13 +3456,13 @@
             <exception cref="T:System.ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="F:Discord.DiscordConfig.MaxMessageSize"/>.</exception>
             <exception cref="T:System.InvalidOperationException">The parameters provided were invalid or the token was invalid.</exception>
         </member>
-        <member name="M:Discord.WebSocket.SocketInteraction.FollowupAsync(Discord.Embed[],System.String,System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketInteraction.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent)">
             <summary>
                 Sends a followup message for this interaction.
             </summary>
             <param name="text">The text of the message to be sent</param>
-            <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
             <param name="embeds">A array of embeds to send with this response. Max 10</param>
+            <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
             <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
             <param name="allowedMentions">The allowed mentions for this response.</param>
             <param name="options">The request options for this response.</param>

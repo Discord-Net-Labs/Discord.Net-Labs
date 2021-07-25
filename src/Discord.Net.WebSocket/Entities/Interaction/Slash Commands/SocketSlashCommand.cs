@@ -15,7 +15,7 @@ namespace Discord.WebSocket
         /// <summary>
         ///     The data associated with this interaction.
         /// </summary>
-        new public SocketSlashCommandData Data { get; private set; }
+        new public SocketSlashCommandData Data { get; }
 
         internal SocketSlashCommand(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
             : base(client, model.Id, channel)
@@ -51,8 +51,8 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         public override async Task RespondAsync(
-            Embed[] embeds = null,
             string text = null,
+            Embed[] embeds = null,
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,
@@ -64,7 +64,7 @@ namespace Discord.WebSocket
 
             if (Discord.AlwaysAcknowledgeInteractions)
             {
-                await FollowupAsync(embeds, text, isTTS, ephemeral, allowedMentions, options, component);
+                await FollowupAsync(text, embeds, isTTS, ephemeral, allowedMentions, options, component);
                 return;
             }
 
@@ -110,8 +110,8 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         public override async Task<RestFollowupMessage> FollowupAsync(
-            Embed[] embeds = null,
             string text = null,
+            Embed[] embeds = null,
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,

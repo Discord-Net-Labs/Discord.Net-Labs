@@ -69,8 +69,8 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         public override async Task RespondAsync(
-            Embed[] embeds = null,
             string text = null,
+            Embed[] embeds = null,
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,
@@ -82,7 +82,7 @@ namespace Discord.WebSocket
 
             if (Discord.AlwaysAcknowledgeInteractions)
             {
-                await FollowupAsync(embeds, text, isTTS, ephemeral, allowedMentions, options);
+                await FollowupAsync(text, embeds, isTTS, ephemeral, allowedMentions, options);
                 return;
             }
 
@@ -186,8 +186,8 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         public override async Task<RestFollowupMessage> FollowupAsync(
-            Embed[] embeds = null,
             string text = null,
+            Embed[] embeds = null,
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,
