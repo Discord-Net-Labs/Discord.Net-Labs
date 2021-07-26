@@ -133,7 +133,7 @@ namespace Discord
         /// <returns>The current builder.</returns>
         public ComponentBuilder WithButton(
             string label,
-            string customId,
+            string customId = null,
             ButtonStyle style = ButtonStyle.Primary,
             IEmote emote = null,
             string url = null,
@@ -375,7 +375,7 @@ namespace Discord
         /// <param name="style">The custom ID of this button</param>
         /// <param name="emote">The emote of this button</param>
         /// <param name="disabled">Disabled this button or not</param>
-        public ButtonBuilder(string label, string customId, ButtonStyle style = ButtonStyle.Primary, string url = null, IEmote emote = null, bool disabled = false)
+        public ButtonBuilder(string label, string customId = null, ButtonStyle style = ButtonStyle.Primary, string url = null, IEmote emote = null, bool disabled = false)
         {
             this.CustomId = customId;
             this.Style = style;
