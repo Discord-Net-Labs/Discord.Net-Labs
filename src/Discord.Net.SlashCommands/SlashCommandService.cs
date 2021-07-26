@@ -47,7 +47,7 @@ namespace Discord.SlashCommands
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
 
-        internal readonly bool _runAsync, _throwOnError;
+        internal readonly bool _runAsync, _throwOnError, _deleteUnkownCommandAck;
 
         /// <summary>
         /// Represents all of the modules that are loaded in the <see cref="SlashCommandService"/>
@@ -100,6 +100,7 @@ namespace Discord.SlashCommands
 
             _runAsync = config.RunAsync;
             _throwOnError = config.ThrowOnError;
+            _deleteUnkownCommandAck = config.DeleteUnknownCommandAck;
 
             DefaultReaders.CreateDefaultTypeReaders(_typeReaders);
         }
@@ -330,8 +331,13 @@ namespace Discord.SlashCommands
             if (!result.IsSuccess)
             {
                 await _cmdLogger.DebugAsync($"Unknown slash command, skipping execution ({string.Join(" ", input).ToUpper()})");
-                var originalResponse = await InteractionHelper.GetOriginalResponseAsync(Client, context.Channel, context.Interaction).ConfigureAwait(false);
-                await InteractionHelper.DeletedInteractionResponse(Client, originalResponse).ConfigureAwait(false);
+
+                if(_deleteUnkownCommandAck)
+                {
+                    var originalResponse = await InteractionHelper.GetOriginalResponseAsync(Client, context.Channel, context.Interaction).ConfigureAwait(false);
+                    await InteractionHelper.DeletedInteractionResponse(Client, originalResponse).ConfigureAwait(false);
+                }
+
                 return;
             }
             await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
@@ -356,8 +362,13 @@ namespace Discord.SlashCommands
             if (!result.IsSuccess)
             {
                 await _cmdLogger.DebugAsync($"Unknown custom interaction id, skipping execution ({input.ToUpper()})");
-                var originalResponse = await InteractionHelper.GetOriginalResponseAsync(Client, context.Channel, context.Interaction).ConfigureAwait(false);
-                await InteractionHelper.DeletedInteractionResponse(Client, originalResponse).ConfigureAwait(false);
+
+                if (_deleteUnkownCommandAck)
+                {
+                    var originalResponse = await InteractionHelper.GetOriginalResponseAsync(Client, context.Channel, context.Interaction).ConfigureAwait(false);
+                    await InteractionHelper.DeletedInteractionResponse(Client, originalResponse).ConfigureAwait(false);
+                }
+
                 return;
             }
             await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
