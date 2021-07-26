@@ -153,6 +153,15 @@ namespace Discord.WebSocket
         /// <returns>
         ///     A task that represents the asynchronous operation of acknowledging the interaction.
         /// </returns>
+        [Obsolete("This method deprecated, please use DeferAsync instead")]
+        public Task AcknowledgeAsync(RequestOptions options = null) => DeferAsync(options);
+
+        /// <summary>
+        ///     Acknowledges this interaction.
+        /// </summary>
+        /// <returns>
+        ///     A task that represents the asynchronous operation of acknowledging the interaction.
+        /// </returns>
         public abstract Task DeferAsync(RequestOptions options = null);
 
         private bool CheckToken()
