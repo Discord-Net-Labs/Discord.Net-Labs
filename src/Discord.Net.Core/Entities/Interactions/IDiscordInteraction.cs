@@ -39,5 +39,15 @@ namespace Discord
         ///     read-only property, always 1.
         /// </summary>
         int Version { get; }
+
+        Task RespondAsync (string text = null, bool isTTS = false, Embed[] embeds = null, InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
+            bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null);
+
+        Task<IUserMessage> FollowupAsync (string text = null, bool isTTS = false, Embed[] embeds = null, InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
+            bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null);
+
+        Task<IUserMessage> GetOriginalResponseAsync (RequestOptions options = null);
+
+        Task AcknowledgeAsync (RequestOptions options = null);
     }
 }
