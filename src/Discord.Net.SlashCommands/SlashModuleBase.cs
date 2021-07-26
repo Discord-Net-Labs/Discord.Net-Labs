@@ -1,5 +1,9 @@
+using Discord.API;
+using Discord.Rest;
 using Discord.SlashCommands.Builders;
+using Discord.WebSocket;
 using System;
+using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
 {
@@ -36,6 +40,22 @@ namespace Discord.SlashCommands
         {
             var newValue = context as T;
             Context = newValue ?? throw new InvalidOperationException($"Invalid context type. Expected {typeof(T).Name}, got {context.GetType().Name}.");
+        }
+
+        protected virtual async Task RespondAsync (string text = null, bool isTTS = false, Embed[] embeds = null, InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
+            bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null) =>
+            await Context.Interaction.RespondAsync(text, isTTS, embeds, type, ephemeral, allowedMentions, options, component).ConfigureAwait(false);
+
+        protected virtual async Task FolloupAsync (string text = null, bool isTTS = false, Embed[] embeds = null, InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
+            bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null) =>
+            await Context.Interaction.FollowupAsync(text, isTTS, embeds, type, ephemeral, allowedMentions, options, component).ConfigureAwait(false);
+
+        protected virtual async Task<SocketInteraction> WaitNextAsync (TimeSpan timeout, Predicate<SocketInteraction> predicate)
+        {
+            if (!( Context.Client is BaseSocketClient baseSocketClient ))
+                throw new InvalidOperationException("Provided client type is not supported");
+
+            return await InteractionUtility.WaitForInteraction(baseSocketClient, timeout, predicate).ConfigureAwait(false);
         }
     }
 }
