@@ -127,7 +127,7 @@ namespace Discord.WebSocket
         }
 
         /// <summary>
-        ///     Updates the original message of the component on which the interaction was received on.
+        ///     Updates the message of the component on which the interaction was received on.
         ///     (Responds to an Interaction with type <see cref="InteractionResponseType.UpdateMessage"/>)
         /// </summary>
         /// <param name="func">A delegate containing the properties to modify the message with.</param>
