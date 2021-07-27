@@ -401,47 +401,52 @@ namespace Discord
         /// <summary>
         ///     Creates a button with the <see cref="ButtonStyle.Link"/> style.
         /// </summary>
-        /// <param name="label">The label to use on the newly created link button.</param>
+        /// <param name="label">The label for this link button.</param>
         /// <param name="url">The url for this link button to go to.</param>
+        /// <param name="emote">The emote for this link button</param>
         /// <returns>A builder with the newly created button.</returns>
-        public static ButtonBuilder CreateLinkButton(string label, string url)
-            => new ButtonBuilder(label, null, ButtonStyle.Link, url);
+        public static ButtonBuilder CreateLinkButton(string label, string url, IEmote emote = null)
+            => new ButtonBuilder(label, null, ButtonStyle.Link, url, emote: emote);
 
         /// <summary>
         ///     Creates a button with the <see cref="ButtonStyle.Danger"/> style.
         /// </summary>
         /// <param name="label">The label for this danger button.</param>
         /// <param name="customId">The custom id for this danger button.</param>
+        /// <param name="emote">The emote for this danger button</param>
         /// <returns>A builder with the newly created button.</returns>
-        public static ButtonBuilder CreateDangerButton(string label, string customId)
-            => new ButtonBuilder(label, customId, ButtonStyle.Danger);
+        public static ButtonBuilder CreateDangerButton(string label, string customId, IEmote emote = null)
+            => new ButtonBuilder(label, customId, ButtonStyle.Danger, emote: emote);
 
         /// <summary>
         ///     Creates a button with the <see cref="ButtonStyle.Primary"/> style.
         /// </summary>
         /// <param name="label">The label for this primary button.</param>
         /// <param name="customId">The custom id for this primary button.</param>
+        /// <param name="emote">The emote for this primary button</param>
         /// <returns>A builder with the newly created button.</returns>
-        public static ButtonBuilder CreatePrimaryButton(string label, string customId)
-            => new ButtonBuilder(label, customId);
+        public static ButtonBuilder CreatePrimaryButton(string label, string customId, IEmote emote = null)
+            => new ButtonBuilder(label, customId, emote: emote);
 
         /// <summary>
         ///     Creates a button with the <see cref="ButtonStyle.Secondary"/> style.
         /// </summary>
         /// <param name="label">The label for this secondary button.</param>
         /// <param name="customId">The custom id for this secondary button.</param>
+        /// <param name="emote">The emote for this secondary button</param>
         /// <returns>A builder with the newly created button.</returns>
-        public static ButtonBuilder CreateSecondaryButton(string label, string customId)
-            => new ButtonBuilder(label, customId, ButtonStyle.Secondary);
+        public static ButtonBuilder CreateSecondaryButton(string label, string customId, IEmote emote = null)
+            => new ButtonBuilder(label, customId, ButtonStyle.Secondary, emote: emote);
 
         /// <summary>
         ///     Creates a button with the <see cref="ButtonStyle.Success"/> style.
         /// </summary>
         /// <param name="label">The label for this success button.</param>
         /// <param name="customId">The custom id for this success button.</param>
+        /// <param name="emote">The emote for this success button</param>
         /// <returns>A builder with the newly created button.</returns>
-        public static ButtonBuilder CreateSuccessButton(string label, string customId)
-            => new ButtonBuilder(label, customId, ButtonStyle.Success);
+        public static ButtonBuilder CreateSuccessButton(string label, string customId, IEmote emote = null)
+            => new ButtonBuilder(label, customId, ButtonStyle.Success, emote: emote);
 
         /// <summary>
         ///     Sets the current buttons label to the specified text.
