@@ -13,96 +13,104 @@ namespace Discord.SlashCommands
         /// <param name="client">Client that should be listened to for the <see cref="BaseSocketClient.InteractionCreated"/> event</param>
         /// <param name="timeout">Timeout duration for this operation</param>
         /// <param name="predicate">Delegate for cheking wheter an Interaction meets the requirements</param>
+        /// <param name="cancellationToken">Token for canceling the wait operation</param>
         /// <returns>
         /// A Task representing the asyncronous waiting operation with a <see cref="IDiscordInteraction"/> result,
         /// the result is null if the process timed out before receiving a valid Interaction.
         /// </returns>
         public static async Task<SocketInteraction> WaitForInteraction (BaseSocketClient client, TimeSpan timeout,
-            Predicate<SocketInteraction> predicate)
+            Predicate<SocketInteraction> predicate, CancellationToken cancellationToken = default)
         {
-            SocketInteraction next = null;
+            var tcs = new TaskCompletionSource<SocketInteraction>();
 
-            using (var handle = new EventWaitHandle(false, EventResetMode.ManualReset))
-            {
-                client.InteractionCreated += Next;
-                await handle.WaitOneAsync(timeout).ConfigureAwait(false);
-                handle.Close();
-                client.InteractionCreated -= Next;
-                return next;
-
-                Task Next (SocketInteraction interaction)
+            var waitCancelSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            Task wait = Task.Delay(timeout, waitCancelSource.Token)
+                .ContinueWith((t) =>
                 {
-                    if (predicate(interaction))
-                    {
-                        next = interaction;
-                        handle.Set();
-                    }
-                    return Task.CompletedTask;
+                    if (!t.IsCanceled)
+                        tcs.SetResult(null);
+                });
+
+            cancellationToken.Register(( ) => tcs.SetCanceled());
+
+            client.InteractionCreated += HandleInteraction;
+            var result = await tcs.Task.ConfigureAwait(false);
+            client.InteractionCreated -= HandleInteraction;
+
+            return result;
+
+            Task HandleInteraction (SocketInteraction interaction)
+            {
+                if (predicate(interaction))
+                {
+                    tcs.SetResult(interaction);
+                    waitCancelSource.Cancel();
                 }
+
+                return Task.CompletedTask;
             }
         }
 
         /// <summary>
         /// Wait for an Interaction event for a given amount of time as an asynchronous opration
         /// </summary>
-        /// <param name="context">Context the revieved Interations should be compared with</param>
+        /// <param name="ctx"></param>
         /// <param name="timeout">Timeout duration for this operation</param>
-        /// <param name="fromSameUser">Wait for an Interaction event raised by the same <see cref="IUser"/></param>
-        /// <param name="fromSameChannel">Wait for an Interaction event raised from the same <see cref="IChannel"/></param>
-        /// <param name="withCustomId">Wait for a <see cref="IMessageComponent"/> Interaction with this Custom Id, should be left null if any
-        /// Interaction should pass this criteria</param>
+        /// <param name="sameUser"></param>
+        /// <param name="sameChannel"></param>
+        /// <param name="cancellationToken">Token for canceling the wait operation</param>
         /// <returns>
         /// A Task representing the asyncronous waiting operation with a <see cref="IDiscordInteraction"/> result,
         /// the result is null if the process timed out before receiving a valid Interaction.
         /// </returns>
-        public static async Task<SocketInteraction> WaitForInteraction (ISlashCommandContext context, TimeSpan timeout,
-            bool fromSameUser = true, bool fromSameChannel = true, string withCustomId = null)
+        public static async Task<SocketInteraction> WaitForMessageComponent (ISlashCommandContext ctx, TimeSpan timeout, bool sameUser = true,
+            bool sameChannel = true, CancellationToken cancellationToken = default)
         {
-            Predicate<SocketInteraction> predicate = (interaction) =>
-            {
-                if (( !fromSameChannel || ( interaction.Channel.Id == context.Channel.Id ) ) && ( !fromSameUser || ( interaction.User.Id == context.User.Id ) ))
-                {
-                    if (withCustomId != null)
-                    {
-                        if (interaction is SocketMessageComponent messageInteraction && messageInteraction.Data.CustomId == withCustomId)
-                            return true;
-                    }
-                    else
-                        return true;
-                }
-
-                return false;
-            };
-
-            BaseSocketClient client;
-
-            if (context is SocketSlashCommandContext socketCtx)
-                client = socketCtx.Client;
-            else if (context is ShardedSlashCommandContext shardedCtx)
-                client = shardedCtx.Client;
-            else
+            if(!(ctx.Client is BaseSocketClient baseSocketClient))
                 throw new InvalidOperationException("Type of client provided with the context is not supported");
 
-            return await WaitForInteraction(client, timeout, predicate);
+            Predicate<SocketInteraction> predicate = (interaction) => CheckMessageComponent(ctx, interaction, null, false, sameUser, sameChannel);
+
+            return await WaitForInteraction(baseSocketClient, timeout, predicate, cancellationToken).ConfigureAwait(false);
         }
 
-        internal static Task<bool> WaitOneAsync (this EventWaitHandle handle, int timeout = Timeout.Infinite)
+        /// <summary>
+        /// Wait for an Interaction event for a given amount of time as an asynchronous opration
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <param name="timeout">Timeout duration for this operation</param>
+        /// <param name="customId">Only accept interactions from a <see cref="MessageComponent"/> with this custom id</param>
+        /// <param name="sameUser"></param>
+        /// <param name="sameChannel"></param>
+        /// <param name="cancellationToken">Token for canceling the wait operation</param>
+        /// <returns>
+        /// A Task representing the asyncronous waiting operation with a <see cref="IDiscordInteraction"/> result,
+        /// the result is null if the process timed out before receiving a valid Interaction.
+        /// </returns>
+        public static async Task<SocketInteraction> WaitForMessageComponent (ISlashCommandContext ctx, TimeSpan timeout, string customId, bool sameUser = true,
+            bool sameChannel = true, CancellationToken cancellationToken = default)
         {
-            if (handle == null)
-                throw new ArgumentNullException("Wait handle");
+            if (!( ctx.Client is BaseSocketClient baseSocketClient ))
+                throw new InvalidOperationException("Type of client provided with the context is not supported");
 
-            var tcs = new TaskCompletionSource<bool>();
-            var rwh = ThreadPool.RegisterWaitForSingleObject(handle, (state, dur) =>
-            {
-                tcs.TrySetResult(true);
-            }, null, timeout, true);
+            Predicate<SocketInteraction> predicate = (interaction) => CheckMessageComponent(ctx, interaction, customId, true, sameUser, sameChannel);
 
-            var task = tcs.Task;
-            _ = task.ContinueWith(x => rwh.Unregister(null));
-            return task;
+            return await WaitForInteraction(baseSocketClient, timeout, predicate, cancellationToken).ConfigureAwait(false);
         }
 
-        internal static Task<bool> WaitOneAsync (this EventWaitHandle handle, TimeSpan timeout) =>
-            WaitOneAsync(handle, (int)timeout.TotalMilliseconds);
+        private static bool CheckMessageComponent(ISlashCommandContext ctx, SocketInteraction interaction, string customId = null, bool checkId = true,
+            bool sameUser = true, bool sameChannel = true)
+        {
+            if (ctx.Interaction.Type != InteractionType.MessageComponent)
+                return false;
+            if (sameUser && ctx.User.Id != interaction.User.Id)
+                return false;
+            if (sameChannel && ctx.Channel.Id != interaction.Channel.Id)
+                return false;
+            if (( ctx.Interaction as SocketMessageComponent ).Data.CustomId != customId)
+                return false;
+
+            return true;
+        }
     }
 }
