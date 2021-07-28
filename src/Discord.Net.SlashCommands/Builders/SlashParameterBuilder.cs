@@ -1,6 +1,7 @@
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Discord.SlashCommands.Builders
 {
@@ -18,7 +19,7 @@ namespace Discord.SlashCommands.Builders
         public IReadOnlyList<ParameterChoice> Choices => _choices;
         public IReadOnlyList<Attribute> Attributes => _attributes;
 
-        public Func<ISlashCommandContext, SocketSlashCommandDataOption, IServiceProvider, object> TypeReader { get; internal set; }
+        public TypeReader TypeReader { get; internal set; }
 
         internal SlashParameterBuilder (SlashCommandBuilder command)
         {
@@ -48,6 +49,7 @@ namespace Discord.SlashCommands.Builders
         internal SlashParameterBuilder WithType (Type type)
         {
             ParameterType = type;
+            TypeReader = GetTypeReader(type);
             return this;
         }
 
@@ -78,6 +80,13 @@ namespace Discord.SlashCommands.Builders
         internal SlashParameterInfo Build (SlashCommandInfo command)
         {
             return new SlashParameterInfo(this, command);
+        }
+
+        private TypeReader GetTypeReader ( Type type )
+        {
+            var commandService = Command.Module.CommandService;
+
+            return commandService.GetTypeReader(type);
         }
     }
 }

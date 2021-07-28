@@ -261,8 +261,7 @@ namespace Discord.SlashCommands.Builders
             builder.Description = paramInfo.Name;
             builder.IsRequired = !paramInfo.IsOptional;
             builder.DefaultValue = paramInfo.DefaultValue;
-            builder.ParameterType = paramType;
-            builder.TypeReader = GetTypeReader(paramType, commandService);
+            builder.WithType(paramType);
 
             foreach (var attribute in attributes)
             {
@@ -292,18 +291,6 @@ namespace Discord.SlashCommands.Builders
                         break;
                 }
             }
-        }
-
-        private static Func<ISlashCommandContext, SocketSlashCommandDataOption, IServiceProvider, object> GetTypeReader ( Type type, SlashCommandService commandService )
-        {
-            var discordType = SlashCommandUtility.GetDiscordOptionType(type);
-
-            var reader = commandService.TypeReaders[discordType];
-
-            if (reader == null)
-                throw new InvalidOperationException($"There is no registered type reader for type {nameof(type)}");
-
-            return reader;
         }
 
         internal static bool IsValidModuleDefinition (TypeInfo typeInfo)

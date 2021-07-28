@@ -45,8 +45,8 @@ namespace Discord.SlashCommands
         /// <summary>
         /// Parameter type that will be registered to Discord if applicable
         /// </summary>
-        public ApplicationCommandOptionType DiscordOptionType => SlashCommandUtility.GetDiscordOptionType(ParameterType);
-        public Func<ISlashCommandContext, SocketSlashCommandDataOption, IServiceProvider, object> TypeReader { get; }
+        public ApplicationCommandOptionType DiscordOptionType => TypeReader.GetDiscordType();
+        public TypeReader TypeReader { get; }
 
         internal SlashParameterInfo (SlashParameterBuilder builder, SlashCommandInfo command)
         {

@@ -7,6 +7,7 @@ using Discord.WebSocket;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -42,8 +43,9 @@ namespace Discord.SlashCommands
         private readonly SlashCommandMap<SlashCommandInfo> _commandMap;
         private readonly SlashCommandMap<SlashInteractionInfo> _interactionCommandMap;
         private readonly HashSet<SlashModuleInfo> _moduleDefs;
+        private readonly ConcurrentDictionary<Type, TypeReader> _typeReaders;
+        private readonly ConcurrentDictionary<Type, Type> _genericTypeReaders;
         private readonly SemaphoreSlim _lock;
-        private readonly ConcurrentDictionary<ApplicationCommandOptionType, Func<ISlashCommandContext, SocketSlashCommandDataOption, IServiceProvider, object>> _typeReaders;
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
 
@@ -63,8 +65,6 @@ namespace Discord.SlashCommands
         /// Represents all of the Interaction handlers that are loaded in the <see cref="SlashCommandService"/>
         /// </summary>
         public IReadOnlyCollection<SlashInteractionInfo> Interacions => _moduleDefs.SelectMany(x => x.Interactions).ToList();
-
-        public IReadOnlyDictionary<ApplicationCommandOptionType, Func<ISlashCommandContext, SocketSlashCommandDataOption, IServiceProvider, object>> TypeReaders => _typeReaders;
 
         /// <summary>
         /// Client that the Application Commands will be registered for
@@ -87,7 +87,7 @@ namespace Discord.SlashCommands
             _lock = new SemaphoreSlim(1, 1);
             _typedModuleDefs = new ConcurrentDictionary<Type, SlashModuleInfo>();
             _moduleDefs = new HashSet<SlashModuleInfo>();
-            _typeReaders = new ConcurrentDictionary<ApplicationCommandOptionType, Func<ISlashCommandContext, SocketSlashCommandDataOption, IServiceProvider, object>>();
+            _typeReaders = new ConcurrentDictionary<Type, TypeReader>();
 
             _logManager = new LogManager(config.LogLevel);
             _logManager.Message += async msg => await _logEvent.InvokeAsync(msg).ConfigureAwait(false);
@@ -102,7 +102,12 @@ namespace Discord.SlashCommands
             _throwOnError = config.ThrowOnError;
             _deleteUnkownCommandAck = config.DeleteUnknownCommandAck;
 
-            DefaultReaders.CreateDefaultTypeReaders(_typeReaders);
+            _genericTypeReaders = new ConcurrentDictionary<Type, Type>();
+            _genericTypeReaders[typeof(IChannel)] = typeof(DefaultChannelReader<>);
+            _genericTypeReaders[typeof(IRole)] = typeof(DefaultRoleReader<>);
+            _genericTypeReaders[typeof(IUser)] = typeof(DefaultUserReader<>);
+            _genericTypeReaders[typeof(IMentionable)] = typeof(DefaultMentionableReader<>);
+            _genericTypeReaders[typeof(IConvertible)] = typeof(DefaultValueTypeReader<>);
         }
 
         /// <summary>
@@ -374,16 +379,52 @@ namespace Discord.SlashCommands
             await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Replace a default type reader
-        /// </summary>
-        /// <remarks>
-        /// Must be used before the module discovery
-        /// </remarks>
-        /// <param name="discordParamType">The Application Commands API type this reader will be used for</param>
-        /// <param name="reader">Type Reader function</param>
-        public void ReplaceTypeReader (ApplicationCommandOptionType discordParamType, Func<ISlashCommandContext, SocketSlashCommandDataOption, IServiceProvider, object> reader) =>
-            _typeReaders[discordParamType] = reader;
+        internal TypeReader GetTypeReader (Type type)
+        {
+            if (_typeReaders.TryGetValue(type, out var specific))
+                return specific;
+
+            else if(_typeReaders.Any(x => x.Value.CanConvertTo(type)))
+                return _typeReaders.First(x => x.Value.CanConvertTo(type)).Value;
+
+            else if(_genericTypeReaders.Any(x => x.Key.IsAssignableFrom(type)))
+            {
+                var readerType = _genericTypeReaders.First(x => x.Key.IsAssignableFrom(type)).Value;
+                var reader = readerType.MakeGenericType(type).GetConstructor(Array.Empty<Type>()).Invoke(Array.Empty<object>()) as TypeReader;
+                _typeReaders[type] = reader;
+                return reader;
+            }
+
+            throw new ArgumentException($"No type reader is defined for this {nameof(Type)}", "type");
+        }
+
+        public void AddTypeReader(Type type, TypeReader reader)
+        {
+            if (!reader.CanConvertTo(type))
+                throw new ArgumentException($"This {nameof(TypeReader)} cannot read {type.FullName} and cannot be registered as its type readers");
+
+            _typeReaders[type] = reader;
+        }
+
+        public bool RemoveTypeReader<T> ( ) =>
+            RemoveTypeReader(typeof(T));
+
+        public bool RemoveTypeReader (Type type) =>
+            _typeReaders.TryRemove(type, out var _);
+
+        public void AddGenericTypeReader (Type type, Type readerType )
+        {
+            if (!readerType.IsGenericTypeDefinition)
+                throw new ArgumentException($"{nameof(TypeReader)} is not generic.");
+
+            _genericTypeReaders[type] = readerType;
+        }
+
+        public bool RemoveGenericTypeReader<T> ( ) =>
+            RemoveGenericTypeReader(typeof(T));
+
+        public bool RemoveGenericTypeReader (Type type) =>
+            _genericTypeReaders.TryRemove(type, out var _);
 
         public void Dispose ( )
         {

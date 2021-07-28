@@ -82,7 +82,7 @@ namespace Discord.SlashCommands
 
             try
             {
-                object[] args = GenerateArgs(context, paramList, argList, services);
+                object[] args = await GenerateArgs(context, paramList, argList, services).ConfigureAwait(false);
 
                 if (CommandService._runAsync)
                 {
@@ -160,12 +160,15 @@ namespace Discord.SlashCommands
             }
         }
 
-        private object[] GenerateArgs (ISlashCommandContext context, IEnumerable<SlashParameterInfo> paramList, IEnumerable<SocketSlashCommandDataOption> options,
-            IServiceProvider services)
+        private async Task<object[]>  GenerateArgs (ISlashCommandContext context, IEnumerable<SlashParameterInfo> paramList,
+            IEnumerable<SocketSlashCommandDataOption> options, IServiceProvider services)
         {
             IList<SocketSlashCommandDataOption> args = options?.ToList();
             while(args != null && args.Any(x => x?.Type == ApplicationCommandOptionType.SubCommand || x?.Type == ApplicationCommandOptionType.SubCommandGroup))
                 args = args.ElementAt(0)?.Options?.ToList();
+
+            if (paramList?.Count() < options?.Count())
+                throw new InvalidOperationException("Command was invoked with too many parameters");
 
             var result = new List<object>();
 
@@ -182,17 +185,19 @@ namespace Discord.SlashCommands
                 }
                 else
                 {
-                    if (parameter.Attributes.Any(x => x is ParamArrayAttribute))
-                        foreach (var remaining in args)
-                        {
-                            result.Add(parameter.TypeReader(context, remaining, services));
-                            args?.Remove(arg);
-                        }    
-                    else
-                    {
-                        result.Add(parameter.TypeReader(context, arg, services));
-                        args?.Remove(arg);
-                    }
+                    var typeReader = parameter.TypeReader;
+
+                    if (!typeReader.CanConvertTo(parameter.ParameterType))
+                        throw new InvalidOperationException($"Type {nameof(parameter.ParameterType)} cannot be read by the registered Type Reader");
+
+                    var readResult = await typeReader.ReadAsync(context, arg, services).ConfigureAwait(false);
+
+                    if (!readResult.IsSuccess)
+                        throw new InvalidOperationException($"Argument Read was not successful: {readResult.ErrorReason}");
+
+                    result.Add(readResult.Value);
+
+                    args?.Remove(arg);
                 }
             }
 

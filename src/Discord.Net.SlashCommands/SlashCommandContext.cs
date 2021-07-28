@@ -18,6 +18,8 @@ namespace Discord.SlashCommands
         /// </summary>
         public bool IsPrivate => Channel is IPrivateChannel;
 
+        public InteractionType InvokerType => Interaction.Type;
+
         public SlashCommandContext (IDiscordClient client, IMessageChannel channel, IUser user, IDiscordInteraction interaction)
         {
             Client = client;

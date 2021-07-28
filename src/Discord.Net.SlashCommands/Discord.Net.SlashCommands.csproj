@@ -4,6 +4,7 @@
     <Version>3.0.0-dev-Interactions</Version>
     <Company>Discord.Net Contributors</Company>
     <Authors>Discord.Net Contributors</Authors>
+    <RootNamespace>Discord.SlashCommands</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +19,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.3.1" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
 </Project>
