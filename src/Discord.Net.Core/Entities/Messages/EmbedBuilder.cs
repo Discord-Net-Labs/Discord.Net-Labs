@@ -401,25 +401,29 @@ namespace Discord
         ///     The built embed object.
         /// </returns>
         /// <exception cref="InvalidOperationException">Total embed length exceeds <see cref="MaxEmbedLength"/>.</exception>
-        /// <exception cref="InvalidOperationException">Any Url must be well formatted include its protocols (i.e http:// or https://).</exception>
+        /// <exception cref="InvalidOperationException">Any Url must include its protocols (i.e http:// or https://).</exception>
         public Embed Build()
         {
             if (Length > MaxEmbedLength)
                 throw new InvalidOperationException($"Total embed length must be less than or equal to {MaxEmbedLength}.");
-            if (!string.IsNullOrEmpty(Url) && !Uri.IsWellFormedUriString(Url, UriKind.Absolute))
-                throw new InvalidOperationException("Url must be well formatted and include its protocol (either HTTP or HTTPS)");
-            if (!string.IsNullOrEmpty(ThumbnailUrl) && !Uri.IsWellFormedUriString(ThumbnailUrl, UriKind.Absolute))
-                throw new InvalidOperationException("Thumbnail Url must be well formatted and include its protocol (either HTTP or HTTPS)");
-            if (!string.IsNullOrEmpty(ImageUrl) && !Uri.IsWellFormedUriString(ImageUrl, UriKind.Absolute))
-                throw new InvalidOperationException("Image Url must be well formatted and include its protocol (either HTTP or HTTPS)");
+            if (!string.IsNullOrEmpty(Url) && (!(Url.ToLower().StartsWith("http://") || (Url.ToLower().StartsWith("https://")))))
+                throw new InvalidOperationException("Url must be include its protocol (either HTTP or HTTPS)");
+            if (!string.IsNullOrEmpty(ThumbnailUrl) && (!(ThumbnailUrl.ToLower().StartsWith("http://") || (ThumbnailUrl.ToLower().StartsWith("https://")))))
+                throw new InvalidOperationException("Thumbnail Url must include its protocol (either HTTP or HTTPS)");
+            if (!string.IsNullOrEmpty(ImageUrl) && (!(ImageUrl.ToLower().StartsWith("http://") || (ImageUrl.ToLower().StartsWith("https://")))))
+                throw new InvalidOperationException("Image Url must include its protocol (either HTTP or HTTPS)");
             if (Author != null)
             {
-                if(!string.IsNullOrEmpty(Author.Url) && !Uri.IsWellFormedUriString(Author.Url, UriKind.Absolute))
-                    throw new InvalidOperationException("Author Url must be well formatted and include its protocol (either HTTP or HTTPS)");
-                if (!string.IsNullOrEmpty(Author.IconUrl) && !Uri.IsWellFormedUriString(Author.IconUrl, UriKind.Absolute))
-                    throw new InvalidOperationException("Author Icon Url must be well formatted and include its protocol (either HTTP or HTTPS)");
+                if(!string.IsNullOrEmpty(Author.Url) && (!(Author.Url.ToLower().StartsWith("http://") || (Author.Url.ToLower().StartsWith("https://")))))
+                    throw new InvalidOperationException("Author Url must include its protocol (either HTTP or HTTPS)");
+                if (!string.IsNullOrEmpty(Author.IconUrl) && (!(Author.IconUrl.ToLower().StartsWith("http://") || (Author.IconUrl.ToLower().StartsWith("https://")))))
+                    throw new InvalidOperationException("Author Icon Url must include its protocol (either HTTP or HTTPS)");
             }
-
+            if(Footer != null)
+            {
+                if (!string.IsNullOrEmpty(Footer.IconUrl) && (!(Footer.IconUrl.ToLower().StartsWith("http://") || (Footer.IconUrl.ToLower().StartsWith("https://")))))
+                    throw new InvalidOperationException("Footer Icon Url must include its protocol (either HTTP or HTTPS)");
+            }
             var fields = ImmutableArray.CreateBuilder<EmbedField>(Fields.Count);
             for (int i = 0; i < Fields.Count; i++)
                 fields.Add(Fields[i].Build());

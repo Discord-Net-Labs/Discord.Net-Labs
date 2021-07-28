@@ -537,8 +537,8 @@ namespace Discord
             {
                     if (string.IsNullOrEmpty(this.Url))
                         throw new InvalidOperationException("Link buttons must have a link associated with them");
-                    else if (!Uri.IsWellFormedUriString(this.Url, UriKind.Absolute))
-                        throw new InvalidOperationException("Urls must be well formatted and include their protocol (either HTTP or HTTPS)");
+                    else if (!(this.Url.ToLower().StartsWith("http://") || (this.Url.ToLower().StartsWith("https://"))))
+                        throw new InvalidOperationException("Urls must include their protocol (either HTTP or HTTPS)");
             }
             
             else if (string.IsNullOrEmpty(this.CustomId))
