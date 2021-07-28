@@ -401,10 +401,24 @@ namespace Discord
         ///     The built embed object.
         /// </returns>
         /// <exception cref="InvalidOperationException">Total embed length exceeds <see cref="MaxEmbedLength"/>.</exception>
+        /// <exception cref="InvalidOperationException">Any Url must include protocols (i.e http:// or https://).</exception>
         public Embed Build()
         {
             if (Length > MaxEmbedLength)
                 throw new InvalidOperationException($"Total embed length must be less than or equal to {MaxEmbedLength}.");
+            if (!string.IsNullOrEmpty(Url) && !Uri.IsWellFormedUriString(Url, UriKind.Absolute))
+                throw new InvalidOperationException("Url must include protocol (either HTTP or HTTPS)");
+            if (!string.IsNullOrEmpty(ThumbnailUrl) && !Uri.IsWellFormedUriString(ThumbnailUrl, UriKind.Absolute))
+                throw new InvalidOperationException("Thumbnail Url must include protocol (either HTTP or HTTPS)");
+            if (!string.IsNullOrEmpty(ImageUrl) && !Uri.IsWellFormedUriString(ImageUrl, UriKind.Absolute))
+                throw new InvalidOperationException("Image Url must include protocol (either HTTP or HTTPS)");
+            if (Author != null)
+            {
+                if(!string.IsNullOrEmpty(Author.Url) && !Uri.IsWellFormedUriString(Author.Url, UriKind.Absolute))
+                    throw new InvalidOperationException("Author Url must include protocol (either HTTP or HTTPS)");
+                if (!string.IsNullOrEmpty(Author.IconUrl) && !Uri.IsWellFormedUriString(Author.IconUrl, UriKind.Absolute))
+                    throw new InvalidOperationException("Author Icon Url must include protocol (either HTTP or HTTPS)");
+            }
 
             var fields = ImmutableArray.CreateBuilder<EmbedField>(Fields.Count);
             for (int i = 0; i < Fields.Count; i++)
