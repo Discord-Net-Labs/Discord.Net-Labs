@@ -523,7 +523,7 @@ namespace Discord
         /// <exception cref="InvalidOperationException">A button must contain either a <see cref="Url"/> or a <see cref="CustomId"/>, but not both.</exception>
         /// <exception cref="InvalidOperationException">A button must have an <see cref="Emote"/> or a <see cref="Label"/>.</exception>
         /// <exception cref="InvalidOperationException">A link button must contain a URL.</exception>
-        /// <exception cref="InvalidOperationException">A link must include a protocol (http or https).</exception>
+        /// <exception cref="InvalidOperationException">A URL must include a protocol (http or https).</exception>
         /// <exception cref="InvalidOperationException">A non-link button must contain a custom id</exception>
         public ButtonComponent Build()
         {
