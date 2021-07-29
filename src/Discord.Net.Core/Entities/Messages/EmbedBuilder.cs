@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using Discord.Utils;
 
 namespace Discord
 {
@@ -406,23 +407,23 @@ namespace Discord
         {
             if (Length > MaxEmbedLength)
                 throw new InvalidOperationException($"Total embed length must be less than or equal to {MaxEmbedLength}.");
-            if (!string.IsNullOrEmpty(Url) && (!(Url.ToLower().StartsWith("http://") || (Url.ToLower().StartsWith("https://")))))
-                throw new InvalidOperationException("Url must be include its protocol (either HTTP or HTTPS)");
-            if (!string.IsNullOrEmpty(ThumbnailUrl) && (!(ThumbnailUrl.ToLower().StartsWith("http://") || (ThumbnailUrl.ToLower().StartsWith("https://")))))
-                throw new InvalidOperationException("Thumbnail Url must include its protocol (either HTTP or HTTPS)");
-            if (!string.IsNullOrEmpty(ImageUrl) && (!(ImageUrl.ToLower().StartsWith("http://") || (ImageUrl.ToLower().StartsWith("https://")))))
-                throw new InvalidOperationException("Image Url must include its protocol (either HTTP or HTTPS)");
+            if (!string.IsNullOrEmpty(Url))
+                UrlValidation.Validate(Url);
+            if (!string.IsNullOrEmpty(ThumbnailUrl))
+                UrlValidation.Validate(ThumbnailUrl);
+            if (!string.IsNullOrEmpty(ImageUrl))
+                UrlValidation.Validate(ImageUrl);
             if (Author != null)
             {
-                if(!string.IsNullOrEmpty(Author.Url) && (!(Author.Url.ToLower().StartsWith("http://") || (Author.Url.ToLower().StartsWith("https://")))))
-                    throw new InvalidOperationException("Author Url must include its protocol (either HTTP or HTTPS)");
-                if (!string.IsNullOrEmpty(Author.IconUrl) && (!(Author.IconUrl.ToLower().StartsWith("http://") || (Author.IconUrl.ToLower().StartsWith("https://")))))
-                    throw new InvalidOperationException("Author Icon Url must include its protocol (either HTTP or HTTPS)");
+                if (!string.IsNullOrEmpty(Author.Url))
+                    UrlValidation.Validate(Author.Url);
+                if (!string.IsNullOrEmpty(Author.IconUrl))
+                    UrlValidation.Validate(Author.IconUrl);
             }
             if(Footer != null)
             {
-                if (!string.IsNullOrEmpty(Footer.IconUrl) && (!(Footer.IconUrl.ToLower().StartsWith("http://") || (Footer.IconUrl.ToLower().StartsWith("https://")))))
-                    throw new InvalidOperationException("Footer Icon Url must include its protocol (either HTTP or HTTPS)");
+                if (!string.IsNullOrEmpty(Footer.IconUrl))
+                    UrlValidation.Validate(Footer.IconUrl);
             }
             var fields = ImmutableArray.CreateBuilder<EmbedField>(Fields.Count);
             for (int i = 0; i < Fields.Count; i++)
