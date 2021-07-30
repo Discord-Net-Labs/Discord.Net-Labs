@@ -118,7 +118,7 @@ namespace Discord
         /// <summary>
         ///     Allows for requesting to speak in stage channels. (This permission is under active development and may be changed or removed.)
         /// </summary>
-        RequesToSpeak       = 0x01_00_00_00_00,
+        RequestToSpeak       = 0x01_00_00_00_00,
 
         /// <summary>
         ///     Allows for deleting and archiving threads, and viewing all private threads
