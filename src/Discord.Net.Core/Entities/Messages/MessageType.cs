@@ -58,8 +58,31 @@ namespace Discord
         /// </summary>
         ChannelFollowAdd = 12,
         /// <summary>
+        ///     TBD
+        /// </summary>
+        GuildDiscoveryDisqualified = 14,
+        /// <summary>
+        ///     TBD
+        /// </summary>
+        GuildDiscoveryRequalified = 15,
+        /// <summary>
+        ///     TBD
+        /// </summary>
+        GuildDiscoveryGracePeriodInitialWarning = 16,
+        /// <summary>
+        ///     TBD
+        /// </summary>
+        GuildDiscoveryGracePeriodFinalWarning = 17,
+        /// <summary>
+        ///     TBD
+        /// </summary>
+        ThreadCreated = 18,
+        /// <summary>
         ///     The message is an inline reply.
         /// </summary>
+        /// <remarks>
+        ///     Only available in API v8
+        /// </remarks>
         Reply = 19,
         /// <summary>
         ///     The message is an Application Command
@@ -67,6 +90,17 @@ namespace Discord
         /// <remarks>
         ///     Only available in API v8
         /// </remarks>
-        ApplicationCommand = 20
+        ApplicationCommand = 20,
+        /// <summary>
+        ///     TBD
+        /// </summary>
+        /// <remarks>
+        ///     Only available in API v9
+        /// </remarks>
+        ThreadStarterMessage = 21,
+        /// <summary>
+        ///     TBD
+        /// </summary>
+        GuildInviteReminder = 22
     }
 }
