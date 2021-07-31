@@ -58,23 +58,23 @@ namespace Discord
         /// </summary>
         ChannelFollowAdd = 12,
         /// <summary>
-        ///     TBD
+        ///     The message for when a guild is disqualified from discovery.
         /// </summary>
         GuildDiscoveryDisqualified = 14,
         /// <summary>
-        ///     TBD
+        ///     The message for when a guild is requalified for discovery.
         /// </summary>
         GuildDiscoveryRequalified = 15,
         /// <summary>
-        ///     TBD
+        ///     The message for when the initial warning is sent for the initial grace period discovery.
         /// </summary>
         GuildDiscoveryGracePeriodInitialWarning = 16,
         /// <summary>
-        ///     TBD
+        ///     The message for when the final warning is sent for the initial grace period discovery.
         /// </summary>
         GuildDiscoveryGracePeriodFinalWarning = 17,
         /// <summary>
-        ///     TBD
+        ///     The message for when a thread is created.
         /// </summary>
         ThreadCreated = 18,
         /// <summary>
@@ -92,14 +92,14 @@ namespace Discord
         /// </remarks>
         ApplicationCommand = 20,
         /// <summary>
-        ///     TBD
+        ///     The message that starts a thread.
         /// </summary>
         /// <remarks>
         ///     Only available in API v9
         /// </remarks>
         ThreadStarterMessage = 21,
         /// <summary>
-        ///     TBD
+        ///     The message for a invite reminder
         /// </summary>
         GuildInviteReminder = 22
     }
