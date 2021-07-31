@@ -52,15 +52,19 @@ namespace Discord.WebSocket
         /// <inheritdoc/>
         public override async Task RespondAsync(
             string text = null,
-            Embed[] embeds = null,
+            Embed[] embeds = null,  
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,
             RequestOptions options = null,
-            MessageComponent component = null)
+            MessageComponent component = null,
+            Embed embed = null)
         {
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
+
+            if (embeds == null && embed != null)
+                embeds = new[] { embed };
 
             if (Discord.AlwaysAcknowledgeInteractions)
             {
@@ -87,8 +91,7 @@ namespace Discord.WebSocket
                     throw new ArgumentException("The Roles flag is mutually exclusive with the list of Role Ids.", nameof(allowedMentions));
                 }
             }
-
-
+               
             var response = new API.InteractionResponse
             {
                 Type = InteractionResponseType.ChannelMessageWithSource,
@@ -96,7 +99,7 @@ namespace Discord.WebSocket
                 {
                     Content = text,
                     AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
-                    Embeds = embeds?.Select(x => x.ToModel()).ToArray() ?? Optional<API.Embed[]>.Unspecified,
+                    Embeds = embeds?.Select(x => x.ToModel()).ToArray() ??  Optional<API.Embed[]>.Unspecified,
                     TTS = isTTS ? true : Optional<bool>.Unspecified,
                     Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified
                 }
@@ -116,11 +119,14 @@ namespace Discord.WebSocket
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,
             RequestOptions options = null,
-            MessageComponent component = null)
+            MessageComponent component = null,
+            Embed embed = null)
         {
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
+            if (embeds == null && embed != null)
+                embeds = new[] { embed };
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
             Preconditions.AtMost(embeds?.Length ?? 0, 10, nameof(embeds), "A max of 10 embeds are allowed.");
