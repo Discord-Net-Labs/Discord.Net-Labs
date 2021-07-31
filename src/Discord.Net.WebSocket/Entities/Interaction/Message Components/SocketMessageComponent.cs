@@ -70,7 +70,7 @@ namespace Discord.WebSocket
         /// <inheritdoc/>
         public override async Task RespondAsync(
             string text = null,
-            Embed[] embeds = null,           
+            Embed[] embeds = null,
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,

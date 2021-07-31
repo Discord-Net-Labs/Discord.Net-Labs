@@ -52,7 +52,7 @@ namespace Discord.WebSocket
         /// <inheritdoc/>
         public override async Task RespondAsync(
             string text = null,
-            Embed[] embeds = null,  
+            Embed[] embeds = null,
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,
@@ -99,7 +99,7 @@ namespace Discord.WebSocket
                 {
                     Content = text,
                     AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
-                    Embeds = embeds?.Select(x => x.ToModel()).ToArray() ??  Optional<API.Embed[]>.Unspecified,
+                    Embeds = embeds?.Select(x => x.ToModel()).ToArray() ?? Optional<API.Embed[]>.Unspecified,
                     TTS = isTTS ? true : Optional<bool>.Unspecified,
                     Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified
                 }
