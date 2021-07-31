@@ -1770,6 +1770,29 @@ namespace Discord.WebSocket
                                         }
                                     }
 
+                                    if (user is SocketGuildUser guildUser && data.ChannelId.HasValue)
+                                    {
+                                        SocketStageChannel stage = guildUser.Guild.GetStageChannel(data.ChannelId.Value);
+
+                                        if (stage != null)
+                                        {
+                                            if (!before.RequestToSpeakTimestamp.HasValue && after.RequestToSpeakTimestamp.HasValue)
+                                            {
+                                                await TimedInvokeAsync(_requestToSpeak, nameof(RequestToSpeak), stage, guildUser);
+                                                return;
+                                            }
+                                            if(before.IsSuppressed && !after.IsSuppressed)
+                                            {
+                                                await TimedInvokeAsync(_speakerAdded, nameof(SpeakerAdded), stage, guildUser);
+                                                return;
+                                            }
+                                            if(!before.IsSuppressed && after.IsSuppressed)
+                                            {
+                                                await TimedInvokeAsync(_speakerRemoved, nameof(SpeakerRemoved), stage, guildUser);
+                                            }
+                                        }    
+                                    }
+
                                     await TimedInvokeAsync(_userVoiceStateUpdatedEvent, nameof(UserVoiceStateUpdated), user, before, after).ConfigureAwait(false);
                                 }
                                 break;

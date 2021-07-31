@@ -1,3 +1,4 @@
+using Discord.Rest;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -5,10 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Model = Discord.API.Channel;
-using StageInstance = Discord.API.Gateway.StageInstance;
+using StageInstance = Discord.API.StageInstance;
 
 namespace Discord.WebSocket
 {
+    /// <summary>
+    ///     Represents a stage channel recieved over the gateway.
+    /// </summary>
     public class SocketStageChannel : SocketVoiceChannel, IStageChannel
     {
         /// <inheritdoc/>
@@ -35,7 +39,7 @@ namespace Discord.WebSocket
         internal SocketStageChannel(DiscordSocketClient discord, ulong id, SocketGuild guild)
             : base(discord, id, guild)
         {
-            
+
         }
 
         internal new static SocketStageChannel Create(SocketGuild guild, ClientState state, Model model)
@@ -60,6 +64,37 @@ namespace Discord.WebSocket
             {
                 this.Live = isLive.Value;
             }
+        }
+
+        /// <inheritdoc/>
+        public async Task StartStageAsync(string topic, StagePrivacyLevel privacyLevel = StagePrivacyLevel.GuildOnly, RequestOptions options = null)
+        {
+            var args = new API.Rest.CreateStageInstanceParams()
+            {
+                ChannelId = this.Id,
+                Topic = topic,
+                PrivacyLevel = privacyLevel,
+            };
+
+            var model = await Discord.ApiClient.CreateStageInstanceAsync(this.Id, args, options).ConfigureAwait(false);
+
+            this.Update(model, true);
+        }
+
+        /// <inheritdoc/>
+        public async Task ModifyInstanceAsync(Action<StageInstanceProperties> func, RequestOptions options = null)
+        {
+            var model = await ChannelHelper.ModifyAsync(this, Discord, func, options);
+
+            this.Update(model, true);
+        }
+
+        /// <inheritdoc/>
+        public async Task StopStageAsync(RequestOptions options = null)
+        {
+            await Discord.ApiClient.DeleteStageInstanceAsync(this.Id, options);
+
+            this.Live = false;
         }
 
         IReadOnlyCollection<IGuildUser> IStageChannel.Speakers => Speakers;

@@ -620,7 +620,38 @@ namespace Discord.WebSocket
             add { _stageUpdated.Add(value); }
             remove { _stageUpdated.Remove(value); }
         }
-        internal readonly AsyncEvent<Func<SocketStageChannel, SocketStageChannel, Task>> _stageUpdated = new AsyncEvent<Func<SocketStageChannel, Task>>();
+        internal readonly AsyncEvent<Func<SocketStageChannel, SocketStageChannel, Task>> _stageUpdated = new AsyncEvent<Func<SocketStageChannel, SocketStageChannel, Task>>();
+
+        /// <summary>
+        ///     Fired when a user requests to speak within a stage channel.
+        /// </summary>
+        public event Func<SocketStageChannel, SocketGuildUser, Task> RequestToSpeak
+        {
+            add { _requestToSpeak.Add(value); }
+            remove { _requestToSpeak.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketStageChannel, SocketGuildUser, Task>> _requestToSpeak = new AsyncEvent<Func<SocketStageChannel, SocketGuildUser, Task>>();
+
+        /// <summary>
+        ///     Fired when a speaker is added in a stage channel.
+        /// </summary>
+        public event Func<SocketStageChannel, SocketGuildUser, Task> SpeakerAdded
+        {
+            add { _speakerAdded.Add(value); }
+            remove { _speakerAdded.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketStageChannel, SocketGuildUser, Task>> _speakerAdded = new AsyncEvent<Func<SocketStageChannel, SocketGuildUser, Task>>();
+
+        /// <summary>
+        ///     Fired when a speaker is removed from a stage channel.
+        /// </summary>
+        public event Func<SocketStageChannel, SocketGuildUser, Task> SpeakerRemoved
+        {
+            add { _speakerRemoved.Add(value); }
+            remove { _speakerRemoved.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketStageChannel, SocketGuildUser, Task>> _speakerRemoved = new AsyncEvent<Func<SocketStageChannel, SocketGuildUser, Task>>();
+
 
     }
 }
