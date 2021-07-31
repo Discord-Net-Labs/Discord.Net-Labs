@@ -2180,6 +2180,47 @@ namespace Discord.WebSocket
 
                                 break;
 
+                            case "STAGE_INSTANCE_CREATE" or "STAGE_INSTANCE_UPDATE" or "STAGE_INSTANCE_DELETE":
+                                {
+                                    await _gatewayLogger.DebugAsync($"Received Dispatch ({type})").ConfigureAwait(false);
+
+                                    var data = (payload as JToken).ToObject<StageInstance>(_serializer);
+
+                                    var guild = State.GetGuild(data.GuildId);
+
+                                    if(guild == null)
+                                    {
+                                        await UnknownGuildAsync(type, data.GuildId).ConfigureAwait(false);
+                                        return;
+                                    }
+
+                                    var stageChannel = guild.GetStageChannel(data.Id);
+
+                                    if(stageChannel == null)
+                                    {
+                                        await UnknownChannelAsync(type, data.ChannelId).ConfigureAwait(false);
+                                        return;
+                                    }
+
+                                    SocketStageChannel before = type == "STAGE_INSTANCE_UPDATE" ? stageChannel.Clone() : null;
+
+                                    stageChannel.Update(data, type == "STAGE_INSTANCE_CREATE" ? true : type == "STAGE_INSTANCE_DELETE" ? false : null);
+
+                                    switch (type)
+                                    {
+                                        case "STAGE_INSTANCE_CREATE":
+                                            await TimedInvokeAsync(_stageStarted, nameof(StageStarted), stageChannel);
+                                            return;
+                                        case "STAGE_INSTANCE_DELETE":
+                                            await TimedInvokeAsync(_stageEnded, nameof(StageEnded), stageChannel);
+                                            return;
+                                        case "STAGE_INSTANCE_UPDATE":
+                                            await TimedInvokeAsync(_stageUpdated, nameof(StageUpdated), before, stageChannel);
+                                            return;
+                                    }
+                                }
+                                break;
+
                             //Ignored (User only)
                             case "CHANNEL_PINS_ACK":
                                 await _gatewayLogger.DebugAsync("Ignored Dispatch (CHANNEL_PINS_ACK)").ConfigureAwait(false);

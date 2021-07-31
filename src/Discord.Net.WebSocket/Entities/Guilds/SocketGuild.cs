@@ -639,6 +639,15 @@ namespace Discord.WebSocket
         public SocketVoiceChannel GetVoiceChannel(ulong id)
             => GetChannel(id) as SocketVoiceChannel;
         /// <summary>
+        ///     Gets a stage channel in this guild.
+        /// </summary>
+        /// <param name="id">The snowflake identifier for the stage channel.</param>
+        /// <returns>
+        ///     A stage channel associated with the specified <paramref name="id" />; <see langword="null"/> if none is found.
+        /// </returns>
+        public SocketStageChannel GetStageChannel(ulong id)
+            => GetChannel(id) as SocketStageChannel;
+        /// <summary>
         ///     Gets a category channel in this guild.
         /// </summary>
         /// <param name="id">The snowflake identifier for the category channel.</param>

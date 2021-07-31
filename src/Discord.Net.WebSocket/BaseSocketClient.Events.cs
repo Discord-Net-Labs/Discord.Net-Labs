@@ -592,5 +592,35 @@ namespace Discord.WebSocket
         }
         internal readonly AsyncEvent<Func<SocketThreadUser, Task>> _threadMemberLeft = new AsyncEvent<Func<SocketThreadUser, Task>>();
 
+        /// <summary>
+        ///     Fired when a stage is started.
+        /// </summary>
+        public event Func<SocketStageChannel, Task> StageStarted
+        {
+            add { _stageStarted.Add(value); }
+            remove { _stageStarted.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketStageChannel, Task>> _stageStarted = new AsyncEvent<Func<SocketStageChannel, Task>>();
+
+        /// <summary>
+        ///     Fired when a stage ends.
+        /// </summary>
+        public event Func<SocketStageChannel, Task> StageEnded
+        {
+            add { _stageEnded.Add(value); }
+            remove { _stageEnded.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketStageChannel, Task>> _stageEnded = new AsyncEvent<Func<SocketStageChannel, Task>>();
+
+        /// <summary>
+        ///     Fired when a stage is updated.
+        /// </summary>
+        public event Func<SocketStageChannel, SocketStageChannel, Task> StageUpdated
+        {
+            add { _stageUpdated.Add(value); }
+            remove { _stageUpdated.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketStageChannel, SocketStageChannel, Task>> _stageUpdated = new AsyncEvent<Func<SocketStageChannel, Task>>();
+
     }
 }
