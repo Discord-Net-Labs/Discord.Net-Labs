@@ -578,13 +578,12 @@ namespace Discord.API
         }
 
         // stage
-        public async Task<StageInstance> CreateStageInstanceAsync(ulong channelId, CreateStageInstanceParams args, RequestOptions options = null)
+        public async Task<StageInstance> CreateStageInstanceAsync(CreateStageInstanceParams args, RequestOptions options = null)
         {
-            Preconditions.NotEqual(channelId, 0, nameof(channelId));
-
+           
             options = RequestOptions.CreateOrClone(options);
 
-            var bucket = new BucketIds(channelId: channelId);
+            var bucket = new BucketIds();
 
             return await SendJsonAsync<StageInstance>("POST", () => $"stage-instances", args, bucket, options: options).ConfigureAwait(false);
         }

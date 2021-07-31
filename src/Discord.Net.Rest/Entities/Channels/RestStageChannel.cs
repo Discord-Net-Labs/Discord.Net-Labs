@@ -1,19 +1,17 @@
-using Discord.Rest;
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Model = Discord.API.Channel;
 using StageInstance = Discord.API.StageInstance;
 
-namespace Discord.WebSocket
+namespace Discord.Rest
 {
     /// <summary>
-    ///     Represents a stage channel recieved over the gateway.
+    ///     Represents a REST-based stage channel in a guild.
     /// </summary>
-    public class SocketStageChannel : SocketVoiceChannel, IStageChannel
+    public class RestStageChannel : RestVoiceChannel, IStageChannel
     {
         /// <inheritdoc/>
         public string Topic { get; private set; }
@@ -25,39 +23,24 @@ namespace Discord.WebSocket
         public bool? DiscoverableDisabled { get; private set; }
 
         /// <inheritdoc/>
-        public bool Live { get; private set; } = false;
-
-        /// <summary>
-        ///     Gets a collection of users who are speakers within the stage.
-        /// </summary>
-        public IReadOnlyCollection<SocketGuildUser> Speakers
-            => this.Users.Where(x => !x.IsSuppressed).ToImmutableArray();
-
-        internal new SocketStageChannel Clone() => MemberwiseClone() as SocketStageChannel;
-
-
-        internal SocketStageChannel(DiscordSocketClient discord, ulong id, SocketGuild guild)
-            : base(discord, id, guild)
+        public bool Live { get; private set; }
+        internal RestStageChannel(BaseDiscordClient discord, IGuild guild, ulong id)
+            : base(discord, guild, id)
         {
 
         }
 
-        internal new static SocketStageChannel Create(SocketGuild guild, ClientState state, Model model)
+        internal static new RestStageChannel Create(BaseDiscordClient discord, IGuild guild, Model model)
         {
-            var entity = new SocketStageChannel(guild.Discord, model.Id, guild);
-            entity.Update(state, model);
+            var entity = new RestStageChannel(discord, guild, model.Id);
+            entity.Update(model);
             return entity;
-        }
-
-        internal override void Update(ClientState state, Model model)
-        {
-            base.Update(state, model);
         }
 
         internal void Update(StageInstance model, bool isLive = false)
         {
             this.Live = isLive;
-            if (isLive)
+            if(isLive)
             {
                 this.Topic = model.Topic;
                 this.PrivacyLevel = model.PrivacyLevel;
@@ -72,26 +55,26 @@ namespace Discord.WebSocket
         }
 
         /// <inheritdoc/>
+        public async Task ModifyInstanceAsync(Action<StageInstanceProperties> func, RequestOptions options = null)
+        {
+            var model = await ChannelHelper.ModifyAsync(this, Discord, func, options);
+
+            Update(model, true);
+        }
+
+        /// <inheritdoc/>
         public async Task StartStageAsync(string topic, StagePrivacyLevel privacyLevel = StagePrivacyLevel.GuildOnly, RequestOptions options = null)
         {
             var args = new API.Rest.CreateStageInstanceParams()
             {
                 ChannelId = this.Id,
-                Topic = topic,
                 PrivacyLevel = privacyLevel,
+                Topic = topic
             };
 
-            var model = await Discord.ApiClient.CreateStageInstanceAsync(args, options).ConfigureAwait(false);
+            var model = await Discord.ApiClient.CreateStageInstanceAsync(args, options);
 
-            this.Update(model, true);
-        }
-
-        /// <inheritdoc/>
-        public async Task ModifyInstanceAsync(Action<StageInstanceProperties> func, RequestOptions options = null)
-        {
-            var model = await ChannelHelper.ModifyAsync(this, Discord, func, options);
-
-            this.Update(model, true);
+            Update(model, true);
         }
 
         /// <inheritdoc/>
