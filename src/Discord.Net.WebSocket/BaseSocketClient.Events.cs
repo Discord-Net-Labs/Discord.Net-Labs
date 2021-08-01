@@ -540,5 +540,57 @@ namespace Discord.WebSocket
             remove { _applicationCommandDeleted.Remove(value); }
         }
         internal readonly AsyncEvent<Func<SocketApplicationCommand, Task>> _applicationCommandDeleted = new AsyncEvent<Func<SocketApplicationCommand, Task>>();
+
+        /// <summary>
+        ///     Fired when a thread is created within a guild.
+        /// </summary>
+        public event Func<SocketThreadChannel, Task> ThreadCreated
+        {
+            add { _threadCreated.Add(value); }
+            remove { _threadCreated.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketThreadChannel, Task>> _threadCreated = new AsyncEvent<Func<SocketThreadChannel, Task>>();
+
+        /// <summary>
+        ///     Fired when a thread is updated within a guild.
+        /// </summary>
+        public event Func<SocketThreadChannel, SocketThreadChannel, Task> ThreadUpdated
+        {
+            add { _threadUpdated.Add(value); }
+            remove { _threadUpdated.Remove(value); }
+        }
+
+        internal readonly AsyncEvent<Func<SocketThreadChannel, SocketThreadChannel, Task>> _threadUpdated = new AsyncEvent<Func<SocketThreadChannel, SocketThreadChannel, Task>>();
+
+        /// <summary>
+        ///     Fired when a thread is deleted.
+        /// </summary>
+        public event Func<Cacheable<SocketThreadChannel, ulong>, Task> ThreadDeleted
+        {
+            add { _threadDeleted.Add(value); }
+            remove { _threadDeleted.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<Cacheable<SocketThreadChannel, ulong>, Task>> _threadDeleted = new AsyncEvent<Func<Cacheable<SocketThreadChannel, ulong>, Task>>();
+
+        /// <summary>
+        ///     Fired when a user joins a thread
+        /// </summary>
+        public event Func<SocketThreadUser, Task> ThreadMemberJoined
+        {
+            add { _threadMemberJoined.Add(value); }
+            remove { _threadMemberJoined.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketThreadUser, Task>> _threadMemberJoined = new AsyncEvent<Func<SocketThreadUser, Task>>();
+
+        /// <summary>
+        ///     Fired when a user leaves a thread
+        /// </summary>
+        public event Func<SocketThreadUser, Task> ThreadMemberLeft
+        {
+            add { _threadMemberLeft.Add(value); }
+            remove { _threadMemberLeft.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketThreadUser, Task>> _threadMemberLeft = new AsyncEvent<Func<SocketThreadUser, Task>>();
+
     }
 }
