@@ -69,5 +69,7 @@ namespace Discord
         ///     A task that represents the asynchronous stop operation.
         /// </returns>
         Task StopStageAsync(RequestOptions options = null);
+
+        Task RequestToSpeak(RequestOptions options = null);
     }
 }

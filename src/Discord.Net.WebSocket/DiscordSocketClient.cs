@@ -2227,7 +2227,7 @@ namespace Discord.WebSocket
 
                                     SocketStageChannel before = type == "STAGE_INSTANCE_UPDATE" ? stageChannel.Clone() : null;
 
-                                    stageChannel.Update(data, type == "STAGE_INSTANCE_CREATE" ? true : type == "STAGE_INSTANCE_DELETE" ? false : null);
+                                    stageChannel.Update(data, type == "STAGE_INSTANCE_CREATE" ? true : type == "STAGE_INSTANCE_DELETE" ? false : false);
 
                                     switch (type)
                                     {

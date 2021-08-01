@@ -84,5 +84,15 @@ namespace Discord.Rest
 
             Update(null, false);
         }
+
+        /// <inheritdoc/>
+        public override async Task UpdateAsync(RequestOptions options = null)
+        {
+            await base.UpdateAsync(options);
+
+            var model = await Discord.ApiClient.GetStageInstanceAsync(this.Id, options);
+
+            Update(model, model != null);
+        }
     }
 }

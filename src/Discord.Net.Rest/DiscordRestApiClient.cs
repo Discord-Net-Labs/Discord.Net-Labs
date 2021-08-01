@@ -605,7 +605,11 @@ namespace Discord.API
 
             options = RequestOptions.CreateOrClone(options);
 
-            await SendAsync("DELETE", $"stage-instances/{channelId}", options: options).ConfigureAwait(false);
+            try
+            {
+                await SendAsync("DELETE", $"stage-instances/{channelId}", options: options).ConfigureAwait(false);
+            }
+            catch (HttpException httpEx) when (httpEx.HttpCode == HttpStatusCode.NotFound) { }
         }
 
         public async Task<StageInstance> GetStageInstanceAsync(ulong channelId, RequestOptions options = null)
@@ -616,7 +620,25 @@ namespace Discord.API
 
             var bucket = new BucketIds(channelId: channelId);
 
-            return await SendAsync<StageInstance>("POST", () => $"stage-instances/{channelId}", bucket, options: options).ConfigureAwait(false);
+            try
+            {
+                return await SendAsync<StageInstance>("POST", () => $"stage-instances/{channelId}", bucket, options: options).ConfigureAwait(false);
+            }
+            catch(HttpException httpEx) when (httpEx.HttpCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+        }
+
+        public async Task ModifyMyVoiceState(ulong guildId, ModifyVoiceStateParams args, RequestOptions options = null)
+        {
+            Preconditions.NotEqual(guildId, 0, nameof(guildId));
+
+            options = RequestOptions.CreateOrClone(options);
+
+            var bucket = new BucketIds();
+
+            await SendJsonAsync("PATCH", () => $"guilds/{guildId}/voice-states/@me", args, bucket, options: options).ConfigureAwait(false);
         }
 
         // roles

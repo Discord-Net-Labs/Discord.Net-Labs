@@ -101,5 +101,16 @@ namespace Discord.WebSocket
 
             Update(null, false);
         }
+
+        /// <inheritdoc/>
+        public Task RequestToSpeak(RequestOptions options = null)
+        {
+            var args = new API.Rest.ModifyVoiceStateParams()
+            {
+                ChannelId = this.Id,
+                RequestToSpeakTimestamp = DateTimeOffset.UtcNow
+            };
+            return Discord.ApiClient.ModifyMyVoiceState(this.Guild.Id, args, options);
+        }
     }
 }
