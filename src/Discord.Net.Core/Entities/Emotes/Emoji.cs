@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace Discord
@@ -5942,12 +5943,21 @@ namespace Discord
       ["♡"] = "❤️"
         };
 
-        private static IReadOnlyDictionary<string, string> _unicodesAndNames;
-        private static IReadOnlyDictionary<string, string> UnicodesAndNames
+        private static IReadOnlyDictionary<string, ReadOnlyCollection<string>> _unicodesAndNames;
+        private static IReadOnlyDictionary<string, ReadOnlyCollection<string>> UnicodesAndNames
         {
             get
             {
-                _unicodesAndNames ??= NamesAndUnicodes.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+                _unicodesAndNames ??= new System.Collections.ObjectModel.ReadOnlyDictionary<string, ReadOnlyCollection<string>>(
+                    NamesAndUnicodes
+                        .GroupBy(kvp => kvp.Value)
+                        .ToDictionary(
+                            grouping => grouping.Key,
+                            grouping => grouping.Select(kvp => kvp.Key)
+                                .ToList()
+                                .AsReadOnly()
+                            )
+                    );
                 return _unicodesAndNames;
             }
         }
