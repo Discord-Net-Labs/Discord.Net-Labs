@@ -47,5 +47,16 @@ namespace Discord.SlashCommands
             Type = SlashCommandChoiceType.Integer;
             Value = value;
         }
+
+        /// <summary>
+        /// Create a parameter choice with type <see cref="SlashCommandChoiceType.Number"/>
+        /// </summary>
+        /// <param name="name">Name of the choice</param>
+        /// <param name="value">Predefined value of the choice</param>
+        public ChoiceAttribute (string name, double value) : this(name)
+        {
+            Type = SlashCommandChoiceType.Number;
+            Value = value;
+        }
     }
 }

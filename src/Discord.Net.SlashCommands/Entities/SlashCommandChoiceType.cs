@@ -12,6 +12,10 @@ namespace Discord.SlashCommands
         /// <summary>
         /// Discord type for <see cref="int"/>
         /// </summary>
-        Integer
+        Integer,
+        /// <summary>
+        /// Discord type for <see cref="double"/>
+        /// </summary>
+        Number
     }
 }

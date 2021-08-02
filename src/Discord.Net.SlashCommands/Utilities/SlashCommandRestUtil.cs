@@ -10,18 +10,26 @@ namespace Discord.SlashCommands
         // Parameters
         public static API.ApplicationCommandOption ParseApplicationCommandOption (this SlashParameterInfo parameterInfo)
         {
+
+            var props = new ApplicationCommandOptionProperties();
+            parameterInfo.TypeReader.Write(props);
+
             var option = new API.ApplicationCommandOption
             {
-                Name = parameterInfo.Name.ToLower(),
-                Description = parameterInfo.Description.ToLower(),
-                Required = parameterInfo.IsRequired,
+                Name = props.Name ?? parameterInfo.Name.ToLower(),
+                Description = props.Description ?? parameterInfo.Description.ToLower(),
+                Required = props.Required ?? parameterInfo.IsRequired,
                 Type = parameterInfo.DiscordOptionType,
-                Choices = parameterInfo.Choices != null ?
-                parameterInfo.Choices.Select(x => new ApplicationCommandOptionChoice
+                Choices = props.Choices != null ? props.Choices.Select(x => new ApplicationCommandOptionChoice
                 {
                     Name = x.Name,
                     Value = x.Value
-                }).ToArray() : null,
+                }).ToArray() :
+                parameterInfo.Choices?.Select(x => new ApplicationCommandOptionChoice
+                {
+                    Name = x.Name,
+                    Value = x.Value
+                }).ToArray(),
                 Options = null
             };
 

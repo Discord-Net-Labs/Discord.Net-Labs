@@ -7554,10 +7554,38 @@
                 The message for when a news channel subscription is added to a text channel.
             </summary>
         </member>
+        <member name="F:Discord.MessageType.GuildDiscoveryDisqualified">
+            <summary>
+                The message for when a guild is disqualified from discovery.
+            </summary>
+        </member>
+        <member name="F:Discord.MessageType.GuildDiscoveryRequalified">
+            <summary>
+                The message for when a guild is requalified for discovery.
+            </summary>
+        </member>
+        <member name="F:Discord.MessageType.GuildDiscoveryGracePeriodInitialWarning">
+            <summary>
+                The message for when the initial warning is sent for the initial grace period discovery.
+            </summary>
+        </member>
+        <member name="F:Discord.MessageType.GuildDiscoveryGracePeriodFinalWarning">
+            <summary>
+                The message for when the final warning is sent for the initial grace period discovery.
+            </summary>
+        </member>
+        <member name="F:Discord.MessageType.ThreadCreated">
+            <summary>
+                The message for when a thread is created.
+            </summary>
+        </member>
         <member name="F:Discord.MessageType.Reply">
             <summary>
                 The message is an inline reply.
             </summary>
+            <remarks>
+                Only available in API v8
+            </remarks>
         </member>
         <member name="F:Discord.MessageType.ApplicationCommand">
             <summary>
@@ -7566,6 +7594,19 @@
             <remarks>
                 Only available in API v8
             </remarks>
+        </member>
+        <member name="F:Discord.MessageType.ThreadStarterMessage">
+            <summary>
+                The message that starts a thread.
+            </summary>
+            <remarks>
+                Only available in API v9
+            </remarks>
+        </member>
+        <member name="F:Discord.MessageType.GuildInviteReminder">
+            <summary>
+                The message for a invite reminder
+            </summary>
         </member>
         <member name="T:Discord.ReactionMetadata">
             <summary>

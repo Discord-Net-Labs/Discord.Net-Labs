@@ -177,10 +177,10 @@ namespace Discord.WebSocket
         async Task<IUserMessage> IDiscordInteraction.GetOriginalResponseAsync (RequestOptions options) =>
             await GetOriginalResponseAsync(options).ConfigureAwait(false);            
         async Task IDiscordInteraction.RespondAsync (string text, bool isTTS, Embed[] embeds, InteractionResponseType type, bool ephemeral,
-            AllowedMentions allowedMentions, RequestOptions options, MessageComponent component) =>
-            await RespondAsync(embeds, text, isTTS, type, ephemeral, allowedMentions, options, component).ConfigureAwait(false);
+            AllowedMentions allowedMentions, RequestOptions options, MessageComponent component, Embed embed) =>
+            await RespondAsync(text, embeds, isTTS, ephemeral, allowedMentions, options, component, embed).ConfigureAwait(false);
         async Task<IUserMessage> IDiscordInteraction.FollowupAsync (string text, bool isTTS, Embed[] embeds, InteractionResponseType type, bool ephemeral,
-            AllowedMentions allowedMentions, RequestOptions options, MessageComponent component) =>
-            await FollowupAsync(embeds, text, isTTS, ephemeral, type, allowedMentions, options, component).ConfigureAwait(false);
+            AllowedMentions allowedMentions, RequestOptions options, MessageComponent component, Embed embed) =>
+            await FollowupAsync(text, embeds, isTTS, ephemeral, allowedMentions, options, component, embed).ConfigureAwait(false);
     }
 }

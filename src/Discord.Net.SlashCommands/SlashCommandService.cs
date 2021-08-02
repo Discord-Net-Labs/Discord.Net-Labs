@@ -87,7 +87,6 @@ namespace Discord.SlashCommands
             _lock = new SemaphoreSlim(1, 1);
             _typedModuleDefs = new ConcurrentDictionary<Type, SlashModuleInfo>();
             _moduleDefs = new HashSet<SlashModuleInfo>();
-            _typeReaders = new ConcurrentDictionary<Type, TypeReader>();
 
             _logManager = new LogManager(config.LogLevel);
             _logManager.Message += async msg => await _logEvent.InvokeAsync(msg).ConfigureAwait(false);
@@ -108,6 +107,10 @@ namespace Discord.SlashCommands
             _genericTypeReaders[typeof(IUser)] = typeof(DefaultUserReader<>);
             _genericTypeReaders[typeof(IMentionable)] = typeof(DefaultMentionableReader<>);
             _genericTypeReaders[typeof(IConvertible)] = typeof(DefaultValueTypeReader<>);
+            _genericTypeReaders[typeof(Enum)] = typeof(EnumTypeReader<>);
+
+            _typeReaders = new ConcurrentDictionary<Type, TypeReader>();
+            _typeReaders[typeof(TimeSpan)] = new TimeSpanTypeReader();
         }
 
         /// <summary>
@@ -329,8 +332,6 @@ namespace Discord.SlashCommands
         /// <returns></returns>
         public async Task ExecuteCommandAsync (ISlashCommandContext context, string[] input, IServiceProvider services)
         {
-            services = services ?? EmptyServiceProvider.Instance;
-
             var result = _commandMap.GetCommand(input);
 
             if (!result.IsSuccess)
@@ -360,8 +361,6 @@ namespace Discord.SlashCommands
         /// <returns></returns>
         public async Task ExecuteInteractionAsync (ISlashCommandContext context, string input, IServiceProvider services)
         {
-            services = services ?? EmptyServiceProvider.Instance;
-
             var result = _interactionCommandMap.GetCommand(input);
 
             if (!result.IsSuccess)
@@ -389,7 +388,7 @@ namespace Discord.SlashCommands
 
             else if(_genericTypeReaders.Any(x => x.Key.IsAssignableFrom(type)))
             {
-                var readerType = _genericTypeReaders.First(x => x.Key.IsAssignableFrom(type)).Value;
+                var readerType = GetMostSpecificTypeReader(type);
                 var reader = readerType.MakeGenericType(type).GetConstructor(Array.Empty<Type>()).Invoke(Array.Empty<object>()) as TypeReader;
                 _typeReaders[type] = reader;
                 return reader;
@@ -412,10 +411,23 @@ namespace Discord.SlashCommands
         public bool RemoveTypeReader (Type type) =>
             _typeReaders.TryRemove(type, out var _);
 
+        public void AddGenericTypeReader<T> (Type typeReader) =>
+            AddGenericTypeReader(typeof(T), typeReader);
+
         public void AddGenericTypeReader (Type type, Type readerType )
         {
             if (!readerType.IsGenericTypeDefinition)
                 throw new ArgumentException($"{nameof(TypeReader)} is not generic.");
+
+            var genericArguments = readerType.GetGenericArguments();
+
+            if (genericArguments.Count() > 1)
+                throw new InvalidOperationException($"Valid generic {nameof(TypeReader)}s cannot have more than 1 generic type parameter");
+
+            var constraints = genericArguments.SelectMany(x => x.GetGenericParameterConstraints());
+
+            if (!constraints.Any(x => x.IsAssignableFrom(type)))
+                throw new InvalidOperationException($"This generic class does not support type {type.FullName}");
 
             _genericTypeReaders[type] = readerType;
         }
@@ -429,6 +441,22 @@ namespace Discord.SlashCommands
         public void Dispose ( )
         {
             _lock.Dispose();
+        }
+
+        private Type GetMostSpecificTypeReader ( Type type )
+        {
+            var scorePairs = new Dictionary<Type, int>();
+
+            var validReaders = _genericTypeReaders.Where(x => x.Key.IsAssignableFrom(type));
+
+            foreach(var typeReaderPair in validReaders)
+            {
+                var score = validReaders.Count(x => typeReaderPair.Key.IsAssignableFrom(x.Key));
+
+                scorePairs.Add(typeReaderPair.Value, score);
+            }
+
+            return scorePairs.OrderBy(x => x.Value).ElementAt(0).Key;
         }
     }
 }

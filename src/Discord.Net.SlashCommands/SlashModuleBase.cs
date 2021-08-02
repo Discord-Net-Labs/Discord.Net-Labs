@@ -1,5 +1,3 @@
-using Discord.API;
-using Discord.Rest;
 using Discord.SlashCommands.Builders;
 using Discord.WebSocket;
 using System;
@@ -49,6 +47,10 @@ namespace Discord.SlashCommands
         protected virtual async Task FolloupAsync (string text = null, bool isTTS = false, Embed[] embeds = null, InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
             bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null) =>
             await Context.Interaction.FollowupAsync(text, isTTS, embeds, type, ephemeral, allowedMentions, options, component).ConfigureAwait(false);
+
+        protected virtual async Task ReplyAsync (string text = null, bool isTTS = false, Embed embed = null, RequestOptions options = null,
+            AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null) =>
+            await Context.Channel.SendMessageAsync(text, false, embed, options, allowedMentions, messageReference, component).ConfigureAwait(false);
 
         protected virtual async Task<SocketInteraction> WaitNextAsync (TimeSpan timeout, Predicate<SocketInteraction> predicate)
         {
