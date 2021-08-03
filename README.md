@@ -53,9 +53,9 @@ private async Task Client_InteractionCreated(SocketInteraction interaction)
 }
 ```
 
-### Handling slash commands with very simple handler
+### Simple handling slash commands
 ```cs
-private async Task MyMessageComponentHandler(SocketSlashCommand interaction)
+private async Task MySlashCommandHandler(SocketSlashCommand interaction)
 {
     // Checking command name
     if (interaction.Data.Name == "ping")
@@ -70,7 +70,7 @@ private async Task MyMessageComponentHandler(SocketSlashCommand interaction)
 }
 ```
 
-### Handling button clicks and selection dropdowns with very simple handler
+### Simple handling button clicks and selection dropdowns
 ```cs
 private async Task MyMessageComponentHandler(SocketMessageComponent interaction)
 {
