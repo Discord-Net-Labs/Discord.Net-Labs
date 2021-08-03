@@ -5943,21 +5943,21 @@ namespace Discord
       ["♡"] = "❤️"
         };
 
+
         private static IReadOnlyDictionary<string, ReadOnlyCollection<string>> _unicodesAndNames;
         private static IReadOnlyDictionary<string, ReadOnlyCollection<string>> UnicodesAndNames
         {
             get
             {
-                _unicodesAndNames ??= new System.Collections.ObjectModel.ReadOnlyDictionary<string, ReadOnlyCollection<string>>(
+                _unicodesAndNames ??=
                     NamesAndUnicodes
                         .GroupBy(kvp => kvp.Value)
-                        .ToDictionary(
+                        .ToImmutableDictionary(
                             grouping => grouping.Key,
                             grouping => grouping.Select(kvp => kvp.Key)
                                 .ToList()
                                 .AsReadOnly()
-                            )
-                    );
+                        );
                 return _unicodesAndNames;
             }
         }
