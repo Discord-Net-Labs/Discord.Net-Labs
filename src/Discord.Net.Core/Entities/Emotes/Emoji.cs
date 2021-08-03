@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
 
@@ -57,7 +58,7 @@ namespace Discord
             if (NamesAndUnicodes.ContainsKey(text))
                 result = new Emoji(NamesAndUnicodes[text]);
 
-            if (UnicodesAndNames.ContainsKey(text))
+            if (Unicodes.Contains(text))
                 result = new Emoji(text);
 
             return result != null;
@@ -5943,6 +5944,15 @@ namespace Discord
       ["♡"] = "❤️"
         };
 
+        private static IReadOnlyCollection<string> _unicodes;
+        private static IReadOnlyCollection<string> Unicodes
+        {
+            get
+            {
+                _unicodes ??= NamesAndUnicodes.Select(kvp => kvp.Value).ToImmutableHashSet();
+                return _unicodes;
+            }
+        }
 
         private static IReadOnlyDictionary<string, ReadOnlyCollection<string>> _unicodesAndNames;
         private static IReadOnlyDictionary<string, ReadOnlyCollection<string>> UnicodesAndNames
