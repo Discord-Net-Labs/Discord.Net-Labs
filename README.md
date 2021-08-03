@@ -34,7 +34,8 @@ client.InteractionCreated += Client_InteractionCreated;
 ...
 private async Task Client_InteractionCreated(SocketInteraction interaction)
 {
-  switch (interaction) // We want to check the type of this interaction
+  // Checking the type of this interaction
+  switch (interaction)
   {
     // Slash commands
     case SocketSlashCommand commandInteraction:
