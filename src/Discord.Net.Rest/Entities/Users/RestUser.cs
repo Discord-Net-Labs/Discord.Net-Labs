@@ -102,7 +102,7 @@ namespace Discord.Rest
 
         /// <inheritdoc />
         public string GetBannerUrl(ImageFormat format = ImageFormat.Auto, ushort size = 128)
-            => CDN.GetUserAvatarUrl(Id, BannerId, size, format);
+            => CDN.GetUserBannerUrl(Id, BannerId, size, format);
 
         /// <inheritdoc />
         public string GetDefaultAvatarUrl()
