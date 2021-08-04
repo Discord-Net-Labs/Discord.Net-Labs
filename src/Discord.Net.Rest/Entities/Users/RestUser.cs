@@ -66,9 +66,9 @@ namespace Discord.Rest
             if (model.Avatar.IsSpecified)
                 AvatarId = model.Avatar.Value;
             if (model.Banner.IsSpecified)
-                AvatarId = model.Avatar.Value;
+                BannerId = model.Banner.Value;
             if (model.AccentColor.IsSpecified)
-                AvatarId = model.Avatar.Value;
+                AccentColor = model.AccentColor.Value;
             if (model.Discriminator.IsSpecified)
                 DiscriminatorValue = ushort.Parse(model.Discriminator.Value, NumberStyles.None, CultureInfo.InvariantCulture);
             if (model.Bot.IsSpecified)
