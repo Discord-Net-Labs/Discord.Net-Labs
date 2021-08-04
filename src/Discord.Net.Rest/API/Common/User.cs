@@ -18,7 +18,7 @@ namespace Discord.API
         [JsonProperty("banner")]
         public Optional<string> Banner { get; set; }
         [JsonProperty("accent_color")]
-        public Optional<Color?> AccentColor { get; set; }
+        public Optional<uint?> AccentColor { get; set; }
 
         //CurrentUser
         [JsonProperty("verified")]

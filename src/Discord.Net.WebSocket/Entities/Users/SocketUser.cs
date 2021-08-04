@@ -73,7 +73,7 @@ namespace Discord.WebSocket
                 BannerId = model.Banner.Value;
                 hasChanges = true;
             }
-            if (model.AccentColor.IsSpecified && model.AccentColor.Value != AccentColor)
+            if (model.AccentColor.IsSpecified && model.AccentColor.Value != AccentColor?.RawValue)
             {
                 AccentColor = model.AccentColor.Value;
                 hasChanges = true;
