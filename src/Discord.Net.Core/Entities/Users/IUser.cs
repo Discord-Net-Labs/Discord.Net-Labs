@@ -54,7 +54,7 @@ namespace Discord
         /// <returns>
         ///     A string representing the user's avatar URL; <c>null</c> if the user does not have an banner in place.
         /// </returns>
-        string GetBannerUrl(ImageFormat format = ImageFormat.Auto, ushort size = 128);
+        string GetBannerUrl(ImageFormat format = ImageFormat.Auto, ushort size = 256);
         /// <summary>
         ///     Gets the default avatar URL for this user.
         /// </summary>

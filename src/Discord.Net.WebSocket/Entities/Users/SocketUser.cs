@@ -114,7 +114,7 @@ namespace Discord.WebSocket
             => CDN.GetUserAvatarUrl(Id, AvatarId, size, format);
 
         /// <inheritdoc />
-        public string GetBannerUrl(ImageFormat format = ImageFormat.Auto, ushort size = 128)
+        public string GetBannerUrl(ImageFormat format = ImageFormat.Auto, ushort size = 256)
             => CDN.GetUserBannerUrl(Id, BannerId, size, format);
 
         /// <inheritdoc />
