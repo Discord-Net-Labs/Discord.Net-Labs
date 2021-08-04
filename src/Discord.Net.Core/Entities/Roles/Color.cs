@@ -10,6 +10,8 @@ namespace Discord
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
     public struct Color
     {
+        /// <summary> Gets the max decimal value of color. </summary>
+        public const uint MaxDecimalValue = 0xFFFFFF;
         /// <summary> Gets the default user color value. </summary>
         public static readonly Color Default = new(0);
         /// <summary> Gets the teal color value. </summary>
@@ -98,8 +100,12 @@ namespace Discord
         ///     </code>
         /// </example>
         /// <param name="rawValue">The raw value of the color (e.g. <c>0x607D8B</c>).</param>
+        /// <exception cref="ArgumentException">Value exceeds <see cref="MaxDecimalValue"/>.</exception>
         public Color(uint rawValue)
         {
+            if (rawValue > MaxDecimalValue)
+                throw new ArgumentException($"{nameof(RawValue)} of color cannot be greater than {MaxDecimalValue}!", nameof(rawValue));
+
             RawValue = rawValue;
         }
 
@@ -116,11 +122,17 @@ namespace Discord
         /// <param name="r">The byte that represents the red color.</param>
         /// <param name="g">The byte that represents the green color.</param>
         /// <param name="b">The byte that represents the blue color.</param>
+        /// <exception cref="ArgumentException">Value exceeds <see cref="MaxDecimalValue"/>.</exception>
         public Color(byte r, byte g, byte b)
         {
-            RawValue = ((uint)r << 16)
-                     | ((uint)g << 8)
-                     | (uint)b;
+            uint value = ((uint)r << 16)
+                       | ((uint)g << 8)
+                       | (uint)b;
+
+            if (value > MaxDecimalValue)
+                throw new ArgumentException($"{nameof(RawValue)} of color cannot be greater than {MaxDecimalValue}!");
+
+            RawValue = value;
         }
 
         /// <summary>
