@@ -271,6 +271,14 @@ namespace Discord.WebSocket
         public IReadOnlyCollection<SocketVoiceChannel> VoiceChannels
             => Channels.OfType<SocketVoiceChannel>().ToImmutableArray();
         /// <summary>
+        ///     Gets a collection of all stage channels in this guild.
+        /// </summary>
+        /// <returns>
+        ///     A read-only collection of stage channels found within this guild.
+        /// </returns>
+        public IReadOnlyCollection<SocketStageChannel> StageChannels
+            => Channels.OfType<SocketStageChannel>().ToImmutableArray();
+        /// <summary>
         ///     Gets a collection of all category channels in this guild.
         /// </summary>
         /// <returns>
@@ -633,6 +641,16 @@ namespace Discord.WebSocket
         public SocketTextChannel GetTextChannel(ulong id)
             => GetChannel(id) as SocketTextChannel;
         /// <summary>
+        ///     Gets a thread in this guild.
+        /// </summary>
+        /// <param name="id">The snowflake identifier for the thread.</param>
+        /// <returns>
+        ///     A thread channel associated with the specified <paramref name="id" />; <see langword="null"/> if none is found.
+        /// </returns>
+        public SocketThreadChannel GetThreadChannel(ulong id)
+            => GetChannel(id) as SocketThreadChannel;
+
+        /// <summary>
         ///     Gets a voice channel in this guild.
         /// </summary>
         /// <param name="id">The snowflake identifier for the voice channel.</param>
@@ -641,6 +659,15 @@ namespace Discord.WebSocket
         /// </returns>
         public SocketVoiceChannel GetVoiceChannel(ulong id)
             => GetChannel(id) as SocketVoiceChannel;
+        /// <summary>
+        ///     Gets a stage channel in this guild.
+        /// </summary>
+        /// <param name="id">The snowflake identifier for the stage channel.</param>
+        /// <returns>
+        ///     A stage channel associated with the specified <paramref name="id" />; <see langword="null"/> if none is found.
+        /// </returns>
+        public SocketStageChannel GetStageChannel(ulong id)
+            => GetChannel(id) as SocketStageChannel;
         /// <summary>
         ///     Gets a category channel in this guild.
         /// </summary>
@@ -1329,6 +1356,12 @@ namespace Discord.WebSocket
         Task<ITextChannel> IGuild.GetTextChannelAsync(ulong id, CacheMode mode, RequestOptions options)
             => Task.FromResult<ITextChannel>(GetTextChannel(id));
         /// <inheritdoc />
+        Task<IThreadChannel> IGuild.GetThreadChannelAsync(ulong id, CacheMode mode, RequestOptions options)
+            => Task.FromResult<IThreadChannel>(GetThreadChannel(id));
+        /// <inheritdoc />
+        Task<IReadOnlyCollection<IThreadChannel>> IGuild.GetThreadChannelsAsync(CacheMode mode, RequestOptions options)
+            => Task.FromResult<IReadOnlyCollection<IThreadChannel>>(ThreadChannels);
+        /// <inheritdoc />
         Task<IReadOnlyCollection<IVoiceChannel>> IGuild.GetVoiceChannelsAsync(CacheMode mode, RequestOptions options)
             => Task.FromResult<IReadOnlyCollection<IVoiceChannel>>(VoiceChannels);
         /// <inheritdoc />
@@ -1337,6 +1370,12 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         Task<IVoiceChannel> IGuild.GetVoiceChannelAsync(ulong id, CacheMode mode, RequestOptions options)
             => Task.FromResult<IVoiceChannel>(GetVoiceChannel(id));
+        /// <inheritdoc />
+        Task<IStageChannel> IGuild.GetStageChannelAsync(ulong id, CacheMode mode = CacheMode.AllowDownload, RequestOptions options = null)
+            => Task.FromResult<IStageChannel>(GetStageChannel(id));
+        /// <inheritdoc />
+        Task<IReadOnlyCollection<IStageChannel>> IGuild.GetStageChannelsAsync(CacheMode mode = CacheMode.AllowDownload, RequestOptions options = null)
+            => Task.FromResult<IReadOnlyCollection<IStageChannel>>(StageChannels);
         /// <inheritdoc />
         Task<IVoiceChannel> IGuild.GetAFKChannelAsync(CacheMode mode, RequestOptions options)
             => Task.FromResult<IVoiceChannel>(AFKChannel);
@@ -1446,5 +1485,7 @@ namespace Discord.WebSocket
             _audioLock?.Dispose();
             _audioClient?.Dispose();
         }
+
+        
     }
 }
