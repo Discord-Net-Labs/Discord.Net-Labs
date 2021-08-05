@@ -651,7 +651,5 @@ namespace Discord.WebSocket
             remove { _speakerRemoved.Remove(value); }
         }
         internal readonly AsyncEvent<Func<SocketStageChannel, SocketGuildUser, Task>> _speakerRemoved = new AsyncEvent<Func<SocketStageChannel, SocketGuildUser, Task>>();
-
-
     }
 }
