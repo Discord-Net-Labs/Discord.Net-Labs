@@ -30,6 +30,6 @@ namespace Discord.API
         [JsonProperty("self_stream")]
         public bool SelfStream { get; set; }
         [JsonProperty("request_to_speak_timestamp")]
-        public Optional<DateTimeOffset> RequestToSpeakTimestamp { get; set; }
+        public Optional<DateTimeOffset?> RequestToSpeakTimestamp { get; set; }
     }
 }

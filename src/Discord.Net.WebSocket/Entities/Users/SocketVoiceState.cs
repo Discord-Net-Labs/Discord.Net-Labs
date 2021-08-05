@@ -75,7 +75,7 @@ namespace Discord.WebSocket
         }
         internal static SocketVoiceState Create(SocketVoiceChannel voiceChannel, Model model)
         {
-            return new SocketVoiceState(voiceChannel, model.RequestToSpeakTimestamp.ToNullable(), model.SessionId, model.SelfMute, model.SelfDeaf, model.Mute, model.Deaf, model.Suppress, model.SelfStream);
+            return new SocketVoiceState(voiceChannel, model.RequestToSpeakTimestamp.IsSpecified ? model.RequestToSpeakTimestamp.Value : null, model.SessionId, model.SelfMute, model.SelfDeaf, model.Mute, model.Deaf, model.Suppress, model.SelfStream);
         }
 
         /// <summary>

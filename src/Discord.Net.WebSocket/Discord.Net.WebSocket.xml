@@ -2203,6 +2203,9 @@
         <member name="M:Discord.WebSocket.SocketStageChannel.StopStageAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
+        <member name="M:Discord.WebSocket.SocketStageChannel.RequestToSpeak(Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
         <member name="T:Discord.WebSocket.SocketTextChannel">
             <summary>
                 Represents a WebSocket-based channel in a guild that can send and receive messages.

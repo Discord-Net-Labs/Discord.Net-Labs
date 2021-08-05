@@ -94,5 +94,16 @@ namespace Discord.Rest
 
             Update(model, model != null);
         }
+
+        /// <inheritdoc/>
+        public Task RequestToSpeak(RequestOptions options = null)
+        {
+            var args = new API.Rest.ModifyVoiceStateParams()
+            {
+                ChannelId = this.Id,
+                RequestToSpeakTimestamp = DateTimeOffset.UtcNow
+            };
+            return Discord.ApiClient.ModifyMyVoiceState(this.Guild.Id, args, options);
+        }
     }
 }

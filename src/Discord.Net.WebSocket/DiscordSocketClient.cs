@@ -1774,7 +1774,7 @@ namespace Discord.WebSocket
                                     {
                                         SocketStageChannel stage = guildUser.Guild.GetStageChannel(data.ChannelId.Value);
 
-                                        if (stage != null)
+                                        if (stage != null && before.VoiceChannel != null && after.VoiceChannel != null)
                                         {
                                             if (!before.RequestToSpeakTimestamp.HasValue && after.RequestToSpeakTimestamp.HasValue)
                                             {
@@ -2217,7 +2217,7 @@ namespace Discord.WebSocket
                                         return;
                                     }
 
-                                    var stageChannel = guild.GetStageChannel(data.Id);
+                                    var stageChannel = guild.GetStageChannel(data.ChannelId);
 
                                     if(stageChannel == null)
                                     {
