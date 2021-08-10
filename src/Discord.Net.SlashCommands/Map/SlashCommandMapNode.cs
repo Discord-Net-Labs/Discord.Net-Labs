@@ -1,18 +1,23 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Discord.SlashCommands
 {
     internal class SlashCommandMapNode<T> where T : class, IExecutableInfo
     {
+        private const string WildCardStr = "*";
+        private const string RegexWildCardExp = ".*";
+
         private ConcurrentDictionary<string, SlashCommandMapNode<T>> _nodes;
         private ConcurrentDictionary<string, T> _commands;
-        private T _wildCardCommand;
+        private ConcurrentDictionary<string, T> _wildCardCommands;
 
-        public T WildCardCommand => _wildCardCommand;
         public IReadOnlyDictionary<string, SlashCommandMapNode<T>> Nodes => _nodes;
         public IReadOnlyDictionary<string, T> Commands => _commands;
+        public IReadOnlyDictionary<string, T> WildCardCommands => _wildCardCommands;
         public string Name { get; }
 
         public SlashCommandMapNode (string name)
@@ -20,6 +25,7 @@ namespace Discord.SlashCommands
             Name = name;
             _nodes = new ConcurrentDictionary<string, SlashCommandMapNode<T>>();
             _commands = new ConcurrentDictionary<string, T>();
+            _wildCardCommands = new ConcurrentDictionary<string, T>();
         }
 
         public void AddCommand (string[] keywords, int index, T commandInfo)
@@ -27,7 +33,10 @@ namespace Discord.SlashCommands
             if (keywords.Length == index + 1)
             {
                 if (commandInfo.IsWildCard)
-                    _wildCardCommand = commandInfo;
+                {
+                    if (!_wildCardCommands.TryAdd(commandInfo.Name, commandInfo))
+                        throw new InvalidOperationException($"A {typeof(T).FullName} already exists with the same name");
+                }
                 else
                 {
                     if (!_commands.TryAdd(commandInfo.Name, commandInfo))
@@ -64,8 +73,22 @@ namespace Discord.SlashCommands
             {
                 if (_commands.TryGetValue(keywords[index], out var cmd))
                     return SearchResult<T>.FromSuccess(name, cmd);
-                else if (_wildCardCommand != null)
-                    return SearchResult<T>.FromSuccess(name, _wildCardCommand);
+                else
+                {
+                    foreach(var cmdPair in _wildCardCommands)
+                    {
+                        var patternStr = cmdPair.Key.Replace(WildCardStr, RegexWildCardExp);
+
+                        var match = Regex.Match(keywords[index], patternStr, RegexOptions.IgnoreCase);
+                        if (match.Success && match.Value.Length == keywords[index].Length)
+                        {
+                            var statics = cmdPair.Key.Split(new string[] { WildCardStr }, StringSplitOptions.RemoveEmptyEntries);
+
+                            var args = match.Value.Split(statics, StringSplitOptions.RemoveEmptyEntries);
+                            return SearchResult<T>.FromSuccess(name, cmdPair.Value, args);
+                        }
+                    }
+                }
             }
             else
             {

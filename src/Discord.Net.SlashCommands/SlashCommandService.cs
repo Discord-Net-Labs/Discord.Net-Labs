@@ -373,7 +373,7 @@ namespace Discord.SlashCommands
 
                 return result;
             }
-            return await result.Command.ExecuteAsync(context, services, _interactionCommandMap.Seperators.ToArray()).ConfigureAwait(false);
+            return await result.Command.ExecuteAsync(context, services, result.WilCardMatch).ConfigureAwait(false);
         }
 
         internal TypeReader GetTypeReader (Type type)

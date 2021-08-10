@@ -14,6 +14,7 @@ namespace Discord.SlashCommands
     /// </summary>
     public class SlashInteractionInfo : IExecutableInfo
     {
+        private const string WildCardStr = "*";
         private readonly Func<ISlashCommandContext, object[], IServiceProvider, SlashInteractionInfo, Task> _action;
 
         /// <summary>
@@ -21,7 +22,7 @@ namespace Discord.SlashCommands
         /// </summary>
         public SlashCommandService CommandService { get; }
         public string Name { get; }
-        public bool IsWildCard { get; }
+        public bool IsWildCard => Name.Contains(WildCardStr);
         /// <inheritdoc/>
         public SlashGroupInfo Group { get; }
         /// <inheritdoc/>
@@ -41,7 +42,6 @@ namespace Discord.SlashCommands
             Module = module;
 
             Name = builder.Name;
-            IsWildCard = builder.IsWildCard;
             Group = builder.Group;
             Parameters = builder.Parameters.ToImmutableArray();
             Attributes = builder.Attributes.ToImmutableArray();
@@ -53,17 +53,14 @@ namespace Discord.SlashCommands
             => await ExecuteAsync(context, services, null).ConfigureAwait(false);
 
         /// <inheritdoc/>
-        public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services, char[] seperators = null)
+        public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services, params string[] additionalArgs)
         {
             if (context.Interaction is SocketMessageComponent messageInteraction)
             {
                 var args = new List<string>();
-                if (IsWildCard)
-                {
-                    var customId = messageInteraction.Data.CustomId;
 
-                    args.Add(seperators != null ? customId.Split(seperators, StringSplitOptions.RemoveEmptyEntries).Last() : customId);
-                }
+                if (additionalArgs != null)
+                    args.AddRange(additionalArgs);
 
                 if(messageInteraction.Data?.Values != null)
                     args.AddRange(messageInteraction.Data.Values);
@@ -126,7 +123,12 @@ namespace Discord.SlashCommands
             foreach (var parameter in paramList)
             {
                 if (argList?.ElementAt(index) == null)
-                    result[index] = Type.Missing;
+                {
+                    if (parameter.IsOptional)
+                        result[index] = Type.Missing;
+                    else
+                        throw new InvalidOperationException($"Interaction handler is executed with too few args.");
+                }
                 else if (parameter.CustomAttributes.Any(x => x.AttributeType == typeof(ParamArrayAttribute)))
                 {
                     string[] paramArray = new string[argList.Count() - index];
@@ -135,6 +137,8 @@ namespace Discord.SlashCommands
                 }
                 else
                     result[index] = argList?.ElementAt(index);
+
+                index++;
             }
 
             return result;

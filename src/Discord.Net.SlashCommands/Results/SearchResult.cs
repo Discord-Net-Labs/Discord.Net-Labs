@@ -8,29 +8,31 @@ namespace Discord.SlashCommands
     {
         public string Text { get; }
         public T Command { get; }
+        public string[] WilCardMatch { get; }
         public SlashCommandError? Error { get; }
 
         public string ErrorReason { get; }
 
         public bool IsSuccess => !Error.HasValue;
 
-        private SearchResult(string text, T commandInfo, SlashCommandError? error, string reason)
+        private SearchResult(string text, T commandInfo, string[] wildCardMatch, SlashCommandError? error, string reason)
         {
             Text = text;
             Error = error;
+            WilCardMatch = wildCardMatch;
             Command = commandInfo;
             ErrorReason = reason;
         }
 
-        public static SearchResult<T> FromSuccess (string text, T commandInfo) =>
-            new SearchResult<T>(text, commandInfo, null, null);
+        public static SearchResult<T> FromSuccess (string text, T commandInfo, string[] wildCardMatch = null) =>
+            new SearchResult<T>(text, commandInfo, wildCardMatch, null, null);
 
         public static SearchResult<T> FromError (string text, SlashCommandError error, string reason) =>
-            new SearchResult<T>(text, null, error, reason);
+            new SearchResult<T>(text, null, null, error, reason);
         public static SearchResult<T> FromError (Exception ex) =>
-            new SearchResult<T>(null, null, SlashCommandError.Exception, ex.Message);
+            new SearchResult<T>(null, null, null, SlashCommandError.Exception, ex.Message);
         public static SearchResult<T> FromError (IResult result) =>
-            new SearchResult<T>(null, null, result.Error, result.ErrorReason);
+            new SearchResult<T>(null, null, null, result.Error, result.ErrorReason);
 
         public override string ToString ( ) => IsSuccess ? "Success" : $"{Error}: {ErrorReason}";
     }

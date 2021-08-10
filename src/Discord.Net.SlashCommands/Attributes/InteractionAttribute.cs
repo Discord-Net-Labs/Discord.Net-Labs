@@ -14,13 +14,11 @@ namespace Discord.SlashCommands
         /// </summary>
         public string CustomId { get; }
 
-        public bool IsWildCard => CustomId == null;
-
         /// <summary>
         /// Tag a method for interaction handling
         /// </summary>
         /// <param name="customId">Custom ID of the Message Component that raises the event which will be handled</param>
-        public InteractionAttribute (string customId = null)
+        public InteractionAttribute (string customId)
         {
             CustomId = customId;
         }

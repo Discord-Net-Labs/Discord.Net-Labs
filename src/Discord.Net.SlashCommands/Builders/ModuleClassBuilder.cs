@@ -210,10 +210,7 @@ namespace Discord.SlashCommands.Builders
                 {
                     case InteractionAttribute interaction:
                         {
-                            if (interaction.IsWildCard)
-                                builder.IsWildCard = true;
-                            else
-                                builder.Name = interaction.CustomId;
+                            builder.Name = interaction.CustomId;
                         }
                         break;
                     default:

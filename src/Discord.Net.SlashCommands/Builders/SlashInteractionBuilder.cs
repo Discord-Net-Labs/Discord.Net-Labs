@@ -16,7 +16,6 @@ namespace Discord.SlashCommands.Builders
         public SlashModuleBuilder Module { get; }
         public SlashGroupInfo Group { get; private set; }
         public string Name { get; set; }
-        public bool IsWildCard { get; set; }
 
         public IReadOnlyList<Attribute> Attributes => _attributes;
         public IReadOnlyList<ParameterInfo> Parameters => _parameters;
