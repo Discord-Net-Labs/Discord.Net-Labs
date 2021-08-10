@@ -12,6 +12,7 @@ namespace Discord.SlashCommands
         /// Name of the method
         /// </summary>
         string Name { get; }
+        bool IsWildCard { get; }
         /// <summary>
         /// Module the method belongs to
         /// </summary>

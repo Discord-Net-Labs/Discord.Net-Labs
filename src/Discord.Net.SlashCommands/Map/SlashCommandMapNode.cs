@@ -8,7 +8,9 @@ namespace Discord.SlashCommands
     {
         private ConcurrentDictionary<string, SlashCommandMapNode<T>> _nodes;
         private ConcurrentDictionary<string, T> _commands;
+        private T _wildCardCommand;
 
+        public T WildCardCommand => _wildCardCommand;
         public IReadOnlyDictionary<string, SlashCommandMapNode<T>> Nodes => _nodes;
         public IReadOnlyDictionary<string, T> Commands => _commands;
         public string Name { get; }
@@ -24,8 +26,13 @@ namespace Discord.SlashCommands
         {
             if (keywords.Length == index + 1)
             {
-                if (!_commands.TryAdd(commandInfo.Name, commandInfo))
-                    throw new InvalidOperationException("A command already exists with the same name");
+                if (commandInfo.IsWildCard)
+                    _wildCardCommand = commandInfo;
+                else
+                {
+                    if (!_commands.TryAdd(commandInfo.Name, commandInfo))
+                        throw new InvalidOperationException($"A {typeof(T).FullName} already exists with the same name");
+                }
             }
             else
             {
@@ -39,12 +46,12 @@ namespace Discord.SlashCommands
             if (keywords.Length == index + 1)
             {
                 if (!_commands.TryRemove(keywords[index], out var _))
-                    throw new Exception($"Could not remove any commands from this node for input: {keywords[index]}");
+                    throw new Exception($"Could not remove any {typeof(T).FullName}s from this node for input: {keywords[index]}");
             }
             else
             {
                 if (!_nodes.TryGetValue(keywords[index], out var node))
-                    throw new InvalidOperationException($"No descendant nodes were found with the name {keywords[index]}");
+                    throw new InvalidOperationException($"No descendant node was found with the name {keywords[index]}");
                 node.RemoveCommand(keywords, ++index);
             }
         }
@@ -53,16 +60,20 @@ namespace Discord.SlashCommands
         {
             string name = string.Join(" ", keywords);
 
-            if (keywords.Length == index + 1)
+            if(keywords.Length == index + 1)
+            {
                 if (_commands.TryGetValue(keywords[index], out var cmd))
                     return SearchResult<T>.FromSuccess(name, cmd);
-                else
-                    return SearchResult<T>.FromError(name, SlashCommandError.UnknownCommand, $"No command found for {name}");
+                else if (_wildCardCommand != null)
+                    return SearchResult<T>.FromSuccess(name, _wildCardCommand);
+            }
             else
+            {
                 if (_nodes.TryGetValue(keywords[index], out var node))
                     return node.GetCommand(keywords, ++index);
-            else
-                return SearchResult<T>.FromError(name, SlashCommandError.UnknownCommand, $"No command found for {name}");
+            }
+
+            return SearchResult<T>.FromError(name, SlashCommandError.UnknownCommand, $"No {typeof(T).FullName} found for {name}");
         }
 
         public SearchResult<T> GetCommand (string text, int index, char[] seperators)

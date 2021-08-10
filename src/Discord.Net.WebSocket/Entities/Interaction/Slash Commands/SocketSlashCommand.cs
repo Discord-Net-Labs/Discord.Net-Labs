@@ -39,7 +39,7 @@ namespace Discord.WebSocket
             while (child?.Type == ApplicationCommandOptionType.SubCommandGroup || child?.Type == ApplicationCommandOptionType.SubCommand)
             {
                 command.Add(child.Name);
-                child = child.Options.ElementAt(0);
+                child = child.Options?.ElementAt(0);
             }
 
             Command = command.ToArray();

@@ -209,7 +209,12 @@ namespace Discord.SlashCommands.Builders
                 switch (attribute)
                 {
                     case InteractionAttribute interaction:
-                        builder.Name = interaction.CustomId;
+                        {
+                            if (interaction.IsWildCard)
+                                builder.IsWildCard = true;
+                            else
+                                builder.Name = interaction.CustomId;
+                        }
                         break;
                     default:
                         builder.AddAttributes(attribute);
@@ -283,7 +288,7 @@ namespace Discord.SlashCommands.Builders
                             else if (choice.Value is int integer)
                                 builder.AddOptions(new ParameterChoice(choice.Name, integer));
                             else
-                                throw new InvalidOperationException("Parameter choice must either be an integer or a string");
+                                throw new InvalidOperationException("Parameter choice must either be an integer, a string or a double");
                         }
                         break;
                     default:

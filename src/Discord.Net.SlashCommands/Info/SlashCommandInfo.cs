@@ -26,6 +26,7 @@ namespace Discord.SlashCommands
         /// Get the name of this command that will be used to both execute and register this command
         /// </summary>
         public string Name { get; }
+        public bool IsWildCard { get; } = false;
         /// <summary>
         /// Get the description that will be shown in Discord
         /// </summary>
@@ -70,7 +71,15 @@ namespace Discord.SlashCommands
         public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services)
         {
             if (context.Interaction is SocketSlashCommand commandInteraction)
-                return await ExecuteAsync(context, Parameters, commandInteraction.Data.Options, services);
+            {
+                var options = commandInteraction.Data.Options;
+
+                IList<SocketSlashCommandDataOption> args = options?.ToList();
+                while (args != null && args.Any(x => x?.Type == ApplicationCommandOptionType.SubCommand || x?.Type == ApplicationCommandOptionType.SubCommandGroup))
+                    args = args.ElementAt(0)?.Options?.ToList();
+
+                return await ExecuteAsync(context, Parameters, args, services);
+            }
             else
                 return ExecuteResult.FromError(SlashCommandError.ParseFailed, $"Provided {nameof(ISlashCommandContext)} belongs to a message component");
         }
@@ -114,14 +123,8 @@ namespace Discord.SlashCommands
                 {
                     var result = await resultTask.ConfigureAwait(false);
                     await Module.CommandService._commandExecutedEvent.InvokeAsync(this, context, result).ConfigureAwait(false);
-                    if (result is RuntimeResult execResult)
-                        return execResult;
-                }
-                else if (task is Task<ExecuteResult> execTask)
-                {
-                    var result = await execTask.ConfigureAwait(false);
-                    await Module.CommandService._commandExecutedEvent.InvokeAsync(this, context, result).ConfigureAwait(false);
-                    return result;
+                    if (result is RuntimeResult || result is ExecuteResult)
+                        return result;
                 }
                 else
                 {
@@ -130,6 +133,7 @@ namespace Discord.SlashCommands
                     await Module.CommandService._commandExecutedEvent.InvokeAsync(this, context, result).ConfigureAwait(false);
                     return result;
                 }
+
 
                 return ExecuteResult.FromError(SlashCommandError.Unsuccessful, "Command execution failed for an unknown reason");
             }
@@ -163,10 +167,6 @@ namespace Discord.SlashCommands
         private async Task<object[]>  GenerateArgs (ISlashCommandContext context, IEnumerable<SlashParameterInfo> paramList,
             IEnumerable<SocketSlashCommandDataOption> options, IServiceProvider services)
         {
-            IList<SocketSlashCommandDataOption> args = options?.ToList();
-            while(args != null && args.Any(x => x?.Type == ApplicationCommandOptionType.SubCommand || x?.Type == ApplicationCommandOptionType.SubCommandGroup))
-                args = args.ElementAt(0)?.Options?.ToList();
-
             if (paramList?.Count() < options?.Count())
                 throw new InvalidOperationException("Command was invoked with too many parameters");
 
@@ -174,7 +174,7 @@ namespace Discord.SlashCommands
 
             foreach (var parameter in paramList)
             {
-                var arg = args?.FirstOrDefault(x => string.Equals(x.Name, parameter.Name, StringComparison.OrdinalIgnoreCase));
+                var arg = options?.FirstOrDefault(x => string.Equals(x.Name, parameter.Name, StringComparison.OrdinalIgnoreCase));
 
                 if (arg == null || arg == default)
                 {
@@ -196,8 +196,6 @@ namespace Discord.SlashCommands
                         throw new InvalidOperationException($"Argument Read was not successful: {readResult.ErrorReason}");
 
                     result.Add(readResult.Value);
-
-                    args?.Remove(arg);
                 }
             }
 

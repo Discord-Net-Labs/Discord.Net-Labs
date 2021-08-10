@@ -43,7 +43,7 @@ namespace Discord.SlashCommands
 
         public static CreateApplicationCommandParams ParseApplicationCommandParams(this SlashCommandInfo commandInfo)
         {
-            return new CreateApplicationCommandParams(commandInfo.Name, commandInfo.Description)
+            return new CreateApplicationCommandParams(commandInfo.Name.ToLower(), commandInfo.Description)
             {
                 DefaultPermission = commandInfo.DefaultPermission,
                 Options = commandInfo.Parameters?.Select(x => x.ParseApplicationCommandOption()).ToArray()
@@ -55,7 +55,7 @@ namespace Discord.SlashCommands
             var option = new API.ApplicationCommandOption
             {
                 Name = commandInfo.Name.ToLower(),
-                Description = commandInfo.Description.ToLower(),
+                Description = commandInfo.Description,
                 Type = ApplicationCommandOptionType.SubCommand,
                 Options = commandInfo.Parameters.Select(x => x.ParseApplicationCommandOption()).ToArray(),
                 Choices = null,
@@ -96,7 +96,7 @@ namespace Discord.SlashCommands
 
                 args.Add(new CreateApplicationCommandParams
                 {
-                    Name = moduleInfo.SlashGroupName,
+                    Name = moduleInfo.SlashGroupName.ToLower(),
                     Description = moduleInfo.Description,
                     DefaultPermission = moduleInfo.DefaultPermission,
                     Options = options.ToArray()
@@ -117,7 +117,7 @@ namespace Discord.SlashCommands
                 return new List<ApplicationCommandOption>() {
                     new ApplicationCommandOption
                     {
-                        Name = module.SlashGroupName,
+                        Name = module.SlashGroupName.ToLower(),
                         Description = module.Description,
                         Type = ApplicationCommandOptionType.SubCommandGroup,
                         Options = options.ToArray()

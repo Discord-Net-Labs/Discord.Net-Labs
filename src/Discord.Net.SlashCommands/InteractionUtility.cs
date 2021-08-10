@@ -43,8 +43,8 @@ namespace Discord.SlashCommands
             {
                 if (predicate(interaction))
                 {
-                    tcs.SetResult(interaction);
                     waitCancelSource.Cancel();
+                    tcs.SetResult(interaction);
                 }
 
                 return Task.CompletedTask;

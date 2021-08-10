@@ -181,45 +181,39 @@ namespace Discord.SlashCommands
         /// <returns></returns>
         public async Task SyncCommands (IGuild guild = null, bool deleteMissing = true)
         {
-            DiscordRestApiClient restClient = Client.ApiClient;
+            CheckApplicationId();
 
-            var creationParams = Modules.SelectMany(x => x.ToModel());
+            var creationParams = _typedModuleDefs.Values.SelectMany(x => x.ToModel());
 
-            if (deleteMissing)
+            IEnumerable<ApplicationCommand> existing;
+
+            if (guild != null)
+                existing = await Client.ApiClient.GetGuildApplicationCommandsAsync(guild.Id).ConfigureAwait(false);
+            else
+                existing = await Client.ApiClient.GetGlobalApplicationCommandsAsync().ConfigureAwait(false);
+
+            var payload = new List<CreateApplicationCommandParams>();
+
+            foreach(var cmd in existing)
             {
-                IEnumerable<RestApplicationCommand> existing;
+                var args = creationParams.FirstOrDefault(x => x.Name == cmd.Name);
 
-                if (guild != null)
-                    existing = await ClientHelper.GetGuildApplicationCommands(Client, guild.Id, null).ConfigureAwait(false);
-                else
-                    existing = await ClientHelper.GetGlobalApplicationCommands(Client, null).ConfigureAwait(false);
-
-                var missing = existing.Where(x => !creationParams.Any(y => y.Name == x.Name));
-
-                if (missing != null)
-                    foreach (var command in missing)
+                if (args != default)
+                    payload.Add(args);
+                else if (!deleteMissing)
+                    payload.Add(new CreateApplicationCommandParams
                     {
-                        if (command is RestGlobalCommand global)
-                            await InteractionHelper.DeleteGlobalCommand(Client, global).ConfigureAwait(false);
-                        else
-                            await InteractionHelper.DeleteGuildCommand(Client, guild.Id, command).ConfigureAwait(false);
-
-                        existing.ToList().Remove(command);
-                    }
+                        Name = cmd.Name,
+                        Description = cmd.Description,
+                        DefaultPermission = cmd.DefaultPermissions,
+                        Options = cmd.Options
+                    });
             }
 
-            foreach (var args in creationParams)
-            {
-                ApplicationCommand result;
-
-                if (guild != null)
-                    result = await restClient.CreateGuildApplicationCommandAsync( args, guild.Id).ConfigureAwait(false);
-                else
-                    result = await restClient.CreateGlobalApplicationCommandAsync(args).ConfigureAwait(false);
-
-                if (result == null)
-                    await _cmdLogger.WarningAsync($"Command could not be registered ({args.Name})").ConfigureAwait(false);
-            }
+            if (guild != null)
+                await Client.ApiClient.BulkOverwriteGuildApplicationCommands(guild.Id, payload.ToArray()).ConfigureAwait(false);
+            else
+                await Client.ApiClient.BulkOverwriteGlobalApplicationCommands(payload.ToArray()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -234,6 +228,8 @@ namespace Discord.SlashCommands
         /// <returns></returns>
         public async Task AddCommandsToGuild (IGuild guild, params SlashCommandInfo[] commands)
         {
+            CheckApplicationId();
+
             if (guild == null)
                 throw new ArgumentException($"{nameof(guild)} cannot be null to call this function.");
 
@@ -255,6 +251,8 @@ namespace Discord.SlashCommands
         /// <returns></returns>
         public async Task AddModulesToGuild (IGuild guild, params SlashModuleInfo[] modules)
         {
+            CheckApplicationId();
+
             if (guild == null)
                 throw new ArgumentException($"{nameof(guild)} cannot be null to call this function.");
 
@@ -330,7 +328,7 @@ namespace Discord.SlashCommands
         /// <param name="input">Command string that will be used to parse the <see cref="SlashCommandInfo"/></param>
         /// <param name="services">Services that will be injected into the declaring type</param>
         /// <returns></returns>
-        public async Task ExecuteCommandAsync (ISlashCommandContext context, string[] input, IServiceProvider services)
+        public async Task<IResult> ExecuteCommandAsync (ISlashCommandContext context, string[] input, IServiceProvider services)
         {
             var result = _commandMap.GetCommand(input);
 
@@ -340,13 +338,13 @@ namespace Discord.SlashCommands
 
                 if(_deleteUnkownCommandAck)
                 {
-                    var originalResponse = await InteractionHelper.GetOriginalResponseAsync(Client, context.Channel, context.Interaction).ConfigureAwait(false);
-                    await InteractionHelper.DeletedInteractionResponse(Client, originalResponse).ConfigureAwait(false);
+                    var response = await context.Interaction.GetOriginalResponseAsync().ConfigureAwait(false);
+                    await response.DeleteAsync().ConfigureAwait(false);
                 }
 
-                return;
+                return result;
             }
-            await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
+            return await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -359,7 +357,7 @@ namespace Discord.SlashCommands
         /// Message Component Interactions automatically</param>
         /// <param name="services">Services that will be injected into the declaring type</param>
         /// <returns></returns>
-        public async Task ExecuteInteractionAsync (ISlashCommandContext context, string input, IServiceProvider services)
+        public async Task<IResult> ExecuteInteractionAsync (ISlashCommandContext context, string input, IServiceProvider services)
         {
             var result = _interactionCommandMap.GetCommand(input);
 
@@ -369,13 +367,13 @@ namespace Discord.SlashCommands
 
                 if (_deleteUnkownCommandAck)
                 {
-                    var originalResponse = await InteractionHelper.GetOriginalResponseAsync(Client, context.Channel, context.Interaction).ConfigureAwait(false);
-                    await InteractionHelper.DeletedInteractionResponse(Client, originalResponse).ConfigureAwait(false);
+                    var response = await context.Interaction.GetOriginalResponseAsync().ConfigureAwait(false);
+                    await response.DeleteAsync().ConfigureAwait(false);
                 }
 
-                return;
+                return result;
             }
-            await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
+            return await result.Command.ExecuteAsync(context, services, _interactionCommandMap.Seperators.ToArray()).ConfigureAwait(false);
         }
 
         internal TypeReader GetTypeReader (Type type)
@@ -438,6 +436,55 @@ namespace Discord.SlashCommands
         public bool RemoveGenericTypeReader (Type type) =>
             _genericTypeReaders.TryRemove(type, out var _);
 
+        public async Task<ParseResult> ParseGuildCommand (SlashCommandInfo command, IGuild guild )
+        {
+            var registered = await guild.GetApplicationCommandsAsync().ConfigureAwait(false);
+
+            return await ParseCommands(command, registered).ConfigureAwait(false);
+        }
+
+        public async Task<ParseResult> ParseGlobalCommands (SlashCommandInfo command )
+        {
+            var registered = await Client.Rest.GetGlobalApplicationCommands().ConfigureAwait(false);
+
+            return await ParseCommands(command, registered).ConfigureAwait(false);
+        }
+
+        private Task<ParseResult> ParseCommands (SlashCommandInfo command, IEnumerable<IApplicationCommand> applicationCommands)
+        {
+            var keywords = new List<string>() { command.Name };
+
+            SlashModuleInfo parent = command.Module;
+            while (parent != null)
+            {
+                if (parent.SlashGroupName != null)
+                    keywords.Add(parent.SlashGroupName);
+
+                parent = parent.Parent;
+            }
+
+            try
+            {
+                var index = keywords.Count - 1;
+                var restCommand = applicationCommands.First(x => x.Name == keywords[index--]);
+                var options = restCommand.Options;
+
+                while (index >= 0)
+                {
+                    var option = options.First(x => x.Name == keywords[index--]);
+                    options = option.Options;
+                }
+
+                return Task.FromResult(ParseResult.FromSuccess(restCommand));
+            }
+            catch (InvalidOperationException ex)
+            {
+                keywords.Reverse();
+                var result = ParseResult.FromError(SlashCommandError.ParseFailed, $"No Slash command was found with the name {string.Join(" ", keywords)}");
+                return Task.FromResult(result);
+            }
+        }
+
         public void Dispose ( )
         {
             _lock.Dispose();
@@ -446,17 +493,21 @@ namespace Discord.SlashCommands
         private Type GetMostSpecificTypeReader ( Type type )
         {
             var scorePairs = new Dictionary<Type, int>();
-
             var validReaders = _genericTypeReaders.Where(x => x.Key.IsAssignableFrom(type));
 
             foreach(var typeReaderPair in validReaders)
             {
                 var score = validReaders.Count(x => typeReaderPair.Key.IsAssignableFrom(x.Key));
-
                 scorePairs.Add(typeReaderPair.Value, score);
             }
 
             return scorePairs.OrderBy(x => x.Value).ElementAt(0).Key;
+        }
+
+        private void CheckApplicationId ( )
+        {
+            if (Client.CurrentUser == null)
+                throw new InvalidOperationException($"Provided client is not ready to execute this operation, invoke this operation after a `Client Ready` event");
         }
     }
 }

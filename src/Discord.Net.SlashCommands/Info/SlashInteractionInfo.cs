@@ -21,6 +21,7 @@ namespace Discord.SlashCommands
         /// </summary>
         public SlashCommandService CommandService { get; }
         public string Name { get; }
+        public bool IsWildCard { get; }
         /// <inheritdoc/>
         public SlashGroupInfo Group { get; }
         /// <inheritdoc/>
@@ -40,6 +41,7 @@ namespace Discord.SlashCommands
             Module = module;
 
             Name = builder.Name;
+            IsWildCard = builder.IsWildCard;
             Group = builder.Group;
             Parameters = builder.Parameters.ToImmutableArray();
             Attributes = builder.Attributes.ToImmutableArray();
@@ -47,11 +49,27 @@ namespace Discord.SlashCommands
             _action = builder.Callback;
         }
 
-        /// <inheritdoc/>
         public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services)
+            => await ExecuteAsync(context, services, null).ConfigureAwait(false);
+
+        /// <inheritdoc/>
+        public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services, char[] seperators = null)
         {
             if (context.Interaction is SocketMessageComponent messageInteraction)
-                return await ExecuteAsync(context, Parameters, messageInteraction.Data.Values, services);
+            {
+                var args = new List<string>();
+                if (IsWildCard)
+                {
+                    var customId = messageInteraction.Data.CustomId;
+
+                    args.Add(seperators != null ? customId.Split(seperators, StringSplitOptions.RemoveEmptyEntries).Last() : customId);
+                }
+
+                if(messageInteraction.Data?.Values != null)
+                    args.AddRange(messageInteraction.Data.Values);
+
+                return await ExecuteAsync(context, Parameters, args, services);
+            }
             else
                 throw new ArgumentException("Cannot execute command from the provided command context");
         }

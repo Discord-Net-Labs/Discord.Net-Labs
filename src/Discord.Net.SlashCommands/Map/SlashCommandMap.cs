@@ -1,17 +1,20 @@
 using System.Collections.Generic;
+
 namespace Discord.SlashCommands
 {
     internal class SlashCommandMap<T> where T : class, IExecutableInfo
     {
-        private readonly char[] Seperators = { ' ', '\n', '\r', ',' };
+        private readonly char[] _seperators = { ' ', '\n', '\r', ',' };
 
         private readonly SlashCommandMapNode<T> _root = new SlashCommandMapNode<T>(null);
+
+        public IReadOnlyCollection<char> Seperators => _seperators;
 
         public SlashCommandMap (SlashCommandService commandService, char[] seperators = null)
         {
             if (seperators != null)
                 foreach (var seperator in seperators)
-                    Seperators[Seperators.Length] = seperator;
+                    _seperators[_seperators.Length] = seperator;
         }
 
         public void AddCommand (T command)
@@ -29,7 +32,7 @@ namespace Discord.SlashCommands
         }
 
         public SearchResult<T> GetCommand (string input) =>
-            GetCommand(input.Split(Seperators));
+            GetCommand(input.Split(_seperators));
 
         public SearchResult<T> GetCommand (string[] input) =>
             _root.GetCommand(input, 0);

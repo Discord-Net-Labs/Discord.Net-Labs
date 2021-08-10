@@ -5,6 +5,7 @@ namespace Discord.SlashCommands
     /// <summary>
     /// Use to change the default name and description of an Application Command element
     /// </summary>
+    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
     public class SummaryAttribute : Attribute
     {
         /// <summary>

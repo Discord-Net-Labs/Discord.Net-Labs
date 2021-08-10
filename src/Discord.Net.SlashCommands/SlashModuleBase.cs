@@ -40,13 +40,13 @@ namespace Discord.SlashCommands
             Context = newValue ?? throw new InvalidOperationException($"Invalid context type. Expected {typeof(T).Name}, got {context.GetType().Name}.");
         }
 
-        protected virtual async Task RespondAsync (string text = null, bool isTTS = false, Embed[] embeds = null, InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
-            bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null) =>
-            await Context.Interaction.RespondAsync(text, isTTS, embeds, type, ephemeral, allowedMentions, options, component).ConfigureAwait(false);
+        protected virtual async Task RespondAsync (string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false,
+            AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null) =>
+            await Context.Interaction.RespondAsync(text, embeds, isTTS, ephemeral, allowedMentions, options, component, embed).ConfigureAwait(false);
 
-        protected virtual async Task FolloupAsync (string text = null, bool isTTS = false, Embed[] embeds = null, InteractionResponseType type = InteractionResponseType.ChannelMessageWithSource,
-            bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null) =>
-            await Context.Interaction.FollowupAsync(text, isTTS, embeds, type, ephemeral, allowedMentions, options, component).ConfigureAwait(false);
+        protected virtual async Task FolloupAsync (string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false,
+            AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null) =>
+            await Context.Interaction.FollowupAsync(text, embeds, isTTS, ephemeral, allowedMentions, options, component, embed).ConfigureAwait(false);
 
         protected virtual async Task ReplyAsync (string text = null, bool isTTS = false, Embed embed = null, RequestOptions options = null,
             AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null) =>
