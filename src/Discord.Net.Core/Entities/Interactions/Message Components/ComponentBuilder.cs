@@ -308,6 +308,11 @@ namespace Discord
     public class ButtonBuilder
     {
         /// <summary>
+        ///     The max length of a <see cref="ButtonComponent.Label"/>.
+        /// </summary>
+        public const int MaxLabelLength = 80;
+
+        /// <summary>
         ///     Gets or sets the label of the current button.
         /// </summary>
         /// <exception cref="ArgumentException" accessor="set"><see cref="Label"/> length exceeds <see cref="ComponentBuilder.MaxButtonLabelLength"/>.</exception>
@@ -539,8 +544,8 @@ namespace Discord
                 if (string.IsNullOrEmpty(this.Url))
                     throw new InvalidOperationException("Link buttons must have a link associated with them");
                 else
-                    UrlValidation.Validate(this.Url); 
-            }       
+                    UrlValidation.Validate(this.Url);
+            }
             else if (string.IsNullOrEmpty(this.CustomId))
                 throw new InvalidOperationException("Non-link buttons must have a custom id associated with them");
 
@@ -831,6 +836,11 @@ namespace Discord
     /// </summary>
     public class SelectMenuOptionBuilder
     {
+        /// <summary>
+        ///     The maximum length of a <see cref="SelectMenuOption.Label"/>.
+        /// </summary>
+        public const int MaxLabelLength = 100;
+
         /// <summary>
         ///     The maximum length of a <see cref="SelectMenuOption.Description"/>.
         /// </summary>

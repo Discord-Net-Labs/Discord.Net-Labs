@@ -13,7 +13,7 @@
         <member name="F:Discord.API.Gateway.GatewayOpCode.Identify">
             <summary> C→S - Used to associate a connection with a token and specify configuration. </summary>
         </member>
-        <member name="F:Discord.API.Gateway.GatewayOpCode.StatusUpdate">
+        <member name="F:Discord.API.Gateway.GatewayOpCode.PresenceUpdate">
             <summary> C→S - Used to update client's status and current game id. </summary>
         </member>
         <member name="F:Discord.API.Gateway.GatewayOpCode.VoiceStateUpdate">
@@ -758,7 +758,7 @@
         </member>
         <member name="E:Discord.WebSocket.BaseSocketClient.ThreadCreated">
             <summary>
-                Fired when a thread is created within a guild.
+                Fired when a thread is created within a guild, or when the current user is added to a thread.
             </summary>
         </member>
         <member name="E:Discord.WebSocket.BaseSocketClient.ThreadUpdated">
@@ -779,6 +779,36 @@
         <member name="E:Discord.WebSocket.BaseSocketClient.ThreadMemberLeft">
             <summary>
                 Fired when a user leaves a thread
+            </summary>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.StageStarted">
+            <summary>
+                Fired when a stage is started.
+            </summary>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.StageEnded">
+            <summary>
+                Fired when a stage ends.
+            </summary>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.StageUpdated">
+            <summary>
+                Fired when a stage is updated.
+            </summary>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.RequestToSpeak">
+            <summary>
+                Fired when a user requests to speak within a stage channel.
+            </summary>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.SpeakerAdded">
+            <summary>
+                Fired when a speaker is added in a stage channel.
+            </summary>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.SpeakerRemoved">
+            <summary>
+                Fired when a speaker is removed from a stage channel.
             </summary>
         </member>
         <member name="P:Discord.WebSocket.DiscordShardedClient.Latency">
@@ -2142,6 +2172,57 @@
                 </note>
             </remarks>
         </member>
+        <member name="T:Discord.WebSocket.SocketStageChannel">
+            <summary>
+                Represents a stage channel recieved over the gateway.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketStageChannel.Topic">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketStageChannel.PrivacyLevel">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketStageChannel.DiscoverableDisabled">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketStageChannel.Live">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketStageChannel.IsSpeaker">
+            <summary>
+                Returns <see langword="true"/> if the current user is a speaker within the stage, otherwise <see langword="false"/>.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketStageChannel.Speakers">
+            <summary>
+                Gets a collection of users who are speakers within the stage.
+            </summary>
+        </member>
+        <member name="M:Discord.WebSocket.SocketStageChannel.StartStageAsync(System.String,Discord.StagePrivacyLevel,Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketStageChannel.ModifyInstanceAsync(System.Action{Discord.StageInstanceProperties},Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketStageChannel.StopStageAsync(Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketStageChannel.RequestToSpeak(Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketStageChannel.BecomeSpeakerAsync(Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketStageChannel.StopSpeakingAsync(Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketStageChannel.MoveToSpeaker(Discord.IGuildUser,Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketStageChannel.RemoveFromSpeaker(Discord.IGuildUser,Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
         <member name="T:Discord.WebSocket.SocketTextChannel">
             <summary>
                 Represents a WebSocket-based channel in a guild that can send and receive messages.
@@ -2787,6 +2868,9 @@
         <member name="P:Discord.WebSocket.SocketGuild.MaxVideoChannelUsers">
             <inheritdoc />
         </member>
+        <member name="P:Discord.WebSocket.SocketGuild.NsfwLevel">
+            <inheritdoc />
+        </member>
         <member name="P:Discord.WebSocket.SocketGuild.PreferredCulture">
             <inheritdoc />
         </member>
@@ -2896,6 +2980,14 @@
             </summary>
             <returns>
                 A read-only collection of voice channels found within this guild.
+            </returns>
+        </member>
+        <member name="P:Discord.WebSocket.SocketGuild.StageChannels">
+            <summary>
+                Gets a collection of all stage channels in this guild.
+            </summary>
+            <returns>
+                A read-only collection of stage channels found within this guild.
             </returns>
         </member>
         <member name="P:Discord.WebSocket.SocketGuild.CategoryChannels">
@@ -3055,6 +3147,15 @@
                 A text channel associated with the specified <paramref name="id" />; <see langword="null"/> if none is found.
             </returns>
         </member>
+        <member name="M:Discord.WebSocket.SocketGuild.GetThreadChannel(System.UInt64)">
+            <summary>
+                Gets a thread in this guild.
+            </summary>
+            <param name="id">The snowflake identifier for the thread.</param>
+            <returns>
+                A thread channel associated with the specified <paramref name="id" />; <see langword="null"/> if none is found.
+            </returns>
+        </member>
         <member name="M:Discord.WebSocket.SocketGuild.GetVoiceChannel(System.UInt64)">
             <summary>
                 Gets a voice channel in this guild.
@@ -3062,6 +3163,15 @@
             <param name="id">The snowflake identifier for the voice channel.</param>
             <returns>
                 A voice channel associated with the specified <paramref name="id" />; <see langword="null"/> if none is found.
+            </returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.GetStageChannel(System.UInt64)">
+            <summary>
+                Gets a stage channel in this guild.
+            </summary>
+            <param name="id">The snowflake identifier for the stage channel.</param>
+            <returns>
+                A stage channel associated with the specified <paramref name="id" />; <see langword="null"/> if none is found.
             </returns>
         </member>
         <member name="M:Discord.WebSocket.SocketGuild.GetCategoryChannel(System.UInt64)">
@@ -3390,6 +3500,12 @@
         <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetTextChannelAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
             <inheritdoc />
         </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetThreadChannelAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetThreadChannelsAsync(Discord.CacheMode,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
         <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetVoiceChannelsAsync(Discord.CacheMode,Discord.RequestOptions)">
             <inheritdoc />
         </member>
@@ -3397,6 +3513,12 @@
             <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetVoiceChannelAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetStageChannelAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetStageChannelsAsync(Discord.CacheMode,Discord.RequestOptions)">
             <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetAFKChannelAsync(Discord.CacheMode,Discord.RequestOptions)">
@@ -3509,14 +3631,18 @@
         <member name="M:Discord.WebSocket.SocketMessageComponent.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketMessageComponent.DeferAsync(Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketMessageComponent.DeferLoadingAsync(System.Boolean,Discord.RequestOptions)">
             <summary>
-                Acknowledges this interaction with the <see cref="F:Discord.InteractionResponseType.DeferredUpdateMessage"/>.
+                Defers an interaction and responds with type 5 (<see cref="F:Discord.InteractionResponseType.DeferredChannelMessageWithSource"/>)
             </summary>
+            <param name="ephemeral"><see langword="true"/> to send this message ephemerally, otherwise <see langword="false"/>.</param>
             <param name="options">The request options for this async request.</param>
             <returns>
                 A task that represents the asynchronous operation of acknowledging the interaction.
             </returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketMessageComponent.DeferAsync(System.Boolean,Discord.RequestOptions)">
+            <inheritdoc/>
         </member>
         <member name="T:Discord.WebSocket.SocketMessageComponentData">
             <summary>
@@ -3628,13 +3754,8 @@
         <member name="M:Discord.WebSocket.SocketSlashCommand.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketSlashCommand.DeferAsync(Discord.RequestOptions)">
-            <summary>
-                Acknowledges this interaction with the <see cref="F:Discord.InteractionResponseType.DeferredChannelMessageWithSource"/>.
-            </summary>
-            <returns>
-                A task that represents the asynchronous operation of acknowledging the interaction.
-            </returns>
+        <member name="M:Discord.WebSocket.SocketSlashCommand.DeferAsync(System.Boolean,Discord.RequestOptions)">
+            <inheritdoc/>
         </member>
         <member name="T:Discord.WebSocket.SocketSlashCommandData">
             <summary>
@@ -3769,10 +3890,12 @@
                 A task that represents the asynchronous operation of acknowledging the interaction.
             </returns>
         </member>
-        <member name="M:Discord.WebSocket.SocketInteraction.DeferAsync(Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketInteraction.DeferAsync(System.Boolean,Discord.RequestOptions)">
             <summary>
                 Acknowledges this interaction.
             </summary>
+            <param name="ephemeral"><see langword="true"/> to send this message ephemerally, otherwise <see langword="false"/>.</param>
+            <param name="options">The request options for this async request.</param>
             <returns>
                 A task that represents the asynchronous operation of acknowledging the interaction.
             </returns>
@@ -4322,6 +4445,12 @@
         <member name="P:Discord.WebSocket.SocketGroupUser.AvatarId">
             <inheritdoc />
         </member>
+        <member name="P:Discord.WebSocket.SocketGroupUser.BannerId">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.SocketGroupUser.AccentColor">
+            <inheritdoc />
+        </member>
         <member name="P:Discord.WebSocket.SocketGroupUser.Presence">
             <inheritdoc />
         </member>
@@ -4352,6 +4481,9 @@
         <member name="P:Discord.WebSocket.SocketGroupUser.Discord#IVoiceState#IsStreaming">
             <inheritdoc />
         </member>
+        <member name="P:Discord.WebSocket.SocketGroupUser.Discord#IVoiceState#RequestToSpeakTimestamp">
+            <inheritdoc />
+        </member>
         <member name="T:Discord.WebSocket.SocketGuildUser">
             <summary>
                 Represents a WebSocket-based guild user.
@@ -4377,6 +4509,12 @@
         <member name="P:Discord.WebSocket.SocketGuildUser.AvatarId">
             <inheritdoc />
         </member>
+        <member name="P:Discord.WebSocket.SocketGuildUser.BannerId">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.SocketGuildUser.AccentColor">
+            <inheritdoc />
+        </member>
         <member name="P:Discord.WebSocket.SocketGuildUser.GuildPermissions">
             <inheritdoc />
         </member>
@@ -4399,6 +4537,9 @@
             <inheritdoc />
         </member>
         <member name="P:Discord.WebSocket.SocketGuildUser.IsStreaming">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.SocketGuildUser.RequestToSpeakTimestamp">
             <inheritdoc />
         </member>
         <member name="P:Discord.WebSocket.SocketGuildUser.IsPending">
@@ -4437,7 +4578,7 @@
                 Returns the position of the user within the role hierarchy.
             </summary>
             <remarks>
-                The returned value equal to the position of the highest role the user has, or 
+                The returned value equal to the position of the highest role the user has, or
                 <see cref="F:System.Int32.MaxValue"/> if user is the server owner.
             </remarks>
         </member>
@@ -4559,6 +4700,12 @@
         <member name="P:Discord.WebSocket.SocketSelfUser.AvatarId">
             <inheritdoc />
         </member>
+        <member name="P:Discord.WebSocket.SocketSelfUser.BannerId">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.SocketSelfUser.AccentColor">
+            <inheritdoc />
+        </member>
         <member name="P:Discord.WebSocket.SocketSelfUser.Presence">
             <inheritdoc />
         </member>
@@ -4612,6 +4759,12 @@
         <member name="P:Discord.WebSocket.SocketThreadUser.AvatarId">
             <inheritdoc/>
         </member>
+        <member name="P:Discord.WebSocket.SocketThreadUser.BannerId">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketThreadUser.AccentColor">
+            <inheritdoc/>
+        </member>
         <member name="P:Discord.WebSocket.SocketThreadUser.DiscriminatorValue">
             <inheritdoc/>
         </member>
@@ -4646,6 +4799,9 @@
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketThreadUser.IsStreaming">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketThreadUser.RequestToSpeakTimestamp">
             <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.SocketThreadUser.GetPermissions(Discord.IGuildChannel)">
@@ -4716,6 +4872,12 @@
         <member name="P:Discord.WebSocket.SocketUnknownUser.AvatarId">
             <inheritdoc />
         </member>
+        <member name="P:Discord.WebSocket.SocketUnknownUser.BannerId">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.SocketUnknownUser.AccentColor">
+            <inheritdoc />
+        </member>
         <member name="P:Discord.WebSocket.SocketUnknownUser.IsBot">
             <inheritdoc />
         </member>
@@ -4744,6 +4906,12 @@
             <inheritdoc />
         </member>
         <member name="P:Discord.WebSocket.SocketUser.AvatarId">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.SocketUser.BannerId">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.SocketUser.AccentColor">
             <inheritdoc />
         </member>
         <member name="P:Discord.WebSocket.SocketUser.IsWebhook">
@@ -4784,6 +4952,9 @@
         <member name="M:Discord.WebSocket.SocketUser.GetAvatarUrl(Discord.ImageFormat,System.UInt16)">
             <inheritdoc />
         </member>
+        <member name="M:Discord.WebSocket.SocketUser.GetBannerUrl(Discord.ImageFormat,System.UInt16)">
+            <inheritdoc />
+        </member>
         <member name="M:Discord.WebSocket.SocketUser.GetDefaultAvatarUrl">
             <inheritdoc />
         </member>
@@ -4812,6 +4983,9 @@
         </member>
         <member name="P:Discord.WebSocket.SocketVoiceState.VoiceSessionId">
             <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.SocketVoiceState.RequestToSpeakTimestamp">
+            <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketVoiceState.IsMuted">
             <inheritdoc />
@@ -4861,6 +5035,14 @@
         </member>
         <member name="P:Discord.WebSocket.SocketWebhookUser.AvatarId">
             <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.SocketWebhookUser.BannerId">
+            <inheritdoc />
+            <exception cref="T:System.NotSupportedException">Webhook users does not support banners.</exception>
+        </member>
+        <member name="P:Discord.WebSocket.SocketWebhookUser.AccentColor">
+            <inheritdoc />
+            <exception cref="T:System.NotSupportedException">Webhook users does not support accent colors.</exception>
         </member>
         <member name="P:Discord.WebSocket.SocketWebhookUser.IsBot">
             <inheritdoc />
@@ -4960,6 +5142,9 @@
             <inheritdoc />
         </member>
         <member name="P:Discord.WebSocket.SocketWebhookUser.Discord#IVoiceState#IsStreaming">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.SocketWebhookUser.Discord#IVoiceState#RequestToSpeakTimestamp">
             <inheritdoc />
         </member>
         <member name="T:Discord.WebSocket.SocketVoiceServer">

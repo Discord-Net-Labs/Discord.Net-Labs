@@ -7,22 +7,27 @@ using System.Threading.Tasks;
 namespace Discord
 {
     /// <summary>
-    ///     The base command model that belongs to an application. see <see href="https://discord.com/developers/docs/interactions/slash-commands#applicationcommand"/>
+    ///     The base command model that belongs to an application. see <see href="https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-structure"/>
     /// </summary>
     public interface IApplicationCommand : ISnowflakeEntity, IDeletable
     {
+        /// <summary>
+        ///     The type of command.
+        /// </summary>
+        ApplicationCommandType Type { get; } 
+
         /// <summary>
         ///     Gets the unique id of the parent application.
         /// </summary>
         ulong ApplicationId { get; }
 
         /// <summary>
-        ///     The name of the command.
+        ///     The 1-32 character name of the command.
         /// </summary>
         string Name { get; }
 
         /// <summary>
-        ///     The description of the command.
+        ///     The 1-100 character description of the command.
         /// </summary>
         string Description { get; }
 
@@ -32,8 +37,11 @@ namespace Discord
         bool DefaultPermission { get; }
 
         /// <summary>
-        ///     If the option is a subcommand or subcommand group type, this nested options will be the parameters.
+        ///     The parameters for the command, max 25.
         /// </summary>
+        /// <remarks>
+        ///     Only valid for commands with a type of <see cref="ApplicationCommandType.ChatInput"/>.
+        /// </remarks>
         IReadOnlyCollection<IApplicationCommandOption> Options { get; }
     }
 }
