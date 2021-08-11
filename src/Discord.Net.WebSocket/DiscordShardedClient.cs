@@ -88,26 +88,15 @@ namespace Discord.WebSocket
                     RegisterEvents(_shards[i], i == 0);
                 }
             }
-            CreateCurrentUserObserver();
+
+            ShardReady += (client) =>
+            {
+                ApiClient.CurrentUserId = CurrentUser?.Id;
+                return Task.CompletedTask;
+            };
         }
         private static API.DiscordSocketApiClient CreateApiClient(DiscordSocketConfig config)
             => new API.DiscordSocketApiClient(config.RestClientProvider, config.WebSocketProvider, DiscordRestConfig.UserAgent);
-
-        private void CreateCurrentUserObserver ( )
-        {
-            ShardReady += SetCurrentUserId;
-
-            Task SetCurrentUserId (DiscordSocketClient socket)
-            {
-                if (base.ApiClient.CurrentUserId == null)
-                    base.ApiClient.CurrentUserId = CurrentUser?.Id;
-
-                if (base.ApiClient.CurrentUserId != null)
-                    ShardReady -= SetCurrentUserId;
-
-                return Task.CompletedTask;
-            }
-        }
 
         internal async Task AcquireIdentifyLockAsync(int shardId, CancellationToken token)
         {
