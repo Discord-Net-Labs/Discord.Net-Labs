@@ -13,6 +13,9 @@ namespace Discord.WebSocket
         /// <inheritdoc/>
         public string Name { get; private set; }
 
+        /// <inheritdoc/>
+        public ApplicationCommandType Type { get; private set; }
+
         /// <summary>
         ///     The <see cref="SocketSlashCommandDataOption"/>'s received with this interaction.
         /// </summary>

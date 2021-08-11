@@ -21,5 +21,7 @@ namespace Discord.API
         public Optional<ApplicationCommandOption[]> Options { get; set; }
         [JsonProperty("default_permission")]
         public Optional<bool> DefaultPermissions { get; set; }
+        [JsonProperty("type")]
+        public ApplicationCommandType Type = ApplicationCommandType.ChatInput;
     }
 }

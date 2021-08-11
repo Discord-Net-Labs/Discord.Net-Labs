@@ -20,6 +20,9 @@ namespace Discord.Rest
         public string Name { get; private set; }
 
         /// <inheritdoc/>
+        public ApplicationCommandType Type { get; private set; }
+
+        /// <inheritdoc/>
         public string Description { get; private set; }
 
         /// <inheritdoc/>
@@ -29,11 +32,6 @@ namespace Discord.Rest
         ///     The options of this command.
         /// </summary>
         public IReadOnlyCollection<RestApplicationCommandOption> Options { get; private set; }
-
-        /// <summary>
-        ///     The type of this rest application command.
-        /// </summary>
-        public RestApplicationCommandType CommandType { get; internal set; }
 
         /// <inheritdoc/>
         public DateTimeOffset CreatedAt
@@ -62,6 +60,7 @@ namespace Discord.Rest
             this.Name = model.Name;
             this.Description = model.Description;
             this.DefaultPermission = model.DefaultPermissions.GetValueOrDefault(true);
+            this.Type = model.Type;
 
             this.Options = model.Options.IsSpecified
                 ? model.Options.Value.Select(x => RestApplicationCommandOption.Create(x)).ToImmutableArray()

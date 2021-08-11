@@ -9,6 +9,15 @@ namespace Discord.API
 {
     internal class MessageComponentInteractionData : IDiscordInteractionData
     {
+        [JsonProperty("id")]
+        public ulong Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("type")]
+        public ApplicationCommandType Type { get; set; }
+
         [JsonProperty("custom_id")]
         public string CustomId { get; set; }
 
