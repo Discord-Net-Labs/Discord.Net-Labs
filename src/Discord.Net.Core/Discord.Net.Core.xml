@@ -4484,9 +4484,34 @@
                 Whether the command is enabled by default when the app is added to a guild. Default is <see langword="true"/>
             </summary>
         </member>
+        <member name="T:Discord.ApplicationCommandType">
+            <summary>
+                Represents the different type of applicatio commands.
+            </summary>
+        </member>
+        <member name="F:Discord.ApplicationCommandType.ChatInput">
+            <summary>
+                Slash commands; a text-based command that shows up when a user types /
+            </summary>
+        </member>
+        <member name="F:Discord.ApplicationCommandType.User">
+            <summary>
+                A UI-based command that shows up when you right click or tap on a user
+            </summary>
+        </member>
+        <member name="F:Discord.ApplicationCommandType.Message">
+            <summary>
+                A UI-based command that shows up when you right click or tap on a messages
+            </summary>
+        </member>
         <member name="T:Discord.IApplicationCommand">
             <summary>
-                The base command model that belongs to an application. see <see href="https://discord.com/developers/docs/interactions/slash-commands#applicationcommand"/>
+                The base command model that belongs to an application. see <see href="https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-structure"/>
+            </summary>
+        </member>
+        <member name="P:Discord.IApplicationCommand.Type">
+            <summary>
+                The type of command.
             </summary>
         </member>
         <member name="P:Discord.IApplicationCommand.ApplicationId">
@@ -4496,12 +4521,12 @@
         </member>
         <member name="P:Discord.IApplicationCommand.Name">
             <summary>
-                The name of the command.
+                The 1-32 character name of the command.
             </summary>
         </member>
         <member name="P:Discord.IApplicationCommand.Description">
             <summary>
-                The description of the command.
+                The 1-100 character description of the command.
             </summary>
         </member>
         <member name="P:Discord.IApplicationCommand.DefaultPermission">
@@ -4511,8 +4536,11 @@
         </member>
         <member name="P:Discord.IApplicationCommand.Options">
             <summary>
-                If the option is a subcommand or subcommand group type, this nested options will be the parameters.
+                The parameters for the command, max 25.
             </summary>
+            <remarks>
+                Only valid for commands with a type of <see cref="F:Discord.ApplicationCommandType.ChatInput"/>.
+            </remarks>
         </member>
         <member name="T:Discord.IApplicationCommandInteractionData">
             <summary>
@@ -4702,6 +4730,16 @@
         <member name="T:Discord.IDiscordInteractionData">
             <summary>
                 Represents an interface used to specify classes that they are a vaild dataype of a <see cref="T:Discord.IDiscordInteraction"/> class.
+            </summary>
+        </member>
+        <member name="P:Discord.IDiscordInteractionData.Name">
+            <summary>
+                Gets the name of the invoked command.
+            </summary>
+        </member>
+        <member name="P:Discord.IDiscordInteractionData.Type">
+            <summary>
+                Gets the type of the invoked command.
             </summary>
         </member>
         <member name="T:Discord.InteractionResponseType">

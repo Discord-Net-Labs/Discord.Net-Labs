@@ -26,6 +26,12 @@ namespace Discord.WebSocket
         public InteractionType Type { get; private set; }
 
         /// <summary>
+        ///     Gets the command type if the <see cref="Type"/> is <see cref="InteractionType.ApplicationCommand"/>
+        /// </summary>
+        public ApplicationCommandType CommandType
+            => Data.Type;
+
+        /// <summary>
         ///     The token used to respond to this interaction.
         /// </summary>
         public string Token { get; private set; }
@@ -188,5 +194,8 @@ namespace Discord.WebSocket
         /// <inheritdoc/>
         async Task<IUserMessage> IDiscordInteraction.ModifyOriginalResponseAsync (Action<MessageProperties> func, RequestOptions options)
             => await ModifyOriginalResponseAsync(func, options).ConfigureAwait(false);
+
+        Task IDiscordInteraction.DeferAsync(bool ephemeral, RequestOptions options)
+            => DeferAsync(ephemeral, options);
     }
 }
