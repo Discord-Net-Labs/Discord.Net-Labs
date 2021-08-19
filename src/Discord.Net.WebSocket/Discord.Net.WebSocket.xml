@@ -3599,37 +3599,37 @@
         <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetWebhooksAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="T:Discord.WebSocket.SocketApplicationMessageCommand">
+        <member name="T:Discord.WebSocket.SocketMessageCommand">
             <summary>
                 Represents a Websocket-based slash command received over the gateway.
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketApplicationMessageCommand.Data">
+        <member name="P:Discord.WebSocket.SocketMessageCommand.Data">
             <summary>
                 The data associated with this interaction.
             </summary>
         </member>
         <member name="T:Discord.WebSocket.SocketApplicationMessageCommandData">
             <summary>
-                Represents the data tied with the <see cref="T:Discord.WebSocket.SocketApplicationMessageCommand"/> interaction.
+                Represents the data tied with the <see cref="T:Discord.WebSocket.SocketMessageCommand"/> interaction.
             </summary>
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationMessageCommandData.Name">
             <inheritdoc/>
         </member>
-        <member name="T:Discord.WebSocket.SocketApplicationUserCommand">
+        <member name="T:Discord.WebSocket.SocketUserCommand">
             <summary>
                 Represents a Websocket-based slash command received over the gateway.
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketApplicationUserCommand.Data">
+        <member name="P:Discord.WebSocket.SocketUserCommand.Data">
             <summary>
                 The data associated with this interaction.
             </summary>
         </member>
         <member name="T:Discord.WebSocket.SocketApplicationUserCommandData">
             <summary>
-                Represents the data tied with the <see cref="T:Discord.WebSocket.SocketApplicationUserCommand"/> interaction.
+                Represents the data tied with the <see cref="T:Discord.WebSocket.SocketUserCommand"/> interaction.
             </summary>
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationUserCommandData.Name">

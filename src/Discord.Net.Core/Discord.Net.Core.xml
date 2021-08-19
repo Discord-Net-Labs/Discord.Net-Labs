@@ -5481,9 +5481,9 @@
         </member>
         <member name="M:Discord.MessageCommandBuilder.Build">
             <summary>
-                Build the current builder into a <see cref="T:Discord.MessageCommandCreationProperties"/> class.
+                Build the current builder into a <see cref="T:Discord.ContextMenuCommandCreationProperties"/> class.
             </summary>
-            <returns>A <see cref="T:Discord.MessageCommandCreationProperties"/> that can be used to create user commands over rest.</returns>
+            <returns>A <see cref="T:Discord.ContextMenuCommandCreationProperties"/> that can be used to create user commands over rest.</returns>
         </member>
         <member name="M:Discord.MessageCommandBuilder.WithName(System.String)">
             <summary>
@@ -5501,22 +5501,22 @@
             <param name="description">The description of this command.</param>
             <returns>The current builder.</returns>
         </member>
-        <member name="T:Discord.MessageCommandCreationProperties">
+        <member name="T:Discord.ContextMenuCommandCreationProperties">
             <summary>
                 A class used to create Message commands.
             </summary>
         </member>
-        <member name="P:Discord.MessageCommandCreationProperties.Name">
+        <member name="P:Discord.ContextMenuCommandCreationProperties.Name">
             <summary>
                 The name of this command.
             </summary>
         </member>
-        <member name="P:Discord.MessageCommandCreationProperties.Description">
+        <member name="P:Discord.ContextMenuCommandCreationProperties.Description">
             <summary>
                The discription of this command.
             </summary>
         </member>
-        <member name="P:Discord.MessageCommandCreationProperties.Type">
+        <member name="P:Discord.ContextMenuCommandCreationProperties.Type">
             <summary>
                 Gets or sets the type for this command.
             </summary>
@@ -5810,9 +5810,9 @@
         </member>
         <member name="M:Discord.UserCommandBuilder.Build">
             <summary>
-                Build the current builder into a <see cref="T:Discord.UserCommandCreationProperties"/> class.
+                Build the current builder into a <see cref="T:Discord.ContextMenuCommandCreationProperties"/> class.
             </summary>
-            <returns>A <see cref="T:Discord.UserCommandCreationProperties"/> that can be used to create user commands over rest.</returns>
+            <returns>A <see cref="T:Discord.ContextMenuCommandCreationProperties"/> that can be used to create user commands over rest.</returns>
         </member>
         <member name="M:Discord.UserCommandBuilder.WithName(System.String)">
             <summary>
@@ -5830,22 +5830,22 @@
             <param name="description">The description of this command.</param>
             <returns>The current builder.</returns>
         </member>
-        <member name="T:Discord.UserCommandCreationProperties">
+        <member name="T:Discord.ContextMenuCommandCreationProperties">
             <summary>
                 A class used to create User commands.
             </summary>
         </member>
-        <member name="P:Discord.UserCommandCreationProperties.Name">
+        <member name="P:Discord.ContextMenuCommandCreationProperties.Name">
             <summary>
                 The name of this command.
             </summary>
         </member>
-        <member name="P:Discord.UserCommandCreationProperties.Description">
+        <member name="P:Discord.ContextMenuCommandCreationProperties.Description">
             <summary>
                The discription of this command.
             </summary>
         </member>
-        <member name="P:Discord.UserCommandCreationProperties.Type">
+        <member name="P:Discord.ContextMenuCommandCreationProperties.Type">
             <summary>
                 Gets or sets the type for this command.
             </summary>
