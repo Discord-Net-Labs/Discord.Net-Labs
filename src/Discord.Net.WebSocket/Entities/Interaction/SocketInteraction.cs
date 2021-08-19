@@ -71,9 +71,9 @@ namespace Discord.WebSocket
                     if (dataModel != null)
                     {
                         if (dataModel.Type.Equals(ApplicationCommandType.User))
-                            return SocketApplicationUserCommand.Create(client, model, channel);
+                            return SocketUserCommand.Create(client, model, channel);
                         if (dataModel.Type.Equals(ApplicationCommandType.Message))
-                            return SocketApplicationMessageCommand.Create(client, model, channel);
+                            return SocketMessageCommand.Create(client, model, channel);
                     }
                 }
                 return SocketSlashCommand.Create(client, model, channel);

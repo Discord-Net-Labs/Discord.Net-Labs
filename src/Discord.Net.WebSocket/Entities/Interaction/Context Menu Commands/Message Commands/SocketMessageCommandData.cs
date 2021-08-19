@@ -6,9 +6,9 @@ using Model = Discord.API.ApplicationCommandInteractionData;
 namespace Discord.WebSocket
 {
     /// <summary>
-    ///     Represents the data tied with the <see cref="SocketApplicationMessageCommand"/> interaction.
+    ///     Represents the data tied with the <see cref="SocketMessageCommand"/> interaction.
     /// </summary>
-    public class SocketApplicationMessageCommandData : SocketEntity<ulong>, IApplicationCommandInteractionData
+    public class SocketMessageCommandData : SocketEntity<ulong>, IApplicationCommandInteractionData
     {
         /// <inheritdoc/>
         public string Name { get; private set; }
@@ -29,7 +29,7 @@ namespace Discord.WebSocket
 
         private ApplicationCommandType Type;
 
-        internal SocketApplicationMessageCommandData(DiscordSocketClient client, Model model, ulong? guildId)
+        internal SocketMessageCommandData(DiscordSocketClient client, Model model, ulong? guildId)
             : base(client, model.Id)
         {
             this.guildId = guildId;
@@ -126,9 +126,9 @@ namespace Discord.WebSocket
             }
         }
 
-        internal static SocketApplicationMessageCommandData Create(DiscordSocketClient client, Model model, ulong id, ulong? guildId)
+        internal static SocketMessageCommandData Create(DiscordSocketClient client, Model model, ulong id, ulong? guildId)
         {
-            var entity = new SocketApplicationMessageCommandData(client, model, guildId);
+            var entity = new SocketMessageCommandData(client, model, guildId);
             entity.Update(model);
             return entity;
         }

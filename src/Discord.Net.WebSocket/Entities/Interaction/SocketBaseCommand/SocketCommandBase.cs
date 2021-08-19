@@ -9,6 +9,9 @@ using Model = Discord.API.Interaction;
 
 namespace Discord.WebSocket
 {
+    /// <summary>
+    /// Base class for User, Message, and Slash command interactions
+    /// </summary>
     public class SocketCommandBase : SocketInteraction
     {
         /// <summary>

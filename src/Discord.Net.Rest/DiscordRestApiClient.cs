@@ -1115,9 +1115,7 @@ namespace Discord.API
             Preconditions.AtLeast(command.Name.Length, 3, nameof(command.Name));
             Preconditions.Equals(command.Description, "");
 
-            options = RequestOptions.CreateOrClone(options);
-
-            
+            options = RequestOptions.CreateOrClone(options);            
 
             return await TrySendApplicationCommand(SendJsonAsync<ApplicationCommand>("POST", () => $"applications/{this.CurrentUserId}/commands", command, new BucketIds(), options: options)).ConfigureAwait(false);
         }        
@@ -1129,8 +1127,6 @@ namespace Discord.API
             Preconditions.Equals(command.Description, "");
 
             options = RequestOptions.CreateOrClone(options);
-
-
 
             return await TrySendApplicationCommand(SendJsonAsync<ApplicationCommand>("POST", () => $"applications/{this.CurrentUserId}/commands", command, new BucketIds(), options: options)).ConfigureAwait(false);
         }
@@ -1174,7 +1170,6 @@ namespace Discord.API
             var bucket = new BucketIds(guildId: guildId);
 
             return await TrySendApplicationCommand(SendJsonAsync<ApplicationCommand>("POST", () => $"applications/{this.CurrentUserId}/guilds/{guildId}/commands", command, bucket, options: options)).ConfigureAwait(false);
-
         }
         public async Task<ApplicationCommand> ModifyGuildApplicationCommandAsync(ModifyApplicationCommandParams command, ulong guildId, ulong commandId, RequestOptions options = null)
         {
@@ -1223,8 +1218,8 @@ namespace Discord.API
             var bucket = new BucketIds(guildId: guildId);
 
             return await TrySendApplicationCommand(SendJsonAsync<ApplicationCommand>("POST", () => $"applications/{this.CurrentUserId}/guilds/{guildId}/commands", command, bucket, options: options)).ConfigureAwait(false);
-
         }
+
         public async Task<ApplicationCommand> ModifyGuildApplicationUserCommandAsync(ModifyApplicationCommandParams command, ulong guildId, ulong commandId, RequestOptions options = null)
         {
             options = RequestOptions.CreateOrClone(options);
@@ -1263,7 +1258,6 @@ namespace Discord.API
             var bucket = new BucketIds(guildId: guildId);
 
             return await TrySendApplicationCommand(SendJsonAsync<ApplicationCommand>("POST", () => $"applications/{this.CurrentUserId}/guilds/{guildId}/commands", command, bucket, options: options)).ConfigureAwait(false);
-
         }
         public async Task<ApplicationCommand> ModifyGuildApplicationMessageCommandAsync(ModifyApplicationCommandParams command, ulong guildId, ulong commandId, RequestOptions options = null)
         {
