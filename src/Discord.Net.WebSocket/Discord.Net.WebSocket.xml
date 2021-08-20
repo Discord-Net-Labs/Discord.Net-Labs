@@ -3599,6 +3599,9 @@
         <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetWebhooksAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetApplicationCommandsAsync(Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
         <member name="T:Discord.WebSocket.SocketMessageCommand">
             <summary>
                 Represents a Websocket-based slash command received over the gateway.
@@ -3632,13 +3635,8 @@
                 Represents the data tied with the <see cref="T:Discord.WebSocket.SocketUserCommand"/> interaction.
             </summary>
         </member>
-<<<<<<< Updated upstream
-        <member name="P:Discord.WebSocket.SocketApplicationUserCommandData.Name">
-            <inheritdoc/
-=======
         <member name="P:Discord.WebSocket.SocketUserCommandData.Name">
             <inheritdoc/>
->>>>>>> Stashed changes
         </member>
         <member name="T:Discord.WebSocket.SocketMessageComponent">
             <summary>
@@ -3837,7 +3835,7 @@
         <member name="M:Discord.WebSocket.SocketCommandBase.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketCommandBase.DeferAsync(Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketCommandBase.DeferAsync(System.Boolean,Discord.RequestOptions)">
             <summary>
                 Acknowledges this interaction with the <see cref="F:Discord.InteractionResponseType.DeferredChannelMessageWithSource"/>.
             </summary>
