@@ -52,6 +52,12 @@ namespace Discord.SlashCommands
             AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null) =>
             await Context.Channel.SendMessageAsync(text, false, embed, options, allowedMentions, messageReference, component).ConfigureAwait(false);
 
+        protected virtual async Task DeleteOriginalResponseAsync ( )
+        {
+            var response = await Context.Interaction.GetOriginalResponseAsync().ConfigureAwait(false);
+            await response.DeleteAsync().ConfigureAwait(false);
+        }
+
         protected virtual async Task<SocketInteraction> WaitNextAsync (TimeSpan timeout, Predicate<SocketInteraction> predicate)
         {
             if (!( Context.Client is BaseSocketClient baseSocketClient ))
