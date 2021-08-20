@@ -12,6 +12,9 @@ namespace Discord.WebSocket
     {
         /// <inheritdoc/>
         public string Name { get; private set; }
+        /// <summary>
+        /// The message selected to run the command
+        /// </summary>
         public SocketMessage Message {  get; private set; }
 
         internal Dictionary<ulong, SocketGuildUser> guildMembers { get; private set; }
@@ -27,14 +30,10 @@ namespace Discord.WebSocket
 
         private ulong? guildId;
 
-        private ApplicationCommandType Type;
-
         internal SocketMessageCommandData(DiscordSocketClient client, Model model, ulong? guildId)
             : base(client, model.Id)
         {
             this.guildId = guildId;
-
-            this.Type = (ApplicationCommandType)model.Type;
 
             if (model.Resolved.IsSpecified)
             {
