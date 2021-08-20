@@ -1113,7 +1113,6 @@ namespace Discord.API
             Preconditions.NotNull(command, nameof(command));
             Preconditions.AtMost(command.Name.Length, 32, nameof(command.Name));
             Preconditions.AtLeast(command.Name.Length, 3, nameof(command.Name));
-            Preconditions.Equals(command.Description, "");
 
             options = RequestOptions.CreateOrClone(options);            
 
@@ -1124,7 +1123,6 @@ namespace Discord.API
             Preconditions.NotNull(command, nameof(command));
             Preconditions.AtMost(command.Name.Length, 32, nameof(command.Name));
             Preconditions.AtLeast(command.Name.Length, 3, nameof(command.Name));
-            Preconditions.Equals(command.Description, "");
 
             options = RequestOptions.CreateOrClone(options);
 
@@ -1177,21 +1175,7 @@ namespace Discord.API
 
             var bucket = new BucketIds(guildId: guildId);
 
-            try
-            {
-                return await SendJsonAsync<ApplicationCommand>("PATCH", () => $"applications/{this.CurrentUserId}/guilds/{guildId}/commands/{commandId}", command, bucket, options: options).ConfigureAwait(false);
-            }
-            catch (HttpException x)
-            {
-                if (x.HttpCode == HttpStatusCode.BadRequest)
-                {
-                    var json = (x.Request as JsonRestRequest).Json;
-                    throw new ApplicationCommandException(json, x);
-                }
-
-                // Re-throw the http exception
-                throw;
-            }
+                return await TrySendApplicationCommand(SendJsonAsync<ApplicationCommand>("PATCH", () => $"applications/{this.CurrentUserId}/guilds/{guildId}/commands/{commandId}", command, bucket, options: options)).ConfigureAwait(false);
         }
         public async Task DeleteGuildApplicationCommandAsync(ulong guildId, ulong commandId, RequestOptions options = null)
         {
@@ -1226,21 +1210,7 @@ namespace Discord.API
 
             var bucket = new BucketIds(guildId: guildId);
 
-            try
-            {
-                return await SendJsonAsync<ApplicationCommand>("PATCH", () => $"applications/{this.CurrentUserId}/guilds/{guildId}/commands/{commandId}", command, bucket, options: options).ConfigureAwait(false);
-            }
-            catch (HttpException x)
-            {
-                if (x.HttpCode == HttpStatusCode.BadRequest)
-                {
-                    var json = (x.Request as JsonRestRequest).Json;
-                    throw new ApplicationCommandException(json, x);
-                }
-
-                // Re-throw the http exception
-                throw;
-            }
+            return await TrySendApplicationCommand(SendJsonAsync<ApplicationCommand>("PATCH", () => $"applications/{this.CurrentUserId}/guilds/{guildId}/commands/{commandId}", command, bucket, options: options)).ConfigureAwait(false);
         }
         public async Task<ApplicationCommand[]> BulkOverwriteGuildApplicationUserCommands(ulong guildId, CreateApplicationCommandParams[] commands, RequestOptions options = null)
         {
@@ -1265,21 +1235,7 @@ namespace Discord.API
 
             var bucket = new BucketIds(guildId: guildId);
 
-            try
-            {
-                return await SendJsonAsync<ApplicationCommand>("PATCH", () => $"applications/{this.CurrentUserId}/guilds/{guildId}/commands/{commandId}", command, bucket, options: options).ConfigureAwait(false);
-            }
-            catch (HttpException x)
-            {
-                if (x.HttpCode == HttpStatusCode.BadRequest)
-                {
-                    var json = (x.Request as JsonRestRequest).Json;
-                    throw new ApplicationCommandException(json, x);
-                }
-
-                // Re-throw the http exception
-                throw;
-            }
+                return await TrySendApplicationCommand(SendJsonAsync<ApplicationCommand>("PATCH", () => $"applications/{this.CurrentUserId}/guilds/{guildId}/commands/{commandId}", command, bucket, options: options)).ConfigureAwait(false);
         }
 
         public async Task<ApplicationCommand[]> BulkOverwriteGuildApplicationMessageCommands(ulong guildId, CreateApplicationCommandParams[] commands, RequestOptions options = null)

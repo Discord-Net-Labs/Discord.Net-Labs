@@ -4489,6 +4489,41 @@
                 Whether the command is enabled by default when the app is added to a guild. Default is <see langword="true"/>
             </summary>
         </member>
+        <member name="T:Discord.ApplicationCommandType">
+            <summary>
+            ApplicationCommandType is enum of current valid Application Command Types: Slash, User, Message
+            </summary>
+        </member>
+        <member name="F:Discord.ApplicationCommandType.Slash">
+            <summary>
+            ApplicationCommandType.Slash is Slash command type
+            </summary>
+        </member>
+        <member name="F:Discord.ApplicationCommandType.User">
+            <summary>
+            ApplicationCommandType.User is Context Menu User command type
+            </summary>
+        </member>
+        <member name="F:Discord.ApplicationCommandType.Message">
+            <summary>
+            ApplicationCommandType.Message is Context Menu Message command type
+            </summary>
+        </member>
+        <member name="T:Discord.ContextMenuCommandCreationProperties">
+            <summary>
+                A class used to create Message commands.
+            </summary>
+        </member>
+        <member name="P:Discord.ContextMenuCommandCreationProperties.Name">
+            <summary>
+                The name of this command.
+            </summary>
+        </member>
+        <member name="P:Discord.ContextMenuCommandCreationProperties.Type">
+            <summary>
+                Gets or sets the type for this command.
+            </summary>
+        </member>
         <member name="T:Discord.IApplicationCommand">
             <summary>
                 The base command model that belongs to an application. see <see href="https://discord.com/developers/docs/interactions/slash-commands#applicationcommand"/>
@@ -5538,7 +5573,7 @@
         </member>
         <member name="T:Discord.MessageCommandBuilder">
             <summary>
-                A class used to build slash commands.
+                A class used to build Message commands.
             </summary>
         </member>
         <member name="F:Discord.MessageCommandBuilder.MaxNameLength">
@@ -5546,26 +5581,16 @@
                 Returns the maximun length a commands name allowed by Discord
             </summary>
         </member>
-        <member name="F:Discord.MessageCommandBuilder.MaxDescriptionLength">
-            <summary> 
-                Returns the maximum length of a commands description allowed by Discord. 
-            </summary>
-        </member>
         <member name="P:Discord.MessageCommandBuilder.Name">
             <summary>
-                The name of this slash command.
-            </summary>
-        </member>
-        <member name="P:Discord.MessageCommandBuilder.Description">
-            <summary>
-               A 1-100 length description of this slash command
+                The name of this Message command.
             </summary>
         </member>
         <member name="M:Discord.MessageCommandBuilder.Build">
             <summary>
                 Build the current builder into a <see cref="T:Discord.ContextMenuCommandCreationProperties"/> class.
             </summary>
-            <returns>A <see cref="T:Discord.ContextMenuCommandCreationProperties"/> that can be used to create user commands over rest.</returns>
+            <returns>A <see cref="T:Discord.ContextMenuCommandCreationProperties"/> that can be used to create message commands over rest.</returns>
         </member>
         <member name="M:Discord.MessageCommandBuilder.WithName(System.String)">
             <summary>
@@ -5575,33 +5600,6 @@
             <returns>
                 The current builder.
             </returns>
-        </member>
-        <member name="M:Discord.MessageCommandBuilder.WithDescription(System.String)">
-            <summary>
-                Sets the description of the current command.
-            </summary>
-            <param name="description">The description of this command.</param>
-            <returns>The current builder.</returns>
-        </member>
-        <member name="T:Discord.ContextMenuCommandCreationProperties">
-            <summary>
-                A class used to create Message commands.
-            </summary>
-        </member>
-        <member name="P:Discord.ContextMenuCommandCreationProperties.Name">
-            <summary>
-                The name of this command.
-            </summary>
-        </member>
-        <member name="P:Discord.ContextMenuCommandCreationProperties.Description">
-            <summary>
-               The discription of this command.
-            </summary>
-        </member>
-        <member name="P:Discord.ContextMenuCommandCreationProperties.Type">
-            <summary>
-                Gets or sets the type for this command.
-            </summary>
         </member>
         <member name="T:Discord.SlashCommandBuilder">
             <summary>
@@ -5867,7 +5865,7 @@
         </member>
         <member name="T:Discord.UserCommandBuilder">
             <summary>
-                A class used to build slash commands.
+                A class used to build user commands.
             </summary>
         </member>
         <member name="F:Discord.UserCommandBuilder.MaxNameLength">
@@ -5875,19 +5873,9 @@
                 Returns the maximun length a commands name allowed by Discord
             </summary>
         </member>
-        <member name="F:Discord.UserCommandBuilder.MaxDescriptionLength">
-            <summary> 
-                Returns the maximum length of a commands description allowed by Discord. 
-            </summary>
-        </member>
         <member name="P:Discord.UserCommandBuilder.Name">
             <summary>
-                The name of this slash command.
-            </summary>
-        </member>
-        <member name="P:Discord.UserCommandBuilder.Description">
-            <summary>
-               A 1-100 length description of this slash command
+                The name of this User command.
             </summary>
         </member>
         <member name="M:Discord.UserCommandBuilder.Build">
@@ -5905,29 +5893,22 @@
                 The current builder.
             </returns>
         </member>
-        <member name="M:Discord.UserCommandBuilder.WithDescription(System.String)">
-            <summary>
-                Sets the description of the current command.
-            </summary>
-            <param name="description">The description of this command.</param>
-            <returns>The current builder.</returns>
-        </member>
-        <member name="T:Discord.ContextMenuCommandCreationProperties">
+        <member name="T:Discord.UserCommandCreationProperties">
             <summary>
                 A class used to create User commands.
             </summary>
         </member>
-        <member name="P:Discord.ContextMenuCommandCreationProperties.Name">
+        <member name="P:Discord.UserCommandCreationProperties.Name">
             <summary>
                 The name of this command.
             </summary>
         </member>
-        <member name="P:Discord.ContextMenuCommandCreationProperties.Description">
+        <member name="P:Discord.UserCommandCreationProperties.Description">
             <summary>
                The discription of this command.
             </summary>
         </member>
-        <member name="P:Discord.ContextMenuCommandCreationProperties.Type">
+        <member name="P:Discord.UserCommandCreationProperties.Type">
             <summary>
                 Gets or sets the type for this command.
             </summary>
