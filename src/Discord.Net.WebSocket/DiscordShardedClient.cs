@@ -30,16 +30,7 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public override IActivity Activity { get => _shards[0].Activity; protected set { } }
 
-        internal new DiscordSocketApiClient ApiClient
-        {
-            get
-            {
-                if (base.ApiClient.CurrentUserId == null)
-                    base.ApiClient.CurrentUserId = CurrentUser?.Id;
-
-                return base.ApiClient;
-            }
-        }
+        internal new DiscordSocketApiClient ApiClient => base.ApiClient;
         /// <inheritdoc />
         public override IReadOnlyCollection<SocketGuild> Guilds => GetGuilds().ToReadOnlyCollection(GetGuildCount);
         /// <inheritdoc />
@@ -97,6 +88,12 @@ namespace Discord.WebSocket
                     RegisterEvents(_shards[i], i == 0);
                 }
             }
+
+            ShardReady += (client) =>
+            {
+                ApiClient.CurrentUserId = CurrentUser?.Id;
+                return Task.CompletedTask;
+            };
         }
         private static API.DiscordSocketApiClient CreateApiClient(DiscordSocketConfig config)
             => new API.DiscordSocketApiClient(config.RestClientProvider, config.WebSocketProvider, DiscordRestConfig.UserAgent);
@@ -388,6 +385,9 @@ namespace Discord.WebSocket
             client.InviteDeleted += (channel, invite) => _inviteDeletedEvent.InvokeAsync(channel, invite);
 
             client.InteractionCreated += (interaction) => _interactionCreatedEvent.InvokeAsync(interaction);
+            client.ApplicationCommandCreated += (cmd) => _applicationCommandCreated.InvokeAsync(cmd);
+            client.ApplicationCommandDeleted += (cmd) => _applicationCommandDeleted.InvokeAsync(cmd);
+            client.ApplicationCommandUpdated += (cmd) => _applicationCommandUpdated.InvokeAsync(cmd);
 
             client.ThreadUpdated += (thread1, thread2) => _threadUpdated.InvokeAsync(thread1, thread2);
             client.ThreadCreated += (thread) => _threadCreated.InvokeAsync(thread);
