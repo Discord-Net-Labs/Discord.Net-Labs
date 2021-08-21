@@ -14,9 +14,9 @@ namespace Discord
         /// <summary>
         ///     Gets the identifier of this user's banner.
         /// </summary>
-        string BannerId { get; }
+        string? BannerId { get; }
         /// <summary>
-        ///     Gets the user's banner color.
+        ///     Gets the user's banner color. <c>Null</c> if not set.
         /// </summary>
         /// <returns>
         ///     A <see cref="Color"/> struct representing the accent color of this user's banner.
