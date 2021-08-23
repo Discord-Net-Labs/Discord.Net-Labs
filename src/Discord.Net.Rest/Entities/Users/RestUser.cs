@@ -22,7 +22,7 @@ namespace Discord.Rest
         /// <inheritdoc />
         public string AvatarId { get; private set; }
         /// <inheritdoc />
-        public string BannerId { get; private set; }
+        public string? BannerId { get; private set; }
         /// <inheritdoc />
         public Color? AccentColor { get; private set; }
         /// <inheritdoc />

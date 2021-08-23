@@ -54,7 +54,7 @@ namespace Discord.WebSocket
         }
 
         /// <inheritdoc/>
-        public override string BannerId
+        public override string? BannerId
         {
             get => GuildUser.BannerId;
             internal set => GuildUser.BannerId = value;
