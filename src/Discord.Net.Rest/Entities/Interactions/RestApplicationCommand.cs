@@ -57,6 +57,7 @@ namespace Discord.Rest
 
         internal virtual void Update(Model model)
         {
+            this.Type = model.Type;
             this.ApplicationId = model.ApplicationId;
             this.Name = model.Name;
             this.Description = model.Description;
