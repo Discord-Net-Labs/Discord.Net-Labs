@@ -71,6 +71,12 @@ namespace Discord.Rest
         /// <inheritdoc/>
         public abstract Task DeleteAsync(RequestOptions options = null);
 
+        /// <inheritdoc />
+        public Task ModifyAsync(Action<ApplicationCommandProperties> func, RequestOptions options = null)
+        {
+            return ModifyAsync<ApplicationCommandProperties>(func, options);
+        }
+        
         /// <inheritdoc/>
         public abstract Task ModifyAsync<TArg>(Action<TArg> func, RequestOptions options = null)
             where TArg : ApplicationCommandProperties;

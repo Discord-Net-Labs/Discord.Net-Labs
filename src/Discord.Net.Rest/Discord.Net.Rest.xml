@@ -3909,6 +3909,9 @@
         <member name="M:Discord.Rest.RestApplicationCommand.DeleteAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
+        <member name="M:Discord.Rest.RestApplicationCommand.ModifyAsync(System.Action{Discord.ApplicationCommandProperties},Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
         <member name="M:Discord.Rest.RestApplicationCommand.ModifyAsync``1(System.Action{``0},Discord.RequestOptions)">
             <inheritdoc/>
         </member>

@@ -167,13 +167,15 @@ namespace Discord.Rest
         private static TArg GetApplicationCommandProperties<TArg>(IApplicationCommand command)
             where TArg : ApplicationCommandProperties
         {
+            bool isBaseClass = typeof(TArg) == typeof(ApplicationCommandProperties);
+
             switch (true)
             {
-                case true when typeof(TArg) == typeof(SlashCommandProperties) && command.Type == ApplicationCommandType.Slash:
+                case true when (typeof(TArg) == typeof(SlashCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.Slash:
                     return new SlashCommandProperties() as TArg;
-                case true when typeof(TArg) == typeof(MessageCommandProperties) && command.Type == ApplicationCommandType.Message:
+                case true when (typeof(TArg) == typeof(MessageCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.Message:
                     return new MessageCommandProperties() as TArg;
-                case true when typeof(TArg) == typeof(UserCommandProperties) && command.Type == ApplicationCommandType.User:
+                case true when (typeof(TArg) == typeof(UserCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.User:
                     return new UserCommandProperties() as TArg;
                 default:
                     throw new InvalidOperationException($"Cannot modify application command of type {command.Type} with the parameter type {typeof(TArg).FullName}");

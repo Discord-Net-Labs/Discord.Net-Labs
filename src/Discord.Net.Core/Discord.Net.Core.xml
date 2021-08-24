@@ -4719,6 +4719,16 @@
                 If the option is a subcommand or subcommand group type, this nested options will be the parameters.
             </summary>
         </member>
+        <member name="M:Discord.IApplicationCommand.ModifyAsync(System.Action{Discord.ApplicationCommandProperties},Discord.RequestOptions)">
+            <summary>
+                Modifies the current application command.
+            </summary>
+            <param name="func">The new properties to use when modifying the command.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous modification operation.
+            </returns>
+        </member>
         <member name="M:Discord.IApplicationCommand.ModifyAsync``1(System.Action{``0},Discord.RequestOptions)">
             <summary>
                 Modifies the current application command.
@@ -4728,6 +4738,7 @@
             <returns>
                 A task that represents the asynchronous modification operation.
             </returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when you pass in an invalid <see cref="T:Discord.ApplicationCommandProperties"/> type.</exception>
         </member>
         <member name="T:Discord.IApplicationCommandInteractionData">
             <summary>
