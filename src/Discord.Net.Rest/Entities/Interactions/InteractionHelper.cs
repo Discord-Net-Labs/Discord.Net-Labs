@@ -288,7 +288,7 @@ namespace Discord.Rest
         {
             var model = new ModifyApplicationCommandParams()
             {
-                Name = arg.Name.Value,
+                Name = arg.Name,
             };
 
             if (arg is SlashCommandProperties slashProps)
