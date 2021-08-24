@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Discord
 {
     /// <summary>
-    ///     The base command model that belongs to an application. see <see href="https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-structure"/>
+    ///     The base command model that belongs to an application. 
     /// </summary>
     public interface IApplicationCommand : ISnowflakeEntity, IDeletable
     {
@@ -22,7 +22,12 @@ namespace Discord
         ulong ApplicationId { get; }
 
         /// <summary>
-        ///     The 1-32 character name of the command.
+        ///     The type of the command
+        /// </summary>
+        ApplicationCommandType Type { get; }
+
+        /// <summary>
+        ///     The name of the command.
         /// </summary>
         string Name { get; }
 
@@ -43,5 +48,15 @@ namespace Discord
         ///     Only valid for commands with a type of <see cref="ApplicationCommandType.ChatInput"/>.
         /// </remarks>
         IReadOnlyCollection<IApplicationCommandOption> Options { get; }
+
+        /// <summary>
+        ///     Modifies the current application command.
+        /// </summary>
+        /// <param name="func">The new properties to use when modifying the command.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous modification operation.
+        /// </returns>
+        Task ModifyAsync(Action<ApplicationCommandProperties> func, RequestOptions options = null);
     }
 }

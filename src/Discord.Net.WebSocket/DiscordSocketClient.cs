@@ -44,6 +44,7 @@ namespace Discord.WebSocket
         private RestApplication _applicationInfo;
         private bool _isDisposed;
         private GatewayIntents _gatewayIntents;
+        private ImmutableArray<StickerPack<SocketSticker>> _defaultStickers;
 
         /// <summary>
         ///     Provides access to a REST-only client with a shared state from this client.
@@ -76,6 +77,17 @@ namespace Discord.WebSocket
         internal new DiscordSocketApiClient ApiClient => base.ApiClient as DiscordSocketApiClient;
         /// <inheritdoc />
         public override IReadOnlyCollection<SocketGuild> Guilds => State.Guilds;
+        /// <inheritdoc/>
+        public override IReadOnlyCollection<StickerPack<SocketSticker>> DefaultStickerPacks
+        {
+            get
+            {
+                if (this._shardedClient != null)
+                    return this._shardedClient.DefaultStickerPacks;
+                else
+                    return _defaultStickers.ToReadOnlyCollection();
+            }
+        }
         /// <inheritdoc />
         public override IReadOnlyCollection<ISocketPrivateChannel> PrivateChannels => State.PrivateChannels;
         /// <summary>
@@ -137,6 +149,7 @@ namespace Discord.WebSocket
             Rest = new DiscordSocketRestClient(config, ApiClient);
             _heartbeatTimes = new ConcurrentQueue<long>();
             _gatewayIntents = config.GatewayIntents;
+            _defaultStickers = new ImmutableArray<StickerPack<SocketSticker>>();
 
             _stateLock = new SemaphoreSlim(1, 1);
             _gatewayLogger = LogManager.CreateLogger(ShardId == 0 && TotalShards == 1 ? "Gateway" : $"Shard #{ShardId}");
@@ -193,6 +206,31 @@ namespace Discord.WebSocket
             }
 
             base.Dispose(disposing);
+        }
+
+        internal override async Task OnLoginAsync(TokenType tokenType, string token)
+        {
+            if(this._shardedClient != null && this._defaultStickers.Length == 0)
+            {
+                var models = await ApiClient.ListNitroStickerPacksAsync().ConfigureAwait(false);
+
+                foreach (var model in models.StickerPacks)
+                {
+                    var stickers = model.Stickers.Select(x => SocketSticker.Create(this, x));
+
+                    var pack = new StickerPack<SocketSticker>(
+                        model.Name,
+                        model.Id,
+                        model.SkuId,
+                        model.CoverStickerId.ToNullable(),
+                        model.Description,
+                        model.BannerAssetId,
+                        stickers
+                    );
+
+                    _defaultStickers.Add(pack);
+                }
+            }
         }
 
         /// <inheritdoc />
@@ -343,6 +381,83 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public override SocketUser GetUser(string username, string discriminator)
             => State.Users.FirstOrDefault(x => x.Discriminator == discriminator && x.Username == username);
+
+        /// <summary>
+        ///     Gets a global application command.
+        /// </summary>
+        /// <param name="id">The id of the command.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A ValueTask that represents the asynchronous get operation. The task result contains the application command if found, otherwise
+        ///     <see langword="null"/>.
+        /// </returns>
+        public async ValueTask<SocketApplicationCommand> GetGlobalApplicationCommandAsync(ulong id, RequestOptions options = null)
+        {
+            var command = State.GetCommand(id);
+
+            if (command != null)
+                return command;
+
+            var model = await ApiClient.GetGlobalApplicationCommandAsync(id, options);
+
+            if (model == null)
+                return null;
+
+            command = SocketApplicationCommand.Create(this, model);
+
+            State.AddCommand(command);
+
+            return command;
+        }
+        /// <summary>
+        ///     Gets a collection of all global commands.
+        /// </summary>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous get operation. The task result contains a read-only collection of global
+        ///     application commands.
+        /// </returns>
+        public async Task<IReadOnlyCollection<SocketApplicationCommand>> GetGlobalApplicationCommandsAsync(RequestOptions options = null)
+        {
+            var commands = (await ApiClient.GetGlobalApplicationCommandsAsync(options)).Select(x => SocketApplicationCommand.Create(this, x));
+
+            foreach(var command in commands)
+            {
+                State.AddCommand(command);
+            }
+
+            return commands.ToImmutableArray();
+        }
+
+        public async Task<SocketApplicationCommand> CreateGlobalApplicationCommandAsync(ApplicationCommandProperties properties, RequestOptions options = null)
+        {
+            var model = await InteractionHelper.CreateGlobalCommand(this, properties, options).ConfigureAwait(false);
+
+            var entity = State.GetOrAddCommand(model.Id, (id) => SocketApplicationCommand.Create(this, model));
+
+            // update it incase it was cached
+            entity.Update(model);
+
+            return entity;
+        }
+        public async Task<IReadOnlyCollection<SocketApplicationCommand>> BulkOverwriteGlobalApplicationCommandsAsync(
+            ApplicationCommandProperties[] properties, RequestOptions options = null)
+        {
+            var models = await InteractionHelper.BulkOverwriteGlobalCommands(this, properties, options);
+
+            var entities = models.Select(x => SocketApplicationCommand.Create(this, x));
+
+            // purge our previous commands
+            State.PurgeCommands(x => x.IsGlobalCommand);
+
+            foreach(var entity in entities)
+            {
+                State.AddCommand(entity);
+            }
+
+            return entities.ToImmutableArray();
+        }
+
         /// <summary>
         ///     Clears cached users from the client.
         /// </summary>
@@ -367,6 +482,51 @@ namespace Discord.WebSocket
         }
         internal void RemoveUser(ulong id)
             => State.RemoveUser(id);
+
+        /// <inheritdoc/>
+        public override async Task<SocketSticker> GetStickerAsync(ulong id, CacheMode mode = CacheMode.AllowDownload, RequestOptions options = null)
+        {
+            var sticker = _defaultStickers.FirstOrDefault(x => x.Stickers.Any(y => y.Id == id))?.Stickers.FirstOrDefault(x => x.Id == id);
+
+            if (sticker != null)
+                return sticker;
+
+            foreach(var guild in Guilds)
+            {
+                sticker = await guild.GetStickerAsync(id, CacheMode.CacheOnly).ConfigureAwait(false);
+
+                if (sticker != null)
+                    return sticker;
+            }
+
+            if (mode == CacheMode.CacheOnly)
+                return null;
+
+            var model = await ApiClient.GetStickerAsync(id, options).ConfigureAwait(false);
+
+            if(model == null)
+                return null;
+
+            
+            if (model.GuildId.IsSpecified)
+            {
+                var guild = State.GetGuild(model.GuildId.Value);
+                sticker = guild.AddOrUpdateSticker(model);
+                return sticker;
+            }
+            else
+            {
+                return SocketSticker.Create(this, model);
+            }
+        }
+
+        /// <summary>
+        ///     Gets a sticker.
+        /// </summary>
+        /// <param name="id">The unique identifier of the sticker.</param>
+        /// <returns>A sticker if found, otherwise <see langword="null"/>.</returns>
+        public SocketSticker GetSticker(ulong id)
+            => GetStickerAsync(id, CacheMode.CacheOnly).GetAwaiter().GetResult();
 
         /// <inheritdoc />
         public override async ValueTask<IReadOnlyCollection<RestVoiceRegion>> GetVoiceRegionsAsync(RequestOptions options = null)
@@ -1891,8 +2051,6 @@ namespace Discord.WebSocket
                                 {
                                     await _gatewayLogger.DebugAsync("Received Dispatch (INTERACTION_CREATE)").ConfigureAwait(false);
 
-                                    // 0x546861742062696720656e6469616e20656e636f64696e67206d616b6573206d79316d687a20636c6f636b207469636b
-
                                     var data = (payload as JToken).ToObject<API.Interaction>(_serializer);
 
                                     SocketChannel channel = null;
@@ -1932,6 +2090,25 @@ namespace Discord.WebSocket
                                             await interaction.DeferAsync().ConfigureAwait(false);
 
                                         await TimedInvokeAsync(_interactionCreatedEvent, nameof(InteractionCreated), interaction).ConfigureAwait(false);
+
+                                        switch (interaction)
+                                        {
+                                            case SocketSlashCommand slashCommand:
+                                                await TimedInvokeAsync(_slashCommandExecuted, nameof(SlashCommandExecuted), slashCommand).ConfigureAwait(false);
+                                                break;
+                                            case SocketMessageComponent messageComponent:
+                                                if(messageComponent.Data.Type == ComponentType.SelectMenu)
+                                                    await TimedInvokeAsync(_selectMenuExecuted, nameof(SelectMenuExecuted), messageComponent).ConfigureAwait(false);
+                                                if(messageComponent.Data.Type == ComponentType.Button)
+                                                    await TimedInvokeAsync(_buttonExecuted, nameof(ButtonExecuted), messageComponent).ConfigureAwait(false);
+                                                break;
+                                            case SocketUserCommand userCommand:
+                                                await TimedInvokeAsync(_userCommandExecuted, nameof(UserCommandExecuted), userCommand).ConfigureAwait(false);
+                                                break;
+                                            case SocketMessageCommand messageCommand:
+                                                await TimedInvokeAsync(_messageCommandExecuted, nameof(MessageCommandExecuted), messageCommand).ConfigureAwait(false);
+                                                break;
+                                        }
                                     }
                                     else
                                     {
@@ -1946,14 +2123,19 @@ namespace Discord.WebSocket
 
                                     var data = (payload as JToken).ToObject<API.Gateway.ApplicationCommandCreatedUpdatedEvent>(_serializer);
 
-                                    var guild = State.GetGuild(data.GuildId);
-                                    if(guild == null)
+                                    if (data.GuildId.IsSpecified)
                                     {
-                                        await UnknownGuildAsync(type, data.GuildId).ConfigureAwait(false);
-                                        return;
+                                        var guild = State.GetGuild(data.GuildId.Value);
+                                        if (guild == null)
+                                        {
+                                            await UnknownGuildAsync(type, data.GuildId.Value).ConfigureAwait(false);
+                                            return;
+                                        }
                                     }
 
                                     var applicationCommand = SocketApplicationCommand.Create(this, data);
+
+                                    State.AddCommand(applicationCommand);
 
                                     await TimedInvokeAsync(_applicationCommandCreated, nameof(ApplicationCommandCreated), applicationCommand).ConfigureAwait(false);
                                 }
@@ -1964,14 +2146,19 @@ namespace Discord.WebSocket
 
                                     var data = (payload as JToken).ToObject<API.Gateway.ApplicationCommandCreatedUpdatedEvent>(_serializer);
 
-                                    var guild = State.GetGuild(data.GuildId);
-                                    if (guild == null)
+                                    if (data.GuildId.IsSpecified)
                                     {
-                                        await UnknownGuildAsync(type, data.GuildId).ConfigureAwait(false);
-                                        return;
+                                        var guild = State.GetGuild(data.GuildId.Value);
+                                        if (guild == null)
+                                        {
+                                            await UnknownGuildAsync(type, data.GuildId.Value).ConfigureAwait(false);
+                                            return;
+                                        }
                                     }
 
                                     var applicationCommand = SocketApplicationCommand.Create(this, data);
+
+                                    State.AddCommand(applicationCommand);
 
                                     await TimedInvokeAsync(_applicationCommandUpdated, nameof(ApplicationCommandUpdated), applicationCommand).ConfigureAwait(false);
                                 }
@@ -1982,14 +2169,19 @@ namespace Discord.WebSocket
 
                                     var data = (payload as JToken).ToObject<API.Gateway.ApplicationCommandCreatedUpdatedEvent>(_serializer);
 
-                                    var guild = State.GetGuild(data.GuildId);
-                                    if (guild == null)
+                                    if (data.GuildId.IsSpecified)
                                     {
-                                        await UnknownGuildAsync(type, data.GuildId).ConfigureAwait(false);
-                                        return;
+                                        var guild = State.GetGuild(data.GuildId.Value);
+                                        if (guild == null)
+                                        {
+                                            await UnknownGuildAsync(type, data.GuildId.Value).ConfigureAwait(false);
+                                            return;
+                                        }
                                     }
 
                                     var applicationCommand = SocketApplicationCommand.Create(this, data);
+
+                                    State.RemoveCommand(applicationCommand.Id);
 
                                     await TimedInvokeAsync(_applicationCommandDeleted, nameof(ApplicationCommandDeleted), applicationCommand).ConfigureAwait(false);
                                 }
@@ -2241,6 +2433,59 @@ namespace Discord.WebSocket
                                         case "STAGE_INSTANCE_UPDATE":
                                             await TimedInvokeAsync(_stageUpdated, nameof(StageUpdated), before, stageChannel);
                                             return;
+                                    }
+                                }
+                                break;
+                            case "GUILD_STICKERS_UPDATE":
+                                {
+                                    await _gatewayLogger.DebugAsync($"Received Dispatch (GUILD_STICKERS_UPDATE)").ConfigureAwait(false);
+
+                                    var data = (payload as JToken).ToObject<GuildStickerUpdateEvent>(_serializer);
+
+                                    var guild = State.GetGuild(data.GuildId);
+
+                                    if (guild == null)
+                                    {
+                                        await UnknownGuildAsync(type, data.GuildId).ConfigureAwait(false);
+                                        return;
+                                    }
+
+                                    var newStickers = data.Stickers.Where(x => !guild.Stickers.Any(y => y.Id == x.Id));
+                                    var deletedStickers = guild.Stickers.Where(x => !data.Stickers.Any(y => y.Id == x.Id));
+                                    var updatedStickers = data.Stickers.Select(x =>
+                                    {
+                                        var s = guild.Stickers.FirstOrDefault(y => y.Id == x.Id);
+                                        if (s == null)
+                                            return null;
+
+                                        var e = s.Equals(x);
+                                        if (!e)
+                                        {
+                                            return (s, x) as (SocketCustomSticker Entity, API.Sticker Model)?;
+                                        }
+                                        else
+                                        {
+                                            return null;
+                                        }
+                                    }).Where(x => x.HasValue).Select(x => x.Value).ToArray();
+
+                                    foreach(var model in newStickers)
+                                    {
+                                        var entity = guild.AddSticker(model);
+                                        await TimedInvokeAsync(_guildStickerCreated, nameof(GuildStickerCreated), entity);
+                                    }
+                                    foreach(var sticker in deletedStickers)
+                                    {
+                                        var entity = guild.RemoveSticker(sticker.Id);
+                                        await TimedInvokeAsync(_guildStickerDeleted, nameof(GuildStickerDeleted), entity);
+                                    }
+                                    foreach(var entityModelPair in updatedStickers)
+                                    {
+                                        var before = entityModelPair.Entity.Clone();
+
+                                        entityModelPair.Entity.Update(entityModelPair.Model);
+
+                                        await TimedInvokeAsync(_guildStickerUpdated, nameof(GuildStickerUpdated), before, entityModelPair.Entity);
                                     }
                                 }
                                 break;
@@ -2601,6 +2846,13 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         async Task<IVoiceRegion> IDiscordClient.GetVoiceRegionAsync(string id, RequestOptions options)
             => await GetVoiceRegionAsync(id, options).ConfigureAwait(false);
+
+        /// <inheritdoc />
+        async Task<IApplicationCommand> IDiscordClient.GetGlobalApplicationCommandAsync(ulong id, RequestOptions options)
+            => await GetGlobalApplicationCommandAsync(id, options);
+        /// <inheritdoc />
+        async Task<IReadOnlyCollection<IApplicationCommand>> IDiscordClient.GetGlobalApplicationCommandsAsync(RequestOptions options)
+            => await GetGlobalApplicationCommandsAsync(options);
 
         /// <inheritdoc />
         async Task IDiscordClient.StartAsync()

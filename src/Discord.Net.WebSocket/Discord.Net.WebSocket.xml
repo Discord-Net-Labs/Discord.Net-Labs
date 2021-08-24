@@ -118,6 +118,11 @@
                 Provides access to a REST-only client with a shared state from this client.
             </summary>
         </member>
+        <member name="P:Discord.WebSocket.BaseSocketClient.DefaultStickerPacks">
+            <summary>
+                Gets a collection of default stickers.
+            </summary>
+        </member>
         <member name="P:Discord.WebSocket.BaseSocketClient.CurrentUser">
             <summary>
                 Gets the current logged-in user.
@@ -347,6 +352,17 @@
             <param name="options">The options to be used when sending the request.</param>
             <returns>
                 A task that represents the asynchronous get operation. The task result contains the invite information.
+            </returns>
+        </member>
+        <member name="M:Discord.WebSocket.BaseSocketClient.GetStickerAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <summary>
+                Gets a sticker.
+            </summary>
+            <param name="mode">Whether or not to allow downloading from the api.</param>
+            <param name="id">The id of the sticker to get.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A <see cref="T:Discord.WebSocket.SocketSticker"/> if found, otherwise <see langword="null"/>.
             </returns>
         </member>
         <member name="M:Discord.WebSocket.BaseSocketClient.Discord#IDiscordClient#GetApplicationInfoAsync(Discord.RequestOptions)">
@@ -693,7 +709,7 @@
         </member>
         <member name="E:Discord.WebSocket.BaseSocketClient.InteractionCreated">
             <summary>
-                Fired when an Interaction is created.
+                Fired when an Interaction is created. This event covers all types of interactions including but not limited to: buttons, select menus, slash commands.
             </summary>
             <remarks>
                 <para>
@@ -704,6 +720,31 @@
                     The interaction created will be passed into the <see cref="T:Discord.WebSocket.SocketInteraction"/> parameter.
                 </para>
             </remarks>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.ButtonExecuted">
+            <summary>
+                Fired when a button is clicked and its interaction is received.
+            </summary>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.SelectMenuExecuted">
+            <summary>
+                Fired when a select menu is used and its interaction is received.
+            </summary>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.SlashCommandExecuted">
+            <summary>
+                Fired when a slash command is used and its interaction is received.
+            </summary>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.UserCommandExecuted">
+            <summary>
+                Fired when a user command is used and its interaction is received.
+            </summary>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.MessageCommandExecuted">
+            <summary>
+                Fired when a message command is used and its interaction is received.
+            </summary>
         </member>
         <member name="E:Discord.WebSocket.BaseSocketClient.ApplicationCommandCreated">
              <summary>
@@ -811,6 +852,21 @@
                 Fired when a speaker is removed from a stage channel.
             </summary>
         </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.GuildStickerCreated">
+            <summary>
+                Fired when a sticker in a guild is created.
+            </summary>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.GuildStickerUpdated">
+            <summary>
+                Fired when a sticker in a guild is updated.
+            </summary>
+        </member>
+        <member name="E:Discord.WebSocket.BaseSocketClient.GuildStickerDeleted">
+            <summary>
+                Fired when a sticker in a guild is deleted.
+            </summary>
+        </member>
         <member name="P:Discord.WebSocket.DiscordShardedClient.Latency">
             <inheritdoc />
         </member>
@@ -819,6 +875,9 @@
         </member>
         <member name="P:Discord.WebSocket.DiscordShardedClient.Activity">
             <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.DiscordShardedClient.DefaultStickerPacks">
+            <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.DiscordShardedClient.Guilds">
             <inheritdoc />
@@ -857,6 +916,9 @@
         </member>
         <member name="M:Discord.WebSocket.DiscordShardedClient.GetChannel(System.UInt64)">
             <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.DiscordShardedClient.GetStickerAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.DiscordShardedClient.GetUser(System.UInt64)">
             <inheritdoc />
@@ -958,6 +1020,9 @@
         </member>
         <member name="P:Discord.WebSocket.DiscordSocketClient.Guilds">
             <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.DiscordSocketClient.DefaultStickerPacks">
+            <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.DiscordSocketClient.PrivateChannels">
             <inheritdoc />
@@ -1078,10 +1143,41 @@
         <member name="M:Discord.WebSocket.DiscordSocketClient.GetUser(System.String,System.String)">
             <inheritdoc />
         </member>
+        <member name="M:Discord.WebSocket.DiscordSocketClient.GetGlobalApplicationCommandAsync(System.UInt64,Discord.RequestOptions)">
+            <summary>
+                Gets a global application command.
+            </summary>
+            <param name="id">The id of the command.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A ValueTask that represents the asynchronous get operation. The task result contains the application command if found, otherwise
+                <see langword="null"/>.
+            </returns>
+        </member>
+        <member name="M:Discord.WebSocket.DiscordSocketClient.GetGlobalApplicationCommandsAsync(Discord.RequestOptions)">
+            <summary>
+                Gets a collection of all global commands.
+            </summary>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous get operation. The task result contains a read-only collection of global
+                application commands.
+            </returns>
+        </member>
         <member name="M:Discord.WebSocket.DiscordSocketClient.PurgeUserCache">
             <summary>
                 Clears cached users from the client.
             </summary>
+        </member>
+        <member name="M:Discord.WebSocket.DiscordSocketClient.GetStickerAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.DiscordSocketClient.GetSticker(System.UInt64)">
+            <summary>
+                Gets a sticker.
+            </summary>
+            <param name="id">The unique identifier of the sticker.</param>
+            <returns>A sticker if found, otherwise <see langword="null"/>.</returns>
         </member>
         <member name="M:Discord.WebSocket.DiscordSocketClient.GetVoiceRegionsAsync(Discord.RequestOptions)">
             <inheritdoc />
@@ -1164,6 +1260,12 @@
             <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.DiscordSocketClient.Discord#IDiscordClient#GetVoiceRegionAsync(System.String,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.DiscordSocketClient.Discord#IDiscordClient#GetGlobalApplicationCommandAsync(System.UInt64,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.DiscordSocketClient.Discord#IDiscordClient#GetGlobalApplicationCommandsAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.DiscordSocketClient.Discord#IDiscordClient#StartAsync">
@@ -2208,7 +2310,7 @@
         <member name="M:Discord.WebSocket.SocketStageChannel.StopStageAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketStageChannel.RequestToSpeak(Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketStageChannel.RequestToSpeakAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.SocketStageChannel.BecomeSpeakerAsync(Discord.RequestOptions)">
@@ -2217,10 +2319,10 @@
         <member name="M:Discord.WebSocket.SocketStageChannel.StopSpeakingAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketStageChannel.MoveToSpeaker(Discord.IGuildUser,Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketStageChannel.MoveToSpeakerAsync(Discord.IGuildUser,Discord.RequestOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketStageChannel.RemoveFromSpeaker(Discord.IGuildUser,Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketStageChannel.RemoveFromSpeakerAsync(Discord.IGuildUser,Discord.RequestOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Discord.WebSocket.SocketTextChannel">
@@ -3030,6 +3132,11 @@
         <member name="P:Discord.WebSocket.SocketGuild.Emotes">
             <inheritdoc />
         </member>
+        <member name="P:Discord.WebSocket.SocketGuild.Stickers">
+            <summary>
+                Gets a collection of all custom stickers for this guild.
+            </summary>
+        </member>
         <member name="P:Discord.WebSocket.SocketGuild.Features">
             <inheritdoc />
         </member>
@@ -3244,16 +3351,16 @@
                 voice regions the guild can access.
             </returns>
         </member>
-        <member name="M:Discord.WebSocket.SocketGuild.DeleteSlashCommandsAsync(Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketGuild.DeleteApplicationCommandsAsync(Discord.RequestOptions)">
             <summary>
-                Deletes all slash commands in the current guild.
+                Deletes all application commands in the current guild.
             </summary>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
                 A task that represents the asynchronous delete operation.
             </returns>
         </member>
-        <member name="M:Discord.WebSocket.SocketGuild.GetSlashCommandsAsync(Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketGuild.GetApplicationCommandsAsync(Discord.RequestOptions)">
             <summary>
                 Gets a collection of slash commands created by the current user in this guild.
             </summary>
@@ -3263,15 +3370,36 @@
                 slash commands created by the current user.
             </returns>
         </member>
-        <member name="M:Discord.WebSocket.SocketGuild.GetSlashCommandAsync(System.UInt64,Discord.RequestOptions)">
+        <member name="M:Discord.WebSocket.SocketGuild.GetApplicationCommandAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
             <summary>
-                Gets a slash command in the current guild.
+                Gets an application command within this guild with the specified id.
             </summary>
-            <param name="id">The unique identifier of the slash command.</param>
+            <param name="id">The id of the application command to get.</param>
+            <param name="mode">The <see cref="T:Discord.CacheMode" /> that determines whether the object should be fetched from cache.</param>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
-                A task that represents the asynchronous get operation. The task result contains a
-                slash command created by the current user.
+                A ValueTask that represents the asynchronous get operation. The task result contains a <see cref="T:Discord.IApplicationCommand"/>
+                if found, otherwise <see langword="null"/>.
+            </returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.CreateApplicationCommandAsync(Discord.ApplicationCommandProperties,Discord.RequestOptions)">
+            <summary>
+                Creates an application command within this guild.
+            </summary>
+            <param name="properties">The properties to use when creating the command.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the command that was created.
+            </returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.BulkOverwriteApplicationCommandAsync(Discord.ApplicationCommandProperties[],Discord.RequestOptions)">
+            <summary>
+                Overwrites the application commands within this guild.
+            </summary>
+            <param name="properties">A collection of properties to use when creating the commands.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains a collection of commands that was created.
             </returns>
         </member>
         <member name="M:Discord.WebSocket.SocketGuild.GetInvitesAsync(Discord.RequestOptions)">
@@ -3412,16 +3540,6 @@
                 of webhooks found within the guild.
             </returns>
         </member>
-        <member name="M:Discord.WebSocket.SocketGuild.GetApplicationCommandsAsync(Discord.RequestOptions)">
-            <summary>
-                Gets this guilds slash commands commands
-            </summary>
-            <param name="options">The options to be used when sending the request.</param>
-            <returns>
-                A task that represents the asynchronous get operation. The task result contains a read-only collection
-                of application commands found within the guild.
-            </returns>
-        </member>
         <member name="M:Discord.WebSocket.SocketGuild.GetEmotesAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
@@ -3437,6 +3555,86 @@
         </member>
         <member name="M:Discord.WebSocket.SocketGuild.DeleteEmoteAsync(Discord.GuildEmote,Discord.RequestOptions)">
             <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.GetStickerAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <summary>
+                Gets a specific sticker within this guild.
+            </summary>
+            <param name="id">The id of the sticker to get.</param>
+            <param name="mode">The <see cref="T:Discord.CacheMode" /> that determines whether the object should be fetched from cache.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous get operation. The task result contains the sticker found with the
+                specified <paramref name="id"/>; <see langword="null" /> if none is found.
+            </returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.GetSticker(System.UInt64)">
+            <summary>
+                Gets a specific sticker within this guild.
+            </summary>
+            <param name="id">The id of the sticker to get.</param>
+            <returns>A sticker, if none is found then <see langword="null"/>.</returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.GetStickersAsync(Discord.CacheMode,Discord.RequestOptions)">
+            <summary>
+                Gets a collection of all stickers within this guild.
+            </summary>
+            <param name="mode">The <see cref="T:Discord.CacheMode" /> that determines whether the object should be fetched from cache.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous get operation. The task result contains a read-only collection
+                of stickers found within the guild.
+            </returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},Discord.Image,Discord.RequestOptions)">
+            <summary>
+                Creates a new sticker in this guild.
+            </summary>
+            <param name="name">The name of the sticker.</param>
+            <param name="description">The description of the sticker.</param>
+            <param name="tags">The tags of the sticker.</param>
+            <param name="image">The image of the new emote.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the created sticker.
+            </returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.String,Discord.RequestOptions)">
+            <summary>
+                Creates a new sticker in this guild
+            </summary>
+            <param name="name">The name of the sticker.</param>
+            <param name="description">The description of the sticker.</param>
+            <param name="tags">The tags of the sticker.</param>
+            <param name="path">The path of the file to upload.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the created sticker.
+            </returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.IO.Stream,System.String,Discord.RequestOptions)">
+            <summary>
+                Creates a new sticker in this guild
+            </summary>
+            <param name="name">The name of the sticker.</param>
+            <param name="description">The description of the sticker.</param>
+            <param name="tags">The tags of the sticker.</param>
+            <param name="stream">The stream containing the file data.</param>
+            <param name="filename">The name of the file <b>with</b> the extension, ex: image.png</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the created sticker.
+            </returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.DeleteStickerAsync(Discord.WebSocket.SocketCustomSticker,Discord.RequestOptions)">
+            <summary>
+                Deletes a sticker within this guild.
+            </summary>
+            <param name="sticker">The sticker to delete.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous removal operation.
+            </returns>
         </member>
         <member name="M:Discord.WebSocket.SocketGuild.ToString">
             <summary>
@@ -3477,6 +3675,9 @@
             <inheritdoc />
         </member>
         <member name="P:Discord.WebSocket.SocketGuild.Discord#IGuild#ApproximatePresenceCount">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.SocketGuild.Discord#IGuild#Stickers">
             <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetBansAsync(Discord.RequestOptions)">
@@ -3602,6 +3803,85 @@
         <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetApplicationCommandsAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},Discord.Image,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.IO.Stream,System.String,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.String,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetStickerAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetStickersAsync(Discord.CacheMode,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#DeleteStickerAsync(Discord.ICustomSticker,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#GetApplicationCommandAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#CreateApplicationCommandAsync(Discord.ApplicationCommandProperties,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#BulkOverwriteApplicationCommandsAsync(Discord.ApplicationCommandProperties[],Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="T:Discord.WebSocket.SocketMessageCommand">
+            <summary>
+                Represents a Websocket-based slash command received over the gateway.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketMessageCommand.Data">
+            <summary>
+                The data associated with this interaction.
+            </summary>
+        </member>
+        <member name="T:Discord.WebSocket.SocketMessageCommandData">
+            <summary>
+                Represents the data tied with the <see cref="T:Discord.WebSocket.SocketMessageCommand"/> interaction.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketMessageCommandData.Message">
+            <summary>
+                Gets the messagte associated with this message command.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketMessageCommandData.Options">
+            <inheritdoc/>
+            <remarks>
+                <b>Note</b> Not implemented for <see cref="T:Discord.WebSocket.SocketMessageCommandData"/>
+            </remarks>
+        </member>
+        <member name="T:Discord.WebSocket.SocketUserCommand">
+            <summary>
+                Represents a Websocket-based slash command received over the gateway.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketUserCommand.Data">
+            <summary>
+                The data associated with this interaction.
+            </summary>
+        </member>
+        <member name="T:Discord.WebSocket.SocketUserCommandData">
+            <summary>
+                Represents the data tied with the <see cref="T:Discord.WebSocket.SocketUserCommand"/> interaction.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketUserCommandData.Member">
+            <summary>
+                Gets the user who this command targets.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketUserCommandData.Options">
+            <inheritdoc/>
+            <remarks>
+                <b>Note</b> Not implemented for <see cref="T:Discord.WebSocket.SocketUserCommandData"/>
+            </remarks>
+        </member>
         <member name="T:Discord.WebSocket.SocketMessageComponent">
             <summary>
                 Represents a Websocket-based interaction type for Message Components.
@@ -3664,15 +3944,57 @@
                 The value(s) of a <see cref="T:Discord.SelectMenu"/> interaction response.
             </summary>
         </member>
+        <member name="T:Discord.WebSocket.SocketSlashCommand">
+            <summary>
+                Represents a Websocket-based slash command received over the gateway.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSlashCommand.Data">
+            <summary>
+                The data associated with this interaction.
+            </summary>
+        </member>
+        <member name="T:Discord.WebSocket.SocketSlashCommandData">
+            <summary>
+                Represents the data tied with the <see cref="T:Discord.WebSocket.SocketSlashCommand"/> interaction.
+            </summary>
+        </member>
+        <member name="T:Discord.WebSocket.SocketSlashCommandDataOption">
+            <summary>
+                Represents a Websocket-based <see cref="T:Discord.IApplicationCommandInteractionDataOption"/> recieved by the gateway
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Value">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Type">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Options">
+            <summary>
+                 The sub command options received for this sub command group.
+            </summary>
+        </member>
         <member name="T:Discord.WebSocket.SocketApplicationCommand">
             <summary>
-                Represends a Websocket-based <see cref="T:Discord.IApplicationCommand"/> recieved over the gateway.
+                Represends a Websocket-based <see cref="T:Discord.IApplicationCommand"/>.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketApplicationCommand.IsGlobalCommand">
+            <summary>
+               <see langword="true"/> if this command is a global command, otherwise <see langword="false"/>.
             </summary>
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommand.ApplicationId">
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommand.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketApplicationCommand.Type">
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommand.Description">
@@ -3683,19 +4005,33 @@
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommand.Options">
             <summary>
-                A collection of <see cref="T:Discord.WebSocket.SocketApplicationCommandOption"/>'s recieved over the gateway.
+                A collection of <see cref="T:Discord.WebSocket.SocketApplicationCommandOption"/>'s for this command.
             </summary>
+            <remarks>
+                If the <see cref="P:Discord.WebSocket.SocketApplicationCommand.Type"/> is not a slash command, this field will be an empty collection.
+            </remarks>
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommand.CreatedAt">
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommand.Guild">
             <summary>
-                The <see cref="T:Discord.WebSocket.SocketGuild"/> where this application was created.
+                Returns the guild this command resides in, if this command is a global command then it will return <see langword="null"/>
             </summary>
         </member>
         <member name="M:Discord.WebSocket.SocketApplicationCommand.DeleteAsync(Discord.RequestOptions)">
             <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketApplicationCommand.ModifyAsync``1(System.Action{``0},Discord.RequestOptions)">
+            <summary>
+                Modifies the current application command.
+            </summary>
+            <param name="func">The new properties to use when modifying the command.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous modification operation.
+            </returns>
+            <exception cref="T:System.InvalidOperationException">Thrown when you pass in an invalid <see cref="T:Discord.ApplicationCommandProperties"/> type.</exception>
         </member>
         <member name="T:Discord.WebSocket.SocketApplicationCommandChoice">
             <summary>
@@ -3738,55 +4074,46 @@
                 If the option is a subcommand or subcommand group type, this nested options will be the parameters.
             </summary>
         </member>
-        <member name="T:Discord.WebSocket.SocketSlashCommand">
+        <member name="T:Discord.WebSocket.SocketCommandBase">
             <summary>
-                Represents a Websocket-based slash command received over the gateway.
+                Base class for User, Message, and Slash command interactions
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommand.Data">
+        <member name="P:Discord.WebSocket.SocketCommandBase.Data">
             <summary>
                 The data associated with this interaction.
             </summary>
         </member>
-        <member name="M:Discord.WebSocket.SocketSlashCommand.RespondAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
+        <member name="M:Discord.WebSocket.SocketCommandBase.RespondAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketSlashCommand.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
+        <member name="M:Discord.WebSocket.SocketCommandBase.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketSlashCommand.DeferAsync(System.Boolean,Discord.RequestOptions)">
-            <inheritdoc/>
-        </member>
-        <member name="T:Discord.WebSocket.SocketSlashCommandData">
+        <member name="M:Discord.WebSocket.SocketCommandBase.DeferAsync(System.Boolean,Discord.RequestOptions)">
             <summary>
-                Represents the data tied with the <see cref="T:Discord.WebSocket.SocketSlashCommand"/> interaction.
+                Acknowledges this interaction with the <see cref="F:Discord.InteractionResponseType.DeferredChannelMessageWithSource"/>.
+            </summary>
+            <returns>
+                A task that represents the asynchronous operation of acknowledging the interaction.
+            </returns>
+        </member>
+        <member name="T:Discord.WebSocket.SocketCommandBaseData`1">
+            <summary>
+                Represents the base data tied with the <see cref="T:Discord.WebSocket.SocketCommandBase"/> interaction.
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandData.Name">
+        <member name="P:Discord.WebSocket.SocketCommandBaseData`1.Name">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandData.Options">
+        <member name="P:Discord.WebSocket.SocketCommandBaseData`1.Options">
             <summary>
-                The <see cref="T:Discord.WebSocket.SocketSlashCommandDataOption"/>'s received with this interaction.
+                The <typeparamref name="TOption"/> received with this interaction.
             </summary>
         </member>
-        <member name="T:Discord.WebSocket.SocketSlashCommandDataOption">
+        <member name="T:Discord.WebSocket.SocketCommandBaseData">
             <summary>
-                Represents a Websocket-based <see cref="T:Discord.IApplicationCommandInteractionDataOption"/> recieved by the gateway
-            </summary>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Name">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Value">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Type">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSlashCommandDataOption.Options">
-            <summary>
-                 The sub command options received for this sub command group.
+                Represents the base data tied with the <see cref="T:Discord.WebSocket.SocketCommandBase"/> interaction.
             </summary>
         </member>
         <member name="T:Discord.WebSocket.SocketInteraction">
@@ -4416,6 +4743,96 @@
         </member>
         <member name="P:Discord.WebSocket.SocketEntity`1.Id">
             <inheritdoc />
+        </member>
+        <member name="T:Discord.WebSocket.SocketCustomSticker">
+            <summary>
+                Represents a custom sticker within a guild received over the gateway.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketCustomSticker.Author">
+            <summary>
+                Gets the user that uploaded the guild sticker.
+            </summary>
+            <remarks>
+                <note>
+                    This may return <see langword="null"/> in the WebSocket implementation due to incomplete user collection in
+                    large guilds, or the bot doesnt have the MANAGE_EMOJIS_AND_STICKERS permission.
+                </note>
+            </remarks>
+        </member>
+        <member name="P:Discord.WebSocket.SocketCustomSticker.Guild">
+            <summary>
+                Gets the guild the sticker lives in.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketCustomSticker.AuthorId">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketCustomSticker.ModifyAsync(System.Action{Discord.StickerProperties},Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketCustomSticker.DeleteAsync(Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.WebSocket.SocketSticker">
+            <summary>
+                Represents a general sticker received over the gateway.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSticker.PackId">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSticker.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSticker.Description">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSticker.Tags">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSticker.Asset">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSticker.PreviewAsset">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSticker.Format">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketSticker.GetStickerUrl">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketSticker.Equals(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.WebSocket.SocketUnknownSticker">
+            <summary>
+                Represents an unknown sticker received over the gateway.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketUnknownSticker.Asset">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketUnknownSticker.Tags">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketUnknownSticker.Description">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketUnknownSticker.PackId">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketUnknownSticker.PreviewAsset">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketUnknownSticker.ResolveAsync(Discord.CacheMode,Discord.RequestOptions)">
+            <summary>
+                Attempts to try to find the sticker.
+            </summary>
+            <returns>
+                The sticker representing this unknown stickers Id, if none is found then <see langword="null"/>.
+            </returns>
         </member>
         <member name="T:Discord.WebSocket.SocketGroupUser">
             <summary>

@@ -19,6 +19,8 @@ using PresenceModel = Discord.API.Presence;
 using RoleModel = Discord.API.Role;
 using UserModel = Discord.API.User;
 using VoiceStateModel = Discord.API.VoiceState;
+using StickerModel = Discord.API.Sticker;
+using System.IO;
 
 namespace Discord.WebSocket
 {
@@ -36,7 +38,9 @@ namespace Discord.WebSocket
         private ConcurrentDictionary<ulong, SocketGuildUser> _members;
         private ConcurrentDictionary<ulong, SocketRole> _roles;
         private ConcurrentDictionary<ulong, SocketVoiceState> _voiceStates;
+        private ConcurrentDictionary<ulong, SocketCustomSticker> _stickers;
         private ImmutableArray<GuildEmote> _emotes;
+
         private ImmutableArray<string> _features;
         private AudioClient _audioClient;
 #pragma warning restore IDISP002, IDISP006
@@ -322,6 +326,11 @@ namespace Discord.WebSocket
         }
         /// <inheritdoc />
         public IReadOnlyCollection<GuildEmote> Emotes => _emotes;
+        /// <summary>
+        ///     Gets a collection of all custom stickers for this guild.
+        /// </summary>
+        public IReadOnlyCollection<SocketCustomSticker> Stickers
+            => _stickers.Select(x => x.Value).ToImmutableArray();
         /// <inheritdoc />
         public IReadOnlyCollection<string> Features => _features;
         /// <summary>
@@ -440,6 +449,8 @@ namespace Discord.WebSocket
             }
             _voiceStates = voiceStates;
 
+           
+
             _syncPromise = new TaskCompletionSource<bool>();
             _downloaderPromise = new TaskCompletionSource<bool>();
             var _ = _syncPromise.TrySetResultAsync(true);
@@ -509,6 +520,25 @@ namespace Discord.WebSocket
                 }
             }
             _roles = roles;
+
+            if (model.Stickers != null)
+            {
+                var stickers = new ConcurrentDictionary<ulong, SocketCustomSticker>(ConcurrentHashSet.DefaultConcurrencyLevel, (int)(model.Stickers.Length * 1.05));
+                for (int i = 0; i < model.Stickers.Length; i++)
+                {
+                    var sticker = model.Stickers[i];
+                    if (sticker.User.IsSpecified)
+                        AddOrUpdateUser(sticker.User.Value);
+
+                    var entity = SocketCustomSticker.Create(Discord, sticker, this, sticker.User.IsSpecified ? sticker.User.Value.Id : null);
+
+                    stickers.TryAdd(sticker.Id, entity);
+                }
+
+                _stickers = stickers;
+            }
+            else
+                _stickers = new ConcurrentDictionary<ulong, SocketCustomSticker>(ConcurrentHashSet.DefaultConcurrencyLevel, 7);
         }
         /*internal void Update(ClientState state, GuildSyncModel model) //TODO remove? userbot related
         {
@@ -785,13 +815,13 @@ namespace Discord.WebSocket
 
         //Interactions
         /// <summary>
-        ///     Deletes all slash commands in the current guild.
+        ///     Deletes all application commands in the current guild.
         /// </summary>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
         ///     A task that represents the asynchronous delete operation.
         /// </returns>
-        public Task DeleteSlashCommandsAsync(RequestOptions options = null)
+        public Task DeleteApplicationCommandsAsync(RequestOptions options = null)
             => InteractionHelper.DeleteAllGuildCommandsAsync(Discord, this.Id, options);
 
         /// <summary>
@@ -802,20 +832,93 @@ namespace Discord.WebSocket
         ///     A task that represents the asynchronous get operation. The task result contains a read-only collection of
         ///     slash commands created by the current user.
         /// </returns>
-        public Task<IReadOnlyCollection<RestGuildCommand>> GetSlashCommandsAsync(RequestOptions options = null)
-            => GuildHelper.GetSlashCommandsAsync(this, Discord, options);
+        public async Task<IReadOnlyCollection<SocketApplicationCommand>> GetApplicationCommandsAsync(RequestOptions options = null)
+        {
+            var commands = (await Discord.ApiClient.GetGuildApplicationCommandsAsync(this.Id, options)).Select(x => SocketApplicationCommand.Create(Discord, x, this.Id));
+
+            foreach (var command in commands)
+            {
+                Discord.State.AddCommand(command);
+            }
+
+            return commands.ToImmutableArray();
+        }
 
         /// <summary>
-        ///     Gets a slash command in the current guild.
+        ///     Gets an application command within this guild with the specified id.
         /// </summary>
-        /// <param name="id">The unique identifier of the slash command.</param>
+        /// <param name="id">The id of the application command to get.</param>
+        /// <param name="mode">The <see cref="CacheMode" /> that determines whether the object should be fetched from cache.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
-        ///     A task that represents the asynchronous get operation. The task result contains a
-        ///     slash command created by the current user.
+        ///     A ValueTask that represents the asynchronous get operation. The task result contains a <see cref="IApplicationCommand"/>
+        ///     if found, otherwise <see langword="null"/>.
         /// </returns>
-        public Task<RestGuildCommand> GetSlashCommandAsync(ulong id, RequestOptions options = null)
-            => GuildHelper.GetSlashCommandAsync(this, id, Discord, options);
+        public async ValueTask<SocketApplicationCommand> GetApplicationCommandAsync(ulong id, CacheMode mode = CacheMode.AllowDownload, RequestOptions options = null)
+        {
+            var command = Discord.State.GetCommand(id);
+
+            if (command != null)
+                return command;
+
+            if (mode == CacheMode.CacheOnly)
+                return null;
+
+            var model = await Discord.ApiClient.GetGlobalApplicationCommandAsync(id, options);
+
+            if (model == null)
+                return null;
+
+            command = SocketApplicationCommand.Create(Discord, model, this.Id);
+
+            Discord.State.AddCommand(command);
+
+            return command;
+        }
+
+        /// <summary>
+        ///     Creates an application command within this guild.
+        /// </summary>
+        /// <param name="properties">The properties to use when creating the command.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous creation operation. The task result contains the command that was created.
+        /// </returns>
+        public async Task<SocketApplicationCommand> CreateApplicationCommandAsync(ApplicationCommandProperties properties, RequestOptions options = null)
+        {
+            var model = await InteractionHelper.CreateGuildCommand(Discord, this.Id, properties, options);
+
+            var entity = Discord.State.GetOrAddCommand(model.Id, (id) => SocketApplicationCommand.Create(Discord, model));
+
+            entity.Update(model);
+
+            return entity;
+        }
+
+        /// <summary>
+        ///     Overwrites the application commands within this guild.
+        /// </summary>
+        /// <param name="properties">A collection of properties to use when creating the commands.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous creation operation. The task result contains a collection of commands that was created.
+        /// </returns>
+        public async Task<IReadOnlyCollection<SocketApplicationCommand>> BulkOverwriteApplicationCommandAsync(ApplicationCommandProperties[] properties,
+            RequestOptions options = null)
+        {
+            var models = await InteractionHelper.BulkOverwriteGuildCommands(Discord, this.Id, properties, options);
+
+            var entities = models.Select(x => SocketApplicationCommand.Create(Discord, x));
+
+            Discord.State.PurgeCommands(x => !x.IsGlobalCommand && x.Guild.Id == this.Id);
+
+            foreach(var entity in entities)
+            {
+                Discord.State.AddCommand(entity);
+            }
+
+            return entities.ToImmutableArray();
+        }
 
         //Invites
         /// <summary>
@@ -896,6 +999,33 @@ namespace Discord.WebSocket
                 role = AddRole(model);
 
             return role;
+        }
+
+        internal SocketCustomSticker AddSticker(StickerModel model)
+        {
+            if (model.User.IsSpecified)
+                AddOrUpdateUser(model.User.Value);
+
+            var sticker = SocketCustomSticker.Create(Discord, model, this, model.User.IsSpecified ? model.User.Value.Id : null);
+            _stickers[model.Id] = sticker;
+            return sticker;
+        }
+
+        internal SocketCustomSticker AddOrUpdateSticker(StickerModel model)
+        {
+            if (_stickers.TryGetValue(model.Id, out SocketCustomSticker sticker))
+                _stickers[model.Id].Update(model);
+            else
+                sticker = AddSticker(model);
+
+            return sticker;
+        }
+
+        internal SocketCustomSticker RemoveSticker(ulong id)
+        {
+            if (_stickers.TryRemove(id, out SocketCustomSticker sticker))
+                return sticker;
+            return null;
         }
 
         //Users
@@ -1079,18 +1209,6 @@ namespace Discord.WebSocket
         public Task<IReadOnlyCollection<RestWebhook>> GetWebhooksAsync(RequestOptions options = null)
             => GuildHelper.GetWebhooksAsync(this, Discord, options);
 
-        //Interactions
-        /// <summary>
-        ///     Gets this guilds slash commands commands
-        /// </summary>
-        /// <param name="options">The options to be used when sending the request.</param>
-        /// <returns>
-        ///     A task that represents the asynchronous get operation. The task result contains a read-only collection
-        ///     of application commands found within the guild.
-        /// </returns>
-        public async Task<IReadOnlyCollection<RestApplicationCommand>> GetApplicationCommandsAsync(RequestOptions options = null)
-            => await Discord.Rest.GetGuildApplicationCommands(this.Id, options);
-
         //Emotes
         /// <inheritdoc />
         public Task<IReadOnlyCollection<GuildEmote>> GetEmotesAsync(RequestOptions options = null)
@@ -1108,6 +1226,135 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public Task DeleteEmoteAsync(GuildEmote emote, RequestOptions options = null)
             => GuildHelper.DeleteEmoteAsync(this, Discord, emote.Id, options);
+
+        //Stickers
+        /// <summary>
+        ///     Gets a specific sticker within this guild.
+        /// </summary>
+        /// <param name="id">The id of the sticker to get.</param>
+        /// <param name="mode">The <see cref="CacheMode" /> that determines whether the object should be fetched from cache.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous get operation. The task result contains the sticker found with the
+        ///     specified <paramref name="id"/>; <see langword="null" /> if none is found.
+        /// </returns>
+        public async ValueTask<SocketCustomSticker> GetStickerAsync(ulong id, CacheMode mode = CacheMode.AllowDownload, RequestOptions options = null)
+        {
+            var sticker = _stickers[id];
+
+            if (sticker != null)
+                return sticker;
+
+            if (mode == CacheMode.CacheOnly)
+                return null;
+
+            var model = await Discord.ApiClient.GetGuildStickerAsync(this.Id, id, options).ConfigureAwait(false);
+
+            if (model == null)
+                return null;
+
+            return AddOrUpdateSticker(model);
+        }
+        /// <summary>
+        ///     Gets a specific sticker within this guild.
+        /// </summary>
+        /// <param name="id">The id of the sticker to get.</param>
+        /// <returns>A sticker, if none is found then <see langword="null"/>.</returns>
+        public SocketCustomSticker GetSticker(ulong id)
+            => GetStickerAsync(id, CacheMode.CacheOnly).GetAwaiter().GetResult();
+        /// <summary>
+        ///     Gets a collection of all stickers within this guild.
+        /// </summary>
+        /// <param name="mode">The <see cref="CacheMode" /> that determines whether the object should be fetched from cache.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous get operation. The task result contains a read-only collection
+        ///     of stickers found within the guild.
+        /// </returns>
+        public async ValueTask<IReadOnlyCollection<SocketCustomSticker>> GetStickersAsync(CacheMode mode = CacheMode.AllowDownload,
+            RequestOptions options = null)
+        {
+            if (this.Stickers.Count > 0)
+                return this.Stickers;
+
+            if (mode == CacheMode.CacheOnly)
+                return ImmutableArray.Create<SocketCustomSticker>();
+
+            var models = await Discord.ApiClient.ListGuildStickersAsync(this.Id, options).ConfigureAwait(false);
+
+            List<SocketCustomSticker> stickers = new();
+
+            foreach (var model in models)
+            {
+                stickers.Add(AddOrUpdateSticker(model));
+            }
+
+            return stickers;
+        }
+        /// <summary>
+        ///     Creates a new sticker in this guild.
+        /// </summary>
+        /// <param name="name">The name of the sticker.</param>
+        /// <param name="description">The description of the sticker.</param>
+        /// <param name="tags">The tags of the sticker.</param>
+        /// <param name="image">The image of the new emote.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous creation operation. The task result contains the created sticker.
+        /// </returns>
+        public async Task<SocketCustomSticker> CreateStickerAsync(string name, string description, IEnumerable<string> tags, Image image,
+            RequestOptions options = null)
+        {
+            var model = await GuildHelper.CreateStickerAsync(Discord, this, name, description, tags, image, options).ConfigureAwait(false);
+
+            return AddOrUpdateSticker(model);
+        }
+        /// <summary>
+        ///     Creates a new sticker in this guild
+        /// </summary>
+        /// <param name="name">The name of the sticker.</param>
+        /// <param name="description">The description of the sticker.</param>
+        /// <param name="tags">The tags of the sticker.</param>
+        /// <param name="path">The path of the file to upload.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous creation operation. The task result contains the created sticker.
+        /// </returns>
+        public Task<SocketCustomSticker> CreateStickerAsync(string name, string description, IEnumerable<string> tags, string path,
+            RequestOptions options = null)
+        {
+            var fs = File.OpenRead(path);
+            return CreateStickerAsync(name, description, tags, fs, Path.GetFileName(fs.Name), options);
+        }
+        /// <summary>
+        ///     Creates a new sticker in this guild
+        /// </summary>
+        /// <param name="name">The name of the sticker.</param>
+        /// <param name="description">The description of the sticker.</param>
+        /// <param name="tags">The tags of the sticker.</param>
+        /// <param name="stream">The stream containing the file data.</param>
+        /// <param name="filename">The name of the file <b>with</b> the extension, ex: image.png</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous creation operation. The task result contains the created sticker.
+        /// </returns>
+        public async Task<SocketCustomSticker> CreateStickerAsync(string name, string description, IEnumerable<string> tags, Stream stream,
+            string filename, RequestOptions options = null)
+        {
+            var model = await GuildHelper.CreateStickerAsync(Discord, this, name, description, tags, stream, filename, options).ConfigureAwait(false);
+
+            return AddOrUpdateSticker(model);
+        }
+        /// <summary>
+        ///     Deletes a sticker within this guild.
+        /// </summary>
+        /// <param name="sticker">The sticker to delete.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous removal operation.
+        /// </returns>
+        public Task DeleteStickerAsync(SocketCustomSticker sticker, RequestOptions options = null)
+            => sticker.DeleteAsync(options);
 
         //Voice States
         internal async Task<SocketVoiceState> AddOrUpdateVoiceStateAsync(ClientState state, VoiceStateModel model)
@@ -1332,6 +1579,8 @@ namespace Discord.WebSocket
         int? IGuild.ApproximateMemberCount => null;
         /// <inheritdoc />
         int? IGuild.ApproximatePresenceCount => null;
+        /// <inheritdoc />
+        IReadOnlyCollection<ICustomSticker> IGuild.Stickers => Stickers;
 
         /// <inheritdoc />
         async Task<IReadOnlyCollection<IBan>> IGuild.GetBansAsync(RequestOptions options)
@@ -1481,6 +1730,34 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         async Task<IReadOnlyCollection<IApplicationCommand>> IGuild.GetApplicationCommandsAsync (RequestOptions options)
             => await GetApplicationCommandsAsync(options).ConfigureAwait(false);
+        /// <inheritdoc />
+        async Task<ICustomSticker> IGuild.CreateStickerAsync(string name, string description, IEnumerable<string> tags, Image image, RequestOptions options)
+            => await CreateStickerAsync(name, description, tags, image, options);
+        /// <inheritdoc />
+        async Task<ICustomSticker> IGuild.CreateStickerAsync(string name, string description, IEnumerable<string> tags, Stream stream, string filename, RequestOptions options)
+            => await CreateStickerAsync(name, description, tags, stream, filename, options);
+        /// <inheritdoc />
+        async Task<ICustomSticker> IGuild.CreateStickerAsync(string name, string description, IEnumerable<string> tags, string path, RequestOptions options)
+            => await CreateStickerAsync(name, description, tags, path, options);
+        /// <inheritdoc />
+        async Task<ICustomSticker> IGuild.GetStickerAsync(ulong id, CacheMode mode, RequestOptions options)
+            => await GetStickerAsync(id, mode, options);
+        /// <inheritdoc />
+        async Task<IReadOnlyCollection<ICustomSticker>> IGuild.GetStickersAsync(CacheMode mode, RequestOptions options)
+            => await GetStickersAsync(mode, options);
+        /// <inheritdoc />
+        Task IGuild.DeleteStickerAsync(ICustomSticker sticker, RequestOptions options)
+            => DeleteStickerAsync(_stickers[sticker.Id], options);
+        /// <inheritdoc />
+        async Task<IApplicationCommand> IGuild.GetApplicationCommandAsync(ulong id, CacheMode mode, RequestOptions options)
+            => await GetApplicationCommandAsync(id, mode, options);
+        /// <inheritdoc />
+        async Task<IApplicationCommand> IGuild.CreateApplicationCommandAsync(ApplicationCommandProperties properties, RequestOptions options)
+            => await CreateApplicationCommandAsync(properties, options);
+        /// <inheritdoc />
+        async Task<IReadOnlyCollection<IApplicationCommand>> IGuild.BulkOverwriteApplicationCommandsAsync(ApplicationCommandProperties[] properties,
+            RequestOptions options)
+            => await BulkOverwriteApplicationCommandAsync(properties, options);
 
         void IDisposable.Dispose()
         {
@@ -1489,6 +1766,6 @@ namespace Discord.WebSocket
             _audioClient?.Dispose();
         }
 
-        
+       
     }
 }

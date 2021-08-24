@@ -226,6 +226,12 @@
         <member name="M:Discord.Rest.BaseDiscordClient.Discord#IDiscordClient#GetWebhookAsync(System.UInt64,Discord.RequestOptions)">
             <inheritdoc />
         </member>
+        <member name="M:Discord.Rest.BaseDiscordClient.Discord#IDiscordClient#GetGlobalApplicationCommandAsync(System.UInt64,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.BaseDiscordClient.Discord#IDiscordClient#GetGlobalApplicationCommandsAsync(Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
         <member name="M:Discord.Rest.BaseDiscordClient.Discord#IDiscordClient#StartAsync">
             <inheritdoc />
         </member>
@@ -297,6 +303,12 @@
             <inheritdoc />
         </member>
         <member name="M:Discord.Rest.DiscordRestClient.Discord#IDiscordClient#GetWebhookAsync(System.UInt64,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.DiscordRestClient.Discord#IDiscordClient#GetGlobalApplicationCommandsAsync(Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.DiscordRestClient.Discord#IDiscordClient#GetGlobalApplicationCommandAsync(System.UInt64,Discord.RequestOptions)">
             <inheritdoc />
         </member>
         <member name="T:Discord.Rest.DiscordRestConfig">
@@ -2310,7 +2322,7 @@
         <member name="M:Discord.Rest.RestStageChannel.UpdateAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.Rest.RestStageChannel.RequestToSpeak(Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestStageChannel.RequestToSpeakAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
         <member name="M:Discord.Rest.RestStageChannel.BecomeSpeakerAsync(Discord.RequestOptions)">
@@ -2319,10 +2331,10 @@
         <member name="M:Discord.Rest.RestStageChannel.StopSpeakingAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.Rest.RestStageChannel.MoveToSpeaker(Discord.IGuildUser,Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestStageChannel.MoveToSpeakerAsync(Discord.IGuildUser,Discord.RequestOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.Rest.RestStageChannel.RemoveFromSpeaker(Discord.IGuildUser,Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestStageChannel.RemoveFromSpeakerAsync(Discord.IGuildUser,Discord.RequestOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Discord.Rest.RestTextChannel">
@@ -3503,6 +3515,37 @@
                 of application commands found within the guild.
             </returns>
         </member>
+        <member name="M:Discord.Rest.RestGuild.GetApplicationCommandAsync(System.UInt64,Discord.RequestOptions)">
+            <summary>
+                Gets an application command within this guild with the specified id.
+            </summary>
+            <param name="id">The id of the application command to get.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A ValueTask that represents the asynchronous get operation. The task result contains a <see cref="T:Discord.IApplicationCommand"/>
+                if found, otherwise <see langword="null"/>.
+            </returns>
+        </member>
+        <member name="M:Discord.Rest.RestGuild.CreateApplicationCommandAsync(Discord.ApplicationCommandProperties,Discord.RequestOptions)">
+            <summary>
+                Creates an application command within this guild.
+            </summary>
+            <param name="properties">The properties to use when creating the command.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the command that was created.
+            </returns>
+        </member>
+        <member name="M:Discord.Rest.RestGuild.BulkOverwriteApplicationCommandsAsync(Discord.ApplicationCommandProperties[],Discord.RequestOptions)">
+            <summary>
+                Overwrites the application commands within this guild.
+            </summary>
+            <param name="properties">A collection of properties to use when creating the commands.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains a collection of commands that was created.
+            </returns>
+        </member>
         <member name="M:Discord.Rest.RestGuild.ToString">
             <summary>
                 Returns the name of the guild.
@@ -3526,6 +3569,77 @@
         </member>
         <member name="M:Discord.Rest.RestGuild.DeleteEmoteAsync(Discord.GuildEmote,Discord.RequestOptions)">
             <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.RestGuild.CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},Discord.Image,Discord.RequestOptions)">
+            <summary>
+                Creates a new sticker in this guild.
+            </summary>
+            <param name="name">The name of the sticker.</param>
+            <param name="description">The description of the sticker.</param>
+            <param name="tags">The tags of the sticker.</param>
+            <param name="image">The image of the new emote.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the created sticker.
+            </returns>
+        </member>
+        <member name="M:Discord.Rest.RestGuild.CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.String,Discord.RequestOptions)">
+            <summary>
+                Creates a new sticker in this guild
+            </summary>
+            <param name="name">The name of the sticker.</param>
+            <param name="description">The description of the sticker.</param>
+            <param name="tags">The tags of the sticker.</param>
+            <param name="path">The path of the file to upload.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the created sticker.
+            </returns>
+        </member>
+        <member name="M:Discord.Rest.RestGuild.CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.IO.Stream,System.String,Discord.RequestOptions)">
+            <summary>
+                Creates a new sticker in this guild
+            </summary>
+            <param name="name">The name of the sticker.</param>
+            <param name="description">The description of the sticker.</param>
+            <param name="tags">The tags of the sticker.</param>
+            <param name="stream">The stream containing the file data.</param>
+            <param name="filename">The name of the file <b>with</b> the extension, ex: image.png</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the created sticker.
+            </returns>
+        </member>
+        <member name="M:Discord.Rest.RestGuild.GetStickerAsync(System.UInt64,Discord.RequestOptions)">
+            <summary>
+                Gets a specific sticker within this guild.
+            </summary>
+            <param name="id">The id of the sticker to get.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous get operation. The task result contains the sticker found with the
+                specified <paramref name="id"/>; <see langword="null" /> if none is found.
+            </returns>
+        </member>
+        <member name="M:Discord.Rest.RestGuild.GetStickersAsync(Discord.RequestOptions)">
+            <summary>
+                Gets a collection of all stickers within this guild.
+            </summary>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous get operation. The task result contains a read-only collection
+                of stickers found within the guild.
+            </returns>
+        </member>
+        <member name="M:Discord.Rest.RestGuild.DeleteStickerAsync(Discord.Rest.CustomSticker,Discord.RequestOptions)">
+            <summary>
+                Deletes a sticker within this guild.
+            </summary>
+            <param name="sticker">The sticker to delete.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous removal operation.
+            </returns>
         </member>
         <member name="P:Discord.Rest.RestGuild.Discord#IGuild#Available">
             <inheritdoc />
@@ -3663,6 +3777,33 @@
         <member name="M:Discord.Rest.RestGuild.Discord#IGuild#GetApplicationCommandsAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
+        <member name="M:Discord.Rest.RestGuild.Discord#IGuild#CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},Discord.Image,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.RestGuild.Discord#IGuild#CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.IO.Stream,System.String,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.RestGuild.Discord#IGuild#CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.String,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.RestGuild.Discord#IGuild#GetStickerAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.RestGuild.Discord#IGuild#GetStickersAsync(Discord.CacheMode,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.RestGuild.Discord#IGuild#DeleteStickerAsync(Discord.ICustomSticker,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.RestGuild.Discord#IGuild#CreateApplicationCommandAsync(Discord.ApplicationCommandProperties,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.RestGuild.Discord#IGuild#BulkOverwriteApplicationCommandsAsync(Discord.ApplicationCommandProperties[],Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.RestGuild.Discord#IGuild#GetApplicationCommandAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
         <member name="P:Discord.Rest.RestGuildIntegration.Name">
             <inheritdoc />
         </member>
@@ -3745,6 +3886,9 @@
         <member name="P:Discord.Rest.RestApplicationCommand.ApplicationId">
             <inheritdoc/>
         </member>
+        <member name="P:Discord.Rest.RestApplicationCommand.Type">
+            <inheritdoc/>
+        </member>
         <member name="P:Discord.Rest.RestApplicationCommand.Name">
             <inheritdoc/>
         </member>
@@ -3759,15 +3903,13 @@
                 The options of this command.
             </summary>
         </member>
-        <member name="P:Discord.Rest.RestApplicationCommand.CommandType">
-            <summary>
-                The type of this rest application command.
-            </summary>
-        </member>
         <member name="P:Discord.Rest.RestApplicationCommand.CreatedAt">
             <inheritdoc/>
         </member>
         <member name="M:Discord.Rest.RestApplicationCommand.DeleteAsync(Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Rest.RestApplicationCommand.ModifyAsync(System.Action{Discord.ApplicationCommandProperties},Discord.RequestOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Discord.Rest.RestApplicationCommandChoice">
@@ -3811,24 +3953,9 @@
                 A collection of <see cref="T:Discord.Rest.RestApplicationCommandOption"/>'s for this command.
             </summary>
         </member>
-        <member name="T:Discord.Rest.RestApplicationCommandType">
-            <summary>
-                Represents a type of Rest-based command.
-            </summary>
-        </member>
-        <member name="F:Discord.Rest.RestApplicationCommandType.GlobalCommand">
-            <summary>
-                Specifies that this command is a Global command.
-            </summary>
-        </member>
-        <member name="F:Discord.Rest.RestApplicationCommandType.GuildCommand">
-            <summary>
-                Specifies that this command is a Guild specific command.
-            </summary>
-        </member>
         <member name="T:Discord.Rest.RestGlobalCommand">
             <summary>
-                Represents a global Slash command.
+                Represents a Rest-based global application command.
             </summary>
         </member>
         <member name="M:Discord.Rest.RestGlobalCommand.DeleteAsync(Discord.RequestOptions)">
@@ -3846,7 +3973,7 @@
         </member>
         <member name="T:Discord.Rest.RestGuildCommand">
             <summary>
-                Represents a Rest-based guild command.
+                Represents a Rest-based guild application command.
             </summary>
         </member>
         <member name="P:Discord.Rest.RestGuildCommand.GuildId">
@@ -3969,6 +4096,33 @@
         </member>
         <member name="P:Discord.Rest.RestInviteMetadata.CreatedAt">
             <inheritdoc />
+        </member>
+        <member name="T:Discord.Rest.CustomSticker">
+            <summary>
+                Represents a Rest-based custom sticker within a guild.
+            </summary>
+        </member>
+        <member name="P:Discord.Rest.CustomSticker.AuthorId">
+            <summary>
+                Gets the users id who uploaded the sticker.
+            </summary>
+            <remarks>
+                In order to get the author id, the bot needs the MANAGE_EMOJIS_AND_STICKERS permission.
+            </remarks>
+        </member>
+        <member name="P:Discord.Rest.CustomSticker.Guild">
+            <summary>
+                Gets the guild that this custom sticker is in.
+            </summary>
+            <remarks>
+                <b>Note</b>: This property can be <see langword="null"/> if the sticker wasnt fetched from a guild.
+            </remarks>
+        </member>
+        <member name="M:Discord.Rest.CustomSticker.DeleteAsync(Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Rest.CustomSticker.ModifyAsync(System.Action{Discord.StickerProperties},Discord.RequestOptions)">
+            <inheritdoc/>
         </member>
         <member name="F:Discord.Rest.MessageHelper.InlineCodeRegex">
             <summary>
@@ -4267,6 +4421,52 @@
         <member name="M:Discord.Rest.RestUserMessage.CrosspostAsync(Discord.RequestOptions)">
             <inheritdoc />
             <exception cref="T:System.InvalidOperationException">This operation may only be called on a <see cref="T:Discord.INewsChannel"/> channel.</exception>
+        </member>
+        <member name="T:Discord.Rest.Sticker">
+            <inheritdoc cref="T:Discord.ISticker"/>
+        </member>
+        <member name="P:Discord.Rest.Sticker.PackId">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.Rest.Sticker.Name">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.Rest.Sticker.Description">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.Rest.Sticker.Tags">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.Rest.Sticker.Asset">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.Rest.Sticker.PreviewAsset">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.Rest.Sticker.Format">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.Sticker.GetStickerUrl">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Rest.StickerItem">
+            <summary>
+                Represents a partial sticker received in a message.
+            </summary>
+        </member>
+        <member name="P:Discord.Rest.StickerItem.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Rest.StickerItem.Format">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Rest.StickerItem.ResolveStickerAsync">
+            <summary>
+                Resolves this sticker item by fetching the <see cref="T:Discord.Rest.Sticker"/> from the API.
+            </summary>
+            <returns>
+                A task representing the download operation, the result of the task is a sticker object.
+            </returns>
         </member>
         <member name="T:Discord.Rest.RestApplication">
             <summary>
@@ -4869,33 +5069,6 @@
             <returns>
                 A string containing the filename of this attachment.
             </returns>
-        </member>
-        <member name="T:Discord.Sticker">
-            <inheritdoc cref="T:Discord.ISticker"/>
-        </member>
-        <member name="P:Discord.Sticker.Id">
-            <inheritdoc />
-        </member>
-        <member name="P:Discord.Sticker.PackId">
-            <inheritdoc />
-        </member>
-        <member name="P:Discord.Sticker.Name">
-            <inheritdoc />
-        </member>
-        <member name="P:Discord.Sticker.Description">
-            <inheritdoc />
-        </member>
-        <member name="P:Discord.Sticker.Tags">
-            <inheritdoc />
-        </member>
-        <member name="P:Discord.Sticker.Asset">
-            <inheritdoc />
-        </member>
-        <member name="P:Discord.Sticker.PreviewAsset">
-            <inheritdoc />
-        </member>
-        <member name="P:Discord.Sticker.FormatType">
-            <inheritdoc />
         </member>
     </members>
 </doc>

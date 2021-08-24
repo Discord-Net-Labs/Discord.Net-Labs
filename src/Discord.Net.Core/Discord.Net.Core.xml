@@ -212,6 +212,16 @@
                 A URL pointing to the Spotify track.
             </returns>
         </member>
+        <member name="M:Discord.CDN.GetStickerUrl(System.UInt64,Discord.StickerFormatType)">
+            <summary>
+                Gets a stickers url based off the id and format.
+            </summary>
+            <param name="stickerId">The id of the sticker.</param>
+            <param name="format">The format of the sticker</param>
+            <returns>
+                A URL to the sticker.
+            </returns>
+        </member>
         <member name="T:Discord.Commands.ICommandContext">
             <summary>
                 Represents a context of a command. This may include the client, guild, channel, user, and message.
@@ -1990,7 +2000,7 @@
                 A task that represents the asynchronous stop operation.
             </returns>
         </member>
-        <member name="M:Discord.IStageChannel.RequestToSpeak(Discord.RequestOptions)">
+        <member name="M:Discord.IStageChannel.RequestToSpeakAsync(Discord.RequestOptions)">
             <summary>
                 Indicates that the bot would like to speak within a stage channel.
             </summary>
@@ -2017,7 +2027,7 @@
                 A task that represents the asynchronous stop operation.
             </returns>
         </member>
-        <member name="M:Discord.IStageChannel.MoveToSpeaker(Discord.IGuildUser,Discord.RequestOptions)">
+        <member name="M:Discord.IStageChannel.MoveToSpeakerAsync(Discord.IGuildUser,Discord.RequestOptions)">
             <summary>
                 Makes a user a speaker within a stage.
             </summary>
@@ -2027,7 +2037,7 @@
                 A task that represents the asynchronous move operation.
             </returns>
         </member>
-        <member name="M:Discord.IStageChannel.RemoveFromSpeaker(Discord.IGuildUser,Discord.RequestOptions)">
+        <member name="M:Discord.IStageChannel.RemoveFromSpeakerAsync(Discord.IGuildUser,Discord.RequestOptions)">
             <summary>
                 Removes a user from speaking.
             </summary>
@@ -3121,6 +3131,14 @@
                 A read-only collection of all custom emotes for this guild.
             </returns>
         </member>
+        <member name="P:Discord.IGuild.Stickers">
+            <summary>
+                Gets a collection of all custom stickers for this guild.
+            </summary>
+            <returns>
+                A read-only collection of all custom stickers for this guild.
+            </returns>
+        </member>
         <member name="P:Discord.IGuild.Features">
             <summary>
                 Gets a collection of all extra features added to this guild.
@@ -3914,14 +3932,119 @@
                 A task that represents the asynchronous removal operation.
             </returns>
         </member>
+        <member name="M:Discord.IGuild.CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},Discord.Image,Discord.RequestOptions)">
+            <summary>
+                Creates a new sticker in this guild.
+            </summary>
+            <param name="name">The name of the sticker.</param>
+            <param name="description">The description of the sticker.</param>
+            <param name="tags">The tags of the sticker.</param>
+            <param name="image">The image of the new emote.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the created sticker.
+            </returns>
+        </member>
+        <member name="M:Discord.IGuild.CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.String,Discord.RequestOptions)">
+            <summary>
+                Creates a new sticker in this guild
+            </summary>
+            <param name="name">The name of the sticker.</param>
+            <param name="description">The description of the sticker.</param>
+            <param name="tags">The tags of the sticker.</param>
+            <param name="path">The path of the file to upload.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the created sticker.
+            </returns>
+        </member>
+        <member name="M:Discord.IGuild.CreateStickerAsync(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},System.IO.Stream,System.String,Discord.RequestOptions)">
+            <summary>
+                Creates a new sticker in this guild
+            </summary>
+            <param name="name">The name of the sticker.</param>
+            <param name="description">The description of the sticker.</param>
+            <param name="tags">The tags of the sticker.</param>
+            <param name="stream">The stream containing the file data.</param>
+            <param name="filename">The name of the file <b>with</b> the extension, ex: image.png</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the created sticker.
+            </returns>
+        </member>
+        <member name="M:Discord.IGuild.GetStickerAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <summary>
+                Gets a specific sticker within this guild.
+            </summary>
+            <param name="id">The id of the sticker to get.</param>
+            <param name="mode">The <see cref="T:Discord.CacheMode" /> that determines whether the object should be fetched from cache.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous get operation. The task result contains the sticker found with the
+                specified <paramref name="id"/>; <see langword="null" /> if none is found.
+            </returns>
+        </member>
+        <member name="M:Discord.IGuild.GetStickersAsync(Discord.CacheMode,Discord.RequestOptions)">
+            <summary>
+                Gets a collection of all stickers within this guild.
+            </summary>
+            <param name="mode">The <see cref="T:Discord.CacheMode" /> that determines whether the object should be fetched from cache.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous get operation. The task result contains a read-only collection
+                of stickers found within the guild.
+            </returns>
+        </member>
+        <member name="M:Discord.IGuild.DeleteStickerAsync(Discord.ICustomSticker,Discord.RequestOptions)">
+            <summary>
+                Deletes a sticker within this guild.
+            </summary>
+            <param name="sticker">The sticker to delete.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous removal operation.
+            </returns>
+        </member>
         <member name="M:Discord.IGuild.GetApplicationCommandsAsync(Discord.RequestOptions)">
             <summary>
-                Gets this guilds slash commands commands
+                Gets this guilds application commands.
             </summary>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
                 A task that represents the asynchronous get operation. The task result contains a read-only collection
                 of application commands found within the guild.
+            </returns>
+        </member>
+        <member name="M:Discord.IGuild.GetApplicationCommandAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
+            <summary>
+                Gets an application command within this guild with the specified id.
+            </summary>
+            <param name="id">The id of the application command to get.</param>
+            <param name="mode">The <see cref="T:Discord.CacheMode" /> that determines whether the object should be fetched from cache.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A ValueTask that represents the asynchronous get operation. The task result contains a <see cref="T:Discord.IApplicationCommand"/>
+                if found, otherwise <see langword="null"/>.
+            </returns>
+        </member>
+        <member name="M:Discord.IGuild.CreateApplicationCommandAsync(Discord.ApplicationCommandProperties,Discord.RequestOptions)">
+            <summary>
+                Creates an application command within this guild.
+            </summary>
+            <param name="properties">The properties to use when creating the command.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the command that was created.
+            </returns>
+        </member>
+        <member name="M:Discord.IGuild.BulkOverwriteApplicationCommandsAsync(Discord.ApplicationCommandProperties[],Discord.RequestOptions)">
+            <summary>
+                Overwrites the application commands within this guild.
+            </summary>
+            <param name="properties">A collection of properties to use when creating the commands.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains a collection of commands that was created.
             </returns>
         </member>
         <member name="T:Discord.IGuildIntegration">
@@ -4461,7 +4584,7 @@
         </member>
         <member name="T:Discord.ApplicationCommandProperties">
             <summary>
-                Provides properties that are used to modify a <see cref="T:Discord.IApplicationCommand" /> with the specified changes.
+                Represents the base class to create/modify application commands.
             </summary>
         </member>
         <member name="P:Discord.ApplicationCommandProperties.Name">
@@ -4469,19 +4592,96 @@
                 Gets or sets the name of this command.
             </summary>
         </member>
-        <member name="P:Discord.ApplicationCommandProperties.Description">
+        <member name="T:Discord.ApplicationCommandType">
             <summary>
-                Gets or sets the discription of this command.
+                ApplicationCommandType is enum of current valid Application Command Types: Slash, User, Message
             </summary>
         </member>
-        <member name="P:Discord.ApplicationCommandProperties.Options">
+        <member name="F:Discord.ApplicationCommandType.Slash">
             <summary>
-                Gets or sets the options for this command.
+                ApplicationCommandType.Slash is Slash command type
             </summary>
         </member>
-        <member name="P:Discord.ApplicationCommandProperties.DefaultPermission">
+        <member name="F:Discord.ApplicationCommandType.User">
             <summary>
-                Whether the command is enabled by default when the app is added to a guild. Default is <see langword="true"/>
+                ApplicationCommandType.User is Context Menu User command type
+            </summary>
+        </member>
+        <member name="F:Discord.ApplicationCommandType.Message">
+            <summary>
+                ApplicationCommandType.Message is Context Menu Message command type
+            </summary>
+        </member>
+        <member name="T:Discord.MessageCommandBuilder">
+            <summary>
+                A class used to build Message commands.
+            </summary>
+        </member>
+        <member name="F:Discord.MessageCommandBuilder.MaxNameLength">
+            <summary> 
+                Returns the maximun length a commands name allowed by Discord
+            </summary>
+        </member>
+        <member name="P:Discord.MessageCommandBuilder.Name">
+            <summary>
+                The name of this Message command.
+            </summary>
+        </member>
+        <member name="M:Discord.MessageCommandBuilder.Build">
+            <summary>
+                Build the current builder into a <see cref="T:Discord.MessageCommandProperties"/> class.
+            </summary>
+            <returns>
+                A <see cref="T:Discord.MessageCommandProperties"/> that can be used to create message commands.
+            </returns>
+        </member>
+        <member name="M:Discord.MessageCommandBuilder.WithName(System.String)">
+            <summary>
+                Sets the field name.
+            </summary>
+            <param name="name">The value to set the field name to.</param>
+            <returns>
+                The current builder.
+            </returns>
+        </member>
+        <member name="T:Discord.MessageCommandProperties">
+            <summary>
+                A class used to create message commands.
+            </summary>
+        </member>
+        <member name="T:Discord.UserCommandBuilder">
+            <summary>
+                A class used to build user commands.
+            </summary>
+        </member>
+        <member name="F:Discord.UserCommandBuilder.MaxNameLength">
+            <summary> 
+                Returns the maximun length a commands name allowed by Discord
+            </summary>
+        </member>
+        <member name="P:Discord.UserCommandBuilder.Name">
+            <summary>
+                The name of this User command.
+            </summary>
+        </member>
+        <member name="M:Discord.UserCommandBuilder.Build">
+            <summary>
+                Build the current builder into a <see cref="T:Discord.UserCommandProperties"/> class.
+            </summary>
+            <returns>A <see cref="T:Discord.UserCommandProperties"/> that can be used to create user commands.</returns>
+        </member>
+        <member name="M:Discord.UserCommandBuilder.WithName(System.String)">
+            <summary>
+                Sets the field name.
+            </summary>
+            <param name="name">The value to set the field name to.</param>
+            <returns>
+                The current builder.
+            </returns>
+        </member>
+        <member name="T:Discord.UserCommandProperties">
+            <summary>
+                A class used to create User commands.
             </summary>
         </member>
         <member name="T:Discord.ApplicationCommandType">
@@ -4506,17 +4706,17 @@
         </member>
         <member name="T:Discord.IApplicationCommand">
             <summary>
-                The base command model that belongs to an application. see <see href="https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-structure"/>
-            </summary>
-        </member>
-        <member name="P:Discord.IApplicationCommand.Type">
-            <summary>
-                The type of command.
+                The base command model that belongs to an application. 
             </summary>
         </member>
         <member name="P:Discord.IApplicationCommand.ApplicationId">
             <summary>
                 Gets the unique id of the parent application.
+            </summary>
+        </member>
+        <member name="P:Discord.IApplicationCommand.Type">
+            <summary>
+                The type of the command
             </summary>
         </member>
         <member name="P:Discord.IApplicationCommand.Name">
@@ -4538,9 +4738,16 @@
             <summary>
                 The parameters for the command, max 25.
             </summary>
-            <remarks>
-                Only valid for commands with a type of <see cref="F:Discord.ApplicationCommandType.ChatInput"/>.
-            </remarks>
+        </member>
+        <member name="M:Discord.IApplicationCommand.ModifyAsync(System.Action{Discord.ApplicationCommandProperties},Discord.RequestOptions)">
+            <summary>
+                Modifies the current application command.
+            </summary>
+            <param name="func">The new properties to use when modifying the command.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous modification operation.
+            </returns>
         </member>
         <member name="T:Discord.IApplicationCommandInteractionData">
             <summary>
@@ -4719,7 +4926,7 @@
             <param name="options">The request options for this async request.</param>
             <returns>A <see cref="T:Discord.IUserMessage"/> that represents the initial response.</returns>
         </member>
-        <member name="M:Discord.IDiscordInteraction.DeferAsync(Discord.RequestOptions)">
+        <member name="M:Discord.IDiscordInteraction.DeferAsync(System.Boolean,Discord.RequestOptions)">
             <summary>
                 Acknowledges this interaction.
             </summary>
@@ -5606,9 +5813,9 @@
         </member>
         <member name="M:Discord.SlashCommandBuilder.Build">
             <summary>
-                Build the current builder into a <see cref="T:Discord.SlashCommandCreationProperties"/> class.
+                Build the current builder into a <see cref="T:Discord.SlashCommandProperties"/> class.
             </summary>
-            <returns>A <see cref="T:Discord.SlashCommandCreationProperties"/> that can be used to create slash commands over rest.</returns>
+            <returns>A <see cref="T:Discord.SlashCommandProperties"/> that can be used to create slash commands over rest.</returns>
         </member>
         <member name="M:Discord.SlashCommandBuilder.WithName(System.String)">
             <summary>
@@ -5796,27 +6003,22 @@
             <param name="type">The type to set.</param>
             <returns>The current builder.</returns>
         </member>
-        <member name="T:Discord.SlashCommandCreationProperties">
+        <member name="T:Discord.SlashCommandProperties">
             <summary>
                 A class used to create slash commands.
             </summary>
         </member>
-        <member name="P:Discord.SlashCommandCreationProperties.Name">
-            <summary>
-                The name of this command.
-            </summary>
-        </member>
-        <member name="P:Discord.SlashCommandCreationProperties.Description">
+        <member name="P:Discord.SlashCommandProperties.Description">
             <summary>
                The discription of this command.
             </summary>
         </member>
-        <member name="P:Discord.SlashCommandCreationProperties.Options">
+        <member name="P:Discord.SlashCommandProperties.Options">
             <summary>
                 Gets or sets the options for this command.
             </summary>
         </member>
-        <member name="P:Discord.SlashCommandCreationProperties.DefaultPermission">
+        <member name="P:Discord.SlashCommandProperties.DefaultPermission">
             <summary>
                 Whether the command is enabled by default when the app is added to a guild. Default is <see langword="true"/>
             </summary>
@@ -7320,7 +7522,14 @@
                 The <see cref="T:Discord.IMessageComponent"/>'s attached to this message
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "P:Discord.IMessage.Stickers" -->
+        <member name="P:Discord.IMessage.Stickers">
+            <summary>
+                Gets all stickers items included in this message.
+            </summary>
+            <returns>
+                A read-only collection of sticker item objects.
+            </returns>
+        </member>
         <member name="P:Discord.IMessage.Flags">
             <summary>
                 Gets the flags related to this message.
@@ -7448,75 +7657,6 @@
             <summary>
                 The <see cref="T:Discord.IEmote" /> used in the reaction.
             </summary>
-        </member>
-        <member name="T:Discord.ISticker">
-            <summary>
-                Represents a discord sticker.
-            </summary>
-        </member>
-        <member name="P:Discord.ISticker.Id">
-            <summary>
-                Gets the ID of this sticker.
-            </summary>
-            <returns>
-                A snowflake ID associated with this sticker.
-            </returns>
-        </member>
-        <member name="P:Discord.ISticker.PackId">
-            <summary>
-                Gets the ID of the pack of this sticker.
-            </summary>
-            <returns>
-                A snowflake ID associated with the pack of this sticker.
-            </returns>
-        </member>
-        <member name="P:Discord.ISticker.Name">
-            <summary>
-                Gets the name of this sticker.
-            </summary>
-            <returns>
-                A <see langword="string"/> with the name of this sticker.
-            </returns>
-        </member>
-        <member name="P:Discord.ISticker.Description">
-            <summary>
-                Gets the description of this sticker.
-            </summary>
-            <returns>
-                A <see langword="string"/> with the description of this sticker.
-            </returns>
-        </member>
-        <member name="P:Discord.ISticker.Tags">
-            <summary>
-                Gets the list of tags of this sticker.
-            </summary>
-            <returns>
-                A read-only list with the tags of this sticker.
-            </returns>
-        </member>
-        <member name="P:Discord.ISticker.Asset">
-            <summary>
-                Gets the asset hash of this sticker.
-            </summary>
-            <returns>
-                A <see langword="string"/> with the asset hash of this sticker.
-            </returns>
-        </member>
-        <member name="P:Discord.ISticker.PreviewAsset">
-            <summary>
-                Gets the preview asset hash of this sticker.
-            </summary>
-            <returns>
-                A <see langword="string"/> with the preview asset hash of this sticker.
-            </returns>
-        </member>
-        <member name="P:Discord.ISticker.FormatType">
-            <summary>
-                Gets the format type of this sticker.
-            </summary>
-            <returns>
-                A <see cref="T:Discord.StickerFormatType"/> with the format type of this sticker.
-            </returns>
         </member>
         <member name="T:Discord.ISystemMessage">
             <summary>
@@ -9367,6 +9507,214 @@
                 otherwise <see langword="false"/>.
             </returns>
         </member>
+        <member name="T:Discord.ICustomSticker">
+            <summary>
+                Represents a custom sticker within a guild.
+            </summary>
+        </member>
+        <member name="P:Discord.ICustomSticker.AuthorId">
+            <summary>
+                Gets the users id who uploaded the sticker.
+            </summary>
+            <remarks>
+                In order to get the author id, the bot needs the MANAGE_EMOJIS_AND_STICKERS permission.
+            </remarks>
+        </member>
+        <member name="P:Discord.ICustomSticker.Guild">
+            <summary>
+                Gets the guild that this custom sticker is in.
+            </summary>
+        </member>
+        <member name="M:Discord.ICustomSticker.ModifyAsync(System.Action{Discord.StickerProperties},Discord.RequestOptions)">
+            <summary>
+                Modifies this sticker.
+            </summary>
+            <remarks>
+                This method modifies this sticker with the specified properties. To see an example of this
+                method and what properties are available, please refer to <see cref="T:Discord.StickerProperties"/>.
+                <br/>
+                <br/>
+                The bot needs the MANAGE_EMOJIS_AND_STICKERS permission within the guild in order to modify stickers.
+            </remarks>
+            <example>
+                <para>The following example replaces the name of the sticker with <c>kekw</c>.</para>
+                <code language="cs">
+                await sticker.ModifyAsync(x =&gt; x.Name = "kekw");
+                </code>
+            </example>
+            <param name="func">A delegate containing the properties to modify the sticker with.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous modification operation.
+            </returns>
+        </member>
+        <member name="M:Discord.ICustomSticker.DeleteAsync(Discord.RequestOptions)">
+            <summary>
+                Deletes the current sticker.
+            </summary>
+            <remakrs>
+                The bot neeeds the MANAGE_EMOJIS_AND_STICKERS permission inside the guild in order to delete stickers.
+            </remakrs>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                 A task that represents the asynchronous deletion operation.
+            </returns>
+        </member>
+        <member name="T:Discord.ISticker">
+            <summary>
+                Represents a discord sticker.
+            </summary>
+        </member>
+        <member name="P:Discord.ISticker.Id">
+            <summary>
+                Gets the ID of this sticker.
+            </summary>
+            <returns>
+                A snowflake ID associated with this sticker.
+            </returns>
+        </member>
+        <member name="P:Discord.ISticker.PackId">
+            <summary>
+                Gets the ID of the pack of this sticker.
+            </summary>
+            <returns>
+                A snowflake ID associated with the pack of this sticker.
+            </returns>
+        </member>
+        <member name="P:Discord.ISticker.Name">
+            <summary>
+                Gets the name of this sticker.
+            </summary>
+            <returns>
+                A <see langword="string"/> with the name of this sticker.
+            </returns>
+        </member>
+        <member name="P:Discord.ISticker.Description">
+            <summary>
+                Gets the description of this sticker.
+            </summary>
+            <returns>
+                A <see langword="string"/> with the description of this sticker.
+            </returns>
+        </member>
+        <member name="P:Discord.ISticker.Tags">
+            <summary>
+                Gets the list of tags of this sticker.
+            </summary>
+            <returns>
+                A read-only list with the tags of this sticker.
+            </returns>
+        </member>
+        <member name="P:Discord.ISticker.Asset">
+            <summary>
+                Gets the asset hash of this sticker.
+            </summary>
+            <returns>
+                A <see langword="string"/> with the asset hash of this sticker.
+            </returns>
+        </member>
+        <member name="P:Discord.ISticker.PreviewAsset">
+            <summary>
+                Gets the preview asset hash of this sticker.
+            </summary>
+            <returns>
+                A <see langword="string"/> with the preview asset hash of this sticker.
+            </returns>
+        </member>
+        <member name="P:Discord.ISticker.Format">
+            <summary>
+                Gets the format type of this sticker.
+            </summary>
+            <returns>
+                A <see cref="T:Discord.StickerFormatType"/> with the format type of this sticker.
+            </returns>
+        </member>
+        <member name="M:Discord.ISticker.GetStickerUrl">
+            <summary>
+                Gets the image url for this sticker.
+            </summary>
+        </member>
+        <member name="T:Discord.IStickerItem">
+            <summary>
+                Represents a partial sticker item received with a message.
+            </summary>
+        </member>
+        <member name="P:Discord.IStickerItem.Id">
+            <summary>
+                The id of the sticker.
+            </summary>
+        </member>
+        <member name="P:Discord.IStickerItem.Name">
+            <summary>
+                The name of the sticker.
+            </summary>
+        </member>
+        <member name="P:Discord.IStickerItem.Format">
+            <summary>
+                The format of the sticker.
+            </summary>
+        </member>
+        <member name="T:Discord.StickerPack`1">
+            <summary>
+                Represents a discord sticker pack.
+            </summary>
+            <typeparam name="TSticker">The type of the stickers within the collection</typeparam>
+        </member>
+        <member name="P:Discord.StickerPack`1.Id">
+            <summary>
+                Gets the id of the sticker pack.
+            </summary>
+        </member>
+        <member name="P:Discord.StickerPack`1.Stickers">
+            <summary>
+                Gets a collection of the stickers in the pack.
+            </summary>
+        </member>
+        <member name="P:Discord.StickerPack`1.Name">
+            <summary>
+                Gets the name of the sticker pack.
+            </summary>
+        </member>
+        <member name="P:Discord.StickerPack`1.SkuId">
+            <summary>
+                Gets the id of the pack's SKU.
+            </summary>
+        </member>
+        <member name="P:Discord.StickerPack`1.CoverStickerId">
+            <summary>
+                Gets the id of a sticker in the pack which is shown as the pack's icon.
+            </summary>
+        </member>
+        <member name="P:Discord.StickerPack`1.Description">
+            <summary>
+                Gets the description of the sticker pack.
+            </summary>
+        </member>
+        <member name="P:Discord.StickerPack`1.BannerAssetId">
+            <summary>
+                Gets the id of the sticker pack's banner image
+            </summary>
+        </member>
+        <member name="T:Discord.StickerProperties">
+            <summary>
+                Represents a class used to modify stickers.
+            </summary>
+        </member>
+        <member name="P:Discord.StickerProperties.Name">
+            <summary>
+                Gets or sets the name of the sticker.
+            </summary>
+        </member>
+        <member name="P:Discord.StickerProperties.Description">
+            <summary>
+                Gets or sets the description of the sticker.
+            </summary>
+        </member>
+        <member name="P:Discord.StickerProperties.Tags">
+            <summary>
+                Gets or sets the tags of the sticker.
+            </summary>
+        </member>
         <member name="T:Discord.ITeam">
             <summary>
                 Represents a Discord Team.
@@ -10920,6 +11268,47 @@
             <param name="options">The options to be used when sending the request.</param>
             <returns>
                 A task that represents the asynchronous get operation. The task result contains a read-only collection of connections.
+            </returns>
+        </member>
+        <member name="M:Discord.IDiscordClient.GetGlobalApplicationCommandAsync(System.UInt64,Discord.RequestOptions)">
+            <summary>
+                Gets a global application command.
+            </summary>
+            <param name="id">The id of the command.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous get operation. The task result contains the application command if found, otherwise
+                <see langword="null"/>.
+            </returns>
+        </member>
+        <member name="M:Discord.IDiscordClient.GetGlobalApplicationCommandsAsync(Discord.RequestOptions)">
+            <summary>
+                Gets a collection of all global commands.
+            </summary>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous get operation. The task result contains a read-only collection of global
+                application commands.
+            </returns>
+        </member>
+        <member name="M:Discord.IDiscordClient.CreateGlobalApplicationCommand(Discord.ApplicationCommandProperties,Discord.RequestOptions)">
+            <summary>
+                Creates a global application command.
+            </summary>
+            <param name="properties">The properties to use when creating the command.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                 A task that represents the asynchronous creation operation. The task result contains the created application command.
+            </returns>
+        </member>
+        <member name="M:Discord.IDiscordClient.BulkOverwriteGlobalApplicationCommand(Discord.ApplicationCommandProperties[],Discord.RequestOptions)">
+            <summary>
+                Bulk overwrites all global application commands.
+            </summary>
+            <param name="properties">A collection of properties to use when creating the commands.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains a collection of application commands that were created.
             </returns>
         </member>
         <member name="M:Discord.IDiscordClient.GetGuildAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
