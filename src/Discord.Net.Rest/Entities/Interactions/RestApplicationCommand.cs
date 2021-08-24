@@ -67,12 +67,12 @@ namespace Discord.Rest
                 : null;
         }
 
-
         /// <inheritdoc/>
         public abstract Task DeleteAsync(RequestOptions options = null);
 
         /// <inheritdoc/>
-        public abstract Task ModifyAsync(Action<ApplicationCommandProperties> func, RequestOptions options = null);
+        public abstract Task ModifyAsync<TArg>(Action<TArg> func, RequestOptions options = null)
+            where TArg : ApplicationCommandProperties;
 
         IReadOnlyCollection<IApplicationCommandOption> IApplicationCommand.Options => Options;
     }

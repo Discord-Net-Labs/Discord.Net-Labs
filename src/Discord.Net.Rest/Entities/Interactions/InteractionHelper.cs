@@ -48,7 +48,7 @@ namespace Discord.Rest
             RequestOptions options = null)
         {
             var model = await client.ApiClient.GetGlobalApplicationCommandAsync(id, options).ConfigureAwait(false);
-            
+
 
             return RestGlobalCommand.Create(client, model);
         }
@@ -164,10 +164,26 @@ namespace Discord.Rest
             return await client.ApiClient.BulkOverwriteGuildApplicationCommands(guildId, models.ToArray(), options).ConfigureAwait(false);
         }
 
-        public static Task<ApplicationCommand> ModifyGlobalCommand<TArg>(BaseDiscordClient client, IApplicationCommand command,
-           Action<TArg> func, RequestOptions options = null) where TArg : ApplicationCommandProperties
+        private static TArg GetApplicationCommandProperties<TArg>(IApplicationCommand command)
+            where TArg : ApplicationCommandProperties
         {
-            var arg = (TArg)Activator.CreateInstance(typeof(TArg));
+            switch (true)
+            {
+                case true when typeof(TArg) == typeof(SlashCommandProperties) && command.Type == ApplicationCommandType.Slash:
+                    return new SlashCommandProperties() as TArg;
+                case true when typeof(TArg) == typeof(MessageCommandProperties) && command.Type == ApplicationCommandType.Message:
+                    return new MessageCommandProperties() as TArg;
+                case true when typeof(TArg) == typeof(UserCommandProperties) && command.Type == ApplicationCommandType.User:
+                    return new UserCommandProperties() as TArg;
+                default:
+                    throw new InvalidOperationException($"Cannot modify application command of type {command.Type} with the parameter type {typeof(TArg).FullName}");
+            }
+        }
+
+        public static Task<ApplicationCommand> ModifyGlobalCommand<TArg>(BaseDiscordClient client, IApplicationCommand command,
+            Action<TArg> func, RequestOptions options = null) where TArg : ApplicationCommandProperties
+        {
+            var arg = GetApplicationCommandProperties<TArg>(command);
             func(arg);
             return ModifyGlobalCommand(client, command, arg, options);
         }
@@ -260,9 +276,9 @@ namespace Discord.Rest
         }
 
         public static Task<ApplicationCommand> ModifyGuildCommand<TArg>(BaseDiscordClient client, IApplicationCommand command, ulong guildId,
-           Action<TArg> func, RequestOptions options = null) where TArg : ApplicationCommandProperties
+            Action<TArg> func, RequestOptions options = null) where TArg : ApplicationCommandProperties
         {
-            var arg = (TArg)Activator.CreateInstance(typeof(TArg));
+            var arg = GetApplicationCommandProperties<TArg>(command);
             func(arg);
             return ModifyGuildCommand(client, command, guildId, arg, options);
         }

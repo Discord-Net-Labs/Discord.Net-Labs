@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Discord
 {
     /// <summary>
-    ///     The base command model that belongs to an application. 
+    ///     The base command model that belongs to an application.
     /// </summary>
     public interface IApplicationCommand : ISnowflakeEntity, IDeletable
     {
@@ -49,6 +49,7 @@ namespace Discord
         /// <returns>
         ///     A task that represents the asynchronous modification operation.
         /// </returns>
-        Task ModifyAsync(Action<ApplicationCommandProperties> func, RequestOptions options = null);
+        Task ModifyAsync<TArg>(Action<TArg> func, RequestOptions options = null)
+            where TArg : ApplicationCommandProperties;
     }
 }
