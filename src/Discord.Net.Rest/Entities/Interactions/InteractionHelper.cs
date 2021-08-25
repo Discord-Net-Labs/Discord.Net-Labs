@@ -73,8 +73,9 @@ namespace Discord.Rest
             if (arg is SlashCommandProperties slashProps)
             {
                 Preconditions.NotNullOrEmpty(slashProps.Description, nameof(slashProps.Description));
+                Preconditions.AtMost(slashProps.Description.Length, SlashCommandBuilder.MaxDescriptionLength, nameof(slashProps.Description));
 
-                model.Description = slashProps.Description.Value;
+                model.Description = slashProps.Description;
 
                 model.Options = slashProps.Options.IsSpecified
                     ? slashProps.Options.Value.Select(x => new Discord.API.ApplicationCommandOption(x)).ToArray()
@@ -108,8 +109,9 @@ namespace Discord.Rest
                 if (arg is SlashCommandProperties slashProps)
                 {
                     Preconditions.NotNullOrEmpty(slashProps.Description, nameof(slashProps.Description));
+                    Preconditions.AtMost(slashProps.Description.Length, SlashCommandBuilder.MaxDescriptionLength, nameof(slashProps.Description));
 
-                    model.Description = slashProps.Description.Value;
+                    model.Description = slashProps.Description;
 
                     model.Options = slashProps.Options.IsSpecified
                         ? slashProps.Options.Value.Select(x => new Discord.API.ApplicationCommandOption(x)).ToArray()
@@ -146,8 +148,9 @@ namespace Discord.Rest
                 if (arg is SlashCommandProperties slashProps)
                 {
                     Preconditions.NotNullOrEmpty(slashProps.Description, nameof(slashProps.Description));
+                    Preconditions.AtMost(slashProps.Description.Length, SlashCommandBuilder.MaxDescriptionLength, nameof(slashProps.Description));
 
-                    model.Description = slashProps.Description.Value;
+                    model.Description = slashProps.Description;
 
                     model.Options = slashProps.Options.IsSpecified
                         ? slashProps.Options.Value.Select(x => new Discord.API.ApplicationCommandOption(x)).ToArray()
@@ -188,11 +191,8 @@ namespace Discord.Rest
 
             if(args is SlashCommandProperties slashProps)
             {
-                if (slashProps.Description.IsSpecified)
-                {
-                    Preconditions.AtMost(slashProps.Description.Value.Length, 100, nameof(slashProps.Description));
-                    Preconditions.AtLeast(slashProps.Description.Value.Length, 1, nameof(slashProps.Description));
-                }
+                Preconditions.NotNullOrEmpty(slashProps.Description, nameof(slashProps.Description));
+                Preconditions.AtMost(slashProps.Description.Length, SlashCommandBuilder.MaxDescriptionLength, nameof(slashProps.Description));
 
                 if (slashProps.Options.IsSpecified)
                 {
@@ -244,8 +244,9 @@ namespace Discord.Rest
             if (arg is SlashCommandProperties slashProps)
             {
                 Preconditions.NotNullOrEmpty(slashProps.Description, nameof(slashProps.Description));
+                Preconditions.AtMost(slashProps.Description.Length, SlashCommandBuilder.MaxDescriptionLength, nameof(slashProps.Description));
 
-                model.Description = slashProps.Description.Value;
+                model.Description = slashProps.Description;
 
                 model.Options = slashProps.Options.IsSpecified
                     ? slashProps.Options.Value.Select(x => new Discord.API.ApplicationCommandOption(x)).ToArray()
@@ -278,8 +279,9 @@ namespace Discord.Rest
             if (arg is SlashCommandProperties slashProps)
             {
                 Preconditions.NotNullOrEmpty(slashProps.Description, nameof(slashProps.Description));
+                Preconditions.AtMost(slashProps.Description.Length, SlashCommandBuilder.MaxDescriptionLength, nameof(slashProps.Description));
 
-                model.Description = slashProps.Description.Value;
+                model.Description = slashProps.Description;
 
                 model.Options = slashProps.Options.IsSpecified
                     ? slashProps.Options.Value.Select(x => new Discord.API.ApplicationCommandOption(x)).ToArray()

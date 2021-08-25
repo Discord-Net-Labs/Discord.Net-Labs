@@ -1142,8 +1142,6 @@ namespace Discord.API
             Preconditions.NotNull(command, nameof(command));
             Preconditions.AtMost(command.Name.Length, 32, nameof(command.Name));
             Preconditions.AtLeast(command.Name.Length, 3, nameof(command.Name));
-            Preconditions.AtMost(command.Description.Length, 100, nameof(command.Description));
-            Preconditions.AtLeast(command.Description.Length, 1, nameof(command.Description));
 
             options = RequestOptions.CreateOrClone(options);
 

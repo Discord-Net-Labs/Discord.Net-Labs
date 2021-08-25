@@ -15,7 +15,7 @@ namespace Discord
         /// <summary>
         ///    The discription of this command.
         /// </summary>
-        public Optional<string> Description { get; set; }
+        public string Description { get; set; }
 
         /// <summary>
         ///     Gets or sets the options for this command.
