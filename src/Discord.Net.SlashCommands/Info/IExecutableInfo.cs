@@ -13,14 +13,11 @@ namespace Discord.SlashCommands
         /// </summary>
         string Name { get; }
         bool IsWildCard { get; }
+        bool IgnoreGroupNames { get; }
         /// <summary>
         /// Module the method belongs to
         /// </summary>
-        SlashModuleInfo Module { get; }
-        /// <summary>
-        /// Group the method belongs to
-        /// </summary>
-        SlashGroupInfo Group { get; }
+        ModuleInfo Module { get; }
         /// <summary>
         /// Executes the command with the provided context
         /// </summary>

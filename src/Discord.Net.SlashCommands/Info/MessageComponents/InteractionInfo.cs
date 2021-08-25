@@ -12,21 +12,10 @@ namespace Discord.SlashCommands
     /// <summary>
     /// Porvides the information of a Interaction handler
     /// </summary>
-    public class SlashInteractionInfo : IExecutableInfo
+    public class InteractionInfo : ExecutableInfo
     {
         private const string WildCardStr = "*";
-        private readonly Func<ISlashCommandContext, object[], IServiceProvider, SlashInteractionInfo, Task> _action;
 
-        /// <summary>
-        /// <see cref="SlashCommandService"/> this command belongs to
-        /// </summary>
-        public SlashCommandService CommandService { get; }
-        public string Name { get; }
-        public bool IsWildCard => Name.Contains(WildCardStr);
-        /// <inheritdoc/>
-        public SlashGroupInfo Group { get; }
-        /// <inheritdoc/>
-        public SlashModuleInfo Module { get; }
         /// <summary>
         /// Get the information on Parameters that belong to this command
         /// </summary>
@@ -36,20 +25,14 @@ namespace Discord.SlashCommands
         /// </summary>
         public IReadOnlyList<Attribute> Attributes { get; }
 
-        internal SlashInteractionInfo (SlashInteractionBuilder builder, SlashModuleInfo module, SlashCommandService commandService)
+        internal InteractionInfo (InteractionBuilder builder, ModuleInfo module, SlashCommandService commandService)
+            :base(builder.Name, builder.IgnoreGroupNames, builder.Name.Contains(WildCardStr), module, commandService, builder.Callback)
         {
-            CommandService = commandService;
-            Module = module;
-
-            Name = builder.Name;
-            Group = builder.Group;
             Parameters = builder.Parameters.ToImmutableArray();
             Attributes = builder.Attributes.ToImmutableArray();
-
-            _action = builder.Callback;
         }
 
-        public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services)
+        public override async Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services)
             => await ExecuteAsync(context, services, null).ConfigureAwait(false);
 
         /// <inheritdoc/>
@@ -92,29 +75,6 @@ namespace Discord.SlashCommands
             }
         }
 
-        private async Task<IResult> ExecuteInternalAsync (ISlashCommandContext context, object[] args, IServiceProvider services)
-        {
-            await Module.CommandService._cmdLogger.DebugAsync($"Executing {GetLogString(context)}").ConfigureAwait(false);
-
-            try
-            {
-                var task = _action.Invoke(context, args, services, this);
-                await task.ConfigureAwait(false);
-                var result = ExecuteResult.FromSuccess();
-                await Module.CommandService._interactionExecutedEvent.InvokeAsync(this, context, result).ConfigureAwait(false);
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                return ExecuteResult.FromError(ex);
-            }
-            finally
-            {
-                await Module.CommandService._cmdLogger.VerboseAsync($"Executed {GetLogString(context)}").ConfigureAwait(false);
-            }
-        }
-
         private static object[] GenerateArgs (IEnumerable<ParameterInfo> paramList, IEnumerable<string> argList)
         {
             var result = new object[paramList.Count()];
@@ -144,12 +104,15 @@ namespace Discord.SlashCommands
             return result;
         }
 
-        private string GetLogString (ISlashCommandContext context)
+        protected override Task InvokeModuleEvent (ISlashCommandContext context, IResult result)
+            => CommandService._interactionExecutedEvent.InvokeAsync(this, context, result);
+
+        protected override string GetLogString (ISlashCommandContext context)
         {
             if (context.Guild != null)
-                return $"\"{Name}\" for {context.User} in {context.Guild}/{context.Channel}";
+                return $"Component Interaction: \"{Name}\" for {context.User} in {context.Guild}/{context.Channel}";
             else
-                return $"\"{Name}\" for {context.User} in {context.Channel}";
+                return $"Component Interaction: \"{Name}\" for {context.User} in {context.Channel}";
         }
     }
 }

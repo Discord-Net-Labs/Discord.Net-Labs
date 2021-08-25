@@ -8,7 +8,7 @@ namespace Discord.SlashCommands
     /// <summary>
     /// Contains the information of a Slash command module
     /// </summary>
-    public class SlashModuleInfo
+    public class ModuleInfo
     {
         /// <summary>
         /// Command service this module belongs to
@@ -22,6 +22,9 @@ namespace Discord.SlashCommands
         /// This value may be missing if the commands are registered as standalone
         /// </remarks>
         public string SlashGroupName { get; }
+        /// <summary>
+        /// Wheter this module has a <see cref="SlashGroupAttribute"/>
+        /// </summary>
         public bool IsSlashGroup => !string.IsNullOrEmpty(SlashGroupName);
         /// <summary>
         /// Description of this module
@@ -34,23 +37,36 @@ namespace Discord.SlashCommands
         /// Check if the Application Command for this module can be executed by default
         /// </summary>
         public bool DefaultPermission { get; }
-        public IReadOnlyList<SlashModuleInfo> SubModules { get; }
         /// <summary>
-        /// Get the information list of the Commands that belong to this module
+        /// Get the collection of Sub Modules of this module
         /// </summary>
-        public IReadOnlyList<SlashCommandInfo> Commands { get; }
+        public IReadOnlyList<ModuleInfo> SubModules { get; }
         /// <summary>
-        /// Get the information list of the Interactions that belong to this module
+        /// Get the information list of the Slash Commands that belong to this module
         /// </summary>
-        public IReadOnlyCollection<SlashInteractionInfo> Interactions { get; }
-        public SlashModuleInfo Parent { get; }
+        public IReadOnlyList<SlashCommandInfo> SlashCommands { get; }
+        /// <summary>
+        /// Get the information list of the Context Commands that belong to this module
+        /// </summary>
+        public IReadOnlyList<ContextCommandInfo> ContextCommands { get; }
+        /// <summary>
+        /// Get the information list of the Message Component handlers that belong to this module
+        /// </summary>
+        public IReadOnlyCollection<InteractionInfo> Interactions { get; }
+        /// <summary>
+        /// Get the declaring type of this module, if this is a Sub Module
+        /// </summary>
+        public ModuleInfo Parent { get; }
+        /// <summary>
+        /// <see langword="true"/> if this module is declared under another <see cref="SlashModuleBase{T}"/>
+        /// </summary>
         public bool IsSubModule => Parent != null;
         /// <summary>
         /// Get a list of the attributes of this module
         /// </summary>
         public IReadOnlyList<Attribute> Attributes { get; }
 
-        internal SlashModuleInfo (SlashModuleBuilder builder, SlashCommandService commandService = null,  SlashModuleInfo parent = null)
+        internal ModuleInfo (ModuleBuilder builder, SlashCommandService commandService = null,  ModuleInfo parent = null)
         {
             CommandService = commandService ?? builder.CommandService;
 
@@ -59,7 +75,8 @@ namespace Discord.SlashCommands
             Description = builder.Description;
             Parent = parent;
             DefaultPermission = builder.DefaultPermission;
-            Commands = BuildCommands(builder).ToImmutableArray();
+            SlashCommands = BuildSlashCommands(builder).ToImmutableArray();
+            ContextCommands = BuildContextCommands(builder).ToImmutableArray();
             Interactions = BuildInteractions(builder).ToImmutableArray();
             SubModules = BuildSubModules(builder).ToImmutableArray();;
             Attributes = BuildAttributes(builder).ToImmutableArray();
@@ -71,29 +88,39 @@ namespace Discord.SlashCommands
             }
         }
 
-        private IEnumerable<SlashModuleInfo> BuildSubModules(SlashModuleBuilder builder, SlashCommandService commandService = null)
+        private IEnumerable<ModuleInfo> BuildSubModules(ModuleBuilder builder, SlashCommandService commandService = null)
         {
-            var result = new List<SlashModuleInfo>();
+            var result = new List<ModuleInfo>();
 
-            foreach (Builders.SlashModuleBuilder moduleBuilder in builder.SubModules)
+            foreach (Builders.ModuleBuilder moduleBuilder in builder.SubModules)
                 result.Add(moduleBuilder.Build(commandService, this));
 
             return result;
         }
 
-        private IEnumerable<SlashCommandInfo> BuildCommands (SlashModuleBuilder builder)
+        private IEnumerable<SlashCommandInfo> BuildSlashCommands (ModuleBuilder builder)
         {
             var result = new List<SlashCommandInfo>();
 
-            foreach (Builders.SlashCommandBuilder commandBuilder in builder.Commands)
+            foreach (Builders.SlashCommandBuilder commandBuilder in builder.SlashCommands)
                 result.Add(commandBuilder.Build(this, CommandService));
 
             return result;
         }
 
-        private IEnumerable<SlashInteractionInfo> BuildInteractions(SlashModuleBuilder builder)
+        private IEnumerable<ContextCommandInfo> BuildContextCommands(ModuleBuilder builder)
         {
-            var result = new List<SlashInteractionInfo>();
+            var result = new List<ContextCommandInfo>();
+
+            foreach (Builders.ContextCommandBuilder commandBuilder in builder.ContextCommands)
+                result.Add(commandBuilder.Build(this, CommandService));
+
+            return result;
+        }
+
+        private IEnumerable<InteractionInfo> BuildInteractions(ModuleBuilder builder)
+        {
+            var result = new List<InteractionInfo>();
 
             foreach (var interactionBuilder in builder.Interactions)
                 result.Add(interactionBuilder.Build(this, CommandService));
@@ -101,7 +128,7 @@ namespace Discord.SlashCommands
             return result;
         }
 
-        private IEnumerable<Attribute> BuildAttributes (SlashModuleBuilder builder)
+        private IEnumerable<Attribute> BuildAttributes (ModuleBuilder builder)
         {
             var result = new List<Attribute>();
             var currentParent = builder;
