@@ -8,4 +8,5 @@ Here you can find some guides on how to use slash commands.
 4. [Parameters in slash commands](https://github.com/Discord-Net-Labs/Discord.Net-Labs/blob/Interactions/docs/guides/slash-commands/04-parameters.md)
 5. [Responding ephemerally](https://github.com/Discord-Net-Labs/Discord.Net-Labs/blob/Interactions/docs/guides/slash-commands/05-responding-ephemerally.md)
 6. [Subcommands](https://github.com/Discord-Net-Labs/Discord.Net-Labs/blob/Interactions/docs/guides/slash-commands/06-subcommands.md)
-7. [Choices](https://github.com/Discord-Net-Labs/Discord.Net-Labs/blob/Interactions/docs/guides/slash-commands/07-choice-slash-command.md) 
+7. [Choices](https://github.com/Discord-Net-Labs/Discord.Net-Labs/blob/Interactions/docs/guides/slash-commands/07-choice-slash-command.md)
+8. [Slash Command Service](https://github.com/Discord-Net-Labs/Discord.Net-Labs/blob/Interactions/docs/guides/slash-commands/08-slash-command-service.md) 

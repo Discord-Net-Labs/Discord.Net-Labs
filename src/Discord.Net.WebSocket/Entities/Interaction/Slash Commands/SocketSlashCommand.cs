@@ -1,5 +1,6 @@
 using Discord.Rest;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataModel = Discord.API.ApplicationCommandInteractionData;
@@ -12,6 +13,7 @@ namespace Discord.WebSocket
     /// </summary>
     public class SocketSlashCommand : SocketCommandBase
     {
+        public string[] Command { get; }
         /// <summary>
         ///     The data associated with this interaction.
         /// </summary>

@@ -4645,7 +4645,7 @@
             </returns>
         </member>
         <member name="T:Discord.MessageCommandProperties">
-            <summary>
+            <summary
                 A class used to create message commands.
             </summary>
         </member>
@@ -4689,9 +4689,9 @@
                 The base command model that belongs to an application. 
             </summary>
         </member>
-        <member name="P:Discord.IApplicationCommand.ApplicationId">
+        <member name="P:Discord.IApplicationCommand.Type">
             <summary>
-                Gets the unique id of the parent application.
+                The type of the command
             </summary>
         </member>
         <member name="P:Discord.IApplicationCommand.Type">
@@ -11869,6 +11869,39 @@
         <member name="F:Discord.RetryMode.AlwaysRetry">
             <summary> Continuously retry a request until it times out, its cancel token is triggered, or the server responds with a non-502 error. </summary>
         </member>
+        <member name="T:Discord.ISlashCommandContext">
+            <summary>
+            Represents the context of an Interaction
+            </summary>
+        </member>
+        <member name="P:Discord.ISlashCommandContext.Client">
+            <summary>
+            Client that will be used to handle this interaction
+            </summary>
+        </member>
+        <member name="P:Discord.ISlashCommandContext.Guild">
+            <summary>
+            Guild the interaction originated from
+            </summary>
+            <remarks>
+            Will be <see langword="null"/> if the interaction originated from a DM channel
+            </remarks>
+        </member>
+        <member name="P:Discord.ISlashCommandContext.Channel">
+            <summary>
+            Channel the interaction originated from
+            </summary>
+        </member>
+        <member name="P:Discord.ISlashCommandContext.User">
+            <summary>
+            User who invoked the interaction event
+            </summary>
+        </member>
+        <member name="P:Discord.ISlashCommandContext.Interaction">
+            <summary>
+            The underlying interaction
+            </summary>
+        </member>
         <member name="T:Discord.TokenType">
             <summary> Specifies the type of token to use with the client. </summary>
         </member>
@@ -12381,6 +12414,12 @@
         </member>
         <member name="M:Discord.Preconditions.NotEveryoneRole(System.UInt64[],System.UInt64,System.String)">
             <exception cref="T:System.ArgumentException">The everyone role cannot be assigned to a user.</exception>
+        </member>
+        <member name="M:Discord.Preconditions.SlashCommandName(System.String,System.String,System.String)">
+            <exception cref="T:System.ArgumentException">Application command names must be contain all lower case characters and between 1-32 characters length.</exception>
+        </member>
+        <member name="M:Discord.Preconditions.SlashCommandDescription(System.String,System.String,System.String)">
+            <exception cref="T:System.ArgumentException">Application command descriptions must be longer than 1, shorter than 100 characters.</exception>
         </member>
         <member name="T:Discord.SnowflakeUtils">
             <summary>
