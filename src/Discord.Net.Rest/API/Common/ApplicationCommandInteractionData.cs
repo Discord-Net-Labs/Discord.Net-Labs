@@ -19,9 +19,5 @@ namespace Discord.API
 
         [JsonProperty("resolved")]
         public Optional<ApplicationCommandInteractionDataResolved> Resolved { get; set; }
-
-        [JsonProperty("type")]
-        public ApplicationCommandType Type { get; set; }
-
     }
 }

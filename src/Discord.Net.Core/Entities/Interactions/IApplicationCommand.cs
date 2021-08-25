@@ -12,11 +12,6 @@ namespace Discord
     public interface IApplicationCommand : ISnowflakeEntity, IDeletable
     {
         /// <summary>
-        ///     The type of command.
-        /// </summary>
-        ApplicationCommandType Type { get; } 
-
-        /// <summary>
         ///     Gets the unique id of the parent application.
         /// </summary>
         ulong ApplicationId { get; }
@@ -32,7 +27,7 @@ namespace Discord
         string Name { get; }
 
         /// <summary>
-        ///     The 1-100 character description of the command.
+        ///     The description of the command.
         /// </summary>
         string Description { get; }
 
@@ -42,11 +37,8 @@ namespace Discord
         bool DefaultPermission { get; }
 
         /// <summary>
-        ///     The parameters for the command, max 25.
+        ///     If the option is a subcommand or subcommand group type, this nested options will be the parameters.
         /// </summary>
-        /// <remarks>
-        ///     Only valid for commands with a type of <see cref="ApplicationCommandType.ChatInput"/>.
-        /// </remarks>
         IReadOnlyCollection<IApplicationCommandOption> Options { get; }
 
         /// <summary>

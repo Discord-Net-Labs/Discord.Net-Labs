@@ -1142,11 +1142,15 @@ namespace Discord.API
             Preconditions.NotNull(command, nameof(command));
             Preconditions.AtMost(command.Name.Length, 32, nameof(command.Name));
             Preconditions.AtLeast(command.Name.Length, 3, nameof(command.Name));
-            Preconditions.AtMost(command.Description.Length, 100, nameof(command.Description));
-            Preconditions.AtLeast(command.Description.Length, 1, nameof(command.Description));
+
+            if (command.Type == ApplicationCommandType.Slash)
+            {
+                Preconditions.NotNullOrEmpty(command.Description, nameof(command.Description));
+                Preconditions.AtMost(command.Description.Length, 100, nameof(command.Description));
+                Preconditions.AtLeast(command.Description.Length, 1, nameof(command.Description));
+            }
 
             options = RequestOptions.CreateOrClone(options);
-
             return await TrySendApplicationCommand(SendJsonAsync<ApplicationCommand>("POST", () => $"applications/{this.CurrentUserId}/commands", command, new BucketIds(), options: options)).ConfigureAwait(false);
         }
         public async Task<ApplicationCommand> ModifyGlobalApplicationCommandAsync(ModifyApplicationCommandParams command, ulong commandId, RequestOptions options = null)
@@ -1239,6 +1243,17 @@ namespace Discord.API
 
         public async Task<ApplicationCommand> CreateGuildApplicationCommandAsync(CreateApplicationCommandParams command, ulong guildId, RequestOptions options = null)
         {
+            Preconditions.NotNull(command, nameof(command));
+            Preconditions.AtMost(command.Name.Length, 32, nameof(command.Name));
+            Preconditions.AtLeast(command.Name.Length, 3, nameof(command.Name));
+
+            if (command.Type == ApplicationCommandType.Slash)
+            {
+                Preconditions.NotNullOrEmpty(command.Description, nameof(command.Description));
+                Preconditions.AtMost(command.Description.Length, 100, nameof(command.Description));
+                Preconditions.AtLeast(command.Description.Length, 1, nameof(command.Description));
+            }
+
             options = RequestOptions.CreateOrClone(options);
 
             var bucket = new BucketIds(guildId: guildId);

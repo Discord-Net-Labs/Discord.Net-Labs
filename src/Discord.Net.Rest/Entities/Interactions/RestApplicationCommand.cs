@@ -23,9 +23,6 @@ namespace Discord.Rest
         public string Name { get; private set; }
 
         /// <inheritdoc/>
-        public ApplicationCommandType Type { get; private set; }
-
-        /// <inheritdoc/>
         public string Description { get; private set; }
 
         /// <inheritdoc/>
