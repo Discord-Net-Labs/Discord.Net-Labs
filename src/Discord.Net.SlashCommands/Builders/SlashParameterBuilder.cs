@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Discord.SlashCommands.Builders
 {
-    public class SlashParameterBuilder
+    internal class SlashParameterBuilder
     {
         private List<ParameterChoice> _choices;
         private List<Attribute> _attributes;

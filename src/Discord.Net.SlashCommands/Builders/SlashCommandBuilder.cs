@@ -4,32 +4,31 @@ using System.Threading.Tasks;
 
 namespace Discord.SlashCommands.Builders
 {
-    public class SlashCommandBuilder
+    internal class SlashCommandBuilder
     {
         private List<Attribute> _attributes;
         private List<SlashParameterBuilder> _parameters;
 
-        internal Func<ISlashCommandContext, object[], IServiceProvider, SlashCommandInfo, Task> Callback { get; set; }
+        internal Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task> Callback { get; set; }
 
-        public SlashModuleBuilder Module { get; }
-        public SlashGroupInfo Group { get; private set; }
+        public ModuleBuilder Module { get; }
         public string Name { get; set; }
         public string Description { get; set; }
         public bool DefaultPermission { get; set; } = true;
+        public bool IgnoreGroupNames { get; set; } = false;
 
         public IReadOnlyList<Attribute> Attributes => _attributes;
         public IReadOnlyList<SlashParameterBuilder> Parameters => _parameters;
 
-        internal SlashCommandBuilder (SlashModuleBuilder module, Func<ISlashCommandContext, object[], IServiceProvider, SlashCommandInfo, Task> callback,
-            SlashGroupInfo group = null) : this(module, group)
+        internal SlashCommandBuilder (ModuleBuilder module, Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task> callback)
+            : this(module)
         {
             Callback = callback;
         }
 
-        internal SlashCommandBuilder (SlashModuleBuilder module, SlashGroupInfo group = null)
+        internal SlashCommandBuilder (ModuleBuilder module)
         {
             Module = module;
-            Group = group;
 
             _attributes = new List<Attribute>();
             _parameters = new List<SlashParameterBuilder>();
@@ -53,15 +52,9 @@ namespace Discord.SlashCommands.Builders
             return this;
         }
 
-        public SlashCommandBuilder WithGroup(string name, string description)
+        public SlashCommandBuilder SetIgnoreGroupNames(bool state)
         {
-            Group = new SlashGroupInfo(name, description);
-            return this;
-        }
-
-        public SlashCommandBuilder WithGroup(SlashGroupInfo group)
-        {
-            Group = group;
+            IgnoreGroupNames = state;
             return this;
         }
 
@@ -90,7 +83,7 @@ namespace Discord.SlashCommands.Builders
             return this;
         }
 
-        internal SlashCommandInfo Build (SlashModuleInfo module, SlashCommandService commandService) =>
+        internal SlashCommandInfo Build (ModuleInfo module, SlashCommandService commandService) =>
             new SlashCommandInfo(this, module, commandService);
     }
 }
