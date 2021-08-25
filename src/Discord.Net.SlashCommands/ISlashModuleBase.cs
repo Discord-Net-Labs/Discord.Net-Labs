@@ -6,10 +6,10 @@ namespace Discord.SlashCommands
     {
         void SetContext (ISlashCommandContext context);
 
-        void BeforeExecute (SlashCommandInfo command);
+        void BeforeExecute (ExecutableInfo command);
 
-        void AfterExecute (SlashCommandInfo command);
+        void AfterExecute (ExecutableInfo command);
 
-        void OnModuleBuilding (SlashCommandService commandService, SlashModuleBuilder builder);
+        void OnModuleBuilding (SlashCommandService commandService, ModuleInfo module);
     }
 }

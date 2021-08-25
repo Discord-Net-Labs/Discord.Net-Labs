@@ -21,8 +21,18 @@ namespace Discord.SlashCommands
         public char[] InteractionCustomIdDelimiters { get; set; } = null;
 
         /// <summary>
-        /// Delete Interaction Acknowledgements if no interaction handler is found in the <see cref="SlashCommandService"/>
+        /// Delete Slash Command acknowledgements if no interaction handler is found in the <see cref="SlashCommandService"/>
         /// </summary>
-        public bool DeleteUnknownCommandAck { get; set; } = true;
+        public bool DeleteUnknownSlashCommandAck { get; set; } = true;
+
+        /// <summary>
+        /// Delete Message Component acknowledgements if no interaction handler is found in the <see cref="SlashCommandService"/>
+        /// </summary>
+        public bool DeleteUnkownComponentInteractionAck { get; set; } = true;
+
+        /// <summary>
+        /// Delete Context Command acknowledgements if no interaction handler is found in the <see cref="SlashCommandService"/>
+        /// </summary>
+        public bool DeleteUnknownContextCommandAck { get; set; } = true;
     }
 }

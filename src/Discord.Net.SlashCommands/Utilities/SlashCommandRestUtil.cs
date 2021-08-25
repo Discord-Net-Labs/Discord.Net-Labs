@@ -43,10 +43,18 @@ namespace Discord.SlashCommands
 
         public static CreateApplicationCommandParams ParseApplicationCommandParams(this SlashCommandInfo commandInfo)
         {
-            return new CreateApplicationCommandParams(commandInfo.Name.ToLower(), commandInfo.Description)
+            return new CreateApplicationCommandParams(commandInfo.Name.ToLower(), commandInfo.Description, commandInfo.CommandType)
             {
                 DefaultPermission = commandInfo.DefaultPermission,
                 Options = commandInfo.Parameters?.Select(x => x.ParseApplicationCommandOption()).ToArray()
+            };
+        }
+
+        public static CreateApplicationCommandParams ParseApplicationCommandParas(this ContextCommandInfo commandInfo)
+        {
+            return new CreateApplicationCommandParams(commandInfo.Name, null, commandInfo.CommandType)
+            {
+                DefaultPermission = commandInfo.DefaultPermission
             };
         }
 
@@ -70,7 +78,7 @@ namespace Discord.SlashCommands
 
         // Modules
 
-        public static IReadOnlyCollection<CreateApplicationCommandParams> ToModel(this SlashModuleInfo moduleInfo)
+        public static IReadOnlyCollection<CreateApplicationCommandParams> ToModel(this ModuleInfo moduleInfo)
         {
             var args = new List<CreateApplicationCommandParams>();
 
@@ -78,11 +86,13 @@ namespace Discord.SlashCommands
             return args;
         }
 
-        private static void ParseModuleModel(List<CreateApplicationCommandParams> args, SlashModuleInfo moduleInfo)
+        private static void ParseModuleModel(List<CreateApplicationCommandParams> args, ModuleInfo moduleInfo)
         {
+            args.AddRange(moduleInfo.ContextCommands.Select(x => x.ParseApplicationCommandParas()));
+
             if (string.IsNullOrEmpty(moduleInfo.SlashGroupName))
             {
-                args.AddRange(moduleInfo.Commands.Select(x => x.ParseApplicationCommandParams()));
+                args.AddRange(moduleInfo.SlashCommands.Select(x => x.ParseApplicationCommandParams()));
 
                 foreach (var submodule in moduleInfo.SubModules)
                     ParseModuleModel(args, submodule);
@@ -91,25 +101,28 @@ namespace Discord.SlashCommands
             {
                 var options = new List<ApplicationCommandOption>();
 
-                options.AddRange(moduleInfo.Commands.Select(x => x.ParseApplicationCommandOption()));
-                options.AddRange(moduleInfo.SubModules.SelectMany(x => x.ParseSubModule()));
+                options.AddRange(moduleInfo.SlashCommands.Select(x => x.ParseApplicationCommandOption()));
+                options.AddRange(moduleInfo.SubModules.SelectMany(x => x.ParseSubModule(args)));
 
                 args.Add(new CreateApplicationCommandParams
                 {
                     Name = moduleInfo.SlashGroupName.ToLower(),
                     Description = moduleInfo.Description,
                     DefaultPermission = moduleInfo.DefaultPermission,
+                    Type = ApplicationCommandType.Slash,
                     Options = options.ToArray()
                 });
             }
         }
 
-        private static IReadOnlyCollection<ApplicationCommandOption> ParseSubModule(this SlashModuleInfo module)
+        private static IReadOnlyCollection<ApplicationCommandOption> ParseSubModule(this ModuleInfo module, List<CreateApplicationCommandParams> args)
         {
+            args.AddRange(module.ContextCommands.Select(x => x.ParseApplicationCommandParas()));
+
             var options = new List<ApplicationCommandOption>();
 
-            options.AddRange(module.Commands.Select(x => x.ParseApplicationCommandOption()));
-            options.AddRange(module.SubModules.SelectMany(x => x.ParseSubModule()));
+            options.AddRange(module.SlashCommands.Select(x => x.ParseApplicationCommandOption()));
+            options.AddRange(module.SubModules.SelectMany(x => x.ParseSubModule(args)));
 
             if (string.IsNullOrEmpty(module.SlashGroupName))
                 return options;

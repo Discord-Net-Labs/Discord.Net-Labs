@@ -17,10 +17,24 @@ namespace Discord.SlashCommands
                     _seperators[_seperators.Length] = seperator;
         }
 
+        public void AddCommand(T command, bool ignoreGroupNames = false)
+        {
+            if (ignoreGroupNames)
+                AddCommand(command);
+            else
+                AddCommandToRoot(command);
+        }
+
         public void AddCommand (T command)
         {
             string[] key = ParseCommandName(command);
 
+            _root.AddCommand(key, 0, command);
+        }
+
+        public void AddCommandToRoot(T command)
+        {
+            string[] key = new string[] { command.Name };
             _root.AddCommand(key, 0, command);
         }
 
