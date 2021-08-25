@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections.Immutable;
 
 namespace Discord.WebSocket
 {
@@ -16,6 +17,7 @@ namespace Discord.WebSocket
         private readonly bool _automaticShards;
         private int[] _shardIds;
         private DiscordSocketClient[] _shards;
+        private ImmutableArray<StickerPack<SocketSticker>> _defaultStickers;
         private int _totalShards;
         private SemaphoreSlim[] _identifySemaphores;
         private object _semaphoreResetLock;
@@ -30,7 +32,20 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public override IActivity Activity { get => _shards[0].Activity; protected set { } }
 
-        internal new DiscordSocketApiClient ApiClient => base.ApiClient;
+        internal new DiscordSocketApiClient ApiClient
+        {
+            get
+            {
+                if (base.ApiClient.CurrentUserId == null)
+                    base.ApiClient.CurrentUserId = CurrentUser?.Id;
+
+                return base.ApiClient;
+            }
+        }
+        /// <inheritdoc/>
+        public override IReadOnlyCollection<StickerPack<SocketSticker>> DefaultStickerPacks
+            => _defaultStickers.ToReadOnlyCollection();
+
         /// <inheritdoc />
         public override IReadOnlyCollection<SocketGuild> Guilds => GetGuilds().ToReadOnlyCollection(GetGuildCount);
         /// <inheritdoc />
@@ -68,6 +83,7 @@ namespace Discord.WebSocket
             _shardIdsToIndex = new Dictionary<int, int>();
             config.DisplayInitialLog = false;
             _baseConfig = config;
+            _defaultStickers = ImmutableArray.Create<StickerPack<SocketSticker>>();
 
             if (config.TotalShards == null)
                 _automaticShards = true;
@@ -152,6 +168,10 @@ namespace Discord.WebSocket
             //Assume thread safe: already in a connection lock
             for (int i = 0; i < _shards.Length; i++)
                 await _shards[i].LoginAsync(tokenType, token);
+
+            if(this._defaultStickers.Length == 0)
+                await DownloadDefaultStickersAsync().ConfigureAwait(false);
+
         }
         internal override async Task OnLogoutAsync()
         {
@@ -243,6 +263,63 @@ namespace Discord.WebSocket
             for (int i = 0; i < _shards.Length; i++)
                 result += _shards[i].Guilds.Count;
             return result;
+        }
+        /// <inheritdoc/>
+        public override async Task<SocketSticker> GetStickerAsync(ulong id, CacheMode mode = CacheMode.AllowDownload, RequestOptions options = null)
+        {
+            var sticker = _defaultStickers.FirstOrDefault(x => x.Stickers.Any(y => y.Id == id))?.Stickers.FirstOrDefault(x => x.Id == id);
+
+            if (sticker != null)
+                return sticker;
+
+            foreach (var guild in Guilds)
+            {
+                sticker = await guild.GetStickerAsync(id, CacheMode.CacheOnly).ConfigureAwait(false);
+
+                if (sticker != null)
+                    return sticker;
+            }
+
+            if (mode == CacheMode.CacheOnly)
+                return null;
+
+            var model = await ApiClient.GetStickerAsync(id, options).ConfigureAwait(false);
+
+            if (model == null)
+                return null;
+
+
+            if (model.GuildId.IsSpecified)
+            {
+                var guild = GetGuild(model.GuildId.Value);
+                sticker = guild.AddOrUpdateSticker(model);
+                return sticker;
+            }
+            else
+            {
+                return SocketSticker.Create(_shards[0], model);
+            }
+        }
+        private async Task DownloadDefaultStickersAsync()
+        {
+            var models = await ApiClient.ListNitroStickerPacksAsync().ConfigureAwait(false);
+
+            foreach(var model in models.StickerPacks)
+            {
+                var stickers = model.Stickers.Select(x => SocketSticker.Create(_shards[0], x));
+
+                var pack = new StickerPack<SocketSticker>(
+                    model.Name,
+                    model.Id,
+                    model.SkuId,
+                    model.CoverStickerId.ToNullable(),
+                    model.Description,
+                    model.BannerAssetId,
+                    stickers
+                );
+
+                _defaultStickers.Add(pack);
+            }
         }
 
         /// <inheritdoc />
@@ -385,9 +462,11 @@ namespace Discord.WebSocket
             client.InviteDeleted += (channel, invite) => _inviteDeletedEvent.InvokeAsync(channel, invite);
 
             client.InteractionCreated += (interaction) => _interactionCreatedEvent.InvokeAsync(interaction);
-            client.ApplicationCommandCreated += (cmd) => _applicationCommandCreated.InvokeAsync(cmd);
-            client.ApplicationCommandDeleted += (cmd) => _applicationCommandDeleted.InvokeAsync(cmd);
-            client.ApplicationCommandUpdated += (cmd) => _applicationCommandUpdated.InvokeAsync(cmd);
+            client.ButtonExecuted += (arg) => _buttonExecuted.InvokeAsync(arg);
+            client.SelectMenuExecuted += (arg) => _selectMenuExecuted.InvokeAsync(arg);
+            client.SlashCommandExecuted += (arg) => _slashCommandExecuted.InvokeAsync(arg);
+            client.UserCommandExecuted += (arg) => _userCommandExecuted.InvokeAsync(arg);
+            client.MessageCommandExecuted += (arg) => _messageCommandExecuted.InvokeAsync(arg);
 
             client.ThreadUpdated += (thread1, thread2) => _threadUpdated.InvokeAsync(thread1, thread2);
             client.ThreadCreated += (thread) => _threadCreated.InvokeAsync(thread);
@@ -402,6 +481,10 @@ namespace Discord.WebSocket
             client.RequestToSpeak += (stage, user) => _requestToSpeak.InvokeAsync(stage, user);
             client.SpeakerAdded += (stage, user) => _speakerAdded.InvokeAsync(stage, user);
             client.SpeakerRemoved += (stage, user) => _speakerRemoved.InvokeAsync(stage, user);
+
+            client.GuildStickerCreated += (sticker) => _guildStickerCreated.InvokeAsync(sticker);
+            client.GuildStickerDeleted += (sticker) => _guildStickerDeleted.InvokeAsync(sticker);
+            client.GuildStickerUpdated += (before, after) => _guildStickerUpdated.InvokeAsync(before, after);
         }
 
         //IDiscordClient
