@@ -195,20 +195,20 @@ namespace Discord.Rest
 
             if (model.Stickers != null)
             {
-                var stickers = new ImmutableArray<CustomSticker>();
+                var builder = ImmutableArray.CreateBuilder<CustomSticker>();
                 for (int i = 0; i < model.Stickers.Length; i++)
                 {
                     var sticker = model.Stickers[i];
                     
                     var entity = CustomSticker.Create(Discord, sticker, this, sticker.User.IsSpecified ? sticker.User.Value.Id : null);
 
-                    stickers.Add(entity);
+                    builder.Add(entity);
                 }
 
-                _stickers = stickers;
+                _stickers = builder.ToImmutable();
             }
             else
-                _stickers = new ImmutableArray<CustomSticker>();
+                _stickers = ImmutableArray.Create<CustomSticker>();
 
             Available = true;
         }
