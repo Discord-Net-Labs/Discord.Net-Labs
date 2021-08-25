@@ -20,6 +20,8 @@ namespace Discord.SlashCommands
 
         public ApplicationCommandType CommandType => ApplicationCommandType.Slash;
 
+        public bool IgnoreGroupNames { get; set; } = false;
+
         /// <summary>
         /// Register a method as a Slash Command
         /// </summary>

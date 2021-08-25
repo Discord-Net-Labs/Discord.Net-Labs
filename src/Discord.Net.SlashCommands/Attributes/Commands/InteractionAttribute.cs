@@ -14,6 +14,8 @@ namespace Discord.SlashCommands
         /// </summary>
         public string CustomId { get; }
 
+        public bool IgnoreGroupNames { get; set; } = false;
+
         /// <summary>
         /// Tag a method for interaction handling
         /// </summary>
