@@ -60,7 +60,7 @@ namespace Discord.Rest
         /// <inheritdoc />
         public virtual IReadOnlyCollection<ITag> Tags => ImmutableArray.Create<ITag>();
         /// <inheritdoc />
-        public virtual IReadOnlyCollection<Sticker> Stickers => ImmutableArray.Create<Sticker>();
+        public virtual IReadOnlyCollection<StickerItem> Stickers => ImmutableArray.Create<StickerItem>();
 
         /// <inheritdoc />
         public DateTimeOffset Timestamp => DateTimeUtils.FromTicks(_timestampTicks);
@@ -87,7 +87,10 @@ namespace Discord.Rest
         }
         internal static RestMessage Create(BaseDiscordClient discord, IMessageChannel channel, IUser author, Model model)
         {
-            if (model.Type == MessageType.Default || model.Type == MessageType.Reply)
+            if (model.Type == MessageType.Default ||
+                model.Type == MessageType.Reply ||
+                model.Type == MessageType.ApplicationCommand ||
+                model.Type == MessageType.ThreadStarterMessage)
                 return RestUserMessage.Create(discord, channel, author, model);
             else
                 return RestSystemMessage.Create(discord, channel, author, model);
@@ -236,7 +239,7 @@ namespace Discord.Rest
         IReadOnlyCollection<IMessageComponent> IMessage.Components => Components;
 
         /// <inheritdoc />
-        IReadOnlyCollection<ISticker> IMessage.Stickers => Stickers;
+        IReadOnlyCollection<IStickerItem> IMessage.Stickers => Stickers;
 
         /// <inheritdoc />
         public IReadOnlyDictionary<IEmote, ReactionMetadata> Reactions => _reactions.ToDictionary(x => x.Emote, x => new ReactionMetadata { ReactionCount = x.Count, IsMe = x.Me });
