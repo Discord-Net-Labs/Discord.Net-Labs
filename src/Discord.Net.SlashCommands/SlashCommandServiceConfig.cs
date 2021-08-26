@@ -8,7 +8,7 @@ namespace Discord.SlashCommands
         /// <summary>
         /// Log severity for the logger
         /// </summary>
-        public LogSeverity LogLevel { get; } = LogSeverity.Info;
+        public LogSeverity LogLevel { get; set; } = LogSeverity.Info;
         /// <summary>
         /// Run mode that will be used when executing the commands
         /// </summary>

@@ -29,8 +29,10 @@ namespace Discord.SlashCommands
         /// </summary>
         public IReadOnlyList<Attribute> Attributes { get; }
 
+        public override bool SupportsWildCards => false;
+
         internal SlashCommandInfo (Builders.SlashCommandBuilder builder, ModuleInfo module, SlashCommandService commandService)
-            :base(builder.Name, builder.IgnoreGroupNames, false, module, commandService, builder.Callback)
+            :base(builder.Name, builder.IgnoreGroupNames, module, commandService, builder.Callback)
         {
             Description = builder.Description;
             DefaultPermission = builder.DefaultPermission;

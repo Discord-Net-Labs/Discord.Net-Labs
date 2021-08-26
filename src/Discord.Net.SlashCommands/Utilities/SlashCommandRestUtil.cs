@@ -1,5 +1,7 @@
 using Discord.API;
 using Discord.API.Rest;
+using Discord.Rest;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,134 +10,156 @@ namespace Discord.SlashCommands
     internal static class SlashCommandRestUtil
     {
         // Parameters
-        public static API.ApplicationCommandOption ParseApplicationCommandOption (this SlashParameterInfo parameterInfo)
+        public static ApplicationCommandOptionProperties ParseApplicationCommandOptionProps(this SlashParameterInfo parameterInfo)
         {
-
-            var props = new ApplicationCommandOptionProperties();
+            var props = new ApplicationCommandOptionProperties
+            {
+                Name = parameterInfo.Name,
+                Description = parameterInfo.Description,
+                Type = parameterInfo.DiscordOptionType,
+                Required = parameterInfo.IsRequired,
+                Choices = parameterInfo.Choices?.Select(x => new ApplicationCommandOptionChoiceProperties
+                {
+                    Name = x.Name,
+                    Value = x.Value
+                })?.ToList()
+            };
             parameterInfo.TypeReader.Write(props);
 
-            var option = new API.ApplicationCommandOption
-            {
-                Name = props.Name ?? parameterInfo.Name.ToLower(),
-                Description = props.Description ?? parameterInfo.Description.ToLower(),
-                Required = props.Required ?? parameterInfo.IsRequired,
-                Type = parameterInfo.DiscordOptionType,
-                Choices = props.Choices != null ? props.Choices.Select(x => new ApplicationCommandOptionChoice
-                {
-                    Name = x.Name,
-                    Value = x.Value
-                }).ToArray() :
-                parameterInfo.Choices?.Select(x => new ApplicationCommandOptionChoice
-                {
-                    Name = x.Name,
-                    Value = x.Value
-                }).ToArray(),
-                Options = null
-            };
-
-            if (option.Choices.IsSpecified && option.Choices.Value.Count() == 0)
-                option.Choices = null;
-
-            return option;
+            return props;
         }
 
         // Commmands
 
-        public static CreateApplicationCommandParams ParseApplicationCommandParams(this SlashCommandInfo commandInfo)
-        {
-            return new CreateApplicationCommandParams(commandInfo.Name.ToLower(), commandInfo.Description, commandInfo.CommandType)
+        public static ApplicationCommandProperties ParseApplicationCommandProps (this SlashCommandInfo commandInfo) =>
+            new SlashCommandProperties
             {
+                Name = commandInfo.Name,
+                Description = commandInfo.Description,
                 DefaultPermission = commandInfo.DefaultPermission,
-                Options = commandInfo.Parameters?.Select(x => x.ParseApplicationCommandOption()).ToArray()
+                Options = commandInfo.Parameters.Select(x => x.ParseApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified
             };
-        }
 
-        public static CreateApplicationCommandParams ParseApplicationCommandParas(this ContextCommandInfo commandInfo)
-        {
-            return new CreateApplicationCommandParams(commandInfo.Name, null, commandInfo.CommandType)
+        public static ApplicationCommandOptionProperties ParseApplicationCommandOptionProps (this SlashCommandInfo commandInfo) =>
+            new ApplicationCommandOptionProperties
             {
-                DefaultPermission = commandInfo.DefaultPermission
-            };
-        }
-
-        public static API.ApplicationCommandOption ParseApplicationCommandOption (this SlashCommandInfo commandInfo)
-        {
-            var option = new API.ApplicationCommandOption
-            {
-                Name = commandInfo.Name.ToLower(),
+                Name = commandInfo.Name,
                 Description = commandInfo.Description,
                 Type = ApplicationCommandOptionType.SubCommand,
-                Options = commandInfo.Parameters.Select(x => x.ParseApplicationCommandOption()).ToArray(),
-                Choices = null,
-                Required = false
+                Required = false,
+                Options = commandInfo.Parameters?.Select(x => x.ParseApplicationCommandOptionProps())?.ToList()
             };
 
-            if (!option.Options.IsSpecified)
-                option.Options = null;
-
-            return option;
-        }
+        public static ApplicationCommandProperties ParseApplicationCommandProps (this ContextCommandInfo commandInfo) =>
+            new ContextCommandProperties(commandInfo.CommandType)
+            {
+                Name = commandInfo.Name
+            };
 
         // Modules
 
-        public static IReadOnlyCollection<CreateApplicationCommandParams> ToModel(this ModuleInfo moduleInfo)
+        public static IReadOnlyCollection<ApplicationCommandProperties> ToModel(this ModuleInfo moduleInfo)
         {
-            var args = new List<CreateApplicationCommandParams>();
+            var args = new List<ApplicationCommandProperties>();
 
             ParseModuleModel(args, moduleInfo);
             return args;
         }
 
-        private static void ParseModuleModel(List<CreateApplicationCommandParams> args, ModuleInfo moduleInfo)
+        private static void ParseModuleModel(List<ApplicationCommandProperties> args, ModuleInfo moduleInfo)
         {
-            args.AddRange(moduleInfo.ContextCommands.Select(x => x.ParseApplicationCommandParas()));
+            args.AddRange(moduleInfo.ContextCommands?.Select(x => x.ParseApplicationCommandProps()));
 
-            if (string.IsNullOrEmpty(moduleInfo.SlashGroupName))
+            if (!moduleInfo.IsSlashGroup)
             {
-                args.AddRange(moduleInfo.SlashCommands.Select(x => x.ParseApplicationCommandParams()));
+                args.AddRange(moduleInfo.SlashCommands?.Select(x => x.ParseApplicationCommandProps()));
 
                 foreach (var submodule in moduleInfo.SubModules)
                     ParseModuleModel(args, submodule);
             }
             else
             {
-                var options = new List<ApplicationCommandOption>();
+                var options = new List<ApplicationCommandOptionProperties>();
 
-                options.AddRange(moduleInfo.SlashCommands.Select(x => x.ParseApplicationCommandOption()));
-                options.AddRange(moduleInfo.SubModules.SelectMany(x => x.ParseSubModule(args)));
+                options.AddRange(moduleInfo.SlashCommands?.Select(x => x.ParseApplicationCommandOptionProps()));
+                options.AddRange(moduleInfo.SubModules?.SelectMany(x => x.ParseSubModule(args)));
 
-                args.Add(new CreateApplicationCommandParams
+                args.Add(new SlashCommandProperties
                 {
                     Name = moduleInfo.SlashGroupName.ToLower(),
                     Description = moduleInfo.Description,
                     DefaultPermission = moduleInfo.DefaultPermission,
-                    Type = ApplicationCommandType.Slash,
-                    Options = options.ToArray()
+                    Options = options
                 });
             }
         }
 
-        private static IReadOnlyCollection<ApplicationCommandOption> ParseSubModule(this ModuleInfo module, List<CreateApplicationCommandParams> args)
+        private static IReadOnlyCollection<ApplicationCommandOptionProperties> ParseSubModule(this ModuleInfo moduleInfo, List<ApplicationCommandProperties> args)
         {
-            args.AddRange(module.ContextCommands.Select(x => x.ParseApplicationCommandParas()));
+            args.AddRange(moduleInfo.ContextCommands?.Select(x => x.ParseApplicationCommandProps()));
 
-            var options = new List<ApplicationCommandOption>();
+            var options = new List<ApplicationCommandOptionProperties>();
+            options.AddRange(moduleInfo.SlashCommands?.Select(x => x.ParseApplicationCommandOptionProps()));
+            options.AddRange(moduleInfo.SubModules?.SelectMany(x => x.ParseSubModule(args)));
 
-            options.AddRange(module.SlashCommands.Select(x => x.ParseApplicationCommandOption()));
-            options.AddRange(module.SubModules.SelectMany(x => x.ParseSubModule(args)));
-
-            if (string.IsNullOrEmpty(module.SlashGroupName))
+            if (!moduleInfo.IsSubModule)
                 return options;
             else
-                return new List<ApplicationCommandOption>() {
-                    new ApplicationCommandOption
+                return new List<ApplicationCommandOptionProperties>() { new ApplicationCommandOptionProperties
+                {
+                    Name = moduleInfo.SlashGroupName.ToLower(),
+                    Description = moduleInfo.Description,
+                    Type = ApplicationCommandOptionType.SubCommandGroup,
+                    Options = options
+                } };
+        }
+
+        public static ApplicationCommandProperties ToCreationProps(this IApplicationCommand command)
+        {
+            switch (command.Type)
+            {
+                case ApplicationCommandType.Slash:
+                    return new SlashCommandProperties
                     {
-                        Name = module.SlashGroupName.ToLower(),
-                        Description = module.Description,
-                        Type = ApplicationCommandOptionType.SubCommandGroup,
-                        Options = options.ToArray()
-                    }
-                };
+                        Name = command.Name,
+                        Description = command.Description,
+                        DefaultPermission = command.DefaultPermission,
+                        Options = command.Options?.Select(x => x.ToCreationProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified
+                    };
+                case ApplicationCommandType.User:
+                case ApplicationCommandType.Message:
+                    return new ContextCommandProperties(command.Type)
+                    {
+                        Name = command.Name
+                    };
+                default:
+                    throw new InvalidOperationException($"Cannot create command properties for command type {command.Type}");
+            }
+        }
+
+        public static ApplicationCommandOptionProperties ToCreationProps(this IApplicationCommandOption commandOption)
+            => new ApplicationCommandOptionProperties
+            {
+                Name = commandOption.Name,
+                Description = commandOption.Description,
+                Type = commandOption.Type,
+                Required = commandOption.Required,
+                Choices = commandOption.Choices?.Select(x => new ApplicationCommandOptionChoiceProperties
+                {
+                    Name = x.Name,
+                    Value = x.Value
+                }).ToList(),
+                Options = commandOption.Options?.Select(x => x.ToCreationProps()).ToList()
+            };
+    }
+
+    internal sealed class ContextCommandProperties : ApplicationCommandProperties
+    {
+        internal override ApplicationCommandType Type { get; }
+
+        public ContextCommandProperties ( ApplicationCommandType type )
+        {
+            Type = type;
         }
     }
 }

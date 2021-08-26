@@ -1,4 +1,3 @@
-using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -107,10 +106,10 @@ namespace Discord.SlashCommands.Builders
                 builder.AddInteraction(x => BuildInteraction(x, typeInfo, method, commandService, services));
         }
 
-        private static void BuildSubModules ( ModuleBuilder parent, IEnumerable<TypeInfo> subModules, IList<TypeInfo> builtTypes, SlashCommandService commandService,
+        private static void BuildSubModules (ModuleBuilder parent, IEnumerable<TypeInfo> subModules, IList<TypeInfo> builtTypes, SlashCommandService commandService,
             IServiceProvider services, int slashGroupDepth = 0)
         {
-            foreach(var submodule in subModules.Where(IsValidModuleDefinition))
+            foreach (var submodule in subModules.Where(IsValidModuleDefinition))
             {
                 if (builtTypes.Contains(submodule))
                     continue;
@@ -212,6 +211,9 @@ namespace Discord.SlashCommands.Builders
         private static void BuildInteraction (InteractionBuilder builder, TypeInfo typeInfo, MethodInfo methodInfo,
             SlashCommandService commandService, IServiceProvider services)
         {
+            if (!methodInfo.GetParameters().All(x => x.ParameterType == typeof(string) || x.ParameterType == typeof(string[])))
+                throw new InvalidOperationException($"Interaction method parameters all must be types of {typeof(string).Name} or {typeof(string[]).Name}");
+
             var attributes = methodInfo.GetCustomAttributes();
 
             builder.Name = methodInfo.Name;
@@ -239,7 +241,7 @@ namespace Discord.SlashCommands.Builders
             builder.Callback = CreateCallback(typeInfo, methodInfo, commandService, services);
         }
 
-        private static Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task<IResult>> CreateCallback ( TypeInfo typeInfo, MethodInfo methodInfo,
+        private static Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task<IResult>> CreateCallback (TypeInfo typeInfo, MethodInfo methodInfo,
             SlashCommandService commandService, IServiceProvider services)
         {
             var createInstance = ReflectionUtils.CreateBuilder<ISlashModuleBase>(typeInfo, commandService);
@@ -328,7 +330,7 @@ namespace Discord.SlashCommands.Builders
                    !methodInfo.IsGenericMethod;
         }
 
-        private static bool IsValidContextCommandDefinition(MethodInfo methodInfo)
+        private static bool IsValidContextCommandDefinition (MethodInfo methodInfo)
         {
             return methodInfo.IsDefined(typeof(ContextCommandAttribute)) &&
                    ( methodInfo.ReturnType == typeof(Task) || methodInfo.ReturnType == typeof(Task<RuntimeResult>) ) &&

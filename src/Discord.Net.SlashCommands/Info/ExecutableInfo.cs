@@ -28,17 +28,14 @@ namespace Discord.SlashCommands
         /// If true, this command will be registered and executed as a standalone command, unaffected by the <see cref="SlashGroupAttribute"/>s of its declaring types
         /// </summary>
         public bool IgnoreGroupNames { get; }
-        /// <summary>
-        /// Wheter this commands name contains a wild card statement
-        /// </summary>
-        public bool IsWildCard { get; }
 
-        internal ExecutableInfo (string name, bool ignoreGroupNames, bool isWildCard, ModuleInfo module, SlashCommandService commandService,
+        public abstract bool SupportsWildCards { get; }
+
+        internal ExecutableInfo (string name, bool ignoreGroupNames, ModuleInfo module, SlashCommandService commandService,
             Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task> Callback)
         {
             Name = name;
             IgnoreGroupNames = ignoreGroupNames;
-            IsWildCard = isWildCard;
             Module = module;
             CommandService = commandService;
 
@@ -55,7 +52,7 @@ namespace Discord.SlashCommands
 
         protected async Task<IResult> ExecuteInternalAsync (ISlashCommandContext context, object[] args, IServiceProvider services)
         {
-            await Module.CommandService._cmdLogger.DebugAsync($"Executing {GetLogString(context)}").ConfigureAwait(false);
+            await CommandService._cmdLogger.DebugAsync($"Executing {GetLogString(context)}").ConfigureAwait(false);
 
             try
             {
@@ -102,7 +99,7 @@ namespace Discord.SlashCommands
             }
             finally
             {
-                await Module.CommandService._cmdLogger.VerboseAsync($"Executed {GetLogString(context)}").ConfigureAwait(false);
+                await CommandService._cmdLogger.VerboseAsync($"Executed {GetLogString(context)}").ConfigureAwait(false);
             }
         }
 

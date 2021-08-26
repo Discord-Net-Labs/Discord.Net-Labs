@@ -14,8 +14,6 @@ namespace Discord.SlashCommands
     /// </summary>
     public class InteractionInfo : ExecutableInfo
     {
-        private const string WildCardStr = "*";
-
         /// <summary>
         /// Get the information on Parameters that belong to this command
         /// </summary>
@@ -25,8 +23,10 @@ namespace Discord.SlashCommands
         /// </summary>
         public IReadOnlyList<Attribute> Attributes { get; }
 
+        public override bool SupportsWildCards => true;
+
         internal InteractionInfo (InteractionBuilder builder, ModuleInfo module, SlashCommandService commandService)
-            :base(builder.Name, builder.IgnoreGroupNames, builder.Name.Contains(WildCardStr), module, commandService, builder.Callback)
+            :base(builder.Name, builder.IgnoreGroupNames, module, commandService, builder.Callback)
         {
             Parameters = builder.Parameters.ToImmutableArray();
             Attributes = builder.Attributes.ToImmutableArray();

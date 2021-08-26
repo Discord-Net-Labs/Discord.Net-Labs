@@ -9,15 +9,15 @@ namespace Discord.SlashCommands
     internal class SlashCommandMapNode<T> where T : class, IExecutableInfo
     {
         private const string WildCardStr = "*";
-        private const string RegexWildCardExp = ".*";
+        private const string RegexWildCardExp = "(\\w+)?";
 
         private ConcurrentDictionary<string, SlashCommandMapNode<T>> _nodes;
         private ConcurrentDictionary<string, T> _commands;
-        private ConcurrentDictionary<string, T> _wildCardCommands;
+        private ConcurrentDictionary<Regex, T> _wildCardCommands;
 
         public IReadOnlyDictionary<string, SlashCommandMapNode<T>> Nodes => _nodes;
         public IReadOnlyDictionary<string, T> Commands => _commands;
-        public IReadOnlyDictionary<string, T> WildCardCommands => _wildCardCommands;
+        public IReadOnlyDictionary<Regex, T> WildCardCommands => _wildCardCommands;
         public string Name { get; }
 
         public SlashCommandMapNode (string name)
@@ -25,16 +25,19 @@ namespace Discord.SlashCommands
             Name = name;
             _nodes = new ConcurrentDictionary<string, SlashCommandMapNode<T>>();
             _commands = new ConcurrentDictionary<string, T>();
-            _wildCardCommands = new ConcurrentDictionary<string, T>();
+            _wildCardCommands = new ConcurrentDictionary<Regex, T>();
         }
 
         public void AddCommand (string[] keywords, int index, T commandInfo)
         {
             if (keywords.Length == index + 1)
             {
-                if (commandInfo.IsWildCard)
+                if (commandInfo.SupportsWildCards && commandInfo.Name.Contains(WildCardStr))
                 {
-                    if (!_wildCardCommands.TryAdd(commandInfo.Name, commandInfo))
+                    var patternStr = commandInfo.Name.Replace(WildCardStr, RegexWildCardExp);
+                    var regex = new Regex(patternStr, RegexOptions.Singleline | RegexOptions.Compiled);
+
+                    if (!_wildCardCommands.TryAdd(regex, commandInfo))
                         throw new InvalidOperationException($"A {typeof(T).FullName} already exists with the same name");
                 }
                 else
@@ -77,15 +80,15 @@ namespace Discord.SlashCommands
                 {
                     foreach(var cmdPair in _wildCardCommands)
                     {
-                        var patternStr = cmdPair.Key.Replace(WildCardStr, RegexWildCardExp);
-
-                        var match = Regex.Match(keywords[index], patternStr, RegexOptions.IgnoreCase);
+                        var match = cmdPair.Key.Match(keywords[index]);
                         if (match.Success && match.Value.Length == keywords[index].Length)
                         {
-                            var statics = cmdPair.Key.Split(new string[] { WildCardStr }, StringSplitOptions.RemoveEmptyEntries);
+                            var args = new string[match.Groups.Count - 1];
 
-                            var args = match.Value.Split(statics, StringSplitOptions.RemoveEmptyEntries);
-                            return SearchResult<T>.FromSuccess(name, cmdPair.Value, args);
+                            for (var i = 1; i < match.Groups.Count; i++)
+                                args[i - 1] = match.Groups[i].Value;
+
+                            return SearchResult<T>.FromSuccess(name, cmdPair.Value, args.ToArray());
                         }
                     }
                 }

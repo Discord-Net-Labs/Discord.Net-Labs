@@ -192,31 +192,42 @@ namespace Discord.SlashCommands
         {
             CheckApplicationId();
 
-            var creationParams = _typedModuleDefs.Values.SelectMany(x => x.ToModel());
-            IEnumerable<ApplicationCommand> existing;
+            var props = _typedModuleDefs.Values.SelectMany(x => x.ToModel()).ToList();
+
+            IEnumerable<IApplicationCommand> existing;
 
             if (guildId.HasValue)
-                existing = await Client.ApiClient.GetGuildApplicationCommandsAsync(guildId.Value).ConfigureAwait(false);
+                existing = await ClientHelper.GetGuildApplicationCommands(Client, guildId.Value).ConfigureAwait(false);
             else
-                existing = await Client.ApiClient.GetGlobalApplicationCommandsAsync().ConfigureAwait(false);
-
-            var payload = creationParams.ToList();
+                existing = await ClientHelper.GetGlobalApplicationCommands(Client).ConfigureAwait(false);
 
             if (!deleteMissing)
             {
-                payload.AddRange(existing.Select(x => new CreateApplicationCommandParams
-                {
-                    Name = x.Name,
-                    Description = x.Description,
-                    DefaultPermission = x.DefaultPermissions,
-                    Options = x.Options
-                }));
+                var missing = existing.Where(x => !props.Any(y => y.Name.IsSpecified && y.Name.Value == x.Name));
+                props.AddRange(missing.Select(x => x.ToCreationProps()));
             }
 
             if (guildId.HasValue)
-                await Client.ApiClient.BulkOverwriteGuildApplicationCommands(guildId.Value, payload.ToArray()).ConfigureAwait(false);
+                await ClientHelper.BulkOverwriteGuildApplicationCommand(Client, guildId.Value, props.ToArray()).ConfigureAwait(false);
             else
-                await Client.ApiClient.BulkOverwriteGlobalApplicationCommands(payload.ToArray()).ConfigureAwait(false);
+                await ClientHelper.BulkOverwriteGlobalApplicationCommand(Client, props.ToArray()).ConfigureAwait(false);
+        }
+
+        public async Task<IReadOnlyList<ApplicationCommandProperties>> GetProps (ulong? guildId = null)
+        {
+            var props = _typedModuleDefs.Values.SelectMany(x => x.ToModel()).ToList();
+
+            IEnumerable<IApplicationCommand> existing;
+
+            if (guildId.HasValue)
+                existing = await ClientHelper.GetGuildApplicationCommands(Client, guildId.Value).ConfigureAwait(false);
+            else
+                existing = await ClientHelper.GetGlobalApplicationCommands(Client).ConfigureAwait(false);
+
+            var missing = existing.Where(x => !props.Any(y => y.Name.IsSpecified && y.Name.Value == x.Name));
+            props.AddRange(missing.Select(x => x.ToCreationProps()));
+
+            return props;
         }
 
         /// <summary>
@@ -238,11 +249,6 @@ namespace Discord.SlashCommands
 
             foreach (var com in commands)
             {
-                ApplicationCommand result = await Client.ApiClient.CreateGuildApplicationCommandAsync(
-                    com.ParseApplicationCommandParams(), guild.Id, null);
-
-                if (result == null)
-                    await _cmdLogger.WarningAsync($"Command could not be registered ({com.Name})").ConfigureAwait(false);
             }
         }
 
@@ -260,9 +266,6 @@ namespace Discord.SlashCommands
                 throw new ArgumentException($"{nameof(guild)} cannot be null to call this function.");
 
             var args = new List<CreateApplicationCommandParams>();
-
-            foreach (var module in Modules)
-                args.AddRange(module.ToModel());
 
             foreach(var commandArg in args)
             {

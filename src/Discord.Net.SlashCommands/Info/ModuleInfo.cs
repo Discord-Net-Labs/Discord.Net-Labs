@@ -14,6 +14,9 @@ namespace Discord.SlashCommands
         /// Command service this module belongs to
         /// </summary>
         public SlashCommandService CommandService { get; }
+        /// <summary>
+        /// Get the name of this module class
+        /// </summary>
         public string Name { get; }
         /// <summary>
         /// Get the name of this module that will be displayed on Discord
