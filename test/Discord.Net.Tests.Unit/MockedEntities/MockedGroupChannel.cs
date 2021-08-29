@@ -96,7 +96,7 @@ namespace Discord
             throw new NotImplementedException();
         }
 
-        public Task<IUserMessage> SendMessageAsync(string text = null, bool isTTS = false, Embed embed = null, RequestOptions options = null, AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null)
+        public Task<IUserMessage> SendMessageAsync(string text = null, bool isTTS = false, Embed[] embeds = null, RequestOptions options = null, AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null, Embed embed = null)
         {
             throw new NotImplementedException();
         }

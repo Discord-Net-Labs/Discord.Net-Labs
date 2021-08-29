@@ -30,15 +30,17 @@ namespace Discord.Commands
         /// Contents of the message; optional only if <paramref name="embed" /> is specified.
         /// </param>
         /// <param name="isTTS">Specifies if Discord should read this <paramref name="message"/> aloud using text-to-speech.</param>
-        /// <param name="embed">An embed to be displayed alongside the <paramref name="message"/>.</param>
+        /// <param name="embeds">An array of embeds to be displayed alongside the <paramref name="message"/>. Max. 10.</param>
         /// <param name="allowedMentions">
         ///     Specifies if notifications are sent for mentioned users and roles in the <paramref name="message"/>.
         ///     If <c>null</c>, all mentioned roles and users will be notified.
         /// </param>
         /// <param name="messageReference">The message references to be included. Used to reply to specific messages.</param>
-        protected virtual async Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, Embed embed = null, RequestOptions options = null, AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null)
+        /// <param name="component">The message components to be included with this message. Used for interactions.</param>
+        /// <param name="embed">A single embed to send with this response. If this is passed alongside an array of embeds, the single embed will be ignored.</param>
+        protected virtual async Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, Embed[] embeds = null, RequestOptions options = null, AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null, Embed embed = null)
         {
-            return await Context.Channel.SendMessageAsync(message, isTTS, embed, options, allowedMentions, messageReference, component).ConfigureAwait(false);
+            return await Context.Channel.SendMessageAsync(message, isTTS, embeds, options, allowedMentions, messageReference, component).ConfigureAwait(false);
         }
         /// <summary>
         ///     The method to execute before executing the command.

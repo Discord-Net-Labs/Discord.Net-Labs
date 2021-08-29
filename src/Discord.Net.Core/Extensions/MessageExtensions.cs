@@ -77,19 +77,21 @@ namespace Discord
         /// </summary>
         /// <param name="text">The message to be sent.</param>
         /// <param name="isTTS">Determines whether the message should be read aloud by Discord or not.</param>
-        /// <param name="embed">The <see cref="Discord.EmbedType.Rich"/> <see cref="Embed"/> to be sent.</param>
+        /// <param name="embeds">An array of embeds to be sent. Max 10.</param>
         /// <param name="allowedMentions">
         ///     Specifies if notifications are sent for mentioned users and roles in the message <paramref name="text"/>.
         ///     If <c>null</c>, all mentioned roles and users will be notified.
         /// </param>
+        /// <param name="component">The message components to be included with this message. Used for interactions.</param>
+        /// <param name="embed">A single embed to send with this response. If this is passed alongside an array of embeds, the single embed will be ignored.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
         ///     A task that represents an asynchronous send operation for delivering the message. The task result
         ///     contains the sent message.
         /// </returns>
-        public static async Task<IUserMessage> ReplyAsync(this IUserMessage msg, string text = null, bool isTTS = false, Embed embed = null, AllowedMentions allowedMentions = null, RequestOptions options = null)
+        public static async Task<IUserMessage> ReplyAsync(this IUserMessage msg, string text = null, bool isTTS = false, Embed[] embeds = null, AllowedMentions allowedMentions = null, MessageComponent component = null, Embed embed = null, RequestOptions options = null)
         {
-            return await msg.Channel.SendMessageAsync(text, isTTS, embed, options, allowedMentions, new MessageReference(messageId: msg.Id)).ConfigureAwait(false);
+            return await msg.Channel.SendMessageAsync(text, isTTS, embeds, options, allowedMentions, new MessageReference(messageId: msg.Id), component, embed).ConfigureAwait(false);
         }
     }
 }

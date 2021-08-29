@@ -26,24 +26,27 @@ namespace Discord
         /// <param name="user">The user to send the DM to.</param>
         /// <param name="text">The message to be sent.</param>
         /// <param name="isTTS">Whether the message should be read aloud by Discord or not.</param>
-        /// <param name="embed">The <see cref="EmbedType.Rich"/> <see cref="Embed"/> to be sent.</param>
+        /// <param name="embeds">An array of embeds to be sent. Max 10.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <param name="allowedMentions">
         ///     Specifies if notifications are sent for mentioned users and roles in the message <paramref name="text"/>.
         ///     If <c>null</c>, all mentioned roles and users will be notified.
         /// </param>
+        /// <param name="component">The message components to be included with this message. Used for interactions.</param>
+        /// <param name="embed">A single embed to send with this response. If this is passed alongside an array of embeds, the single embed will be ignored.</param>
         /// <returns>
         ///     A task that represents the asynchronous send operation. The task result contains the sent message.
         /// </returns>
         public static async Task<IUserMessage> SendMessageAsync(this IUser user,
             string text = null,
             bool isTTS = false,
-            Embed embed = null,
+            Embed[] embeds = null,
             RequestOptions options = null,
             AllowedMentions allowedMentions = null,
-            MessageComponent component = null)
+            MessageComponent component = null,
+            Embed embed = null)
         {
-            return await (await user.CreateDMChannelAsync().ConfigureAwait(false)).SendMessageAsync(text, isTTS, embed, options, allowedMentions, component: component).ConfigureAwait(false);
+            return await (await user.CreateDMChannelAsync().ConfigureAwait(false)).SendMessageAsync(text, isTTS, embeds, options, allowedMentions, component: component, embed: embed).ConfigureAwait(false);
         }
 
         /// <summary>
