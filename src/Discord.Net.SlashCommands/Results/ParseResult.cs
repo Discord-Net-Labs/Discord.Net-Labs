@@ -2,11 +2,23 @@ using System;
 
 namespace Discord.SlashCommands
 {
+    /// <summary>
+    /// Represents the result of a Application Command Parsing process from an <see cref="IExecutableInfo"/>
+    /// </summary>
     public struct ParseResult : IResult
     {
+        /// <summary>
+        /// Get the parsed application command if the operation was successful
+        /// </summary>
         public IApplicationCommand Command { get; }
+
+        /// <inheritdoc/>
         public SlashCommandError? Error { get; }
+
+        /// <inheritdoc/>
         public string ErrorReason { get; }
+
+        /// <inheritdoc/>
         public bool IsSuccess => !Error.HasValue;
 
         private ParseResult (IApplicationCommand command, SlashCommandError? error, string reason)

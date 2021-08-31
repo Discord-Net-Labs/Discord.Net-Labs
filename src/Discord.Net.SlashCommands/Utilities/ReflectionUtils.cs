@@ -78,6 +78,9 @@ namespace Discord.SlashCommands
             throw new InvalidOperationException($"Failed to create \"{ownerType.FullName}\", dependency \"{memberType.Name}\" was not found.");
         }
 
+        /// <summary>
+        /// Create a type initializer using compiled lambda expressions
+        /// </summary>
         internal static Func<IServiceProvider, T> CreateLambdaBuilder<T> (TypeInfo typeInfo, SlashCommandService commandService)
         {
             var constructor = GetConstructor(typeInfo);

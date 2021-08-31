@@ -7,8 +7,10 @@ namespace Discord.SlashCommands
     {
         /// <inheritdoc/>
         public SlashCommandError? Error { get; }
+
         /// <inheritdoc/>
         public string ErrorReason { get; }
+
         /// <inheritdoc/>
         public bool IsSuccess => !Error.HasValue;
 

@@ -75,6 +75,35 @@ namespace Discord.SlashCommands
             return await WaitForInteraction(baseSocketClient, timeout, predicate, cancellationToken).ConfigureAwait(false);
         }
 
+        public static async Task<bool> Confirm(BaseSocketClient client, ISlashCommandContext ctx, TimeSpan timeout, string message = null,
+            CancellationToken cancellationToken = default)
+        {
+            var guid = Guid.NewGuid();
+
+            message = message ?? "Would you like to continue?";
+            var confirmId = $"{guid}:confirm";
+            var declineId = $"{guid}:decline";
+
+            var component = new ComponentBuilder()
+                .WithButton("Confirm", confirmId, ButtonStyle.Success)
+                .WithButton("Cancel", declineId, ButtonStyle.Danger)
+                .Build();
+
+            var dialog = await ctx.Channel.SendMessageAsync(message, component: component).ConfigureAwait(false);
+
+            var response = await WaitForInteraction(client, timeout, (interaction) =>
+            {
+                return CheckMessageComponent(ctx, interaction, confirmId) || CheckMessageComponent(ctx, interaction, declineId);
+            }, cancellationToken).ConfigureAwait(false) as SocketMessageComponent;
+
+            await dialog.DeleteAsync().ConfigureAwait(false);
+
+            if (response != null && response.Data.CustomId == confirmId)
+                return true;
+            else
+                return false;
+        }
+
         private static bool CheckMessageComponent(ISlashCommandContext ctx, SocketInteraction interaction, string customId = null, bool checkId = true,
             bool sameUser = true, bool sameChannel = true)
         {

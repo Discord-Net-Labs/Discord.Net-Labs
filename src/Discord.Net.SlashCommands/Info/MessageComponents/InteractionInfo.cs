@@ -23,6 +23,7 @@ namespace Discord.SlashCommands
         /// </summary>
         public IReadOnlyList<Attribute> Attributes { get; }
 
+        /// <inheritdoc/>
         public override bool SupportsWildCards => true;
 
         internal InteractionInfo (InteractionBuilder builder, ModuleInfo module, SlashCommandService commandService)
@@ -32,10 +33,17 @@ namespace Discord.SlashCommands
             Attributes = builder.Attributes.ToImmutableArray();
         }
 
+        /// <inheritdoc/>
         public override async Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services)
             => await ExecuteAsync(context, services, null).ConfigureAwait(false);
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Execute this command using dependency injection
+        /// </summary>
+        /// <param name="context">Context that will be injected to the <see cref="SlashModuleBase{T}"/></param>
+        /// <param name="services">Services that will be used while initializing the <see cref="SlashModuleBase{T}"/></param>
+        /// <param name="additionalArgs">Provide additional string parameters to the method along with the auto generated parameters</param>
+        /// <returns>A task representing the asyncronous command execution process</returns>
         public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services, params string[] additionalArgs)
         {
             if (context.Interaction is SocketMessageComponent messageInteraction)

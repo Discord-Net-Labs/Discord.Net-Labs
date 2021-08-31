@@ -29,6 +29,7 @@ namespace Discord.SlashCommands
         /// </summary>
         public IReadOnlyList<Attribute> Attributes { get; }
 
+        /// <inheritdoc/>
         public override bool SupportsWildCards => false;
 
         internal SlashCommandInfo (Builders.SlashCommandBuilder builder, ModuleInfo module, SlashCommandService commandService)

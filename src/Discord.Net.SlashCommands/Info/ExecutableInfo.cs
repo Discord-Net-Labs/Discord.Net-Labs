@@ -12,23 +12,19 @@ namespace Discord.SlashCommands
     {
         protected readonly Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task> _action;
 
-        /// <summary>
-        /// <see cref="SlashCommandService"/> this command belongs to
-        /// </summary>
+        /// <inheritdoc/>
         public SlashCommandService CommandService { get; }
-        /// <summary>
-        /// Module this commands belongs to
-        /// </summary>
+
+        /// <inheritdoc/>
         public ModuleInfo Module { get; }
-        /// <summary>
-        /// Get the name of this command that will be used to both execute and register this command
-        /// </summary>
+
+        /// <inheritdoc/>
         public string Name { get; }
-        /// <summary>
-        /// If true, this command will be registered and executed as a standalone command, unaffected by the <see cref="SlashGroupAttribute"/>s of its declaring types
-        /// </summary>
+
+        /// <inheritdoc/>
         public bool IgnoreGroupNames { get; }
 
+        /// <inheritdoc/>
         public abstract bool SupportsWildCards { get; }
 
         internal ExecutableInfo (string name, bool ignoreGroupNames, ModuleInfo module, SlashCommandService commandService,

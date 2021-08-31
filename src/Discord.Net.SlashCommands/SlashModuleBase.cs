@@ -1,4 +1,3 @@
-using Discord.SlashCommands.Builders;
 using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
@@ -40,24 +39,29 @@ namespace Discord.SlashCommands
             Context = newValue ?? throw new InvalidOperationException($"Invalid context type. Expected {typeof(T).Name}, got {context.GetType().Name}.");
         }
 
+        /// <inheritdoc cref="IDiscordInteraction.RespondAsync(string, Embed[], bool, bool, AllowedMentions, RequestOptions, MessageComponent, Embed)"/>
         protected virtual async Task RespondAsync (string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false,
             AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null) =>
             await Context.Interaction.RespondAsync(text, embeds, isTTS, ephemeral, allowedMentions, options, component, embed).ConfigureAwait(false);
 
+        /// <inheritdoc cref="IDiscordInteraction.FollowupAsync(string, Embed[], bool, bool, AllowedMentions, RequestOptions, MessageComponent, Embed)"/>
         protected virtual async Task<IUserMessage> FollowupAsync (string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false,
             AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null) =>
             await Context.Interaction.FollowupAsync(text, embeds, isTTS, ephemeral, allowedMentions, options, component, embed).ConfigureAwait(false);
 
+        /// <inheritdoc cref="IMessageChannel.SendMessageAsync(string, bool, Embed, RequestOptions, AllowedMentions, MessageReference, MessageComponent)"/>
         protected virtual async Task<IUserMessage> ReplyAsync (string text = null, bool isTTS = false, Embed embed = null, RequestOptions options = null,
             AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null) =>
             await Context.Channel.SendMessageAsync(text, false, embed, options, allowedMentions, messageReference, component).ConfigureAwait(false);
 
+        /// <inheritdoc cref="IDeletable."/>
         protected virtual async Task DeleteOriginalResponseAsync ( )
         {
             var response = await Context.Interaction.GetOriginalResponseAsync().ConfigureAwait(false);
             await response.DeleteAsync().ConfigureAwait(false);
         }
 
+        /// <inheritdoc cref="InteractionUtility.WaitForInteraction(BaseSocketClient, TimeSpan, Predicate{SocketInteraction}, System.Threading.CancellationToken)"/>
         protected virtual async Task<SocketInteraction> WaitNextAsync (TimeSpan timeout, Predicate<SocketInteraction> predicate)
         {
             if (!( Context.Client is BaseSocketClient baseSocketClient ))
