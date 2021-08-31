@@ -4,12 +4,19 @@ using System.Reflection;
 namespace Discord.SlashCommands
 {
     /// <summary>
-    /// 
+    /// Base attribute for creating a Context Commands
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public abstract class ContextCommandAttribute : Attribute
     {
+        /// <summary>
+        /// Name of this context command
+        /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// Get the type of this context command
+        /// </summary>
         public ApplicationCommandType CommandType { get; }
 
         internal ContextCommandAttribute (string name, ApplicationCommandType commandType)

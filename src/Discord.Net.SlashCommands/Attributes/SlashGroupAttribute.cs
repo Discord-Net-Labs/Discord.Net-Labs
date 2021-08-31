@@ -8,7 +8,7 @@ namespace Discord.SlashCommands
     /// <remarks>
     /// Can be either used to mark a class to tag all of the declared methods or to mark commands individually
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class SlashGroupAttribute : Attribute
     {
         /// <summary>

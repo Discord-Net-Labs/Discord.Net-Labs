@@ -5,7 +5,7 @@ namespace Discord.SlashCommands
     /// <summary>
     /// Attribute used to add a pre-determined argument value
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true, Inherited = true)]
     public class ChoiceAttribute : Attribute
     {
         /// <summary>

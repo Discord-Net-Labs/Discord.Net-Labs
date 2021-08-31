@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Discord.SlashCommands
 {
@@ -8,18 +6,18 @@ namespace Discord.SlashCommands
     {
         public string Text { get; }
         public T Command { get; }
-        public string[] WilCardMatch { get; }
+        public string[] RegexCaptureGroups { get; }
         public SlashCommandError? Error { get; }
 
         public string ErrorReason { get; }
 
         public bool IsSuccess => !Error.HasValue;
 
-        private SearchResult(string text, T commandInfo, string[] wildCardMatch, SlashCommandError? error, string reason)
+        private SearchResult(string text, T commandInfo, string[] captureGroups, SlashCommandError? error, string reason)
         {
             Text = text;
             Error = error;
-            WilCardMatch = wildCardMatch;
+            RegexCaptureGroups = captureGroups;
             Command = commandInfo;
             ErrorReason = reason;
         }

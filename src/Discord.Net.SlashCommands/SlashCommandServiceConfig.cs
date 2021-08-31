@@ -18,17 +18,14 @@ namespace Discord.SlashCommands
         /// <summary>
         /// Delimiter that will be used to seperate group names and the method name when a Message Component Interaction is recieved
         /// </summary>
-        public char[] InteractionCustomIdDelimiters { get; set; } = null;
+        public char[] InteractionCustomIdDelimiters { get; set; }
+
+        public string WildCardExpression { get; set; }
 
         /// <summary>
         /// Delete Slash Command acknowledgements if no interaction handler is found in the <see cref="SlashCommandService"/>
         /// </summary>
         public bool DeleteUnknownSlashCommandAck { get; set; } = true;
-
-        /// <summary>
-        /// Delete Message Component acknowledgements if no interaction handler is found in the <see cref="SlashCommandService"/>
-        /// </summary>
-        public bool DeleteUnkownComponentInteractionAck { get; set; } = true;
 
         /// <summary>
         /// Delete Context Command acknowledgements if no interaction handler is found in the <see cref="SlashCommandService"/>

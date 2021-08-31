@@ -4,15 +4,18 @@ using System.Reflection;
 namespace Discord.SlashCommands
 {
     /// <summary>
-    /// 
+    /// Use to create an Message Context Command.
     /// </summary>
+    /// <remarks>
+    /// Not affected by the <see cref="SlashGroupAttribute"/>
+    /// </remarks>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class MessageCommandAttribute : ContextCommandAttribute
     {
         /// <summary>
-        /// 
+        /// Register a method as a Message Context Command
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">Name of the context command</param>
         public MessageCommandAttribute (string name) : base(name, ApplicationCommandType.Message) { }
 
         internal override void CheckMethodDefinition (MethodInfo methodInfo)

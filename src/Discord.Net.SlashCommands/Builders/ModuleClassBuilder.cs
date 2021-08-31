@@ -21,12 +21,9 @@ namespace Discord.SlashCommands.Builders
 
             foreach (var type in assembly.DefinedTypes)
             {
-                if (type.IsPublic || type.IsNestedPublic)
+                if ((type.IsPublic || type.IsNestedPublic) && IsValidModuleDefinition(type))
                 {
-                    if (IsValidModuleDefinition(type))
-                    {
-                        result.Add(type);
-                    }
+                    result.Add(type);
                 }
                 else if (IsLoadableModule(type))
                 {
@@ -52,7 +49,20 @@ namespace Discord.SlashCommands.Builders
                 BuildSubModules(builder, type.DeclaredNestedTypes, built, commandService, services);
                 built.Add(type);
 
-                result.Add(type.AsType(), builder.Build());
+                var moduleInfo = builder.Build();
+
+                ISlashModuleBase instance = ReflectionUtils.CreateObject<ISlashModuleBase>(type, commandService, services);
+                try
+                {
+                    instance.OnModuleBuilding(commandService, moduleInfo);
+                }
+                finally
+                {
+                    ( instance as IDisposable )?.Dispose();
+                }
+
+
+                result.Add(type.AsType(), moduleInfo);
             }
 
             await commandService._cmdLogger.DebugAsync($"Successfully built {built.Count} Slash Command modules.").ConfigureAwait(false);
@@ -144,11 +154,10 @@ namespace Discord.SlashCommands.Builders
                 {
                     case SlashCommandAttribute command:
                         {
-                            if (!string.IsNullOrEmpty(command.Name))
-                                builder.Name = command.Name;
+                            builder.Name = command.Name;
+                            builder.Description = command.Description; 
 
-                            if (!string.IsNullOrEmpty(command.Description))
-                                builder.Description = command.Description;
+                            builder.IgnoreGroupNames = command.IgnoreGroupNames;
                         }
                         break;
                     case DefaultPermissionAttribute defaultPermission:
@@ -181,9 +190,7 @@ namespace Discord.SlashCommands.Builders
                 {
                     case ContextCommandAttribute command:
                         {
-                            if (!string.IsNullOrEmpty(command.Name))
-                                builder.Name = command.Name;
-
+                            builder.Name = command.Name;
                             builder.CommandType = command.CommandType;
 
                             command.CheckMethodDefinition(methodInfo);
@@ -244,7 +251,7 @@ namespace Discord.SlashCommands.Builders
         private static Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task<IResult>> CreateCallback (TypeInfo typeInfo, MethodInfo methodInfo,
             SlashCommandService commandService, IServiceProvider services)
         {
-            var createInstance = ReflectionUtils.CreateBuilder<ISlashModuleBase>(typeInfo, commandService);
+            var createInstance = ReflectionUtils.CreateLambdaBuilder<ISlashModuleBase>(typeInfo, commandService);
 
             async Task<IResult> ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, ExecutableInfo commandInfo)
             {
@@ -255,8 +262,17 @@ namespace Discord.SlashCommands.Builders
                 {
                     instance.BeforeExecute(commandInfo);
                     var task = methodInfo.Invoke(instance, args) as Task ?? Task.Delay(0);
-                    await task.ConfigureAwait(false);
-                    return ExecuteResult.FromSuccess();
+
+                    if (task is Task<RuntimeResult> runtimeTask)
+                    {
+                        return await runtimeTask.ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await task.ConfigureAwait(false);
+                        return ExecuteResult.FromSuccess();
+
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -299,14 +315,7 @@ namespace Discord.SlashCommands.Builders
                         }
                         break;
                     case ChoiceAttribute choice:
-                        {
-                            if (choice.Value is string str)
-                                builder.AddOptions(new ParameterChoice(choice.Name, str));
-                            else if (choice.Value is int integer)
-                                builder.AddOptions(new ParameterChoice(choice.Name, integer));
-                            else
-                                throw new InvalidOperationException("Parameter choice must either be an integer, a string or a double");
-                        }
+                            builder.AddOptions(new ParameterChoice(choice.Name, choice.Value));
                         break;
                     default:
                         builder.AddAttributes(attribute);

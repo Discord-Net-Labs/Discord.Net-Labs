@@ -5,6 +5,11 @@ namespace Discord.WebSocket
 {
     public static class WebSocketExtensions
     {
+        /// <summary>
+        /// Get a collection containing all of the names in the Slash Command hierarchy 
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         public static string[] GetCommandKeywords (this SocketSlashCommand command)
         {
             var keywords = new List<string> { command.Data.Name };

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord.SlashCommands.Builders
@@ -15,7 +14,7 @@ namespace Discord.SlashCommands.Builders
 
         public ModuleBuilder Module { get; }
         public string Name { get; set; }
-        public bool IgnoreGroupNames { get; set; } = false;
+        public bool IgnoreGroupNames { get; set; }
 
         public IReadOnlyList<Attribute> Attributes => _attributes;
         public IReadOnlyList<ParameterInfo> Parameters => _parameters;
@@ -39,7 +38,7 @@ namespace Discord.SlashCommands.Builders
             return this;
         }
 
-        public InteractionBuilder SetIgnoreGroupNames(bool state)
+        public InteractionBuilder SetIgnoreGroupNames (bool state)
         {
             IgnoreGroupNames = state;
             return this;

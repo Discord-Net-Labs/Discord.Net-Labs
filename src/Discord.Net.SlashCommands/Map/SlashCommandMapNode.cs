@@ -8,9 +8,9 @@ namespace Discord.SlashCommands
 {
     internal class SlashCommandMapNode<T> where T : class, IExecutableInfo
     {
-        private const string WildCardStr = "*";
         private const string RegexWildCardExp = "(\\w+)?";
 
+        private readonly string _wildCardStr = "*";
         private ConcurrentDictionary<string, SlashCommandMapNode<T>> _nodes;
         private ConcurrentDictionary<string, T> _commands;
         private ConcurrentDictionary<Regex, T> _wildCardCommands;
@@ -20,35 +20,38 @@ namespace Discord.SlashCommands
         public IReadOnlyDictionary<Regex, T> WildCardCommands => _wildCardCommands;
         public string Name { get; }
 
-        public SlashCommandMapNode (string name)
+        public SlashCommandMapNode (string name, string wildCardExp = null)
         {
             Name = name;
             _nodes = new ConcurrentDictionary<string, SlashCommandMapNode<T>>();
             _commands = new ConcurrentDictionary<string, T>();
             _wildCardCommands = new ConcurrentDictionary<Regex, T>();
+
+            if (!string.IsNullOrEmpty(wildCardExp))
+                _wildCardStr = wildCardExp;
         }
 
         public void AddCommand (string[] keywords, int index, T commandInfo)
         {
             if (keywords.Length == index + 1)
             {
-                if (commandInfo.SupportsWildCards && commandInfo.Name.Contains(WildCardStr))
+                if (commandInfo.SupportsWildCards && commandInfo.Name.Contains(_wildCardStr))
                 {
-                    var patternStr = commandInfo.Name.Replace(WildCardStr, RegexWildCardExp);
+                    var patternStr = commandInfo.Name.Replace(_wildCardStr, RegexWildCardExp);
                     var regex = new Regex(patternStr, RegexOptions.Singleline | RegexOptions.Compiled);
 
                     if (!_wildCardCommands.TryAdd(regex, commandInfo))
-                        throw new InvalidOperationException($"A {typeof(T).FullName} already exists with the same name");
+                        throw new InvalidOperationException($"A {typeof(T).FullName} already exists with the same name: {string.Join(" ", keywords)}");
                 }
                 else
                 {
                     if (!_commands.TryAdd(commandInfo.Name, commandInfo))
-                        throw new InvalidOperationException($"A {typeof(T).FullName} already exists with the same name");
+                        throw new InvalidOperationException($"A {typeof(T).FullName} already exists with the same name: {string.Join(" ", keywords)}");
                 }
             }
             else
             {
-                var node = _nodes.GetOrAdd(keywords[index], (key) => new SlashCommandMapNode<T>(key));
+                var node = _nodes.GetOrAdd(keywords[index], (key) => new SlashCommandMapNode<T>(key, _wildCardStr));
                 node.AddCommand(keywords, ++index, commandInfo);
             }
         }

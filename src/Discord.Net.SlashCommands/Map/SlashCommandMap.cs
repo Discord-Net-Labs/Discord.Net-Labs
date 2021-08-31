@@ -6,30 +6,27 @@ namespace Discord.SlashCommands
     {
         private readonly char[] _seperators = { ' ', '\n', '\r', ',' };
 
-        private readonly SlashCommandMapNode<T> _root = new SlashCommandMapNode<T>(null);
+        private readonly SlashCommandMapNode<T> _root;
+        private readonly SlashCommandService _commandService;
 
         public IReadOnlyCollection<char> Seperators => _seperators;
 
-        public SlashCommandMap (SlashCommandService commandService, char[] seperators = null)
+        public SlashCommandMap (SlashCommandService commandService, char[] seperators = null, string wildCardExp = null)
         {
             if (seperators != null)
                 foreach (var seperator in seperators)
                     _seperators[_seperators.Length] = seperator;
+
+            _commandService = commandService;
+            _root = new SlashCommandMapNode<T>(null, wildCardExp);
         }
 
         public void AddCommand(T command, bool ignoreGroupNames = false)
         {
             if (ignoreGroupNames)
-                AddCommand(command);
-            else
                 AddCommandToRoot(command);
-        }
-
-        public void AddCommand (T command)
-        {
-            string[] key = ParseCommandName(command);
-
-            _root.AddCommand(key, 0, command);
+            else
+                AddCommand(command);
         }
 
         public void AddCommandToRoot(T command)
@@ -51,6 +48,13 @@ namespace Discord.SlashCommands
         public SearchResult<T> GetCommand (string[] input) =>
             _root.GetCommand(input, 0);
 
+        private void AddCommand (T command)
+        {
+            string[] key = ParseCommandName(command);
+
+            _root.AddCommand(key, 0, command);
+        }
+
         private string[] ParseCommandName (T command)
         {
             var keywords = new List<string>() { command.Name };
@@ -61,6 +65,7 @@ namespace Discord.SlashCommands
             {
                 if(!string.IsNullOrEmpty(currentParent.SlashGroupName))
                     keywords.Add(currentParent.SlashGroupName);
+
                 currentParent = currentParent.Parent;
             }
 

@@ -44,11 +44,11 @@ namespace Discord.SlashCommands
             AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null) =>
             await Context.Interaction.RespondAsync(text, embeds, isTTS, ephemeral, allowedMentions, options, component, embed).ConfigureAwait(false);
 
-        protected virtual async Task FolloupAsync (string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false,
+        protected virtual async Task<IUserMessage> FollowupAsync (string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false,
             AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null) =>
             await Context.Interaction.FollowupAsync(text, embeds, isTTS, ephemeral, allowedMentions, options, component, embed).ConfigureAwait(false);
 
-        protected virtual async Task ReplyAsync (string text = null, bool isTTS = false, Embed embed = null, RequestOptions options = null,
+        protected virtual async Task<IUserMessage> ReplyAsync (string text = null, bool isTTS = false, Embed embed = null, RequestOptions options = null,
             AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null) =>
             await Context.Channel.SendMessageAsync(text, false, embed, options, allowedMentions, messageReference, component).ConfigureAwait(false);
 

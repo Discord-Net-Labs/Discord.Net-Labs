@@ -4,11 +4,15 @@ using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
 {
+    /// <summary>
+    /// Represents the information class of an attribute based method for command type <see cref="ApplicationCommandType.Message"/>
+    /// </summary>
     public class MessageCommandInfo : ContextCommandInfo
     {
         internal MessageCommandInfo (Builders.ContextCommandBuilder builder, ModuleInfo module, SlashCommandService commandService)
             : base(builder, module, commandService) { }
 
+        /// <inheritdoc/>
         public override async Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services)
         {
             if (!( context.Interaction is SocketMessageCommand messageCommand ))
@@ -40,6 +44,7 @@ namespace Discord.SlashCommands
             }
         }
 
+        /// <inheritdoc/>
         protected override string GetLogString (ISlashCommandContext context)
         {
             if (context.Guild != null)

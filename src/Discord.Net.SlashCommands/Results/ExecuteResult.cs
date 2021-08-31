@@ -2,13 +2,20 @@ using System;
 
 namespace Discord.SlashCommands
 {
+    /// <summary>
+    /// Represents the result of a command execution operation
+    /// </summary>
     public class ExecuteResult : IResult
     {
+        /// <summary>
+        /// Get the exception that caused the execution to fail, if the operation was not successful
+        /// </summary>
         public Exception Exception { get; }
+        /// <inheritdoc/>
         public SlashCommandError? Error { get; }
-
+        /// <inheritdoc/>
         public string ErrorReason { get; }
-
+        /// <inheritdoc/>
         public bool IsSuccess => !Error.HasValue;
 
         private ExecuteResult (Exception exception, SlashCommandError? commandError, string errorReason)

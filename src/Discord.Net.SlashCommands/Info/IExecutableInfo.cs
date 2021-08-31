@@ -6,7 +6,7 @@ namespace Discord.SlashCommands
     /// <summary>
     /// Represent a command information object that can be executed
     /// </summary>
-    internal interface IExecutableInfo
+    public interface IExecutableInfo
     {
         /// <summary>
         /// Name of the method
@@ -18,6 +18,10 @@ namespace Discord.SlashCommands
         /// Module the method belongs to
         /// </summary>
         ModuleInfo Module { get; }
+        /// <summary>
+        /// Get the the underlying command service
+        /// </summary>
+        SlashCommandService CommandService { get; }
         /// <summary>
         /// Executes the command with the provided context
         /// </summary>

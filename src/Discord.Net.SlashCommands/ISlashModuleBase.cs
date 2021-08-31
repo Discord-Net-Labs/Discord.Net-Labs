@@ -1,5 +1,3 @@
-using Discord.SlashCommands.Builders;
-
 namespace Discord.SlashCommands
 {
     internal interface ISlashModuleBase
