@@ -9,9 +9,14 @@ namespace Discord.SlashCommands
     public interface IExecutableInfo
     {
         /// <summary>
-        /// Name of the method
+        /// Name of the command
         /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// Name of the command handler method
+        /// </summary>
+        string MethodName { get; }
 
         /// <summary>
         /// If true, this command will be registered and executed as a standalone command, unaffected by the <see cref="SlashGroupAttribute"/>s of its declaring types
@@ -19,9 +24,14 @@ namespace Discord.SlashCommands
         bool IgnoreGroupNames { get; }
 
         /// <summary>
-        /// Get wheter this command type supports wild card pattern
+        /// Get whether this command type supports wild card pattern
         /// </summary>
         bool SupportsWildCards { get; }
+
+        /// <summary>
+        /// <see langword="true"/> if this command is a top level application command and has not parent module with a Group name
+        /// </summary>
+        bool IsTopLevel { get; }
 
         /// <summary>
         /// Module the method belongs to

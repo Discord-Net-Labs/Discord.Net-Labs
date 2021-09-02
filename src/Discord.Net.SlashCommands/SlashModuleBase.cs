@@ -1,4 +1,3 @@
-using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
 
@@ -15,24 +14,16 @@ namespace Discord.SlashCommands
         /// </summary>
         public T Context { get; private set; }
 
-        /// <summary>
-        /// Method body to be executed after an application command execution
-        /// </summary>
-        /// <param name="command">Command information related to the Discord Application Command</param>
+        /// <inheritdoc/>
         public virtual void AfterExecute (ExecutableInfo command) { }
 
-        /// <summary>
-        /// Method body to be executed before executing an application command
-        /// </summary>
-        /// <param name="command">Command information related to the Discord Application Command</param>
+        /// <inheritdoc/>
         public virtual void BeforeExecute (ExecutableInfo command) { }
 
-        /// <summary>
-        /// Method body to be executed before the derived module is builded
-        /// </summary>
-        /// <param name="commandService">Command service the derived module belongs to</param>
-        /// <param name="builder">Module builder responsible of building the derived type</param>
+        /// <inheritdoc/>
         public virtual void OnModuleBuilding (SlashCommandService commandService, ModuleInfo module) { }
+
+        /// <inheritdoc/>
         public virtual void SetContext (ISlashCommandContext context)
         {
             var newValue = context as T;
@@ -59,15 +50,6 @@ namespace Discord.SlashCommands
         {
             var response = await Context.Interaction.GetOriginalResponseAsync().ConfigureAwait(false);
             await response.DeleteAsync().ConfigureAwait(false);
-        }
-
-        /// <inheritdoc cref="InteractionUtility.WaitForInteraction(BaseSocketClient, TimeSpan, Predicate{SocketInteraction}, System.Threading.CancellationToken)"/>
-        protected virtual async Task<SocketInteraction> WaitNextAsync (TimeSpan timeout, Predicate<SocketInteraction> predicate)
-        {
-            if (!( Context.Client is BaseSocketClient baseSocketClient ))
-                throw new InvalidOperationException("Provided client type is not supported");
-
-            return await InteractionUtility.WaitForInteraction(baseSocketClient, timeout, predicate).ConfigureAwait(false);
         }
     }
 }

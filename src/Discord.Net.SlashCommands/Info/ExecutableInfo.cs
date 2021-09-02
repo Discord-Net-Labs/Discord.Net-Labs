@@ -22,10 +22,16 @@ namespace Discord.SlashCommands
         public string Name { get; }
 
         /// <inheritdoc/>
+        public string MethodName { get; }
+
+        /// <inheritdoc/>
         public bool IgnoreGroupNames { get; }
 
         /// <inheritdoc/>
         public abstract bool SupportsWildCards { get; }
+
+        /// <inheritdoc/>
+        public bool IsTopLevel => IgnoreGroupNames || !Module.IsTopLevel;
 
         internal ExecutableInfo (string name, bool ignoreGroupNames, ModuleInfo module, SlashCommandService commandService,
             Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task> Callback)

@@ -3,7 +3,7 @@ using System;
 namespace Discord.SlashCommands
 {
     /// <summary>
-    /// Attribute used to add a pre-determined argument value
+    /// Add a pre-determined argument value to a command parameter
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true, Inherited = true)]
     public class ChoiceAttribute : Attribute

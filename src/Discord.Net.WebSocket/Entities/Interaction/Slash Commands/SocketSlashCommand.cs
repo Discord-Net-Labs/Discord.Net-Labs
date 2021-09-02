@@ -13,7 +13,6 @@ namespace Discord.WebSocket
     /// </summary>
     public class SocketSlashCommand : SocketCommandBase
     {
-        public string[] Command { get; }
         /// <summary>
         ///     The data associated with this interaction.
         /// </summary>

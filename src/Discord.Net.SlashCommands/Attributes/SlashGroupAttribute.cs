@@ -3,11 +3,8 @@ using System;
 namespace Discord.SlashCommands
 {
     /// <summary>
-    /// Use to create nested Application Commands.
+    /// Create nested Application Commands.
     /// </summary>
-    /// <remarks>
-    /// Can be either used to mark a class to tag all of the declared methods or to mark commands individually
-    /// </remarks>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class SlashGroupAttribute : Attribute
     {
@@ -17,7 +14,7 @@ namespace Discord.SlashCommands
         public string Name { get; }
 
         /// <summary>
-        /// Desription of the group
+        /// Description of the group
         /// </summary>
         public string Description { get; }
 

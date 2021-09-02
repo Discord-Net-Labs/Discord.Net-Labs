@@ -14,16 +14,24 @@ namespace Discord.SlashCommands
     /// </summary>
     public class SlashCommandInfo : ExecutableInfo, IApplicationCommandInfo
     {
-        public string Description { get; }
-        public ApplicationCommandType CommandType { get; } = ApplicationCommandType.Slash;
         /// <summary>
-        /// Whether this command is executable by default
+        /// The command description that will be displayed on Discord
+        /// </summary>
+        public string Description { get; }
+
+        /// <inheritdoc/>
+        public ApplicationCommandType CommandType { get; } = ApplicationCommandType.Slash;
+
+        /// <summary>
+        /// Whether this command is executable by default or not
         /// </summary>
         public bool DefaultPermission { get; }
+
         /// <summary>
         /// Get the information on Parameters that belong to this command
         /// </summary>
         public IReadOnlyList<SlashParameterInfo> Parameters { get; }
+
         /// <summary>
         /// Get the list of attributes of this command
         /// </summary>

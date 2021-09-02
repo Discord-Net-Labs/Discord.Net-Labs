@@ -4,17 +4,32 @@ using System.Text;
 
 namespace Discord.SlashCommands
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public struct TypeReaderResult : IResult
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public object Value { get; }
 
+        /// <summary>
+        /// Type of the error that caused reading process to fail
+        /// </summary>
         public SlashCommandError? Error { get; }
 
+        /// <summary>
+        /// The reason why the reading process failed
+        /// </summary>
         public string ErrorReason { get; }
 
+        /// <summary>
+        /// <see langword="true"/> if the option was read successfully
+        /// </summary>
         public bool IsSuccess => !Error.HasValue;
 
-        public TypeReaderResult ( object value, SlashCommandError? error, string reason )
+        private TypeReaderResult ( object value, SlashCommandError? error, string reason )
         {
             Value = value;
             Error = error;

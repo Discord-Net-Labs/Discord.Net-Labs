@@ -12,6 +12,7 @@ namespace Discord.SlashCommands
             {
                 case TypeCode.Boolean:
                     return ApplicationCommandOptionType.Boolean;
+
                 case TypeCode.DateTime:
                 case TypeCode.SByte:
                 case TypeCode.Byte:
@@ -19,6 +20,7 @@ namespace Discord.SlashCommands
                 case TypeCode.String:
                 case TypeCode.Single:
                     return ApplicationCommandOptionType.String;
+
                 case TypeCode.Int16:
                 case TypeCode.Int32:
                 case TypeCode.Int64:
@@ -26,9 +28,11 @@ namespace Discord.SlashCommands
                 case TypeCode.UInt32:
                 case TypeCode.UInt64:
                     return ApplicationCommandOptionType.Integer;
+
                 case TypeCode.Decimal:
                 case TypeCode.Double:
                     return ApplicationCommandOptionType.Number;
+
                 case TypeCode.DBNull:
                 default:
                     throw new InvalidOperationException($"Type {typeof(T).FullName} is not supported by Discord.");

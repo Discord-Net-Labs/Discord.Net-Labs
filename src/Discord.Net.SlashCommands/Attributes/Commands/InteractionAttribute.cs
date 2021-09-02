@@ -4,8 +4,11 @@ namespace Discord.SlashCommands
 {
     /// <summary>
     /// Attribute for tagging a Message Component interaction handler, CustomId represents
-    /// the CustomId of the Message Component that will be handled. This will stack with <see cref="SlashGroupAttribute"/>
+    /// the CustomId of the Message Component that will be handled
     /// </summary>
+    /// <remarks>
+    /// This will be affected by <see cref="SlashGroupAttribute"/>
+    /// </remarks>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class InteractionAttribute : Attribute
     {

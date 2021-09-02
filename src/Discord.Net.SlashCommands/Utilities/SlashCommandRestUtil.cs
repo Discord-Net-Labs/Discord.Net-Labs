@@ -7,7 +7,7 @@ namespace Discord.SlashCommands
     internal static class SlashCommandRestUtil
     {
         // Parameters
-        public static ApplicationCommandOptionProperties ParseApplicationCommandOptionProps (this SlashParameterInfo parameterInfo)
+        public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps (this SlashParameterInfo parameterInfo)
         {
             var props = new ApplicationCommandOptionProperties
             {
@@ -28,26 +28,26 @@ namespace Discord.SlashCommands
 
         // Commmands
 
-        public static ApplicationCommandProperties ParseApplicationCommandProps (this SlashCommandInfo commandInfo) =>
+        public static ApplicationCommandProperties ToApplicationCommandProps (this SlashCommandInfo commandInfo) =>
             new SlashCommandProperties
             {
                 Name = commandInfo.Name,
                 Description = commandInfo.Description,
                 DefaultPermission = commandInfo.DefaultPermission,
-                Options = commandInfo.Parameters.Select(x => x.ParseApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified
+                Options = commandInfo.Parameters.Select(x => x.ToApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified
             };
 
-        public static ApplicationCommandOptionProperties ParseApplicationCommandOptionProps (this SlashCommandInfo commandInfo) =>
+        public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps (this SlashCommandInfo commandInfo) =>
             new ApplicationCommandOptionProperties
             {
                 Name = commandInfo.Name,
                 Description = commandInfo.Description,
                 Type = ApplicationCommandOptionType.SubCommand,
                 Required = false,
-                Options = commandInfo.Parameters?.Select(x => x.ParseApplicationCommandOptionProps())?.ToList()
+                Options = commandInfo.Parameters?.Select(x => x.ToApplicationCommandOptionProps())?.ToList()
             };
 
-        public static ApplicationCommandProperties ParseApplicationCommandProps (this ContextCommandInfo commandInfo) =>
+        public static ApplicationCommandProperties ToApplicationCommandProps (this ContextCommandInfo commandInfo) =>
             new ContextCommandProperties(commandInfo.CommandType)
             {
                 Name = commandInfo.Name
@@ -55,7 +55,7 @@ namespace Discord.SlashCommands
 
         // Modules
 
-        public static IReadOnlyCollection<ApplicationCommandProperties> ToModel (this ModuleInfo moduleInfo)
+        public static IReadOnlyCollection<ApplicationCommandProperties> ToApplicationCommandProps (this ModuleInfo moduleInfo)
         {
             var args = new List<ApplicationCommandProperties>();
 
@@ -65,11 +65,11 @@ namespace Discord.SlashCommands
 
         private static void ParseModuleModel (List<ApplicationCommandProperties> args, ModuleInfo moduleInfo)
         {
-            args.AddRange(moduleInfo.ContextCommands?.Select(x => x.ParseApplicationCommandProps()));
+            args.AddRange(moduleInfo.ContextCommands?.Select(x => x.ToApplicationCommandProps()));
 
             if (!moduleInfo.IsSlashGroup)
             {
-                args.AddRange(moduleInfo.SlashCommands?.Select(x => x.ParseApplicationCommandProps()));
+                args.AddRange(moduleInfo.SlashCommands?.Select(x => x.ToApplicationCommandProps()));
 
                 foreach (var submodule in moduleInfo.SubModules)
                     ParseModuleModel(args, submodule);
@@ -81,9 +81,9 @@ namespace Discord.SlashCommands
                 foreach (var command in moduleInfo.SlashCommands)
                 {
                     if (command.IgnoreGroupNames)
-                        args.Add(command.ParseApplicationCommandProps());
+                        args.Add(command.ToApplicationCommandProps());
                     else
-                        options.Add(command.ParseApplicationCommandOptionProps());
+                        options.Add(command.ToApplicationCommandOptionProps());
                 }
 
                 options.AddRange(moduleInfo.SubModules?.SelectMany(x => x.ParseSubModule(args)));
@@ -100,7 +100,7 @@ namespace Discord.SlashCommands
 
         private static IReadOnlyCollection<ApplicationCommandOptionProperties> ParseSubModule (this ModuleInfo moduleInfo, List<ApplicationCommandProperties> args)
         {
-            args.AddRange(moduleInfo.ContextCommands?.Select(x => x.ParseApplicationCommandProps()));
+            args.AddRange(moduleInfo.ContextCommands?.Select(x => x.ToApplicationCommandProps()));
 
             var options = new List<ApplicationCommandOptionProperties>();
             options.AddRange(moduleInfo.SubModules?.SelectMany(x => x.ParseSubModule(args)));
@@ -108,9 +108,9 @@ namespace Discord.SlashCommands
             foreach (var command in moduleInfo.SlashCommands)
             {
                 if (command.IgnoreGroupNames)
-                    args.Add(command.ParseApplicationCommandProps());
+                    args.Add(command.ToApplicationCommandProps());
                 else
-                    options.Add(command.ParseApplicationCommandOptionProps());
+                    options.Add(command.ToApplicationCommandOptionProps());
             }
 
             if (!moduleInfo.IsSubModule)
@@ -125,7 +125,7 @@ namespace Discord.SlashCommands
                 } };
         }
 
-        public static ApplicationCommandProperties ToCreationProps (this IApplicationCommand command)
+        public static ApplicationCommandProperties ToApplicationCommandProps (this IApplicationCommand command)
         {
             switch (command.Type)
             {
@@ -135,7 +135,7 @@ namespace Discord.SlashCommands
                         Name = command.Name,
                         Description = command.Description,
                         DefaultPermission = command.DefaultPermission,
-                        Options = command.Options?.Select(x => x.ToAppCommandOptionProperties())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified
+                        Options = command.Options?.Select(x => x.ToApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified
                     };
                 case ApplicationCommandType.User:
                 case ApplicationCommandType.Message:
@@ -148,7 +148,7 @@ namespace Discord.SlashCommands
             }
         }
 
-        public static ApplicationCommandOptionProperties ToAppCommandOptionProperties (this IApplicationCommandOption commandOption) =>
+        public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps (this IApplicationCommandOption commandOption) =>
             new ApplicationCommandOptionProperties
             {
                 Name = commandOption.Name,
@@ -160,7 +160,7 @@ namespace Discord.SlashCommands
                     Name = x.Name,
                     Value = x.Value
                 }).ToList(),
-                Options = commandOption.Options?.Select(x => x.ToAppCommandOptionProperties()).ToList()
+                Options = commandOption.Options?.Select(x => x.ToApplicationCommandOptionProps()).ToList()
             };
     }
 

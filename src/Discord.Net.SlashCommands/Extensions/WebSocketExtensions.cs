@@ -6,10 +6,10 @@ namespace Discord.WebSocket
     public static class WebSocketExtensions
     {
         /// <summary>
-        /// Get a collection containing all of the names in the Slash Command hierarchy 
+        /// Get the name of the executed command and its parents in hierarchical order
         /// </summary>
         /// <param name="command"></param>
-        /// <returns></returns>
+        /// <returns>The name of the executed command and its parents in hierarchical order</returns>
         public static string[] GetCommandKeywords (this SocketSlashCommand command)
         {
             var keywords = new List<string> { command.Data.Name };

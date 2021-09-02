@@ -3,7 +3,7 @@ using System;
 namespace Discord.SlashCommands
 {
     /// <summary>
-    /// Use to change the default name and description of an Application Command parameter
+    /// Change the default name and description of an Application Command parameter
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
     public class SummaryAttribute : Attribute
@@ -12,6 +12,7 @@ namespace Discord.SlashCommands
         /// Custom name of the parameter
         /// </summary>
         public string Name { get; set; } = null;
+
         /// <summary>
         /// Custom description of the parameter
         /// </summary>

@@ -18,6 +18,7 @@ namespace Discord.SlashCommands
         /// Get the information on Parameters that belong to this command
         /// </summary>
         public IReadOnlyList<ParameterInfo> Parameters { get; }
+
         /// <summary>
         /// Get the list of attributes of this command
         /// </summary>

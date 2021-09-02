@@ -8,6 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -55,7 +56,7 @@ namespace Discord.SlashCommands
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
 
-        internal readonly bool _runAsync, _throwOnError, _deleteUnkownSlashCommandAck, _deleteUnkownContextCommandAck;
+        internal readonly bool _runAsync, _throwOnError, _deleteUnkownSlashCommandAck;
         internal readonly string _wildCardExp;
 
         /// <summary>
@@ -113,7 +114,7 @@ namespace Discord.SlashCommands
             _runAsync = config.RunAsync;
             _throwOnError = config.ThrowOnError;
             _deleteUnkownSlashCommandAck = config.DeleteUnknownSlashCommandAck;
-            _deleteUnkownContextCommandAck = config.DeleteUnknownContextCommandAck;
+            _wildCardExp = config.WildCardExpression;
 
             _genericTypeReaders = new ConcurrentDictionary<Type, Type>();
             _genericTypeReaders[typeof(IChannel)] = typeof(DefaultChannelReader<>);
@@ -128,7 +129,7 @@ namespace Discord.SlashCommands
         }
 
         /// <summary>
-        /// Discover and load <see cref="SlashModuleBase{T}"/> from a given assembly
+        /// Discover and load all of the <see cref="SlashModuleBase{T}"/>s from a given assembly
         /// </summary>
         /// <param name="assembly"><see cref="Assembly"/> the command modules are defined in</param>
         /// <param name="services"><see cref="IServiceProvider"/> to be used when instantiating a command module</param>
@@ -158,15 +159,18 @@ namespace Discord.SlashCommands
         }
 
         /// <summary>
-        /// 
+        /// Add a command module manually to the command service
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="services"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <typeparam name="T">Type of the module</typeparam>
+        /// <param name="services">Service provider that will be used to build this module</param>
+        /// <returns>A task representing the module adding process</returns>
+        /// <exception cref="ArgumentException">Thrown when a module that is already present in the command service is trying to be added</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the <typeparamref name="T"/> is not a valid module definition</exception>
         public async Task AddModule<T> (IServiceProvider services)
         {
+            if (!typeof(ISlashModuleBase).IsAssignableFrom(typeof(T)))
+                throw new ArgumentException("Type parameter must be a type of Slash Module", "T");
+
             services = services ?? EmptyServiceProvider.Instance;
 
             await _lock.WaitAsync().ConfigureAwait(false);
@@ -195,12 +199,14 @@ namespace Discord.SlashCommands
         }
 
         /// <summary>
-        /// Register and update the Application Commands from <see cref="SlashCommandService.SlashCommands"/> while deleting the missing commands
+        /// Register/update the Application Commands to Discord
         /// </summary>
-        /// <param name="guildId"></param>
+        /// <param name="guildId">The Id that belongs to the guild, the commands will be registered to</param>
         /// <param name="deleteMissing">If true, delete all of the commands that are not registered in the <see cref="SlashCommandService"/></param>
-        /// <returns></returns>
-        public async Task<IReadOnlyCollection<IApplicationCommand>> RegisterCommandsToGuild(ulong guildId, bool deleteMissing = true)
+        /// <returns>A task representing the command registration process, with a collection of <see cref="RestGuildCommand"/> containing the
+        /// commands that are currently registered to the provided guild as its result.
+        /// </returns>
+        public async Task<IReadOnlyCollection<RestGuildCommand>> RegisterCommandsToGuildAsync (ulong guildId, bool deleteMissing = true)
         {
             CheckApplicationId();
 
@@ -209,12 +215,25 @@ namespace Discord.SlashCommands
             if(deleteMissing)
                 existing = await ClientHelper.GetGuildApplicationCommands(Client, guildId).ConfigureAwait(false);
 
-            var props = GetApplicationCommandProperties(existing);
+            var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
+
+            if (existing != null)
+            {
+                var missing = existing.Where(x => !props.Any(y => y.Name.IsSpecified && y.Name.Value == x.Name));
+                props.AddRange(missing.Select(x => x.ToApplicationCommandProps()));
+            }
 
             return await ClientHelper.BulkOverwriteGuildApplicationCommand(Client, guildId, props.ToArray()).ConfigureAwait(false);
         }
 
-        public async Task<IReadOnlyCollection<IApplicationCommand>> RegisterCommandGlobally (bool deleteMissing = true)
+        /// <summary>
+        /// Register/update the Application Commands to Discord
+        /// </summary>
+        /// <param name="deleteMissing">If true, delete all of the commands that are not registered in the <see cref="SlashCommandService"/></param>
+        /// <returns>A task representing the command registration process, with a collection of <see cref="RestGlobalCommand"/> containing the
+        /// global commands that are currently registered to the Discord
+        /// </returns>
+        public async Task<IReadOnlyCollection<RestGlobalCommand>> RegisterCommandGloballyAsync (bool deleteMissing = true)
         {
             CheckApplicationId();
 
@@ -223,22 +242,15 @@ namespace Discord.SlashCommands
             if (deleteMissing)
                 existing = await ClientHelper.GetGlobalApplicationCommands(Client).ConfigureAwait(false);
 
-            var props = GetApplicationCommandProperties(existing);
+            var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
 
-            return await ClientHelper.BulkOverwriteGlobalApplicationCommand(Client, props.ToArray()).ConfigureAwait(false);
-        }
-
-        private IReadOnlyCollection<ApplicationCommandProperties> GetApplicationCommandProperties(IEnumerable<IApplicationCommand> existing = null)
-        {
-            var props = _typedModuleDefs.Values.SelectMany(x => x.ToModel()).ToList();
-
-            if(existing != null)
+            if (existing != null)
             {
                 var missing = existing.Where(x => !props.Any(y => y.Name.IsSpecified && y.Name.Value == x.Name));
-                props.AddRange(missing.Select(x => x.ToCreationProps()));
+                props.AddRange(missing.Select(x => x.ToApplicationCommandProps()));
             }
 
-            return props;
+            return await ClientHelper.BulkOverwriteGlobalApplicationCommand(Client, props.ToArray()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -250,17 +262,26 @@ namespace Discord.SlashCommands
         /// </remarks>
         /// <param name="guild">Guild the commands will be registered to</param>
         /// <param name="commands">Commands that will be registered</param>
-        /// <returns></returns>
-        public async Task AddCommandsToGuild (IGuild guild, params SlashCommandInfo[] commands)
+        /// <returns>A task representing the command registration process, with a collection of <see cref="RestGuildCommand"/> containing the
+        /// commands that are currently registered to the provided guild as its result.
+        /// </returns>
+        public async Task<IReadOnlyCollection<RestGuildCommand>> AddCommandsToGuildAsync (IGuild guild, params SlashCommandInfo[] commands)
         {
             CheckApplicationId();
 
             if (guild == null)
                 throw new ArgumentException($"{nameof(guild)} cannot be null to call this function.");
 
-            foreach (var com in commands)
+            var existing = await ClientHelper.GetGuildApplicationCommands(Client, guild.Id).ConfigureAwait(false);
+            var props = commands.Select(x => x.ToApplicationCommandProps()).ToList();
+
+            if (existing != null)
             {
+                var missing = existing.Where(x => !props.Any(y => y.Name.IsSpecified && y.Name.Value == x.Name));
+                props.AddRange(missing.Select(x => x.ToApplicationCommandProps()));
             }
+
+            return await ClientHelper.BulkOverwriteGuildApplicationCommand(Client, guild.Id, props.ToArray()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -268,23 +289,23 @@ namespace Discord.SlashCommands
         /// </summary>
         /// <param name="guild">Guild the commands will be registered to</param>
         /// <param name="modules">Modules that will be registered</param>
-        /// <returns></returns>
-        public async Task AddModulesToGuild (IGuild guild, params ModuleInfo[] modules)
+        /// <returns>A task representing the command registration process, with a collection of <see cref="RestGuildCommand"/> containing the
+        /// commands that are currently registered to the provided guild as its result.
+        /// </returns>
+        public async Task<IReadOnlyCollection<RestGuildCommand>> AddModulesToGuildAsync (IGuild guild, params ModuleInfo[] modules)
         {
             CheckApplicationId();
 
             if (guild == null)
                 throw new ArgumentException($"{nameof(guild)} cannot be null to call this function.");
 
-            var args = new List<CreateApplicationCommandParams>();
+            var existing = await ClientHelper.GetGuildApplicationCommands(Client, guild.Id).ConfigureAwait(false);
+            var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
 
-            foreach(var commandArg in args)
-            {
-                ApplicationCommand result = await Client.ApiClient.CreateGuildApplicationCommandAsync(commandArg, guild.Id);
+            foreach (var command in existing)
+                props.Add(command.ToApplicationCommandProps());
 
-                if (result == null)
-                    await _cmdLogger.WarningAsync($"Module could not be registered ({commandArg.Name})").ConfigureAwait(false);
-            }
+            return await ClientHelper.BulkOverwriteGuildApplicationCommand(Client, guild.Id, props.ToArray()).ConfigureAwait(false);
         }
 
         private void LoadModuleInternal (ModuleInfo module)
@@ -341,14 +362,15 @@ namespace Discord.SlashCommands
         }
 
         /// <summary>
-        /// Execute a command from a given <see cref="ISlashCommandContext"/>
+        /// Execute a slash command from a given <see cref="ISlashCommandContext"/>
         /// </summary>
         /// <param name="context">A command context that will be used to execute the command, <see cref="ISlashCommandContext.Interaction"/>
-        /// must be type of <see cref="SocketCommandInteraction"/></param>
-        /// <param name="input">Command string that will be used to parse the <see cref="SlashCommandInfo"/></param>
+        /// must be type of <see cref="SocketSlashCommand"/></param>
+        /// <param name="input">Command string that will be used to parse the <see cref="SlashCommandInfo"/>. Use the
+        /// <see cref="WebSocketExtensions.GetCommandKeywords(SocketSlashCommand)"/> to get the input </param>
         /// <param name="services">Services that will be injected into the declaring type</param>
-        /// <returns></returns>
-        public async Task<IResult> ExecuteCommandAsync (ISlashCommandContext context, string[] input, IServiceProvider services)
+        /// <returns>A task representing the command execution process, with an <see cref="IResult"/> containg the execution information as it result.</returns>
+        public async Task<IResult> ExecuteSlashCommandAsync (ISlashCommandContext context, string[] input, IServiceProvider services)
         {
             var result = _slashCommandMap.GetCommand(input);
 
@@ -367,9 +389,26 @@ namespace Discord.SlashCommands
             return await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Execute a context command from a given <see cref="ISlashCommandContext"/>
+        /// </summary>
+        /// <param name="context">A command context that will be used to execute the command, <see cref="ISlashCommandContext.Interaction"/>
+        /// must be type of <see cref="SocketUserCommand"/> or <see cref="SocketMessageCommand"/></param>
+        /// <param name="input">Command string that will be used to parse the <see cref="SlashCommandInfo"/>.( In normal use, this should be equal to
+        /// <see cref="IDiscordInteractionData.Name"/> )</param>
+        /// <param name="services">Services that will be injected into the declaring type</param>
+        /// <returns>A task representing the command execution process, with an <see cref="IResult"/> containg the execution information as it result.</returns>
         public async Task<IResult> ExecuteContextCommandAsync (ISlashCommandContext context, string input, IServiceProvider services)
             => await ExecuteContextCommandAsync(context, new string[] { input }, services).ConfigureAwait(false);
 
+        /// <summary>
+        /// Execute a context command from a given <see cref="ISlashCommandContext"/>
+        /// </summary>
+        /// <param name="context">A command context that will be used to execute the command, <see cref="ISlashCommandContext.Interaction"/>
+        /// must be type of <see cref="SocketUserCommand"/> or <see cref="SocketMessageCommand"/></param>
+        /// <param name="input">A collection of keywords that will be used for command traversel</param>
+        /// <param name="services">Services that will be injected into the declaring type</param>
+        /// <returns>A task representing the command execution process, with an <see cref="IResult"/> containg the execution information as it result.</returns>
         public async Task<IResult> ExecuteContextCommandAsync (ISlashCommandContext context, string[] input, IServiceProvider services)
         {
             var result = _contextCommandMap.GetCommand(input);
@@ -378,27 +417,20 @@ namespace Discord.SlashCommands
             {
                 await _cmdLogger.DebugAsync($"Unknown context command, skipping execution ({string.Join(" ", input).ToUpper()})");
 
-                if (_deleteUnkownContextCommandAck)
-                {
-                    var response = await context.Interaction.GetOriginalResponseAsync().ConfigureAwait(false);
-                    await response.DeleteAsync().ConfigureAwait(false);
-                }
-
                 return result;
             }
             return await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Use to execute an Interaction Handler from a <see cref="IDiscordInteractable.CustomId"/>
+        /// Execute a Message Component Interaction handler from a given <see cref="ISlashCommandContext"/>
         /// </summary>
         /// <param name="context">A command context that will be used to execute the command, <see cref="ISlashCommandContext.Interaction"/>
-        /// must be type of <see cref="SocketMessageInteraction"/></param>
-        /// <param name="input">String that will be used to parse the <see cref="InteractionInfo"/>,
-        /// set the <see cref="IDiscordInteractable.CustomId"/> of a message component the same as the <see cref="InteractionAttribute.CustomId"/> to handle
-        /// Message Component Interactions automatically</param>
+        /// must be type of <see cref="SocketMessageComponent"/></param>
+        /// <param name="input">Command string that will be used to parse the <see cref="SlashCommandInfo"/>.( In normal use, this should be equal to
+        /// <see cref="SocketMessageComponentData.CustomId"/> )</param>
         /// <param name="services">Services that will be injected into the declaring type</param>
-        /// <returns></returns>
+        /// <returns>A task representing the command execution process, with an <see cref="IResult"/> containg the execution information as it result.</returns>
         public async Task<IResult> ExecuteInteractionAsync (ISlashCommandContext context, string input, IServiceProvider services)
         {
             var result = _interactionCommandMap.GetCommand(input);
@@ -431,6 +463,11 @@ namespace Discord.SlashCommands
             throw new ArgumentException($"No type reader is defined for this {nameof(Type)}", "type");
         }
 
+        /// <summary>
+        /// Add a concrete type <see cref="TypeReader"/> to the command service
+        /// </summary>
+        /// <param name="type">The type that this <see cref="TypeReader"/> will be used to handle</param>
+        /// <param name="reader">The <see cref="TypeReader"/> instance</param>
         public void AddTypeReader(Type type, TypeReader reader)
         {
             if (!reader.CanConvertTo(type))
@@ -439,15 +476,35 @@ namespace Discord.SlashCommands
             _typeReaders[type] = reader;
         }
 
+        /// <summary>
+        /// Remove the concrete type <see cref="TypeReader"/> of a type from the command service
+        /// </summary>
+        /// <typeparam name="T"><The type this <see cref="TypeReader"/> was registered to/typeparam>
+        /// <returns><see cref="true"/> if the <see cref="TypeReader"/> was removed successfully, else <see cref="false"/></returns>
         public bool RemoveTypeReader<T> ( ) =>
             RemoveTypeReader(typeof(T));
 
+        /// <summary>
+        /// Remove the concrete type <see cref="TypeReader"/> of a type from the command service
+        /// </summary>
+        /// <param name="type">The type this <see cref="TypeReader"/> was registered to</param>
+        /// <returns><see cref="true"/> if the <see cref="TypeReader"/> was removed successfully, else <see cref="false"/></returns>
         public bool RemoveTypeReader (Type type) =>
             _typeReaders.TryRemove(type, out var _);
 
+        /// <summary>
+        /// Add a generic type <see cref="TypeReader{T}"/> to the command service
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="typeReader"></param>
         public void AddGenericTypeReader<T> (Type typeReader) =>
             AddGenericTypeReader(typeof(T), typeReader);
 
+        /// <summary>
+        /// Add a generic type <see cref="TypeReader{T}"/> to the command service
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="readerType"></param>
         public void AddGenericTypeReader (Type type, Type readerType )
         {
             if (!readerType.IsGenericTypeDefinition)
@@ -466,59 +523,139 @@ namespace Discord.SlashCommands
             _genericTypeReaders[type] = readerType;
         }
 
+        /// <summary>
+        /// Remove the generic type <see cref="TypeReader{T}"/> of a type from the command service
+        /// </summary>
+        /// <typeparam name="T"><Type the <see cref="TypeReader{T}"/> was registered to</typeparam>
+        /// <returns><see cref="true"/> if the <see cref="TypeReader{T}"/> was removed successfully, else <see cref="false"/></returns>
         public bool RemoveGenericTypeReader<T> ( ) =>
             RemoveGenericTypeReader(typeof(T));
 
+        /// <summary>
+        /// Remove the generic type <see cref="TypeReader{T}"/> of a type from the command service
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         public bool RemoveGenericTypeReader (Type type) =>
             _genericTypeReaders.TryRemove(type, out var _);
 
-        public async Task<ParseResult> ParseGuildCommand (SlashCommandInfo command, IGuild guild )
+        /// <summary>
+        /// Modify the command permissions of the matching Slash Command
+        /// </summary>
+        /// <param name="module">Module representing the top level Slash Command</param>
+        /// <param name="guild"></param>
+        /// <param name="permissions"></param>
+        /// <returns></returns>
+        public async Task<GuildApplicationCommandPermission> ModifySlashCommandPermissionsAsync (ModuleInfo module, IGuild guild,
+            params ApplicationCommandPermission[] permissions)
         {
-            var registered = await guild.GetApplicationCommandsAsync().ConfigureAwait(false);
+            if (!module.IsTopLevel)
+                throw new InvalidOperationException("This module is not a top level application command. You cannot change its permissions");
 
-            return await ParseCommands(command, registered).ConfigureAwait(false);
+            if (guild == null)
+                throw new ArgumentNullException("guild");
+
+            var commands = await ClientHelper.GetGuildApplicationCommands(Client, guild.Id).ConfigureAwait(false);
+            var appCommand = commands.First(x => x.Name == module.SlashGroupName);
+
+            return await appCommand.ModifyCommandPermissions(permissions).ConfigureAwait(false);
         }
 
-        public async Task<ParseResult> ParseGlobalCommands (SlashCommandInfo command )
-        {
-            var registered = await Client.Rest.GetGlobalApplicationCommands().ConfigureAwait(false);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="guild"></param>
+        /// <param name="permissions"></param>
+        /// <returns></returns>
+        public async Task<GuildApplicationCommandPermission> ModifySlashCommandPermissionsAsync (SlashCommandInfo command, IGuild guild,
+            params ApplicationCommandPermission[] permissions) =>
+            await ModifyApplicationCommandPermissionsAsync(command, guild, permissions).ConfigureAwait(false);
 
-            return await ParseCommands(command, registered).ConfigureAwait(false);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="guild"></param>
+        /// <param name="permissions"></param>
+        /// <returns></returns>
+        public async Task<GuildApplicationCommandPermission> ModifyContextCommandPermissionsAsync (ContextCommandInfo command, IGuild guild,
+            params ApplicationCommandPermission[] permissions) =>
+            await ModifyApplicationCommandPermissionsAsync(command, guild, permissions).ConfigureAwait(false);
+
+        private async Task<GuildApplicationCommandPermission> ModifyApplicationCommandPermissionsAsync(IExecutableInfo command, IGuild guild,
+            params ApplicationCommandPermission[] permissions)
+        {
+            if (!command.IsTopLevel)
+                throw new InvalidOperationException("This command is not a top level application command. You cannot change its permissions");
+
+            if (guild == null)
+                throw new ArgumentNullException("guild");
+
+            var commands = await ClientHelper.GetGuildApplicationCommands(Client, guild.Id).ConfigureAwait(false);
+            var appCommand = commands.First(x => x.Name == command.Name);
+
+            return await appCommand.ModifyCommandPermissions(permissions).ConfigureAwait(false);
         }
 
-        private Task<ParseResult> ParseCommands (SlashCommandInfo command, IEnumerable<IApplicationCommand> applicationCommands)
+        /// <summary>
+        /// Get the created <see cref="InteractionInfo"/> instance for a Slash Command handler
+        /// </summary>
+        /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="SlashModuleBase{T}"/></typeparam>
+        /// <param name="name">Name of the method</param>
+        /// <returns>The loaded <see cref="SlashCommandInfo"/> instance for this method</returns>
+        /// <exception cref="InvalidOperationException">The module is not registered to the command service or the slash command could not be found</exception>
+        public SlashCommandInfo GetSlashCommandInfo<TModule>(string name) where TModule: class
         {
-            var keywords = new List<string>() { command.Name };
+            var module = GetModuleInfo<TModule>();
 
-            ModuleInfo parent = command.Module;
-            while (parent != null)
-            {
-                if (parent.SlashGroupName != null)
-                    keywords.Add(parent.SlashGroupName);
+            return module.SlashCommands.First(x => x.MethodName == name);
+        }
 
-                parent = parent.Parent;
-            }
+        /// <summary>
+        /// Get the created <see cref="InteractionInfo"/> instance for a Context Command handler
+        /// </summary>
+        /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="SlashModuleBase{T}"/></typeparam>
+        /// <param name="name"></param>
+        /// <returns>The loaded <see cref="ContextCommandInfo"/> instance for this method</returns>
+        /// <exception cref="InvalidOperationException">The module is not registered to the command service or the context command could not be found</exception>
+        public ContextCommandInfo GetContextCommandInfo<TModule>(string name) where TModule : class
+        {
+            var module = GetModuleInfo<TModule>();
 
-            try
-            {
-                var index = keywords.Count - 1;
-                var restCommand = applicationCommands.First(x => x.Name == keywords[index--]);
-                var options = restCommand.Options;
+            return module.ContextCommands.First(x => x.MethodName == name);
+        }
 
-                while (index >= 0)
-                {
-                    var option = options.First(x => x.Name == keywords[index--]);
-                    options = option.Options;
-                }
+        /// <summary>
+        /// Get the created <see cref="InteractionInfo"/> instance for a Message Component interaction handler
+        /// </summary>
+        /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="SlashModuleBase{T}"/></typeparam>
+        /// <param name="name"></param>
+        /// <returns>The loaded <see cref="InteractionInfo"/> instance for this method</returns>
+        /// <exception cref="InvalidOperationException">The module is not registered to the command service or the interaction could not be found</exception>
+        public InteractionInfo GetInteractionInfo<TModule>(string name) where TModule : class
+        {
+            var module = GetModuleInfo<TModule>();
 
-                return Task.FromResult(ParseResult.FromSuccess(restCommand));
-            }
-            catch (InvalidOperationException ex)
-            {
-                keywords.Reverse();
-                var result = ParseResult.FromError(SlashCommandError.ParseFailed, $"No Slash command was found with the name {string.Join(" ", keywords)}");
-                return Task.FromResult(result);
-            }
+            return module.Interactions.First(x => x.MethodName == name);
+        }
+
+        /// <summary>
+        /// Get the created <see cref="ModuleInfo"/> instance for a module type
+        /// </summary>
+        /// <typeparam name="TModule">Type of the module, must be a type of <see cref="SlashModuleBase{T}"/></typeparam>
+        /// <returns>The loaded <see cref="ModuleInfo"/> instance for this method</returns>
+        public ModuleInfo GetModuleInfo<TModule>() where TModule: class
+        {
+            if (!typeof(ISlashModuleBase).IsAssignableFrom(typeof(TModule)))
+                throw new ArgumentException("Type parameter must be a type of Slash Module", "TModule");
+
+            var module = _typedModuleDefs[typeof(TModule)];
+
+            if (module == null)
+                throw new InvalidOperationException($"{typeof(TModule).FullName} is not loaded to the Slash Command Service");
+
+            return module;
         }
 
         public void Dispose ( )

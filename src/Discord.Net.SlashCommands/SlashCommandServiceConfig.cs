@@ -1,7 +1,7 @@
 namespace Discord.SlashCommands
 {
     /// <summary>
-    /// Holds the general information to be used when initializing <see cref="SlashCommandContext"/>
+    /// Holds the general information to be used while initializing <see cref="SlashCommandContext"/>
     /// </summary>
     public class SlashCommandServiceConfig
     {
@@ -16,20 +16,18 @@ namespace Discord.SlashCommands
         public bool ThrowOnError { get; set; } = true;
 
         /// <summary>
-        /// Delimiter that will be used to seperate group names and the method name when a Message Component Interaction is recieved
+        /// Delimiters that will be used to seperate group names and the method name when a Message Component Interaction is recieved
         /// </summary>
         public char[] InteractionCustomIdDelimiters { get; set; }
 
+        /// <summary>
+        /// The string expression that will be treated as a wild card
+        /// </summary>
         public string WildCardExpression { get; set; }
 
         /// <summary>
-        /// Delete Slash Command acknowledgements if no interaction handler is found in the <see cref="SlashCommandService"/>
+        /// Delete Slash Command acknowledgements if no Slash Command handler is found in the <see cref="SlashCommandService"/>
         /// </summary>
         public bool DeleteUnknownSlashCommandAck { get; set; } = true;
-
-        /// <summary>
-        /// Delete Context Command acknowledgements if no interaction handler is found in the <see cref="SlashCommandService"/>
-        /// </summary>
-        public bool DeleteUnknownContextCommandAck { get; set; } = true;
     }
 }

@@ -14,10 +14,12 @@ namespace Discord.SlashCommands
         /// Command service this module belongs to
         /// </summary>
         public SlashCommandService CommandService { get; }
+
         /// <summary>
         /// Get the name of this module class
         /// </summary>
         public string Name { get; }
+
         /// <summary>
         /// Get the name of this module that will be displayed on Discord
         /// </summary>
@@ -25,10 +27,12 @@ namespace Discord.SlashCommands
         /// This value may be missing if the commands are registered as standalone
         /// </remarks>
         public string SlashGroupName { get; }
+
         /// <summary>
-        /// Wheter this module has a <see cref="SlashGroupAttribute"/>
+        /// Whether this module has a <see cref="SlashGroupAttribute"/> or not
         /// </summary>
         public bool IsSlashGroup => !string.IsNullOrEmpty(SlashGroupName);
+
         /// <summary>
         /// Description of this module
         /// </summary>
@@ -36,38 +40,54 @@ namespace Discord.SlashCommands
         /// This value may be missing if the commands are registered as standalone
         /// </remarks>
         public string Description { get; }
+
         /// <summary>
         /// Check if the Application Command for this module can be executed by default
         /// </summary>
+        /// <remarks>
+        /// If this module does not have a <see cref="SlashGroupAttribute"/> or it has a parent that does, this property will be unaffective
+        /// </remarks>
         public bool DefaultPermission { get; }
+
         /// <summary>
         /// Get the collection of Sub Modules of this module
         /// </summary>
         public IReadOnlyList<ModuleInfo> SubModules { get; }
+
         /// <summary>
         /// Get the information list of the Slash Commands that belong to this module
         /// </summary>
         public IReadOnlyList<SlashCommandInfo> SlashCommands { get; }
+
         /// <summary>
         /// Get the information list of the Context Commands that belong to this module
         /// </summary>
-        public IReadOnlyList<ContextCommandInfo> ContextCommands { get; }
+        public IReadOnlyList<ContextCommandInfo> ContextCommands { get;
+        }
         /// <summary>
         /// Get the information list of the Message Component handlers that belong to this module
         /// </summary>
         public IReadOnlyCollection<InteractionInfo> Interactions { get; }
+
         /// <summary>
         /// Get the declaring type of this module, if this is a Sub Module
         /// </summary>
         public ModuleInfo Parent { get; }
+
         /// <summary>
         /// <see langword="true"/> if this module is declared under another <see cref="SlashModuleBase{T}"/>
         /// </summary>
         public bool IsSubModule => Parent != null;
+
         /// <summary>
         /// Get a list of the attributes of this module
         /// </summary>
         public IReadOnlyList<Attribute> Attributes { get; }
+
+        /// <summary>
+        /// <see langword="true"/> if this module has a valid Group name and represent a top level application command in Discord
+        /// </summary>
+        public bool IsTopLevel { get; }
 
         internal ModuleInfo (ModuleBuilder builder, SlashCommandService commandService = null,  ModuleInfo parent = null)
         {
@@ -83,6 +103,7 @@ namespace Discord.SlashCommands
             Interactions = BuildInteractions(builder).ToImmutableArray();
             SubModules = BuildSubModules(builder).ToImmutableArray();;
             Attributes = BuildAttributes(builder).ToImmutableArray();
+            IsTopLevel = ( parent == null || !parent.IsTopLevel ) && IsSlashGroup;
 
             if (IsSlashGroup)
             {
