@@ -13,6 +13,7 @@ namespace Discord.SlashCommands.Builders
 
         public ModuleBuilder Module { get; }
         public string Name { get; set; }
+        public string MethodName { get; set; }
         public string Description { get; set; }
         public bool DefaultPermission { get; set; } = true;
         public bool IgnoreGroupNames { get; set; } = false;

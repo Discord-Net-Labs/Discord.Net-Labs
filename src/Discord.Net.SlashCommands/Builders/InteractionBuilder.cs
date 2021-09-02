@@ -14,6 +14,7 @@ namespace Discord.SlashCommands.Builders
 
         public ModuleBuilder Module { get; }
         public string Name { get; set; }
+        public string MethodName { get; set; }
         public bool IgnoreGroupNames { get; set; }
 
         public IReadOnlyList<Attribute> Attributes => _attributes;

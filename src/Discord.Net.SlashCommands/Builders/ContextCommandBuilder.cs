@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord.SlashCommands.Builders
@@ -15,6 +14,7 @@ namespace Discord.SlashCommands.Builders
 
         public ModuleBuilder Module { get; }
         public string Name { get; set; }
+        public string MethodName { get; set; }
         public ApplicationCommandType CommandType { get; set; }
         public bool DefaultPermission { get; set; } = true;
 
@@ -22,7 +22,7 @@ namespace Discord.SlashCommands.Builders
         public IReadOnlyList<ParameterInfo> Parameters => _parameters;
 
         internal ContextCommandBuilder (ModuleBuilder module, Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task> callback)
-            :this(module)
+            : this(module)
         {
             Callback = callback;
         }
@@ -47,7 +47,7 @@ namespace Discord.SlashCommands.Builders
             return this;
         }
 
-        public ContextCommandBuilder SetDefaultPermission(bool defaultPermision)
+        public ContextCommandBuilder SetDefaultPermission (bool defaultPermision)
         {
             DefaultPermission = defaultPermision;
             return this;
