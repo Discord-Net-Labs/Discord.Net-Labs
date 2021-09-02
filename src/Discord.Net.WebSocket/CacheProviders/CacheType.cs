@@ -8,12 +8,13 @@ namespace Discord.WebSocket
 {
     public enum CacheType
     {
-        User,
-        GuildUser,
         Guild,
-        Channel,
+        GuildUser,
         GuildChannel,
         Role,
-        Sticker,
+        GuildSticker,
+        GuildEmote,
+        User,
+        Channel,
     }
 }
