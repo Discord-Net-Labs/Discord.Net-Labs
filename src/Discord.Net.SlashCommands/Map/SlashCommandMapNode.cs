@@ -56,18 +56,16 @@ namespace Discord.SlashCommands
             }
         }
 
-        public void RemoveCommand (string[] keywords, int index)
+        public bool RemoveCommand (string[] keywords, int index)
         {
             if (keywords.Length == index + 1)
-            {
-                if (!_commands.TryRemove(keywords[index], out var _))
-                    throw new Exception($"Could not remove any {typeof(T).FullName}s from this node for input: {keywords[index]}");
-            }
+                return _commands.TryRemove(keywords[index], out var _);
             else
             {
                 if (!_nodes.TryGetValue(keywords[index], out var node))
                     throw new InvalidOperationException($"No descendant node was found with the name {keywords[index]}");
-                node.RemoveCommand(keywords, ++index);
+
+                return node.RemoveCommand(keywords, ++index);
             }
         }
 

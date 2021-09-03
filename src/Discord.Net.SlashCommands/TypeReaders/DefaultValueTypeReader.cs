@@ -35,7 +35,7 @@ namespace Discord.SlashCommands
 
                 case TypeCode.DBNull:
                 default:
-                    throw new InvalidOperationException($"Type {typeof(T).FullName} is not supported by Discord.");
+                    throw new InvalidOperationException($"Parameter Type {typeof(T).FullName} is not supported by Discord.");
             }
         }
         public override Task<TypeReaderResult> ReadAsync (ISlashCommandContext context, SocketSlashCommandDataOption option, IServiceProvider services)

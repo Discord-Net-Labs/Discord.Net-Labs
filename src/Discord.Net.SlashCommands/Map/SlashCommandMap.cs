@@ -11,14 +11,14 @@ namespace Discord.SlashCommands
 
         public IReadOnlyCollection<char> Seperators => _seperators;
 
-        public SlashCommandMap (SlashCommandService commandService, char[] seperators = null, string wildCardExp = null)
+        public SlashCommandMap (SlashCommandService commandService, char[] seperators = null)
         {
             if (seperators != null)
                 foreach (var seperator in seperators)
                     _seperators[_seperators.Length] = seperator;
 
             _commandService = commandService;
-            _root = new SlashCommandMapNode<T>(null, wildCardExp);
+            _root = new SlashCommandMapNode<T>(null, _commandService._wildCardExp);
         }
 
         public void AddCommand(T command, bool ignoreGroupNames = false)

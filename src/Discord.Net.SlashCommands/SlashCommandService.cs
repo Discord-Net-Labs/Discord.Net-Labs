@@ -1,5 +1,3 @@
-using Discord.API;
-using Discord.API.Rest;
 using Discord.Logging;
 using Discord.Rest;
 using Discord.SlashCommands.Builders;
@@ -7,8 +5,6 @@ using Discord.WebSocket;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -134,7 +130,7 @@ namespace Discord.SlashCommands
         /// <param name="assembly"><see cref="Assembly"/> the command modules are defined in</param>
         /// <param name="services"><see cref="IServiceProvider"/> to be used when instantiating a command module</param>
         /// <returns>Module information for the <see cref="SlashModuleBase{T}"/> types that are loaded to <see cref="SlashCommandService"/></returns>
-        public async Task<IEnumerable<ModuleInfo>> AddModules (Assembly assembly, IServiceProvider services)
+        public async Task<IEnumerable<ModuleInfo>> AddModulesAsync (Assembly assembly, IServiceProvider services)
         {
             services = services ?? EmptyServiceProvider.Instance;
 
@@ -163,10 +159,10 @@ namespace Discord.SlashCommands
         /// </summary>
         /// <typeparam name="T">Type of the module</typeparam>
         /// <param name="services">Service provider that will be used to build this module</param>
-        /// <returns>A task representing the module adding process</returns>
+        /// <returns>A task representing the module loading process</returns>
         /// <exception cref="ArgumentException">Thrown when a module that is already present in the command service is trying to be added</exception>
         /// <exception cref="InvalidOperationException">Thrown when the <typeparamref name="T"/> is not a valid module definition</exception>
-        public async Task AddModule<T> (IServiceProvider services)
+        public async Task AddModuleAsync<T> (IServiceProvider services)
         {
             if (!typeof(ISlashModuleBase).IsAssignableFrom(typeof(T)))
                 throw new ArgumentException("Type parameter must be a type of Slash Module", "T");
@@ -212,7 +208,7 @@ namespace Discord.SlashCommands
 
             IEnumerable<IApplicationCommand> existing = null;
 
-            if(deleteMissing)
+            if (deleteMissing)
                 existing = await ClientHelper.GetGuildApplicationCommands(Client, guildId).ConfigureAwait(false);
 
             var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
@@ -378,7 +374,7 @@ namespace Discord.SlashCommands
             {
                 await _cmdLogger.DebugAsync($"Unknown slash command, skipping execution ({string.Join(" ", input).ToUpper()})");
 
-                if(_deleteUnkownSlashCommandAck)
+                if (_deleteUnkownSlashCommandAck)
                 {
                     var response = await context.Interaction.GetOriginalResponseAsync().ConfigureAwait(false);
                     await response.DeleteAsync().ConfigureAwait(false);
@@ -449,10 +445,10 @@ namespace Discord.SlashCommands
             if (_typeReaders.TryGetValue(type, out var specific))
                 return specific;
 
-            else if(_typeReaders.Any(x => x.Value.CanConvertTo(type)))
+            else if (_typeReaders.Any(x => x.Value.CanConvertTo(type)))
                 return _typeReaders.First(x => x.Value.CanConvertTo(type)).Value;
 
-            else if(_genericTypeReaders.Any(x => x.Key.IsAssignableFrom(type)))
+            else if (_genericTypeReaders.Any(x => x.Key.IsAssignableFrom(type)))
             {
                 var readerType = GetMostSpecificTypeReader(type);
                 var reader = readerType.MakeGenericType(type).GetConstructor(Array.Empty<Type>()).Invoke(Array.Empty<object>()) as TypeReader;
@@ -466,31 +462,23 @@ namespace Discord.SlashCommands
         /// <summary>
         /// Add a concrete type <see cref="TypeReader"/> to the command service
         /// </summary>
-        /// <param name="type">The type that this <see cref="TypeReader"/> will be used to handle</param>
+        /// <typeparam name="T">The type this <see cref="TypeReader"/> will be used to handle></typeparam>
         /// <param name="reader">The <see cref="TypeReader"/> instance</param>
-        public void AddTypeReader(Type type, TypeReader reader)
+        public void AddTypeReader<T> (TypeReader reader) =>
+            AddTypeReader(typeof(T), reader);
+
+        /// <summary>
+        /// Add a concrete type <see cref="TypeReader"/> to the command service
+        /// </summary>
+        /// <param name="type">The type this <see cref="TypeReader"/> will be used to handle</param>
+        /// <param name="reader">The <see cref="TypeReader"/> instance</param>
+        public void AddTypeReader (Type type, TypeReader reader)
         {
             if (!reader.CanConvertTo(type))
                 throw new ArgumentException($"This {nameof(TypeReader)} cannot read {type.FullName} and cannot be registered as its type readers");
 
             _typeReaders[type] = reader;
         }
-
-        /// <summary>
-        /// Remove the concrete type <see cref="TypeReader"/> of a type from the command service
-        /// </summary>
-        /// <typeparam name="T"><The type this <see cref="TypeReader"/> was registered to/typeparam>
-        /// <returns><see cref="true"/> if the <see cref="TypeReader"/> was removed successfully, else <see cref="false"/></returns>
-        public bool RemoveTypeReader<T> ( ) =>
-            RemoveTypeReader(typeof(T));
-
-        /// <summary>
-        /// Remove the concrete type <see cref="TypeReader"/> of a type from the command service
-        /// </summary>
-        /// <param name="type">The type this <see cref="TypeReader"/> was registered to</param>
-        /// <returns><see cref="true"/> if the <see cref="TypeReader"/> was removed successfully, else <see cref="false"/></returns>
-        public bool RemoveTypeReader (Type type) =>
-            _typeReaders.TryRemove(type, out var _);
 
         /// <summary>
         /// Add a generic type <see cref="TypeReader{T}"/> to the command service
@@ -505,7 +493,7 @@ namespace Discord.SlashCommands
         /// </summary>
         /// <param name="type"></param>
         /// <param name="readerType"></param>
-        public void AddGenericTypeReader (Type type, Type readerType )
+        public void AddGenericTypeReader (Type type, Type readerType)
         {
             if (!readerType.IsGenericTypeDefinition)
                 throw new ArgumentException($"{nameof(TypeReader)} is not generic.");
@@ -524,31 +512,18 @@ namespace Discord.SlashCommands
         }
 
         /// <summary>
-        /// Remove the generic type <see cref="TypeReader{T}"/> of a type from the command service
-        /// </summary>
-        /// <typeparam name="T"><Type the <see cref="TypeReader{T}"/> was registered to</typeparam>
-        /// <returns><see cref="true"/> if the <see cref="TypeReader{T}"/> was removed successfully, else <see cref="false"/></returns>
-        public bool RemoveGenericTypeReader<T> ( ) =>
-            RemoveGenericTypeReader(typeof(T));
-
-        /// <summary>
-        /// Remove the generic type <see cref="TypeReader{T}"/> of a type from the command service
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public bool RemoveGenericTypeReader (Type type) =>
-            _genericTypeReaders.TryRemove(type, out var _);
-
-        /// <summary>
-        /// Modify the command permissions of the matching Slash Command
+        /// Modify the command permissions of the matching Discord Slash Command
         /// </summary>
         /// <param name="module">Module representing the top level Slash Command</param>
-        /// <param name="guild"></param>
-        /// <param name="permissions"></param>
-        /// <returns></returns>
+        /// <param name="guild">Target guild</param>
+        /// <param name="permissions">Set of permissions to be modified</param>
+        /// <returns>The active command permissions after the modification</returns>
         public async Task<GuildApplicationCommandPermission> ModifySlashCommandPermissionsAsync (ModuleInfo module, IGuild guild,
             params ApplicationCommandPermission[] permissions)
         {
+            if (!module.IsSlashGroup)
+                throw new InvalidOperationException($"This module does not have a {nameof(SlashGroupAttribute)} and does not represent an Application Command");
+
             if (!module.IsTopLevel)
                 throw new InvalidOperationException("This module is not a top level application command. You cannot change its permissions");
 
@@ -562,28 +537,28 @@ namespace Discord.SlashCommands
         }
 
         /// <summary>
-        /// 
+        /// Modify the command permissions of the matching Discord Slash Command
         /// </summary>
-        /// <param name="command"></param>
-        /// <param name="guild"></param>
-        /// <param name="permissions"></param>
-        /// <returns></returns>
+        /// <param name="command">Command representing the top level Slash Command</param>
+        /// <param name="guild">Target guild</param>
+        /// <param name="permissions">Set of permissions to be modified</param>
+        /// <returns>The active command permissions after the modification</returns>
         public async Task<GuildApplicationCommandPermission> ModifySlashCommandPermissionsAsync (SlashCommandInfo command, IGuild guild,
             params ApplicationCommandPermission[] permissions) =>
             await ModifyApplicationCommandPermissionsAsync(command, guild, permissions).ConfigureAwait(false);
 
         /// <summary>
-        /// 
+        /// Modify the command permissions of the matching Discord Context Command
         /// </summary>
-        /// <param name="command"></param>
-        /// <param name="guild"></param>
-        /// <param name="permissions"></param>
-        /// <returns></returns>
+        /// <param name="command">Command representing the top level Context Command</param>
+        /// <param name="guild">Target guild</param>
+        /// <param name="permissions">Set of permissions to be modified</param>
+        /// <returns>The active command permissions after the modification</returns>
         public async Task<GuildApplicationCommandPermission> ModifyContextCommandPermissionsAsync (ContextCommandInfo command, IGuild guild,
             params ApplicationCommandPermission[] permissions) =>
             await ModifyApplicationCommandPermissionsAsync(command, guild, permissions).ConfigureAwait(false);
 
-        private async Task<GuildApplicationCommandPermission> ModifyApplicationCommandPermissionsAsync(IExecutableInfo command, IGuild guild,
+        private async Task<GuildApplicationCommandPermission> ModifyApplicationCommandPermissionsAsync (IExecutableInfo command, IGuild guild,
             params ApplicationCommandPermission[] permissions)
         {
             if (!command.IsTopLevel)
@@ -599,13 +574,13 @@ namespace Discord.SlashCommands
         }
 
         /// <summary>
-        /// Get the created <see cref="InteractionInfo"/> instance for a Slash Command handler
+        /// Get the created <see cref="SlashCommandInfo"/> instance for a Slash Command handler
         /// </summary>
         /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="SlashModuleBase{T}"/></typeparam>
-        /// <param name="name">Name of the method</param>
+        /// <param name="name">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
         /// <returns>The loaded <see cref="SlashCommandInfo"/> instance for this method</returns>
         /// <exception cref="InvalidOperationException">The module is not registered to the command service or the slash command could not be found</exception>
-        public SlashCommandInfo GetSlashCommandInfo<TModule>(string name) where TModule: class
+        public SlashCommandInfo GetSlashCommandInfo<TModule> (string name) where TModule : SlashModuleBase
         {
             var module = GetModuleInfo<TModule>();
 
@@ -613,13 +588,13 @@ namespace Discord.SlashCommands
         }
 
         /// <summary>
-        /// Get the created <see cref="InteractionInfo"/> instance for a Context Command handler
+        /// Get the created <see cref="ContextCommandInfo"/> instance for a Context Command handler
         /// </summary>
         /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="SlashModuleBase{T}"/></typeparam>
-        /// <param name="name"></param>
+        /// <param name="name">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
         /// <returns>The loaded <see cref="ContextCommandInfo"/> instance for this method</returns>
         /// <exception cref="InvalidOperationException">The module is not registered to the command service or the context command could not be found</exception>
-        public ContextCommandInfo GetContextCommandInfo<TModule>(string name) where TModule : class
+        public ContextCommandInfo GetContextCommandInfo<TModule> (string name) where TModule : SlashModuleBase
         {
             var module = GetModuleInfo<TModule>();
 
@@ -630,10 +605,10 @@ namespace Discord.SlashCommands
         /// Get the created <see cref="InteractionInfo"/> instance for a Message Component interaction handler
         /// </summary>
         /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="SlashModuleBase{T}"/></typeparam>
-        /// <param name="name"></param>
+        /// <param name="name">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
         /// <returns>The loaded <see cref="InteractionInfo"/> instance for this method</returns>
         /// <exception cref="InvalidOperationException">The module is not registered to the command service or the interaction could not be found</exception>
-        public InteractionInfo GetInteractionInfo<TModule>(string name) where TModule : class
+        public InteractionInfo GetInteractionInfo<TModule> (string name) where TModule : SlashModuleBase
         {
             var module = GetModuleInfo<TModule>();
 
@@ -645,7 +620,7 @@ namespace Discord.SlashCommands
         /// </summary>
         /// <typeparam name="TModule">Type of the module, must be a type of <see cref="SlashModuleBase{T}"/></typeparam>
         /// <returns>The loaded <see cref="ModuleInfo"/> instance for this method</returns>
-        public ModuleInfo GetModuleInfo<TModule>() where TModule: class
+        public ModuleInfo GetModuleInfo<TModule> ( ) where TModule : SlashModuleBase
         {
             if (!typeof(ISlashModuleBase).IsAssignableFrom(typeof(TModule)))
                 throw new ArgumentException("Type parameter must be a type of Slash Module", "TModule");
@@ -663,12 +638,12 @@ namespace Discord.SlashCommands
             _lock.Dispose();
         }
 
-        private Type GetMostSpecificTypeReader ( Type type )
+        private Type GetMostSpecificTypeReader (Type type)
         {
             var scorePairs = new Dictionary<Type, int>();
             var validReaders = _genericTypeReaders.Where(x => x.Key.IsAssignableFrom(type));
 
-            foreach(var typeReaderPair in validReaders)
+            foreach (var typeReaderPair in validReaders)
             {
                 var score = validReaders.Count(x => typeReaderPair.Key.IsAssignableFrom(x.Key));
                 scorePairs.Add(typeReaderPair.Value, score);
