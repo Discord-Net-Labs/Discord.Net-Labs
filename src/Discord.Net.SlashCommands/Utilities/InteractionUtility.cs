@@ -18,7 +18,7 @@ namespace Discord.SlashCommands
         /// A Task representing the asyncronous waiting operation with a <see cref="IDiscordInteraction"/> result,
         /// the result is null if the process timed out before receiving a valid Interaction.
         /// </returns>
-        public static async Task<SocketInteraction> WaitForInteraction (BaseSocketClient client, TimeSpan timeout,
+        public static async Task<SocketInteraction> WaitForInteractionAsync (BaseSocketClient client, TimeSpan timeout,
             Predicate<SocketInteraction> predicate, CancellationToken cancellationToken = default)
         {
             var tcs = new TaskCompletionSource<SocketInteraction>();
@@ -64,12 +64,12 @@ namespace Discord.SlashCommands
         /// A Task representing the asyncronous waiting operation with a <see cref="IDiscordInteraction"/> result,
         /// the result is null if the process timed out before receiving a valid Interaction.
         /// </returns>
-        public static async Task<SocketInteraction> WaitForMessageComponent (BaseSocketClient client, ISlashCommandContext ctx, TimeSpan timeout, bool sameUser = true,
+        public static async Task<SocketInteraction> WaitForMessageComponentAsync (BaseSocketClient client, ISlashCommandContext ctx, TimeSpan timeout, bool sameUser = true,
             bool sameChannel = true, CancellationToken cancellationToken = default)
         {
             Predicate<SocketInteraction> predicate = (interaction) => CheckMessageComponent(ctx, interaction, null, sameUser, sameChannel);
 
-            return await WaitForInteraction(client, timeout, predicate, cancellationToken).ConfigureAwait(false);
+            return await WaitForInteractionAsync(client, timeout, predicate, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace Discord.SlashCommands
         /// A Task representing the asyncronous waiting operation with a <see cref="bool"/> result,
         /// the result is <see cref="false"/> if the user declined the prompt or didnt answer in time, <see cref="true"/> if the user confirmed the prompt
         /// </returns>
-        public static async Task<bool> Confirm (BaseSocketClient client, ISlashCommandContext ctx, TimeSpan timeout, string message = null,
+        public static async Task<bool> ConfirmAsync (BaseSocketClient client, ISlashCommandContext ctx, TimeSpan timeout, string message = null,
             CancellationToken cancellationToken = default)
         {
             var guid = Guid.NewGuid();
@@ -100,7 +100,7 @@ namespace Discord.SlashCommands
 
             var dialog = await ctx.Channel.SendMessageAsync(message, component: component).ConfigureAwait(false);
 
-            var response = await WaitForInteraction(client, timeout, (interaction) =>
+            var response = await WaitForInteractionAsync(client, timeout, (interaction) =>
             {
                 return CheckMessageComponent(ctx, interaction, confirmId) || CheckMessageComponent(ctx, interaction, declineId);
             }, cancellationToken).ConfigureAwait(false) as SocketMessageComponent;
