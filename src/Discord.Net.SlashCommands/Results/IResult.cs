@@ -6,15 +6,17 @@ namespace Discord.SlashCommands
     public interface IResult
     {
         /// <summary>
-        /// Get the error type if this result was not successful
+        /// Type of the error that caused the process to fail
         /// </summary>
         SlashCommandError? Error { get; }
+
         /// <summary>
-        /// Get the error reason that caused the error
+        /// The reason of the error
         /// </summary>
         string ErrorReason { get; }
+
         /// <summary>
-        /// Wheter the operation that produced this result was successful
+        /// <see langword="true"/> if the operation was successful
         /// </summary>
         bool IsSuccess { get; }
     }

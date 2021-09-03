@@ -30,7 +30,7 @@ namespace Discord.SlashCommands
         public ApplicationCommandType CommandType => ApplicationCommandType.Slash;
 
         /// <summary>
-        /// Wheter the <see cref="SlashGroupAttribute"/>s should be ignored while creating this command
+        /// If <see langword="true"/>, <see cref="SlashGroupAttribute"/>s will be ignored while creating this command and this method will be treated as a top level command
         /// </summary>
         public bool IgnoreGroupNames { get; set; } = false;
 

@@ -19,7 +19,7 @@ namespace Discord.SlashCommands
         public virtual IDiscordInteraction Interaction { get; }
 
         /// <summary>
-        /// Wheter the origin channel of the Interaction is a private channel
+        /// Whether the origin channel of the Interaction is a private channel
         /// </summary>
         public bool IsPrivate => Channel is IPrivateChannel;
 

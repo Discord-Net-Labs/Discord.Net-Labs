@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Discord.SlashCommands
 {
@@ -20,7 +18,7 @@ namespace Discord.SlashCommands
         public SlashCommandError? Error { get; }
 
         /// <summary>
-        /// The reason why the reading process failed
+        /// The reason of the error
         /// </summary>
         public string ErrorReason { get; }
 
@@ -29,7 +27,7 @@ namespace Discord.SlashCommands
         /// </summary>
         public bool IsSuccess => !Error.HasValue;
 
-        private TypeReaderResult ( object value, SlashCommandError? error, string reason )
+        private TypeReaderResult (object value, SlashCommandError? error, string reason)
         {
             Value = value;
             Error = error;
