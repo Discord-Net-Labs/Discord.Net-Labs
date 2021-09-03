@@ -10,7 +10,7 @@ namespace Discord.SlashCommands.Builders
         private readonly List<Attribute> _attributes;
         private readonly List<ParameterInfo> _parameters;
 
-        internal Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task> Callback { get; set; }
+        internal ExecutableInfo.ExecuteCallback Callback { get; set; }
 
         public ModuleBuilder Module { get; }
         public string Name { get; set; }
@@ -20,7 +20,7 @@ namespace Discord.SlashCommands.Builders
         public IReadOnlyList<Attribute> Attributes => _attributes;
         public IReadOnlyList<ParameterInfo> Parameters => _parameters;
 
-        internal InteractionBuilder (ModuleBuilder module, Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task> callback) : this(module)
+        internal InteractionBuilder (ModuleBuilder module, ExecutableInfo.ExecuteCallback callback) : this(module)
         {
             Callback = callback;
         }

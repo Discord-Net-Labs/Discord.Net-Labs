@@ -9,7 +9,7 @@ namespace Discord.SlashCommands.Builders
         private List<Attribute> _attributes;
         private List<SlashParameterBuilder> _parameters;
 
-        internal Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task> Callback { get; set; }
+        internal ExecutableInfo.ExecuteCallback Callback { get; set; }
 
         public ModuleBuilder Module { get; }
         public string Name { get; set; }
@@ -21,7 +21,7 @@ namespace Discord.SlashCommands.Builders
         public IReadOnlyList<Attribute> Attributes => _attributes;
         public IReadOnlyList<SlashParameterBuilder> Parameters => _parameters;
 
-        internal SlashCommandBuilder (ModuleBuilder module, Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task> callback)
+        internal SlashCommandBuilder (ModuleBuilder module, ExecutableInfo.ExecuteCallback callback)
             : this(module)
         {
             Callback = callback;
