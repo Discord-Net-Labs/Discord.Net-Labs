@@ -10,7 +10,8 @@ namespace Discord.SlashCommands
     /// </summary>
     public abstract class ExecutableInfo : IExecutableInfo
     {
-        protected readonly Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task> _action;
+        public delegate Task ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, ExecutableInfo commandInfo);
+        protected readonly ExecuteCallback _action;
 
         /// <inheritdoc/>
         public SlashCommandService CommandService { get; }
@@ -33,8 +34,7 @@ namespace Discord.SlashCommands
         /// <inheritdoc/>
         public bool IsTopLevel => IgnoreGroupNames || !Module.IsTopLevel;
 
-        internal ExecutableInfo (string name, bool ignoreGroupNames, ModuleInfo module, SlashCommandService commandService,
-            Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task> Callback)
+        internal ExecutableInfo (string name, bool ignoreGroupNames, ModuleInfo module, SlashCommandService commandService, ExecuteCallback Callback)
         {
             Name = name;
             IgnoreGroupNames = ignoreGroupNames;
