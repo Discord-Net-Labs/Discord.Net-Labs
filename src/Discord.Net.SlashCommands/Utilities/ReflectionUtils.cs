@@ -87,12 +87,19 @@ namespace Discord.SlashCommands
             var parameters = constructor.GetParameters();
             var properties = GetProperties(typeInfo);
 
-            var pExps = new ParameterExpression[parameters.Length];
-            for (int i = 0; i < parameters.Length; i++)
-                pExps[i] = Expression.Parameter(parameters[i].ParameterType, parameters[i].Name);
+            var paramExps = new Expression[parameters.Length];
+            var argsExp = Expression.Parameter(typeof(object[]), "args");
 
-            var createExp = Expression.Lambda(Expression.New(constructor, pExps), pExps);
-            var lambda = createExp.Compile();
+            for(var i = 0; i < parameters.Length; i++)
+            {
+                var indexExp = Expression.Constant(i);
+                var accessExp = Expression.ArrayIndex(argsExp, indexExp);
+
+                paramExps[i] = Expression.Convert(accessExp, parameters[i].ParameterType);
+            }
+
+            var createExp = Expression.Lambda<Func<object[], T>>(Expression.New(constructor, paramExps), argsExp);
+            var invokeConstructor = createExp.Compile();
 
             return (services) =>
             {
@@ -101,7 +108,8 @@ namespace Discord.SlashCommands
                 for (int i = 0; i < parameters.Length; i++)
                     args[i] = GetMember(commandService, services, parameters[i].ParameterType, typeInfo);
 
-                var instance = (T)lambda.DynamicInvoke(args);
+                var instance = invokeConstructor(args);
+
                 foreach (var property in properties)
                     property.SetValue(instance, GetMember(commandService, services, property.PropertyType, typeInfo));
 

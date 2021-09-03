@@ -104,7 +104,12 @@ namespace Discord.SlashCommands.Builders
             var validContextCommands = methods.Where(IsValidContextCommandDefinition);
             var validInteractions = methods.Where(IsValidInteractionDefinition);
 
-            var createInstance = ReflectionUtils.CreateBuilder<ISlashModuleBase>(typeInfo, commandService);
+            Func<IServiceProvider, ISlashModuleBase> createInstance;
+
+            if (commandService._useCompiledLambda)
+                createInstance = ReflectionUtils.CreateLambdaBuilder<ISlashModuleBase>(typeInfo, commandService);
+            else
+                createInstance = ReflectionUtils.CreateBuilder<ISlashModuleBase>(typeInfo, commandService);
 
             foreach (var method in validSlashCommands)
                 builder.AddSlashCommand(x => BuildSlashCommand(x, createInstance, method, commandService, services));

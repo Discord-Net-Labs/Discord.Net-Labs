@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Discord.SlashCommands
 {
@@ -14,8 +16,12 @@ namespace Discord.SlashCommands
         public SlashCommandMap (SlashCommandService commandService, char[] seperators = null)
         {
             if (seperators != null)
-                foreach (var seperator in seperators)
-                    _seperators[_seperators.Length] = seperator;
+            {
+                var combined = _seperators.ToList();
+                combined.AddRange(seperators);
+
+                _seperators = combined.ToArray();
+            }
 
             _commandService = commandService;
             _root = new SlashCommandMapNode<T>(null, _commandService._wildCardExp);

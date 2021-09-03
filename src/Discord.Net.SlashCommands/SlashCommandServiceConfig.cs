@@ -29,5 +29,7 @@ namespace Discord.SlashCommands
         /// Delete Slash Command acknowledgements if no Slash Command handler is found in the <see cref="SlashCommandService"/>
         /// </summary>
         public bool DeleteUnknownSlashCommandAck { get; set; } = true;
+
+        public bool UseCompiledLambda { get; set; } = false;
     }
 }

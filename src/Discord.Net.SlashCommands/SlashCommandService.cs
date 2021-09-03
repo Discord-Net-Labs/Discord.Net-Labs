@@ -52,7 +52,7 @@ namespace Discord.SlashCommands
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
 
-        internal readonly bool _runAsync, _throwOnError, _deleteUnkownSlashCommandAck;
+        internal readonly bool _runAsync, _throwOnError, _deleteUnkownSlashCommandAck, _useCompiledLambda;
         internal readonly string _wildCardExp;
 
         /// <summary>
@@ -111,6 +111,7 @@ namespace Discord.SlashCommands
             _throwOnError = config.ThrowOnError;
             _deleteUnkownSlashCommandAck = config.DeleteUnknownSlashCommandAck;
             _wildCardExp = config.WildCardExpression;
+            _useCompiledLambda = config.UseCompiledLambda;
 
             _genericTypeReaders = new ConcurrentDictionary<Type, Type>();
             _genericTypeReaders[typeof(IChannel)] = typeof(DefaultChannelReader<>);
