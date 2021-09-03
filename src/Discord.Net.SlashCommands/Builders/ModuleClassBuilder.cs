@@ -21,7 +21,7 @@ namespace Discord.SlashCommands.Builders
 
             foreach (var type in assembly.DefinedTypes)
             {
-                if ((type.IsPublic || type.IsNestedPublic) && IsValidModuleDefinition(type))
+                if (( type.IsPublic || type.IsNestedPublic ) && IsValidModuleDefinition(type))
                 {
                     result.Add(type);
                 }
@@ -83,10 +83,8 @@ namespace Discord.SlashCommands.Builders
                 {
                     case SlashGroupAttribute group:
                         {
-                            if (!string.IsNullOrEmpty(group.Name))
-                                builder.SlashGroupName = group.Name;
-                            if (!string.IsNullOrEmpty(group.Description))
-                                builder.Description = group.Description;
+                            builder.SlashGroupName = group.Name;
+                            builder.Description = group.Description;
                         }
                         break;
                     case DefaultPermissionAttribute defPermission:
@@ -106,14 +104,16 @@ namespace Discord.SlashCommands.Builders
             var validContextCommands = methods.Where(IsValidContextCommandDefinition);
             var validInteractions = methods.Where(IsValidInteractionDefinition);
 
+            var createInstance = ReflectionUtils.CreateBuilder<ISlashModuleBase>(typeInfo, commandService);
+
             foreach (var method in validSlashCommands)
-                builder.AddSlashCommand(x => BuildSlashCommand(x, typeInfo, method, commandService, services));
+                builder.AddSlashCommand(x => BuildSlashCommand(x, createInstance, method, commandService, services));
 
             foreach (var method in validContextCommands)
-                builder.AddContextCommand(x => BuildContextCommand(x, typeInfo, method, commandService, services));
+                builder.AddContextCommand(x => BuildContextCommand(x, createInstance, method, commandService, services));
 
             foreach (var method in validInteractions)
-                builder.AddInteraction(x => BuildInteraction(x, typeInfo, method, commandService, services));
+                builder.AddInteraction(x => BuildInteraction(x, createInstance, method, commandService, services));
         }
 
         private static void BuildSubModules (ModuleBuilder parent, IEnumerable<TypeInfo> subModules, IList<TypeInfo> builtTypes, SlashCommandService commandService,
@@ -140,13 +140,12 @@ namespace Discord.SlashCommands.Builders
             }
         }
 
-        private static void BuildSlashCommand (SlashCommandBuilder builder, TypeInfo typeInfo, MethodInfo methodInfo,
+        private static void BuildSlashCommand (SlashCommandBuilder builder, Func<IServiceProvider, ISlashModuleBase> createInstance, MethodInfo methodInfo,
             SlashCommandService commandService, IServiceProvider services)
         {
             var attributes = methodInfo.GetCustomAttributes();
 
-            builder.Name = methodInfo.Name;
-            builder.Description = methodInfo.Name;
+            builder.MethodName = methodInfo.Name;
 
             foreach (var attribute in attributes)
             {
@@ -155,7 +154,7 @@ namespace Discord.SlashCommands.Builders
                     case SlashCommandAttribute command:
                         {
                             builder.Name = command.Name;
-                            builder.Description = command.Description; 
+                            builder.Description = command.Description;
 
                             builder.IgnoreGroupNames = command.IgnoreGroupNames;
                         }
@@ -176,13 +175,15 @@ namespace Discord.SlashCommands.Builders
             foreach (var parameter in parameters)
                 builder.AddParameter(x => BuildSlashParameter(x, parameter, commandService, services));
 
-            builder.Callback = CreateCallback(typeInfo, methodInfo, commandService, services);
+            builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
 
-        private static void BuildContextCommand (ContextCommandBuilder builder, TypeInfo typeInfo, MethodInfo methodInfo,
+        private static void BuildContextCommand (ContextCommandBuilder builder, Func<IServiceProvider, ISlashModuleBase> createInstance, MethodInfo methodInfo,
             SlashCommandService commandService, IServiceProvider services)
         {
             var attributes = methodInfo.GetCustomAttributes();
+
+            builder.MethodName = methodInfo.Name;
 
             foreach (var attribute in attributes)
             {
@@ -212,10 +213,10 @@ namespace Discord.SlashCommands.Builders
             foreach (var parameter in parameters)
                 builder.AddParameter(parameter);
 
-            builder.Callback = CreateCallback(typeInfo, methodInfo, commandService, services);
+            builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
 
-        private static void BuildInteraction (InteractionBuilder builder, TypeInfo typeInfo, MethodInfo methodInfo,
+        private static void BuildInteraction (InteractionBuilder builder, Func<IServiceProvider, ISlashModuleBase> createInstance, MethodInfo methodInfo,
             SlashCommandService commandService, IServiceProvider services)
         {
             if (!methodInfo.GetParameters().All(x => x.ParameterType == typeof(string) || x.ParameterType == typeof(string[])))
@@ -223,7 +224,7 @@ namespace Discord.SlashCommands.Builders
 
             var attributes = methodInfo.GetCustomAttributes();
 
-            builder.Name = methodInfo.Name;
+            builder.MethodName = methodInfo.Name;
 
             foreach (var attribute in attributes)
             {
@@ -245,14 +246,12 @@ namespace Discord.SlashCommands.Builders
             foreach (var parameter in parameters)
                 builder.AddParameter(parameter);
 
-            builder.Callback = CreateCallback(typeInfo, methodInfo, commandService, services);
+            builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
 
-        private static Func<ISlashCommandContext, object[], IServiceProvider, ExecutableInfo, Task<IResult>> CreateCallback (TypeInfo typeInfo, MethodInfo methodInfo,
-            SlashCommandService commandService, IServiceProvider services)
+        private static ExecutableInfo.ExecuteCallback CreateCallback (Func<IServiceProvider, ISlashModuleBase> createInstance,
+            MethodInfo methodInfo, SlashCommandService commandService)
         {
-            var createInstance = ReflectionUtils.CreateLambdaBuilder<ISlashModuleBase>(typeInfo, commandService);
-
             async Task<IResult> ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, ExecutableInfo commandInfo)
             {
                 var instance = createInstance(serviceProvider);
@@ -315,7 +314,7 @@ namespace Discord.SlashCommands.Builders
                         }
                         break;
                     case ChoiceAttribute choice:
-                            builder.AddOptions(new ParameterChoice(choice.Name, choice.Value));
+                        builder.AddOptions(new ParameterChoice(choice.Name, choice.Value));
                         break;
                     default:
                         builder.AddAttributes(attribute);
