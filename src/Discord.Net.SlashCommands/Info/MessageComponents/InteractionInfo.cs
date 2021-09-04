@@ -72,10 +72,16 @@ namespace Discord.SlashCommands
             {
                 object[] args = GenerateArgs(paramList, values);
 
-                _ = Task.Run(async ( ) =>
+                if (CommandService._runAsync)
                 {
-                    await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
-                });
+                    _ = Task.Run(async ( ) =>
+                    {
+                        await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
+                    });
+                }
+                else
+                    return await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
+
                 return ExecuteResult.FromSuccess();
             }
             catch (Exception ex)
