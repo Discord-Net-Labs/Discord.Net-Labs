@@ -52,7 +52,31 @@ namespace Discord.SlashCommands
         /// <returns>A task representing the asyncronous command execution process</returns>
         public abstract Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services);
 
-        protected async Task<IResult> ExecuteInternalAsync (ISlashCommandContext context, object[] args, IServiceProvider services)
+        protected async Task<IResult> RunAsync (ISlashCommandContext context, object[] args, IServiceProvider services )
+        {
+            services = services ?? EmptyServiceProvider.Instance;
+
+            try
+            {
+                if (CommandService._runAsync)
+                {
+                    _ = Task.Run(async ( ) =>
+                    {
+                        await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
+                    });
+                }
+                else
+                    return await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
+
+                return ExecuteResult.FromSuccess();
+            }
+            catch (Exception ex)
+            {
+                return ExecuteResult.FromError(ex);
+            }
+        }
+
+        private async Task<IResult> ExecuteInternalAsync (ISlashCommandContext context, object[] args, IServiceProvider services)
         {
             await CommandService._cmdLogger.DebugAsync($"Executing {GetLogString(context)}").ConfigureAwait(false);
 

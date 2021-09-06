@@ -67,28 +67,9 @@ namespace Discord.SlashCommands
         public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IEnumerable<SlashParameterInfo> paramList,
             IEnumerable<SocketSlashCommandDataOption> argList, IServiceProvider services)
         {
-            services = services ?? EmptyServiceProvider.Instance;
+            object[] args = await GenerateArgs(context, paramList, argList, services).ConfigureAwait(false);
 
-            try
-            {
-                object[] args = await GenerateArgs(context, paramList, argList, services).ConfigureAwait(false);
-
-                if (CommandService._runAsync)
-                {
-                    _ = Task.Run(async ( ) =>
-                    {
-                        await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
-                    });
-                }
-                else
-                    return await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
-
-                return ExecuteResult.FromSuccess();
-            }
-            catch (Exception ex)
-            {
-                return ExecuteResult.FromError(ex);
-            }
+            return await RunAsync(context, args, services).ConfigureAwait(false);
         }
 
         private async Task<object[]> GenerateArgs (ISlashCommandContext context, IEnumerable<SlashParameterInfo> paramList,

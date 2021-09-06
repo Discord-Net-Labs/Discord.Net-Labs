@@ -18,30 +18,10 @@ namespace Discord.SlashCommands
             if (!( context.Interaction is SocketUserCommand userCommand ))
                 return ExecuteResult.FromError(SlashCommandError.ParseFailed, $"Provided {nameof(ISlashCommandContext)} does not belong to a User Command");
 
-            services = services ?? EmptyServiceProvider.Instance;
+            var user = userCommand.Data.Member;
+            object[] args = new object[1] { user };
 
-            try
-            {
-                var user = userCommand.Data.Member;
-
-                object[] args = new object[1] { user };
-
-                if (CommandService._runAsync)
-                {
-                    _ = Task.Run(async ( ) =>
-                    {
-                        await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
-                    });
-                }
-                else
-                    return await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
-
-                return ExecuteResult.FromSuccess();
-            }
-            catch (Exception ex)
-            {
-                return ExecuteResult.FromError(ex);
-            }
+            return await RunAsync(context, args, services).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
