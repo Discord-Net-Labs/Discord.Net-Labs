@@ -14,7 +14,7 @@ public async Task Client_Ready() {
         slashCommandOptionBuilder.WithName("name");
         slashCommandOptionBuilder.WithType(ApplicationCommandOptionType.String);
         slashCommandOptionBuilder.WithDescription("Add a family");
-        slashCommandOptionBuilder.WithRequired(true);
+        slashCommandOptionBuilder.WithRequired(true); // Only add this if you want it to be required
 
         SlashCommandBuilder globalCommandAddFamily = new SlashCommandBuilder(); 
         globalCommandAddFamily.WithName("add-family");
