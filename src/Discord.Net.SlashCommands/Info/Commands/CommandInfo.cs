@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -15,6 +16,10 @@ namespace Discord.SlashCommands
         protected readonly ExecuteCallback _action;
 
         /// <inheritdoc/>
+        public ModuleInfo Module { get; }
+        /// <inheritdoc/>
+        public SlashCommandService CommandService { get; }
+        /// <inheritdoc/>
         public string Name { get; }
         /// <inheritdoc/>
         public string MethodName { get; }
@@ -26,10 +31,6 @@ namespace Discord.SlashCommands
         public bool IsTopLevel => IgnoreGroupNames || !Module.IsTopLevel;
         /// <inheritdoc/>
         public RunMode RunMode { get; }
-        /// <inheritdoc/>
-        public ModuleInfo Module { get; }
-        /// <inheritdoc/>
-        public SlashCommandService CommandService { get; }
         /// <inheritdoc/>
         public IReadOnlyCollection<Attribute> Attributes { get; }
         /// <inheritdoc/>

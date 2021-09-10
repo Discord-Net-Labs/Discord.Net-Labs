@@ -51,7 +51,7 @@ namespace Discord.SlashCommands
                 return await ExecuteAsync(context, Parameters, args, services);
             }
             else
-                return ExecuteResult.FromError(SlashCommandError.ParseFailed, $"Provided {nameof(ISlashCommandContext)} belongs to a message component");
+                return ExecuteResult.FromError(SlashCommandError.ParseFailed, $"Provided {nameof(ISlashCommandContext)} doesn't belong to a Slash Command Interaction");
         }
 
         public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IEnumerable<SlashCommandParameterInfo> paramList,
@@ -91,7 +91,7 @@ namespace Discord.SlashCommands
                     var readResult = await typeReader.ReadAsync(context, arg, services).ConfigureAwait(false);
 
                     if (!readResult.IsSuccess)
-                        throw new InvalidOperationException($"Argument Read was not successful: {readResult.ErrorReason}");
+                        throw new InvalidOperationException($"Argument was not read successfully: {readResult.ErrorReason}");
 
                     result.Add(readResult.Value);
                 }

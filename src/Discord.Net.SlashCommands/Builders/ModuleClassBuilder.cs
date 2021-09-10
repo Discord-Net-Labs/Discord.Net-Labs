@@ -182,7 +182,7 @@ namespace Discord.SlashCommands.Builders
             var parameters = methodInfo.GetParameters();
 
             foreach (var parameter in parameters)
-                builder.AddParameter(x => BuildSlashParameter(x, parameter, commandService, services));
+                builder.AddParameter(x => BuildSlashParameter(x, parameter));
 
             builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
@@ -224,7 +224,7 @@ namespace Discord.SlashCommands.Builders
             var parameters = methodInfo.GetParameters();
 
             foreach (var parameter in parameters)
-                builder.AddParameter(x => BuildParameter(x, parameter, commandService, services));
+                builder.AddParameter(x => BuildParameter(x, parameter));
 
             builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
@@ -261,7 +261,7 @@ namespace Discord.SlashCommands.Builders
             var parameters = methodInfo.GetParameters();
 
             foreach (var parameter in parameters)
-                builder.AddParameter(x => BuildParameter(x, parameter, commandService, services));
+                builder.AddParameter(x => BuildParameter(x, parameter));
 
             builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
@@ -323,7 +323,7 @@ namespace Discord.SlashCommands.Builders
         }
 
         #region Parameters
-        private static void BuildSlashParameter(SlashCommandParameterBuilder builder, ParameterInfo paramInfo, SlashCommandService commandService, IServiceProvider services)
+        private static void BuildSlashParameter(SlashCommandParameterBuilder builder, ParameterInfo paramInfo)
         {
             var attributes = paramInfo.GetCustomAttributes();
             var paramType = paramInfo.ParameterType;
@@ -350,13 +350,19 @@ namespace Discord.SlashCommands.Builders
                     case ChoiceAttribute choice:
                         builder.WithChoices(new ParameterChoice(choice.Name, choice.Value));
                         break;
+                    case ParamArrayAttribute _:
+                        builder.IsParameterArray = true;
+                        break;
+                    case ParameterPreconditionAttribute precondition:
+                        builder.AddPreconditions(precondition);
+                        break;
                     default:
                         break;
                 }
             }
         }
 
-        private static void BuildParameter(CommandParameterBuilder builder, ParameterInfo paramInfo, SlashCommandService commandService, IServiceProvider services)
+        private static void BuildParameter(CommandParameterBuilder builder, ParameterInfo paramInfo)
         {
             var attributes = paramInfo.GetCustomAttributes();
             var paramType = paramInfo.ParameterType;

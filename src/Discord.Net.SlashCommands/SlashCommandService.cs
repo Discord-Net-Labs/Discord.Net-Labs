@@ -52,7 +52,7 @@ namespace Discord.SlashCommands
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
 
-        internal readonly bool _runAsync, _throwOnError, _deleteUnkownSlashCommandAck, _useCompiledLambda;
+        internal readonly bool _throwOnError, _deleteUnkownSlashCommandAck, _useCompiledLambda;
         internal readonly string _wildCardExp;
         internal readonly RunMode _runMode;
 
