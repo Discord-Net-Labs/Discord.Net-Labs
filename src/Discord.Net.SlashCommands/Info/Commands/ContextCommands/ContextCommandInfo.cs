@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
@@ -8,7 +9,7 @@ namespace Discord.SlashCommands
     /// <summary>
     /// Base information class for attribute based context command handlers
     /// </summary>
-    public abstract class ContextCommandInfo : ExecutableInfo, IApplicationCommandInfo
+    public abstract class ContextCommandInfo : CommandInfo<CommandParameterInfo>, IApplicationCommandInfo
     {
         /// <inheritdoc/>
         public ApplicationCommandType CommandType { get; }
@@ -18,26 +19,17 @@ namespace Discord.SlashCommands
         /// </summary>
         public bool DefaultPermission { get; }
 
-        /// <summary>
-        /// Get a collection of the method parameters of this command
-        /// </summary>
-        public IReadOnlyList<ParameterInfo> Parameters { get; }
-
-        /// <summary>
-        /// Get a collection of attributes applied to this command
-        /// </summary>
-        public IReadOnlyList<Attribute> Attributes { get; }
+        public override IReadOnlyCollection<CommandParameterInfo> Parameters { get; }
 
         /// <inheritdoc/>
         public override bool SupportsWildCards => false;
 
         internal ContextCommandInfo (Builders.ContextCommandBuilder builder, ModuleInfo module, SlashCommandService commandService)
-            : base(builder.Name, true, module, commandService, builder.Callback)
+            : base(builder, module, commandService)
         {
             CommandType = builder.CommandType;
             DefaultPermission = builder.DefaultPermission;
-            Parameters = builder.Parameters;
-            Attributes = builder.Attributes;
+            Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
         }
 
         internal static ContextCommandInfo Create (Builders.ContextCommandBuilder builder, ModuleInfo module, SlashCommandService commandService)

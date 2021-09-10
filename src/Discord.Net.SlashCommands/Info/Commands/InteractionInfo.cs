@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
@@ -12,26 +11,16 @@ namespace Discord.SlashCommands
     /// <summary>
     /// Porvides the information of a Interaction handler
     /// </summary>
-    public class InteractionInfo : ExecutableInfo
+    public class InteractionInfo : CommandInfo<CommandParameterInfo>
     {
-        /// <summary>
-        /// Get the information on Parameters that belong to this command
-        /// </summary>
-        public IReadOnlyList<ParameterInfo> Parameters { get; }
-
-        /// <summary>
-        /// Get the list of attributes of this command
-        /// </summary>
-        public IReadOnlyList<Attribute> Attributes { get; }
+        public override IReadOnlyCollection<CommandParameterInfo> Parameters { get; }
 
         /// <inheritdoc/>
         public override bool SupportsWildCards => true;
 
-        internal InteractionInfo (InteractionBuilder builder, ModuleInfo module, SlashCommandService commandService)
-            :base(builder.Name, builder.IgnoreGroupNames, module, commandService, builder.Callback)
+        internal InteractionInfo (InteractionBuilder builder, ModuleInfo module, SlashCommandService commandService) : base(builder, module, commandService)
         {
-            Parameters = builder.Parameters.ToImmutableArray();
-            Attributes = builder.Attributes.ToImmutableArray();
+            Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
         }
 
         /// <inheritdoc/>
@@ -54,7 +43,7 @@ namespace Discord.SlashCommands
                 if (additionalArgs != null)
                     args.AddRange(additionalArgs);
 
-                if(messageInteraction.Data?.Values != null)
+                if (messageInteraction.Data?.Values != null)
                     args.AddRange(messageInteraction.Data.Values);
 
                 return await ExecuteAsync(context, Parameters, args, services);
@@ -63,7 +52,7 @@ namespace Discord.SlashCommands
                 throw new ArgumentException("Cannot execute command from the provided command context");
         }
 
-        public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IEnumerable<ParameterInfo> paramList, IEnumerable<string> values,
+        public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IEnumerable<CommandParameterInfo> paramList, IEnumerable<string> values,
             IServiceProvider services)
         {
             object[] args = GenerateArgs(paramList, values);
@@ -71,7 +60,7 @@ namespace Discord.SlashCommands
             return await RunAsync(context, args, services).ConfigureAwait(false);
         }
 
-        private static object[] GenerateArgs (IEnumerable<ParameterInfo> paramList, IEnumerable<string> argList)
+        private static object[] GenerateArgs (IEnumerable<CommandParameterInfo> paramList, IEnumerable<string> argList)
         {
             var result = new object[paramList.Count()];
             var index = 0;
@@ -80,12 +69,12 @@ namespace Discord.SlashCommands
             {
                 if (argList?.ElementAt(index) == null)
                 {
-                    if (parameter.IsOptional)
+                    if (!parameter.IsRequired)
                         result[index] = Type.Missing;
                     else
                         throw new InvalidOperationException($"Interaction handler is executed with too few args.");
                 }
-                else if (parameter.CustomAttributes.Any(x => x.AttributeType == typeof(ParamArrayAttribute)))
+                else if (parameter.IsParameterArray)
                 {
                     string[] paramArray = new string[argList.Count() - index];
                     argList.ToArray().CopyTo(paramArray, index);

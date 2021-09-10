@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Discord.SlashCommands
 {
-    internal class SlashCommandMap<T> where T : class, IExecutableInfo
+    internal class SlashCommandMap<T> where T : class, ICommandInfo
     {
         private readonly char[] _seperators = { ' ', '\n', '\r', ',' };
 

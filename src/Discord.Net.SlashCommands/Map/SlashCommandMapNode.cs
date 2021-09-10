@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Discord.SlashCommands
 {
-    internal class SlashCommandMapNode<T> where T : class, IExecutableInfo
+    internal class SlashCommandMapNode<T> where T : class, ICommandInfo
     {
         private const string RegexWildCardExp = "(\\w+)?";
 

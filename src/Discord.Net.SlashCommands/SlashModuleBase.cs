@@ -48,10 +48,10 @@ namespace Discord.SlashCommands
         internal SlashModuleBase ( ) { }
 
         /// <inheritdoc/>
-        public virtual void AfterExecute (ExecutableInfo command) { }
+        public virtual void AfterExecute (ICommandInfo command) { }
 
         /// <inheritdoc/>
-        public virtual void BeforeExecute (ExecutableInfo command) { }
+        public virtual void BeforeExecute (ICommandInfo command) { }
 
         /// <inheritdoc/>
         public virtual void OnModuleBuilding (SlashCommandService commandService, ModuleInfo module) { }

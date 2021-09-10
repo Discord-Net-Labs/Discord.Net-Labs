@@ -8,26 +8,27 @@ namespace Discord.SlashCommands
         /// <summary>
         /// Thrown when no registered command is found for a given input
         /// </summary>
-        UnknownCommand = 1,
+        UnknownCommand,
 
         /// <summary>
-        /// Thrown when a Discord Application Command fails to be parsed from an <see cref="IExecutableInfo"/>
+        /// Thrown when a Discord Application Command fails to be parsed from an <see cref="ICommandInfo"/>
         /// </summary>
-        ParseFailed = 2,
+        ParseFailed,
 
         /// <summary>
         /// Thrown when the provided command arguments does not match the method arguments
         /// </summary>
-        BadArgs = 3,
+        BadArgs,
 
         /// <summary>
         /// Thrown whenever an exception occurs during the command execution process
         /// </summary>
-        Exception = 4,
+        Exception,
 
         /// <summary>
         /// Thrown when the command is not successfully executed on runtime.
         /// </summary>
-        Unsuccessful = 5
+        Unsuccessful,
+        UnmetPrecondition
     }
 }

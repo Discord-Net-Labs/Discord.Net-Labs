@@ -19,6 +19,8 @@ namespace Discord.SlashCommands
         /// </summary>
         public ApplicationCommandType CommandType { get; }
 
+        public RunMode RunMode { get; set; } = RunMode.Default;
+
         internal ContextCommandAttribute (string name, ApplicationCommandType commandType)
         {
             Name = name;

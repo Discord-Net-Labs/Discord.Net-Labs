@@ -54,6 +54,7 @@ namespace Discord.SlashCommands
 
         internal readonly bool _runAsync, _throwOnError, _deleteUnkownSlashCommandAck, _useCompiledLambda;
         internal readonly string _wildCardExp;
+        internal readonly RunMode _runMode;
 
         /// <summary>
         /// Represents all of the modules that are loaded in the <see cref="SlashCommandService"/>
@@ -107,7 +108,10 @@ namespace Discord.SlashCommands
 
             Client = discord;
 
-            _runAsync = config.RunAsync;
+            _runMode = config.RunMode;
+            if (_runMode == RunMode.Default)
+                throw new InvalidOperationException($"RunMode cannot be set to {RunMode.Default}");
+
             _throwOnError = config.ThrowOnError;
             _deleteUnkownSlashCommandAck = config.DeleteUnknownSlashCommandAck;
             _wildCardExp = config.WildCardExpression;
@@ -207,15 +211,11 @@ namespace Discord.SlashCommands
         {
             CheckApplicationId();
 
-            IEnumerable<IApplicationCommand> existing = null;
-
-            if (deleteMissing)
-                existing = await ClientHelper.GetGuildApplicationCommands(Client, guildId).ConfigureAwait(false);
-
             var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
 
-            if (existing != null)
+            if (!deleteMissing)
             {
+                var existing = await ClientHelper.GetGuildApplicationCommands(Client, guildId).ConfigureAwait(false);
                 var missing = existing.Where(x => !props.Any(y => y.Name.IsSpecified && y.Name.Value == x.Name));
                 props.AddRange(missing.Select(x => x.ToApplicationCommandProps()));
             }
@@ -230,19 +230,15 @@ namespace Discord.SlashCommands
         /// <returns>A task representing the command registration process, with a collection of <see cref="RestGlobalCommand"/> containing the
         /// global commands that are currently registered to the Discord
         /// </returns>
-        public async Task<IReadOnlyCollection<RestGlobalCommand>> RegisterCommandGloballyAsync (bool deleteMissing = true)
+        public async Task<IReadOnlyCollection<RestGlobalCommand>> RegisterCommandsGloballyAsync (bool deleteMissing = true)
         {
             CheckApplicationId();
 
-            IEnumerable<IApplicationCommand> existing = null;
-
-            if (deleteMissing)
-                existing = await ClientHelper.GetGlobalApplicationCommands(Client).ConfigureAwait(false);
-
             var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
 
-            if (existing != null)
+            if (!deleteMissing)
             {
+                var existing = await ClientHelper.GetGlobalApplicationCommands(Client).ConfigureAwait(false);
                 var missing = existing.Where(x => !props.Any(y => y.Name.IsSpecified && y.Name.Value == x.Name));
                 props.AddRange(missing.Select(x => x.ToApplicationCommandProps()));
             }
@@ -559,7 +555,7 @@ namespace Discord.SlashCommands
             params ApplicationCommandPermission[] permissions) =>
             await ModifyApplicationCommandPermissionsAsync(command, guild, permissions).ConfigureAwait(false);
 
-        private async Task<GuildApplicationCommandPermission> ModifyApplicationCommandPermissionsAsync (IExecutableInfo command, IGuild guild,
+        private async Task<GuildApplicationCommandPermission> ModifyApplicationCommandPermissionsAsync (ICommandInfo command, IGuild guild,
             params ApplicationCommandPermission[] permissions)
         {
             if (!command.IsTopLevel)

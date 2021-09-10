@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
@@ -6,8 +7,8 @@ namespace Discord.SlashCommands
     /// <summary>
     /// Represent a command information object that can be executed
     /// </summary>
-    public interface IExecutableInfo
-    {
+    public interface ICommandInfo
+    { 
         /// <summary>
         /// Name of the command
         /// </summary>
@@ -43,6 +44,12 @@ namespace Discord.SlashCommands
         /// </summary>
         SlashCommandService CommandService { get; }
 
+        RunMode RunMode { get; }
+
+        IReadOnlyCollection<Attribute> Attributes { get; }
+        IReadOnlyCollection<PreconditionAttribute> Preconditions { get; }
+        IReadOnlyCollection<IParameterInfo> Parameters { get; }
+
         /// <summary>
         /// Executes the command with the provided context
         /// </summary>
@@ -50,5 +57,7 @@ namespace Discord.SlashCommands
         /// <param name="services">Dependencies that will be used to create the module instance</param>
         /// <returns></returns>
         Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services);
+
+        Task<PreconditionResult> CheckPreconditionsAsync (ISlashCommandContext context, IServiceProvider services);
     }
 }

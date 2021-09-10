@@ -7,7 +7,7 @@ namespace Discord.SlashCommands
     internal static class SlashCommandRestUtil
     {
         // Parameters
-        public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps (this SlashParameterInfo parameterInfo)
+        public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps (this SlashCommandParameterInfo parameterInfo)
         {
             var props = new ApplicationCommandOptionProperties
             {
