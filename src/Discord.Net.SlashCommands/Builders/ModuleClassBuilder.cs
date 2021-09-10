@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -268,6 +269,23 @@ namespace Discord.SlashCommands.Builders
         private static ExecuteCallback CreateCallback (Func<IServiceProvider, ISlashModuleBase> createInstance,
             MethodInfo methodInfo, SlashCommandService commandService)
         {
+            var parameters = methodInfo.GetParameters();
+            var paramsExp = new Expression[parameters.Length];
+
+            var instanceExp = Expression.Parameter(typeof(ISlashModuleBase), "instance");
+            var argsExp = Expression.Parameter(typeof(object[]), "args");
+
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                var indexExp = Expression.Constant(i);
+                var accessExp = Expression.ArrayIndex(argsExp, indexExp);
+                paramsExp[i] = Expression.Convert(accessExp, parameters[i].ParameterType);
+            }
+
+            var callExp = Expression.Call(Expression.Convert(instanceExp, methodInfo.DeclaringType), methodInfo, paramsExp);
+            var finalExp = Expression.Convert(callExp, typeof(Task));
+            var lambda = Expression.Lambda<Func<ISlashModuleBase, object[], Task>>(finalExp, instanceExp, argsExp).Compile();
+
             async Task<IResult> ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo)
             {
                 var instance = createInstance(serviceProvider);
@@ -276,7 +294,7 @@ namespace Discord.SlashCommands.Builders
                 try
                 {
                     instance.BeforeExecute(commandInfo);
-                    var task = methodInfo.Invoke(instance, args) as Task ?? Task.Delay(0);
+                    var task = lambda(instance, args) ?? Task.Delay(0);
 
                     if (task is Task<RuntimeResult> runtimeTask)
                     {
