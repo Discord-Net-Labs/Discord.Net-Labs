@@ -9,32 +9,54 @@ using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
 {
-    public delegate Task ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo);
+    /// <summary>
+    /// Represents a cached method execution delegate
+    /// </summary>
+    /// <param name="context">Execution context that will be injected to the module class</param>
+    /// <param name="args">Method arguments array</param>
+    /// <param name="serviceProvider">Service collection for initializing the module</param>
+    /// <param name="commandInfo">Command info class of the executed method</param>
+    /// <returns>A task representing the execution operation</returns>
+    internal delegate Task ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo);
 
+    /// <summary>
+    /// The base information class for <see cref="SlashCommandService"/> commands
+    /// </summary>
+    /// <typeparam name="TParameter">The type of <see cref="IParameterInfo"/> that is used by this command type</typeparam>
     public abstract class CommandInfo<TParameter> : ICommandInfo where TParameter : class, IParameterInfo
     {
-        protected readonly ExecuteCallback _action;
+        private readonly ExecuteCallback _action;
 
         /// <inheritdoc/>
         public ModuleInfo Module { get; }
+
         /// <inheritdoc/>
         public SlashCommandService CommandService { get; }
+
         /// <inheritdoc/>
         public string Name { get; }
+
         /// <inheritdoc/>
         public string MethodName { get; }
+
         /// <inheritdoc/>
         public virtual bool IgnoreGroupNames { get; }
+
         /// <inheritdoc/>
         public abstract bool SupportsWildCards { get; }
+
         /// <inheritdoc/>
         public bool IsTopLevel => IgnoreGroupNames || !Module.IsTopLevel;
+
         /// <inheritdoc/>
         public RunMode RunMode { get; }
+
         /// <inheritdoc/>
         public IReadOnlyCollection<Attribute> Attributes { get; }
+
         /// <inheritdoc/>
         public IReadOnlyCollection<PreconditionAttribute> Preconditions { get; }
+
         /// <inheritdoc cref="ICommandInfo.Parameters"/>
         public abstract IReadOnlyCollection<TParameter> Parameters { get; }
 
@@ -112,12 +134,12 @@ namespace Discord.SlashCommands
         {
             services = services ?? EmptyServiceProvider.Instance;
 
-            //var result = await CheckPreconditionsAsync(context, services).ConfigureAwait(false);
-            //if (!result.IsSuccess)
-            //{
-            //    await InvokeModuleEvent(context, result).ConfigureAwait(false);
-            //    return result;
-            //}
+            var result = await CheckPreconditionsAsync(context, services).ConfigureAwait(false);
+            if (!result.IsSuccess)
+            {
+                await InvokeModuleEvent(context, result).ConfigureAwait(false);
+                return result;
+            }
 
             try
             {

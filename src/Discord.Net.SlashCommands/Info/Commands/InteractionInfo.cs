@@ -13,6 +13,7 @@ namespace Discord.SlashCommands
     /// </summary>
     public class InteractionInfo : CommandInfo<CommandParameterInfo>
     {
+        /// <inheritdoc/>
         public override IReadOnlyCollection<CommandParameterInfo> Parameters { get; }
 
         /// <inheritdoc/>
@@ -52,6 +53,7 @@ namespace Discord.SlashCommands
                 throw new ArgumentException("Cannot execute command from the provided command context");
         }
 
+        /// <inheritdoc/>
         public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IEnumerable<CommandParameterInfo> paramList, IEnumerable<string> values,
             IServiceProvider services)
         {

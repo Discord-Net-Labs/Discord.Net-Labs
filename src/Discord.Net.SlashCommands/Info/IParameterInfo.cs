@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
 {
+    /// <summary>
+    /// Represents a <see cref="ICommandInfo"/> parameter
+    /// </summary>
     public interface IParameterInfo
     {
         /// <summary>
@@ -46,6 +49,12 @@ namespace Discord.SlashCommands
         /// </summary>
         IReadOnlyCollection<ParameterPreconditionAttribute> Preconditions { get; }
 
+        /// <summary>
+        /// Check if an execution context meets the parameter precondition requirements
+        /// </summary>
+        /// <param name="context">The execution context</param>
+        /// <param name="services">The service collection that is used for dependency injection</param>
+        /// <returns>A task representing the precondition checking process with a <see cref="PreconditionResult"/> result</returns>
         Task<PreconditionResult> CheckPreconditionsAsync (ISlashCommandContext context, IServiceProvider services);
     }
 }

@@ -5,22 +5,34 @@ using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
 {
+    /// <summary>
+    /// Represents the base parameter info class for <see cref="SlashCommandService"/> commands
+    /// </summary>
     public class CommandParameterInfo : IParameterInfo
     {
+        /// <inheritdoc/>
         public ICommandInfo Command { get; }
 
+        /// <inheritdoc/>
         public string Name { get; }
 
+        /// <inheritdoc/>
         public Type ParameterType { get; }
 
+        /// <inheritdoc/>
         public bool IsRequired { get; }
 
+
+        /// <inheritdoc/>
         public bool IsParameterArray { get; }
 
+        /// <inheritdoc/>
         public object DefaultValue { get; }
 
+        /// <inheritdoc/>
         public IReadOnlyCollection<Attribute> Attributes { get; }
 
+        /// <inheritdoc/>
         public IReadOnlyCollection<ParameterPreconditionAttribute> Preconditions { get; }
 
         internal CommandParameterInfo(Builders.IParameterBuilder builder, ICommandInfo command)
@@ -35,6 +47,7 @@ namespace Discord.SlashCommands
             Preconditions = builder.Preconditions.ToImmutableArray();
         }
 
+        /// <inheritdoc/>
         public async Task<PreconditionResult> CheckPreconditionsAsync (ISlashCommandContext context, IServiceProvider services)
         {
             foreach (var precondition in Preconditions)

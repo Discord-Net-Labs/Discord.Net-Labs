@@ -45,8 +45,6 @@ namespace Discord.SlashCommands
 
     public abstract class SlashModuleBase : ISlashModuleBase
     {
-        internal SlashModuleBase ( ) { }
-
         /// <inheritdoc/>
         public virtual void AfterExecute (ICommandInfo command) { }
 

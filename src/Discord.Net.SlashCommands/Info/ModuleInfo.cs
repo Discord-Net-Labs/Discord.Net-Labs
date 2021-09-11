@@ -80,10 +80,13 @@ namespace Discord.SlashCommands
         public bool IsSubModule => Parent != null;
 
         /// <summary>
-        /// Get a list of the attributes of this module
+        /// Get a collection of the attributes of this module
         /// </summary>
         public IReadOnlyCollection<Attribute> Attributes { get; }
 
+        /// <summary>
+        /// Get a collection of the preconditions of this module
+        /// </summary>
         public IReadOnlyCollection<PreconditionAttribute> Preconditions { get; }
 
         /// <summary>
