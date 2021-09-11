@@ -74,8 +74,9 @@ namespace Discord.SlashCommands.Builders
         private static void BuildModule (ModuleBuilder builder, TypeInfo typeInfo, SlashCommandService commandService,
             IServiceProvider services)
         {
-            builder.Name = typeInfo.Name;
             var attributes = typeInfo.GetCustomAttributes();
+
+            builder.Name = typeInfo.Name;
             builder.TypeInfo = typeInfo;
 
             foreach (var attribute in attributes)
@@ -92,6 +93,9 @@ namespace Discord.SlashCommands.Builders
                         {
                             builder.DefaultPermission = defPermission.Allow;
                         }
+                        break;
+                    case PreconditionAttribute precondition:
+                        builder.AddPreconditions(precondition);
                         break;
                     default:
                         builder.AddAttributes(attribute);
@@ -342,6 +346,7 @@ namespace Discord.SlashCommands.Builders
                         builder.AddPreconditions(precondition);
                         break;
                     default:
+                        builder.AddAttributes(attribute);
                         break;
                 }
             }
