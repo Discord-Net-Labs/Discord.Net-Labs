@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -73,8 +74,9 @@ namespace Discord.SlashCommands.Builders
         private static void BuildModule (ModuleBuilder builder, TypeInfo typeInfo, SlashCommandService commandService,
             IServiceProvider services)
         {
-            builder.Name = typeInfo.Name;
             var attributes = typeInfo.GetCustomAttributes();
+
+            builder.Name = typeInfo.Name;
             builder.TypeInfo = typeInfo;
 
             foreach (var attribute in attributes)
@@ -91,6 +93,9 @@ namespace Discord.SlashCommands.Builders
                         {
                             builder.DefaultPermission = defPermission.Allow;
                         }
+                        break;
+                    case PreconditionAttribute precondition:
+                        builder.AddPreconditions(precondition);
                         break;
                     default:
                         builder.AddAttributes(attribute);
@@ -160,8 +165,8 @@ namespace Discord.SlashCommands.Builders
                         {
                             builder.Name = command.Name;
                             builder.Description = command.Description;
-
                             builder.IgnoreGroupNames = command.IgnoreGroupNames;
+                            builder.RunMode = command.RunMode;
                         }
                         break;
                     case DefaultPermissionAttribute defaultPermission:
@@ -169,8 +174,11 @@ namespace Discord.SlashCommands.Builders
                             builder.DefaultPermission = defaultPermission.Allow;
                         }
                         break;
+                    case PreconditionAttribute precondition:
+                        builder.WithPreconditions(precondition);
+                        break;
                     default:
-                        builder.AddAttributes(attribute);
+                        builder.WithAttributes(attribute);
                         break;
                 }
             }
@@ -178,7 +186,7 @@ namespace Discord.SlashCommands.Builders
             var parameters = methodInfo.GetParameters();
 
             foreach (var parameter in parameters)
-                builder.AddParameter(x => BuildSlashParameter(x, parameter, commandService, services));
+                builder.AddParameter(x => BuildSlashParameter(x, parameter));
 
             builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
@@ -198,6 +206,7 @@ namespace Discord.SlashCommands.Builders
                         {
                             builder.Name = command.Name;
                             builder.CommandType = command.CommandType;
+                            builder.RunMode = command.RunMode;
 
                             command.CheckMethodDefinition(methodInfo);
                         }
@@ -207,8 +216,11 @@ namespace Discord.SlashCommands.Builders
                             builder.DefaultPermission = defaultPermission.Allow;
                         }
                         break;
+                    case PreconditionAttribute precondition:
+                        builder.WithPreconditions(precondition);
+                        break;
                     default:
-                        builder.AddAttributes(attribute);
+                        builder.WithAttributes(attribute);
                         break;
                 }
             }
@@ -216,7 +228,7 @@ namespace Discord.SlashCommands.Builders
             var parameters = methodInfo.GetParameters();
 
             foreach (var parameter in parameters)
-                builder.AddParameter(parameter);
+                builder.AddParameter(x => BuildParameter(x, parameter));
 
             builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
@@ -238,10 +250,14 @@ namespace Discord.SlashCommands.Builders
                     case InteractionAttribute interaction:
                         {
                             builder.Name = interaction.CustomId;
+                            builder.RunMode = interaction.RunMode;
                         }
                         break;
+                    case PreconditionAttribute precondition:
+                        builder.WithPreconditions(precondition);
+                        break;
                     default:
-                        builder.AddAttributes(attribute);
+                        builder.WithAttributes(attribute);
                         break;
                 }
             }
@@ -249,15 +265,17 @@ namespace Discord.SlashCommands.Builders
             var parameters = methodInfo.GetParameters();
 
             foreach (var parameter in parameters)
-                builder.AddParameter(parameter);
+                builder.AddParameter(x => BuildParameter(x, parameter));
 
             builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
 
-        private static ExecutableInfo.ExecuteCallback CreateCallback (Func<IServiceProvider, ISlashModuleBase> createInstance,
+        private static ExecuteCallback CreateCallback (Func<IServiceProvider, ISlashModuleBase> createInstance,
             MethodInfo methodInfo, SlashCommandService commandService)
         {
-            async Task<IResult> ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, ExecutableInfo commandInfo)
+            var methodInvoker = ReflectionUtils.CreateMethodInvoker<ISlashModuleBase>(methodInfo);
+
+            async Task<IResult> ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo)
             {
                 var instance = createInstance(serviceProvider);
                 instance.SetContext(context);
@@ -265,7 +283,7 @@ namespace Discord.SlashCommands.Builders
                 try
                 {
                     instance.BeforeExecute(commandInfo);
-                    var task = methodInfo.Invoke(instance, args) as Task ?? Task.Delay(0);
+                    var task = methodInvoker(instance, args) ?? Task.Delay(0);
 
                     if (task is Task<RuntimeResult> runtimeTask)
                     {
@@ -293,8 +311,8 @@ namespace Discord.SlashCommands.Builders
             return ExecuteCallback;
         }
 
-        private static void BuildSlashParameter (SlashParameterBuilder builder, ParameterInfo paramInfo, SlashCommandService commandService,
-            IServiceProvider services)
+        #region Parameters
+        private static void BuildSlashParameter(SlashCommandParameterBuilder builder, ParameterInfo paramInfo)
         {
             var attributes = paramInfo.GetCustomAttributes();
             var paramType = paramInfo.ParameterType;
@@ -303,7 +321,7 @@ namespace Discord.SlashCommands.Builders
             builder.Description = paramInfo.Name;
             builder.IsRequired = !paramInfo.IsOptional;
             builder.DefaultValue = paramInfo.DefaultValue;
-            builder.WithType(paramType);
+            builder.SetParameterType(paramType);
 
             foreach (var attribute in attributes)
             {
@@ -319,7 +337,13 @@ namespace Discord.SlashCommands.Builders
                         }
                         break;
                     case ChoiceAttribute choice:
-                        builder.AddOptions(new ParameterChoice(choice.Name, choice.Value));
+                        builder.WithChoices(new ParameterChoice(choice.Name, choice.Value));
+                        break;
+                    case ParamArrayAttribute _:
+                        builder.IsParameterArray = true;
+                        break;
+                    case ParameterPreconditionAttribute precondition:
+                        builder.AddPreconditions(precondition);
                         break;
                     default:
                         builder.AddAttributes(attribute);
@@ -327,6 +351,34 @@ namespace Discord.SlashCommands.Builders
                 }
             }
         }
+
+        private static void BuildParameter(CommandParameterBuilder builder, ParameterInfo paramInfo)
+        {
+            var attributes = paramInfo.GetCustomAttributes();
+            var paramType = paramInfo.ParameterType;
+
+            builder.Name = paramInfo.Name;
+            builder.IsRequired = !paramInfo.IsOptional;
+            builder.DefaultValue = paramInfo.DefaultValue;
+            builder.SetParameterType(paramType);
+
+            foreach(var attribute in attributes)
+            {
+                switch (attribute)
+                {
+                    case ParameterPreconditionAttribute precondition:
+                        builder.AddPreconditions(precondition);
+                        break;
+                    case ParamArrayAttribute _:
+                        builder.IsParameterArray = true;
+                        break;
+                    default:
+                        builder.AddAttributes(attribute);
+                        break;
+                }
+            }
+        }
+        #endregion
 
         internal static bool IsValidModuleDefinition (TypeInfo typeInfo)
         {

@@ -10,7 +10,7 @@ namespace Discord.SlashCommands
     /// <summary>
     /// Provides the information of a Slash Command
     /// </summary>
-    public class SlashCommandInfo : ExecutableInfo, IApplicationCommandInfo
+    public class SlashCommandInfo : CommandInfo<SlashCommandParameterInfo>, IApplicationCommandInfo
     {
         /// <summary>
         /// The command description that will be displayed on Discord
@@ -25,26 +25,16 @@ namespace Discord.SlashCommands
         /// </summary>
         public bool DefaultPermission { get; }
 
-        /// <summary>
-        /// Get the information on Parameters that belong to this command
-        /// </summary>
-        public IReadOnlyList<SlashParameterInfo> Parameters { get; }
-
-        /// <summary>
-        /// Get the list of attributes of this command
-        /// </summary>
-        public IReadOnlyList<Attribute> Attributes { get; }
+        public override IReadOnlyCollection<SlashCommandParameterInfo> Parameters { get; }
 
         /// <inheritdoc/>
         public override bool SupportsWildCards => false;
 
-        internal SlashCommandInfo (Builders.SlashCommandBuilder builder, ModuleInfo module, SlashCommandService commandService)
-            : base(builder.Name, builder.IgnoreGroupNames, module, commandService, builder.Callback)
+        internal SlashCommandInfo (Builders.SlashCommandBuilder builder, ModuleInfo module, SlashCommandService commandService) : base(builder, module, commandService)
         {
             Description = builder.Description;
             DefaultPermission = builder.DefaultPermission;
             Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
-            Attributes = builder.Attributes.ToImmutableArray();
         }
 
         /// <inheritdoc/>
@@ -61,10 +51,10 @@ namespace Discord.SlashCommands
                 return await ExecuteAsync(context, Parameters, args, services);
             }
             else
-                return ExecuteResult.FromError(SlashCommandError.ParseFailed, $"Provided {nameof(ISlashCommandContext)} belongs to a message component");
+                return ExecuteResult.FromError(SlashCommandError.ParseFailed, $"Provided {nameof(ISlashCommandContext)} doesn't belong to a Slash Command Interaction");
         }
 
-        public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IEnumerable<SlashParameterInfo> paramList,
+        public async Task<IResult> ExecuteAsync (ISlashCommandContext context, IEnumerable<SlashCommandParameterInfo> paramList,
             IEnumerable<SocketSlashCommandDataOption> argList, IServiceProvider services)
         {
             object[] args = await GenerateArgs(context, paramList, argList, services).ConfigureAwait(false);
@@ -72,7 +62,7 @@ namespace Discord.SlashCommands
             return await RunAsync(context, args, services).ConfigureAwait(false);
         }
 
-        private async Task<object[]> GenerateArgs (ISlashCommandContext context, IEnumerable<SlashParameterInfo> paramList,
+        private async Task<object[]> GenerateArgs (ISlashCommandContext context, IEnumerable<SlashCommandParameterInfo> paramList,
             IEnumerable<SocketSlashCommandDataOption> options, IServiceProvider services)
         {
             if (paramList?.Count() < options?.Count())
@@ -101,7 +91,7 @@ namespace Discord.SlashCommands
                     var readResult = await typeReader.ReadAsync(context, arg, services).ConfigureAwait(false);
 
                     if (!readResult.IsSuccess)
-                        throw new InvalidOperationException($"Argument Read was not successful: {readResult.ErrorReason}");
+                        throw new InvalidOperationException($"Argument was not read successfully: {readResult.ErrorReason}");
 
                     result.Add(readResult.Value);
                 }

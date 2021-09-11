@@ -9,13 +9,13 @@ namespace Discord.SlashCommands
         /// Method body to be executed before executing an application command
         /// </summary>
         /// <param name="command">Command information related to the Discord Application Command</param>
-        void BeforeExecute (ExecutableInfo command);
+        void BeforeExecute (ICommandInfo command);
 
         /// <summary>
         /// Method body to be executed after an application command execution
         /// </summary>
         /// <param name="command">Command information related to the Discord Application Command</param>
-        void AfterExecute (ExecutableInfo command);
+        void AfterExecute (ICommandInfo command);
 
         /// <summary>
         /// Method body to be executed before the derived module is built

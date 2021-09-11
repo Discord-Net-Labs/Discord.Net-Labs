@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
@@ -6,8 +7,8 @@ namespace Discord.SlashCommands
     /// <summary>
     /// Represent a command information object that can be executed
     /// </summary>
-    public interface IExecutableInfo
-    {
+    public interface ICommandInfo
+    { 
         /// <summary>
         /// Name of the command
         /// </summary>
@@ -44,11 +45,39 @@ namespace Discord.SlashCommands
         SlashCommandService CommandService { get; }
 
         /// <summary>
+        /// Get the <see cref="RunMode"/> that will be used by this command
+        /// </summary>
+        RunMode RunMode { get; }
+
+        /// <summary>
+        /// Get a collection of the attributes of this command
+        /// </summary>
+        IReadOnlyCollection<Attribute> Attributes { get; }
+
+        /// <summary>
+        /// Get a collection of the preconditions of this command
+        /// </summary>
+        IReadOnlyCollection<PreconditionAttribute> Preconditions { get; }
+
+        /// <summary>
+        /// Get a collection of the parameters of this command
+        /// </summary>
+        IReadOnlyCollection<IParameterInfo> Parameters { get; }
+
+        /// <summary>
         /// Executes the command with the provided context
         /// </summary>
         /// <param name="context">Context of the command</param>
         /// <param name="services">Dependencies that will be used to create the module instance</param>
-        /// <returns></returns>
+        /// <returns>A task representing the execution process with a <see cref="IResult"/> result</returns>
         Task<IResult> ExecuteAsync (ISlashCommandContext context, IServiceProvider services);
+
+        /// <summary>
+        /// Check if an execution context meets the command precondition requirements
+        /// </summary>
+        /// <param name="context">The execution context</param>
+        /// <param name="services">The service collection that is used for dependency injection</param>
+        /// <returns>A task representing the precondition checking process with a <see cref="PreconditionResult"/> result</returns>
+        Task<PreconditionResult> CheckPreconditionsAsync (ISlashCommandContext context, IServiceProvider services);
     }
 }

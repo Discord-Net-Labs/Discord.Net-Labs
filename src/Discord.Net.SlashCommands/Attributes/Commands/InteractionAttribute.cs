@@ -23,6 +23,8 @@ namespace Discord.SlashCommands
         /// </summary>
         public bool IgnoreGroupNames { get; set; } = false;
 
+        public RunMode RunMode { get; set; } = RunMode.Default;
+
         /// <summary>
         /// Create a command for interaction handling
         /// </summary>

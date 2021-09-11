@@ -80,9 +80,14 @@ namespace Discord.SlashCommands
         public bool IsSubModule => Parent != null;
 
         /// <summary>
-        /// Get a list of the attributes of this module
+        /// Get a collection of the attributes of this module
         /// </summary>
-        public IReadOnlyList<Attribute> Attributes { get; }
+        public IReadOnlyCollection<Attribute> Attributes { get; }
+
+        /// <summary>
+        /// Get a collection of the preconditions of this module
+        /// </summary>
+        public IReadOnlyCollection<PreconditionAttribute> Preconditions { get; }
 
         /// <summary>
         /// <see langword="true"/> if this module has a valid Group name and represent a top level application command in Discord
@@ -103,12 +108,13 @@ namespace Discord.SlashCommands
             Interactions = BuildInteractions(builder).ToImmutableArray();
             SubModules = BuildSubModules(builder).ToImmutableArray();;
             Attributes = BuildAttributes(builder).ToImmutableArray();
+            Preconditions = BuildPreconditions(builder).ToImmutableArray();
             IsTopLevel = ( parent == null || !parent.IsTopLevel ) && IsSlashGroup;
 
             if (IsSlashGroup)
             {
-                Preconditions.SlashCommandName(SlashGroupName, nameof(SlashGroupName));
-                Preconditions.SlashCommandDescription(Description, nameof(Description));
+                Discord.Preconditions.SlashCommandName(SlashGroupName, nameof(SlashGroupName));
+                Discord.Preconditions.SlashCommandDescription(Description, nameof(Description));
             }
         }
 
@@ -165,5 +171,20 @@ namespace Discord.SlashCommands
 
             return result;
         }
+
+        private IEnumerable<PreconditionAttribute> BuildPreconditions(ModuleBuilder builder)
+        {
+            var preconditions = new List<PreconditionAttribute>();
+
+            var parent = builder.Parent;
+
+            while (parent != null)
+            {
+                preconditions.AddRange(parent.Preconditions);
+                parent = parent.Parent;
+            }
+
+            return preconditions;
+        } 
     }
 }

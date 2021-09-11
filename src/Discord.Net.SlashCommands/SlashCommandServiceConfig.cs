@@ -12,7 +12,7 @@ namespace Discord.SlashCommands
         /// <summary>
         /// Run mode that will be used when executing the commands
         /// </summary>
-        public bool RunAsync { get; set; } = true;
+        public RunMode RunMode { get; set; } = RunMode.Async;
         public bool ThrowOnError { get; set; } = true;
 
         /// <summary>

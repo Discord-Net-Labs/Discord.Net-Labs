@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
 {
@@ -78,6 +79,28 @@ namespace Discord.SlashCommands
             throw new InvalidOperationException($"Failed to create \"{ownerType.FullName}\", dependency \"{memberType.Name}\" was not found.");
         }
 
+        internal static Func<T, object[], Task> CreateMethodInvoker<T> ( MethodInfo methodInfo )
+        {
+            var parameters = methodInfo.GetParameters();
+            var paramsExp = new Expression[parameters.Length];
+
+            var instanceExp = Expression.Parameter(typeof(T), "instance");
+            var argsExp = Expression.Parameter(typeof(object[]), "args");
+
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                var indexExp = Expression.Constant(i);
+                var accessExp = Expression.ArrayIndex(argsExp, indexExp);
+                paramsExp[i] = Expression.Convert(accessExp, parameters[i].ParameterType);
+            }
+
+            var callExp = Expression.Call(Expression.Convert(instanceExp, methodInfo.DeclaringType), methodInfo, paramsExp);
+            var finalExp = Expression.Convert(callExp, typeof(Task));
+            var lambda = Expression.Lambda<Func<T, object[], Task>>(finalExp, instanceExp, argsExp).Compile();
+
+            return lambda;
+        }
+
         /// <summary>
         /// Create a type initializer using compiled lambda expressions
         /// </summary>
@@ -87,31 +110,43 @@ namespace Discord.SlashCommands
             var parameters = constructor.GetParameters();
             var properties = GetProperties(typeInfo);
 
-            var paramExps = new Expression[parameters.Length];
             var argsExp = Expression.Parameter(typeof(object[]), "args");
+            var propsExp = Expression.Parameter(typeof(object[]), "props");
 
-            for(var i = 0; i < parameters.Length; i++)
+            var parameterExps = new Expression[parameters.Length];
+
+            for (var i = 0; i < parameters.Length; i++)
             {
                 var indexExp = Expression.Constant(i);
                 var accessExp = Expression.ArrayIndex(argsExp, indexExp);
-
-                paramExps[i] = Expression.Convert(accessExp, parameters[i].ParameterType);
+                parameterExps[i] = Expression.Convert(accessExp, parameters[i].ParameterType);
             }
 
-            var createExp = Expression.Lambda<Func<object[], T>>(Expression.New(constructor, paramExps), argsExp);
-            var invokeConstructor = createExp.Compile();
+            var newExp = Expression.New(constructor, parameterExps);
+
+            var memberExps = new MemberAssignment[properties.Length];
+
+            for (var i = 0; i < properties.Length; i++)
+            {
+                var indexEx = Expression.Constant(i);
+                var accessExp = Expression.Convert(Expression.ArrayIndex(propsExp, indexEx), properties[i].PropertyType);
+                memberExps[i] = Expression.Bind(properties[i], accessExp);
+            }
+            var memberInit = Expression.MemberInit(newExp, memberExps);
+            var lambda = Expression.Lambda<Func<object[], object[], T>>(memberInit, argsExp, propsExp).Compile();
 
             return (services) =>
             {
                 var args = new object[parameters.Length];
+                var props = new object[properties.Length];
 
                 for (int i = 0; i < parameters.Length; i++)
                     args[i] = GetMember(commandService, services, parameters[i].ParameterType, typeInfo);
 
-                var instance = invokeConstructor(args);
+                for (int i = 0; i < properties.Length; i++)
+                    props[i] = GetMember(commandService, services, properties[i].PropertyType, typeInfo);
 
-                foreach (var property in properties)
-                    property.SetValue(instance, GetMember(commandService, services, property.PropertyType, typeInfo));
+                var instance = lambda(args, props);
 
                 return instance;
             };

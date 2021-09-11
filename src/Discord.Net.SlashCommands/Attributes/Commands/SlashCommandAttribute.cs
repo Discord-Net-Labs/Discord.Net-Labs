@@ -34,6 +34,8 @@ namespace Discord.SlashCommands
         /// </summary>
         public bool IgnoreGroupNames { get; set; } = false;
 
+        public RunMode RunMode { get; set; } = RunMode.Default;
+
         /// <summary>
         /// Register a method as a Slash Command
         /// </summary>

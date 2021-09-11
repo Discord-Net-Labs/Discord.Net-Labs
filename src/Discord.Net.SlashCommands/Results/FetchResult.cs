@@ -3,7 +3,7 @@ using System;
 namespace Discord.SlashCommands
 {
     /// <summary>
-    /// Represents the result of a Application Command fetch process from an <see cref="IExecutableInfo"/>
+    /// Represents the result of a Application Command fetch process from an <see cref="ICommandInfo"/>
     /// </summary>
     public struct FetchResult : IResult
     {

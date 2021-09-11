@@ -9,6 +9,7 @@ namespace Discord.SlashCommands.Builders
     internal class ModuleBuilder
     {
         private readonly List<Attribute> _attributes;
+        private readonly List<PreconditionAttribute> _preconditions;
         private readonly List<ModuleBuilder> _subModules;
         private readonly List<SlashCommandBuilder> _slashCommands;
         private readonly List<ContextCommandBuilder> _contextCommands;
@@ -23,6 +24,7 @@ namespace Discord.SlashCommands.Builders
         public bool DefaultPermission { get; set; } = true;
 
         public IReadOnlyList<Attribute> Attributes => _attributes;
+        public IReadOnlyCollection<PreconditionAttribute> Preconditions => _preconditions;
         public IReadOnlyList<ModuleBuilder> SubModules => _subModules;
         public IReadOnlyList<SlashCommandBuilder> SlashCommands => _slashCommands;
         public IReadOnlyList<ContextCommandBuilder> ContextCommands => _contextCommands;
@@ -63,6 +65,12 @@ namespace Discord.SlashCommands.Builders
         public ModuleBuilder AddAttributes(params Attribute[] attributes)
         {
             _attributes.AddRange(attributes);
+            return this;
+        }
+
+        public ModuleBuilder AddPreconditions(params PreconditionAttribute[] preconditions)
+        {
+            _preconditions.AddRange(preconditions);
             return this;
         }
 

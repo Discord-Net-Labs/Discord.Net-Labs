@@ -2,7 +2,7 @@ using System;
 
 namespace Discord.SlashCommands
 {
-    internal struct SearchResult<T> : IResult where T: class, IExecutableInfo
+    internal struct SearchResult<T> : IResult where T: class, ICommandInfo
     {
         public string Text { get; }
         public T Command { get; }
