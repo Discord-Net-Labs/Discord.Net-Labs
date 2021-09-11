@@ -6,15 +6,16 @@
     <Authors>Discord.Net Contributors</Authors>
     <RootNamespace>Discord.SlashCommands</RootNamespace>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Attributes\Preconditions\**" />
+    <EmbeddedResource Remove="Attributes\Preconditions\**" />
+    <None Remove="Attributes\Preconditions\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Discord.Net.Core\Discord.Net.Core.csproj" />
     <ProjectReference Include="..\Discord.Net.Rest\Discord.Net.Rest.csproj" />
     <ProjectReference Include="..\Discord.Net.WebSocket\Discord.Net.WebSocket.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Attributes\Preconditions\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -97,9 +97,4 @@ namespace Discord.SlashCommands.Builders
         ICommandInfo ICommandBuilder.Build (ModuleInfo module, SlashCommandService commandService) =>
             Build(module, commandService);
     }
-
-    internal abstract class CommandBuilder
-    {
-
-    }
 }
