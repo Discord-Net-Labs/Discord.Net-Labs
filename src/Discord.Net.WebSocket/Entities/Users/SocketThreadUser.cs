@@ -47,6 +47,9 @@ namespace Discord.WebSocket
             => GuildUser.IsPending;
 
         /// <inheritdoc/>
+        public int Hierarchy => 0;
+
+        /// <inheritdoc/>
         public override string AvatarId
         {
             get => GuildUser.AvatarId;

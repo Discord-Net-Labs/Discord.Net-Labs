@@ -84,6 +84,9 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         bool? IGuildUser.IsPending => null;
         /// <inheritdoc />
+        public int Hierarchy => 0;
+
+        /// <inheritdoc />
         GuildPermissions IGuildUser.GuildPermissions => GuildPermissions.Webhook;
 
         /// <inheritdoc />
