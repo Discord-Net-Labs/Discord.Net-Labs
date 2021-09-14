@@ -46,6 +46,8 @@ namespace Discord
             {
                 if (value?.Length > 100)
                     throw new ArgumentException("Description length must be less than or equal to 100");
+                if (value?.Length < 1)
+                    throw new ArgumentException("Description length must at least 1 character in length");
                 _description = value;
             }
         }
