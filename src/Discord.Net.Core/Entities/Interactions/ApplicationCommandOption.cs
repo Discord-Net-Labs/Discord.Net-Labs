@@ -45,7 +45,7 @@ namespace Discord
             set
             {
                 if (value?.Length > 100)
-                    throw new ArgumentException("Name length must be less than or equal to 32");
+                    throw new ArgumentException("Description length must be less than or equal to 100");
                 _description = value;
             }
         }

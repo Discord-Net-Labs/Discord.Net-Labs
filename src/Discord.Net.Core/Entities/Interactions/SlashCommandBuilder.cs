@@ -319,7 +319,7 @@ namespace Discord
                 if (value?.Length > SlashCommandBuilder.MaxDescriptionLength)
                     throw new ArgumentException($"Description length must be less than or equal to {SlashCommandBuilder.MaxDescriptionLength}");
                 if (value?.Length < 1)
-                    throw new ArgumentException("Name length must at least 1 character in length");
+                    throw new ArgumentException("Description length must at least 1 character in length");
 
                 _description = value;
             }
