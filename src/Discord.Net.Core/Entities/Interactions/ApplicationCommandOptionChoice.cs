@@ -30,12 +30,10 @@ namespace Discord
         }
 
         /// <summary>
-        /// <para>
         ///     The value of this choice.
-        ///</para>
-        /// <para>
-        ///     Discord only accepts int and string as the input.
-        ///</para>
+        ///     <note type="warning">
+        ///         Discord only accepts int and string as the input.
+        ///     </note>
         /// </summary>
         public object Value
         {
