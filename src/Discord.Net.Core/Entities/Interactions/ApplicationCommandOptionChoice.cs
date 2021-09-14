@@ -29,10 +29,13 @@ namespace Discord
             }
         }
 
-        // Note: discord allows strings & ints as values. how should that be handled?
-        // should we make this an object and then just type check it?
         /// <summary>
+        /// <para>
         ///     The value of this choice.
+        ///</para>
+        /// <para>
+        ///     Discord only accepts int and string as the input.
+        ///</para>
         /// </summary>
         public object Value
         {
