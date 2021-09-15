@@ -12,7 +12,7 @@ namespace Discord.Net.Queue
 {
     internal class RequestQueue : IDisposable
     {
-        public event Func<BucketId, RateLimitInfo?, string, Task> RateLimitTriggered;
+        public event Func<BucketId, RateLimitInfo?, IRequest, string, Task> RateLimitTriggered;
 
         private readonly ConcurrentDictionary<BucketId, object> _buckets;
         private readonly SemaphoreSlim _tokenLock;
@@ -145,9 +145,9 @@ namespace Discord.Net.Queue
             }
             return (RequestBucket)obj;
         }
-        internal async Task RaiseRateLimitTriggered(BucketId bucketId, RateLimitInfo? info, string endpoint)
+        internal async Task RaiseRateLimitTriggered(BucketId bucketId, RateLimitInfo? info, IRequest request, string endpoint)
         {
-            await RateLimitTriggered(bucketId, info, endpoint).ConfigureAwait(false);
+            await RateLimitTriggered(bucketId, info, request, endpoint).ConfigureAwait(false);
         }
         internal (RequestBucket, BucketId) UpdateBucketHash(BucketId id, string discordHash)
         {
