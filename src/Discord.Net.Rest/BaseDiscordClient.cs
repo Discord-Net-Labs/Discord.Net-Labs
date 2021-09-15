@@ -46,9 +46,11 @@ namespace Discord.Rest
             _restLogger = LogManager.CreateLogger("Rest");
             _isFirstLogin = config.DisplayInitialLog;
 
-            ApiClient.RequestQueue.RateLimitTriggered += async (id, info, endpoint) =>
+            ApiClient.RequestQueue.RateLimitTriggered += async (id, info, request, endpoint) =>
             {
-                if (info == null)
+                if (request.Options.UseInternalRatelimiting ?? false)
+                    await _restLogger.VerboseAsync($"Internal Rate limit triggered: {endpoint} {(id.IsHashBucket ? $"(Bucket: {id.BucketHash})" : "")}").ConfigureAwait(false);
+                else if (info == null)
                     await _restLogger.VerboseAsync($"Preemptive Rate limit triggered: {endpoint} {(id.IsHashBucket ? $"(Bucket: {id.BucketHash})" : "")}").ConfigureAwait(false);
                 else
                     await _restLogger.WarningAsync($"Rate limit triggered: {endpoint} {(id.IsHashBucket ? $"(Bucket: {id.BucketHash})" : "")}").ConfigureAwait(false);

@@ -397,6 +397,16 @@
                 The currently set <see cref="T:Discord.RetryMode"/>.
             </returns>
         </member>
+        <member name="P:Discord.DiscordConfig.BuiltInRatelimit">
+            <summary>
+                Gets or sets how the internal ratelimit system works. When this property is set
+                to <see langword="true"/> the library will prevent your application from getting ratelimited
+                by waiting for ratelimits to expire.
+            </summary>
+            <returns>
+                The currently set internal ratelimit configuration.
+            </returns>
+        </member>
         <member name="P:Discord.DiscordConfig.LogLevel">
             <summary>
                 Gets or sets the minimum log level severity that will be sent to the Log event.
@@ -11943,6 +11953,11 @@
         <member name="P:Discord.RequestOptions.RatelimitCallback">
             <summary>
                 Gets or sets the callback to execute regarding ratelimits for this request.
+            </summary>
+        </member>
+        <member name="P:Discord.RequestOptions.UseInternalRatelimiting">
+            <summary>
+                Gets or sets whether or not the request will use internal ratelimiting.
             </summary>
         </member>
         <member name="M:Discord.RequestOptions.#ctor">

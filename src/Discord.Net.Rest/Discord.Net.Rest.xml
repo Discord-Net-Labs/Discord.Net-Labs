@@ -44,7 +44,7 @@
                 Gets the name of the application.
             </summary>
         </member>
-        <member name="M:Discord.API.DiscordRestApiClient.#ctor(Discord.Net.Rest.RestClientProvider,System.String,Discord.RetryMode,Newtonsoft.Json.JsonSerializer,System.Boolean)">
+        <member name="M:Discord.API.DiscordRestApiClient.#ctor(Discord.Net.Rest.RestClientProvider,System.String,Discord.RetryMode,Newtonsoft.Json.JsonSerializer,System.Boolean,System.Boolean)">
             <exception cref="T:System.ArgumentException">Unknown OAuth token type.</exception>
         </member>
         <member name="M:Discord.API.DiscordRestApiClient.SetBaseUrl(System.String)">

@@ -54,6 +54,7 @@ namespace Discord.API
             JsonSerializer serializer = null, bool useSystemClock = true, bool useInternalRatelimiting = true)
         {
             _restClientProvider = restClientProvider;
+            UseInternalRatelimiting = useInternalRatelimiting;
             UserAgent = userAgent;
             DefaultRetryMode = defaultRetryMode;
             _serializer = serializer ?? new JsonSerializer { ContractResolver = new DiscordContractResolver(), NullValueHandling = NullValueHandling.Include };
