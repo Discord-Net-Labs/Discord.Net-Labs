@@ -52,7 +52,7 @@ namespace Discord.SlashCommands.Builders
 
                 var moduleInfo = builder.Build();
 
-                ISlashModuleBase instance = ReflectionUtils.CreateObject<ISlashModuleBase>(type, commandService, services);
+                ISlashModuleBase instance = ReflectionUtils<ISlashModuleBase>.CreateObject(type, commandService, services);
                 try
                 {
                     instance.OnModuleBuilding(commandService, moduleInfo);
@@ -109,12 +109,8 @@ namespace Discord.SlashCommands.Builders
             var validContextCommands = methods.Where(IsValidContextCommandDefinition);
             var validInteractions = methods.Where(IsValidInteractionDefinition);
 
-            Func<IServiceProvider, ISlashModuleBase> createInstance;
-
-            if (commandService._useCompiledLambda)
-                createInstance = ReflectionUtils.CreateLambdaBuilder<ISlashModuleBase>(typeInfo, commandService);
-            else
-                createInstance = ReflectionUtils.CreateBuilder<ISlashModuleBase>(typeInfo, commandService);
+            Func<IServiceProvider, ISlashModuleBase> createInstance = commandService._useCompiledLambda ?
+                ReflectionUtils<ISlashModuleBase>.CreateLambdaBuilder(typeInfo, commandService) : ReflectionUtils<ISlashModuleBase>.CreateBuilder(typeInfo, commandService);
 
             foreach (var method in validSlashCommands)
                 builder.AddSlashCommand(x => BuildSlashCommand(x, createInstance, method, commandService, services));
@@ -188,8 +184,7 @@ namespace Discord.SlashCommands.Builders
             foreach (var parameter in parameters)
                 builder.AddParameter(x => BuildSlashParameter(x, parameter));
 
-            builder.Callback = commandService._useCompiledLambda ? CreateLambdaCallback(createInstance, methodInfo, commandService) :
-                CreateCallback(createInstance, methodInfo, commandService);
+            builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
 
         private static void BuildContextCommand (ContextCommandBuilder builder, Func<IServiceProvider, ISlashModuleBase> createInstance, MethodInfo methodInfo,
@@ -231,8 +226,7 @@ namespace Discord.SlashCommands.Builders
             foreach (var parameter in parameters)
                 builder.AddParameter(x => BuildParameter(x, parameter));
 
-            builder.Callback = commandService._useCompiledLambda ? CreateLambdaCallback(createInstance, methodInfo, commandService) :
-                CreateCallback(createInstance, methodInfo, commandService);
+            builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
 
         private static void BuildInteraction (InteractionBuilder builder, Func<IServiceProvider, ISlashModuleBase> createInstance, MethodInfo methodInfo,
@@ -269,54 +263,15 @@ namespace Discord.SlashCommands.Builders
             foreach (var parameter in parameters)
                 builder.AddParameter(x => BuildParameter(x, parameter));
 
-            builder.Callback = commandService._useCompiledLambda ? CreateLambdaCallback(createInstance, methodInfo, commandService) :
-                CreateCallback(createInstance, methodInfo, commandService);
-        }
-
-        private static ExecuteCallback CreateLambdaCallback (Func<IServiceProvider, ISlashModuleBase> createInstance,
-            MethodInfo methodInfo, SlashCommandService commandService)
-        {
-            Func<ISlashModuleBase, object[], Task> methodInvoker = ReflectionUtils.CreateMethodInvoker<ISlashModuleBase>(methodInfo);
-
-            async Task<IResult> ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo)
-            {
-                var instance = createInstance(serviceProvider);
-                instance.SetContext(context);
-
-                try
-                {
-                    instance.BeforeExecute(commandInfo);
-                    var task = methodInvoker(instance, args) ?? Task.Delay(0);
-
-                    if (task is Task<RuntimeResult> runtimeTask)
-                    {
-                        return await runtimeTask.ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await task.ConfigureAwait(false);
-                        return ExecuteResult.FromSuccess();
-
-                    }
-                }
-                catch (Exception ex)
-                {
-                    await commandService._cmdLogger.ErrorAsync(ex);
-                    return ExecuteResult.FromError(ex);
-                }
-                finally
-                {
-                    instance.AfterExecute(commandInfo);
-                    ( instance as IDisposable )?.Dispose();
-                }
-            }
-
-            return ExecuteCallback;
+            builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
 
         private static ExecuteCallback CreateCallback (Func<IServiceProvider, ISlashModuleBase> createInstance,
             MethodInfo methodInfo, SlashCommandService commandService)
         {
+            Func<ISlashModuleBase, object[], Task> commandInvoker = commandService._useCompiledLambda ?
+                ReflectionUtils<ISlashModuleBase>.CreateMethodInvoker(methodInfo) : (module, args) => methodInfo.Invoke(module, args) as Task;
+
             async Task<IResult> ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo)
             {
                 var instance = createInstance(serviceProvider);
@@ -325,7 +280,7 @@ namespace Discord.SlashCommands.Builders
                 try
                 {
                     instance.BeforeExecute(commandInfo);
-                    var task = methodInfo.Invoke(instance, args) as Task ?? Task.Delay(0);
+                    var task = commandInvoker(instance, args) ?? Task.Delay(0);
 
                     if (task is Task<RuntimeResult> runtimeTask)
                     {
@@ -340,7 +295,7 @@ namespace Discord.SlashCommands.Builders
                 }
                 catch (Exception ex)
                 {
-                    await commandService._cmdLogger.ErrorAsync(ex);
+                    await commandService._cmdLogger.ErrorAsync(ex).ConfigureAwait(false);
                     return ExecuteResult.FromError(ex);
                 }
                 finally

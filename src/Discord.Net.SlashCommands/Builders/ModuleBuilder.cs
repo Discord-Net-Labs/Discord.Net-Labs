@@ -42,6 +42,7 @@ namespace Discord.SlashCommands.Builders
             _slashCommands = new List<SlashCommandBuilder>();
             _contextCommands = new List<ContextCommandBuilder>();
             _interactions = new List<InteractionBuilder>();
+            _preconditions = new List<PreconditionAttribute>();
         }
 
         public ModuleBuilder WithGroupName (string name)

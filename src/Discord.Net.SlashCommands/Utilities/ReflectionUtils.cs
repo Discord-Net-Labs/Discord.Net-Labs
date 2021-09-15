@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
 {
-    internal static class ReflectionUtils
+    internal static class ReflectionUtils<T>
     {
         private static readonly TypeInfo ObjectTypeInfo = typeof(object).GetTypeInfo();
 
-        internal static T CreateObject<T> (TypeInfo typeInfo, SlashCommandService commandService, IServiceProvider services = null) =>
-            CreateBuilder<T>(typeInfo, commandService)(services);
+        internal static T CreateObject (TypeInfo typeInfo, SlashCommandService commandService, IServiceProvider services = null) =>
+            CreateBuilder(typeInfo, commandService)(services);
 
-        internal static Func<IServiceProvider, T> CreateBuilder<T> (TypeInfo typeInfo, SlashCommandService commandService)
+        internal static Func<IServiceProvider, T> CreateBuilder (TypeInfo typeInfo, SlashCommandService commandService)
         {
             var constructor = GetConstructor(typeInfo);
             var parameters = constructor.GetParameters();
@@ -26,14 +26,14 @@ namespace Discord.SlashCommands
                 for (int i = 0; i < parameters.Length; i++)
                     args[i] = GetMember(commandService, services, parameters[i].ParameterType, typeInfo);
 
-                var obj = InvokeConstructor<T>(constructor, args, typeInfo);
+                var obj = InvokeConstructor(constructor, args, typeInfo);
                 foreach (var property in properties)
                     property.SetValue(obj, GetMember(commandService, services, property.PropertyType, typeInfo));
                 return obj;
             };
         }
 
-        private static T InvokeConstructor<T> (ConstructorInfo constructor, object[] args, TypeInfo ownerType)
+        private static T InvokeConstructor (ConstructorInfo constructor, object[] args, TypeInfo ownerType)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace Discord.SlashCommands
             throw new InvalidOperationException($"Failed to create \"{ownerType.FullName}\", dependency \"{memberType.Name}\" was not found.");
         }
 
-        internal static Func<T, object[], Task> CreateMethodInvoker<T> ( MethodInfo methodInfo )
+        internal static Func<T, object[], Task> CreateMethodInvoker ( MethodInfo methodInfo )
         {
             var parameters = methodInfo.GetParameters();
             var paramsExp = new Expression[parameters.Length];
@@ -106,7 +106,7 @@ namespace Discord.SlashCommands
         /// <summary>
         /// Create a type initializer using compiled lambda expressions
         /// </summary>
-        internal static Func<IServiceProvider, T> CreateLambdaBuilder<T> (TypeInfo typeInfo, SlashCommandService commandService)
+        internal static Func<IServiceProvider, T> CreateLambdaBuilder (TypeInfo typeInfo, SlashCommandService commandService)
         {
             var constructor = GetConstructor(typeInfo);
             var parameters = constructor.GetParameters();
