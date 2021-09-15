@@ -397,11 +397,9 @@
                 The currently set <see cref="T:Discord.RetryMode"/>.
             </returns>
         </member>
-        <member name="P:Discord.DiscordConfig.BuiltInRatelimit">
+        <member name="P:Discord.DiscordConfig.UseInternalRatelimiting">
             <summary>
-                Gets or sets how the internal ratelimit system works. When this property is set
-                to <see langword="true"/> the library will prevent your application from getting ratelimited
-                by waiting for ratelimits to expire.
+                Gets or sets whether or not the library will limit your requests. When set to <see langword="true"/> the library will prevent
             </summary>
             <returns>
                 The currently set internal ratelimit configuration.
@@ -4534,6 +4532,9 @@
         <member name="P:Discord.ApplicationCommandOptionChoiceProperties.Value">
             <summary>
                 The value of this choice.
+                <note type="warning">
+                    Discord only accepts int and string as the input.
+                </note>
             </summary>
         </member>
         <member name="T:Discord.ApplicationCommandOptionType">

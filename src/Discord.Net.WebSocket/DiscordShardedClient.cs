@@ -106,7 +106,7 @@ namespace Discord.WebSocket
             }
         }
         private static API.DiscordSocketApiClient CreateApiClient(DiscordSocketConfig config)
-            => new API.DiscordSocketApiClient(config.RestClientProvider, config.WebSocketProvider, DiscordRestConfig.UserAgent);
+            => new API.DiscordSocketApiClient(config.RestClientProvider, config.WebSocketProvider, DiscordRestConfig.UserAgent, useInternalRatelimiting: config.UseInternalRatelimiting);
 
         internal async Task AcquireIdentifyLockAsync(int shardId, CancellationToken token)
         {
