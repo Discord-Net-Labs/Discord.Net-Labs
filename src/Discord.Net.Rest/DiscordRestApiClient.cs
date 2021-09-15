@@ -46,11 +46,12 @@ namespace Discord.API
         internal IRestClient RestClient { get; private set; }
         internal ulong? CurrentUserId { get; set; }
         internal bool UseSystemClock { get; set; }
+        internal bool UseInternalRatelimiting { get; set; }
         internal JsonSerializer Serializer => _serializer;
 
         /// <exception cref="ArgumentException">Unknown OAuth token type.</exception>
         public DiscordRestApiClient(RestClientProvider restClientProvider, string userAgent, RetryMode defaultRetryMode = RetryMode.AlwaysRetry,
-            JsonSerializer serializer = null, bool useSystemClock = true)
+            JsonSerializer serializer = null, bool useSystemClock = true, bool useInternalRatelimiting = true)
         {
             _restClientProvider = restClientProvider;
             UserAgent = userAgent;
@@ -261,6 +262,8 @@ namespace Discord.API
                 request.Options.RetryMode = DefaultRetryMode;
             if (request.Options.UseSystemClock == null)
                 request.Options.UseSystemClock = UseSystemClock;
+            if (request.Options.UseInternalRatelimiting == null)
+                request.Options.UseInternalRatelimiting = UseInternalRatelimiting;
 
             var stopwatch = Stopwatch.StartNew();
             var responseStream = await RequestQueue.SendAsync(request).ConfigureAwait(false);

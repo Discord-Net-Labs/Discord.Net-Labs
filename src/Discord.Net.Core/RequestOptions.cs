@@ -64,6 +64,11 @@ namespace Discord
         /// </summary>
         public Func<IRateLimitInfo, Task> RatelimitCallback { get; set; }
 
+        /// <summary>
+        ///     Gets or sets whether or not the request will use internal ratelimiting.
+        /// </summary>
+        public bool? UseInternalRatelimiting { get; set; }
+
         internal bool IgnoreState { get; set; }
         internal BucketId BucketId { get; set; }
         internal bool IsClientBucket { get; set; }
