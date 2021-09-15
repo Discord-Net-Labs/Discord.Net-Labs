@@ -188,7 +188,8 @@ namespace Discord.SlashCommands.Builders
             foreach (var parameter in parameters)
                 builder.AddParameter(x => BuildSlashParameter(x, parameter));
 
-            builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
+            builder.Callback = commandService._useCompiledLambda ? CreateLambdaCallback(createInstance, methodInfo, commandService) :
+                CreateCallback(createInstance, methodInfo, commandService);
         }
 
         private static void BuildContextCommand (ContextCommandBuilder builder, Func<IServiceProvider, ISlashModuleBase> createInstance, MethodInfo methodInfo,
@@ -230,7 +231,8 @@ namespace Discord.SlashCommands.Builders
             foreach (var parameter in parameters)
                 builder.AddParameter(x => BuildParameter(x, parameter));
 
-            builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
+            builder.Callback = commandService._useCompiledLambda ? CreateLambdaCallback(createInstance, methodInfo, commandService) :
+                CreateCallback(createInstance, methodInfo, commandService);
         }
 
         private static void BuildInteraction (InteractionBuilder builder, Func<IServiceProvider, ISlashModuleBase> createInstance, MethodInfo methodInfo,
@@ -267,13 +269,14 @@ namespace Discord.SlashCommands.Builders
             foreach (var parameter in parameters)
                 builder.AddParameter(x => BuildParameter(x, parameter));
 
-            builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
+            builder.Callback = commandService._useCompiledLambda ? CreateLambdaCallback(createInstance, methodInfo, commandService) :
+                CreateCallback(createInstance, methodInfo, commandService);
         }
 
-        private static ExecuteCallback CreateCallback (Func<IServiceProvider, ISlashModuleBase> createInstance,
+        private static ExecuteCallback CreateLambdaCallback (Func<IServiceProvider, ISlashModuleBase> createInstance,
             MethodInfo methodInfo, SlashCommandService commandService)
         {
-            var methodInvoker = ReflectionUtils.CreateMethodInvoker<ISlashModuleBase>(methodInfo);
+            Func<ISlashModuleBase, object[], Task> methodInvoker = ReflectionUtils.CreateMethodInvoker<ISlashModuleBase>(methodInfo);
 
             async Task<IResult> ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo)
             {
@@ -284,6 +287,45 @@ namespace Discord.SlashCommands.Builders
                 {
                     instance.BeforeExecute(commandInfo);
                     var task = methodInvoker(instance, args) ?? Task.Delay(0);
+
+                    if (task is Task<RuntimeResult> runtimeTask)
+                    {
+                        return await runtimeTask.ConfigureAwait(false);
+                    }
+                    else
+                    {
+                        await task.ConfigureAwait(false);
+                        return ExecuteResult.FromSuccess();
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await commandService._cmdLogger.ErrorAsync(ex);
+                    return ExecuteResult.FromError(ex);
+                }
+                finally
+                {
+                    instance.AfterExecute(commandInfo);
+                    ( instance as IDisposable )?.Dispose();
+                }
+            }
+
+            return ExecuteCallback;
+        }
+
+        private static ExecuteCallback CreateCallback (Func<IServiceProvider, ISlashModuleBase> createInstance,
+            MethodInfo methodInfo, SlashCommandService commandService)
+        {
+            async Task<IResult> ExecuteCallback (ISlashCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo)
+            {
+                var instance = createInstance(serviceProvider);
+                instance.SetContext(context);
+
+                try
+                {
+                    instance.BeforeExecute(commandInfo);
+                    var task = methodInfo.Invoke(instance, args) as Task ?? Task.Delay(0);
 
                     if (task is Task<RuntimeResult> runtimeTask)
                     {

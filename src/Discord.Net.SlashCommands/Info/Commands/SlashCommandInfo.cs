@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
@@ -79,7 +80,7 @@ namespace Discord.SlashCommands
                     if (parameter.IsRequired)
                         throw new InvalidOperationException("Command was invoked with too few parameters");
                     else
-                        result.Add(Type.Missing);
+                        result.Add(parameter.DefaultValue);
                 }
                 else
                 {

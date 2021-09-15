@@ -89,12 +89,14 @@ namespace Discord.SlashCommands
 
             for (var i = 0; i < parameters.Length; i++)
             {
+                var parameter = parameters[i];
+
                 var indexExp = Expression.Constant(i);
                 var accessExp = Expression.ArrayIndex(argsExp, indexExp);
-                paramsExp[i] = Expression.Convert(accessExp, parameters[i].ParameterType);
+                paramsExp[i] = Expression.Convert(accessExp, parameter.ParameterType);
             }
 
-            var callExp = Expression.Call(Expression.Convert(instanceExp, methodInfo.DeclaringType), methodInfo, paramsExp);
+            var callExp = Expression.Call(Expression.Convert(instanceExp, methodInfo.ReflectedType), methodInfo, paramsExp);
             var finalExp = Expression.Convert(callExp, typeof(Task));
             var lambda = Expression.Lambda<Func<T, object[], Task>>(finalExp, instanceExp, argsExp).Compile();
 

@@ -22,7 +22,7 @@ namespace Discord.SlashCommands
         public static new PreconditionGroupResult FromError (IResult result) =>
             new PreconditionGroupResult(result.Error, result.ErrorReason, null);
 
-        public static new PreconditionGroupResult FromError (string reason, IEnumerable<PreconditionResult> results) =>
+        public static PreconditionGroupResult FromError (string reason, IEnumerable<PreconditionResult> results) =>
             new PreconditionGroupResult(SlashCommandError.UnmetPrecondition, reason, results);
     }
 }
