@@ -149,6 +149,38 @@
         <member name="M:Discord.Net.Converters.ImageConverter.ReadJson(Newtonsoft.Json.JsonReader,System.Type,System.Object,Newtonsoft.Json.JsonSerializer)">
             <exception cref="T:System.InvalidOperationException">Cannot read from image.</exception>
         </member>
+        <member name="T:Discord.Net.RateLimitInfo">
+            <summary>
+                Represents a REST-Based ratelimit info.
+            </summary>
+        </member>
+        <member name="P:Discord.Net.RateLimitInfo.IsGlobal">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Net.RateLimitInfo.Limit">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Net.RateLimitInfo.Remaining">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Net.RateLimitInfo.RetryAfter">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Net.RateLimitInfo.Reset">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Net.RateLimitInfo.ResetAfter">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Net.RateLimitInfo.Bucket">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Net.RateLimitInfo.Lag">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Net.RateLimitInfo.Endpoint">
+            <inheritdoc/>
+        </member>
         <member name="P:Discord.Rest.BaseDiscordClient.LoginState">
             <summary>
                 Gets the login state of the client.
@@ -3910,6 +3942,9 @@
             <inheritdoc/>
         </member>
         <member name="M:Discord.Rest.RestApplicationCommand.ModifyAsync(System.Action{Discord.ApplicationCommandProperties},Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.Rest.RestApplicationCommand.ModifyAsync``1(System.Action{``0},Discord.RequestOptions)">
             <inheritdoc/>
         </member>
         <member name="T:Discord.Rest.RestApplicationCommandChoice">
@@ -3961,7 +3996,7 @@
         <member name="M:Discord.Rest.RestGlobalCommand.DeleteAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.Rest.RestGlobalCommand.ModifyAsync(System.Action{Discord.ApplicationCommandProperties},Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestGlobalCommand.ModifyAsync``1(System.Action{``0},Discord.RequestOptions)">
             <summary>
                 Modifies this <see cref="T:Discord.Rest.RestApplicationCommand"/>.
             </summary>
@@ -3984,7 +4019,7 @@
         <member name="M:Discord.Rest.RestGuildCommand.DeleteAsync(Discord.RequestOptions)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.Rest.RestGuildCommand.ModifyAsync(System.Action{Discord.ApplicationCommandProperties},Discord.RequestOptions)">
+        <member name="M:Discord.Rest.RestGuildCommand.ModifyAsync``1(System.Action{``0},Discord.RequestOptions)">
             <summary>
                 Modifies this <see cref="T:Discord.Rest.RestApplicationCommand"/>.
             </summary>
@@ -4676,6 +4711,9 @@
         <member name="P:Discord.Rest.RestGuildUser.IsPending">
             <inheritdoc />
         </member>
+        <member name="P:Discord.Rest.RestGuildUser.Hierarchy">
+            <inheritdoc />
+        </member>
         <member name="P:Discord.Rest.RestGuildUser.GuildPermissions">
             <inheritdoc />
             <exception cref="T:System.InvalidOperationException" accessor="get">Resolving permissions requires the parent guild to be downloaded.</exception>
@@ -4917,6 +4955,9 @@
             <inheritdoc />
         </member>
         <member name="P:Discord.Rest.RestWebhookUser.Discord#IGuildUser#IsPending">
+            <inheritdoc />
+        </member>
+        <member name="P:Discord.Rest.RestWebhookUser.Discord#IGuildUser#Hierarchy">
             <inheritdoc />
         </member>
         <member name="P:Discord.Rest.RestWebhookUser.Discord#IGuildUser#GuildPermissions">

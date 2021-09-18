@@ -37,12 +37,12 @@ namespace Discord
             set
             {
                 Preconditions.NotNullOrEmpty(value, nameof(Name));
-                Preconditions.AtLeast(value.Length, 3, nameof(Name));
+                Preconditions.AtLeast(value.Length, 1, nameof(Name));
                 Preconditions.AtMost(value.Length, MaxNameLength, nameof(Name));
 
                 // Discord updated the docs, this regex prevents special characters like @!$%(... etc,
                 // https://discord.com/developers/docs/interactions/slash-commands#applicationcommand
-                if (!Regex.IsMatch(value, @"^[\w-]{3,32}$"))
+                if (!Regex.IsMatch(value, @"^[\w-]{1,32}$"))
                     throw new ArgumentException("Command name cannot contain any special characters or whitespaces!");
 
                 _name = value;
@@ -169,17 +169,17 @@ namespace Discord
         {
             // Make sure the name matches the requirements from discord
             Preconditions.NotNullOrEmpty(name, nameof(name));
-            Preconditions.AtLeast(name.Length, 3, nameof(name));
+            Preconditions.AtLeast(name.Length, 1, nameof(name));
             Preconditions.AtMost(name.Length, MaxNameLength, nameof(name));
 
             // Discord updated the docs, this regex prevents special characters like @!$%( and s p a c e s.. etc,
             // https://discord.com/developers/docs/interactions/slash-commands#applicationcommand
-            if (!Regex.IsMatch(name, @"^[\w-]{3,32}$"))
+            if (!Regex.IsMatch(name, @"^[\w-]{1,32}$"))
                 throw new ArgumentException("Command name cannot contian any special characters or whitespaces!", nameof(name));
 
             // same with description
             Preconditions.NotNullOrEmpty(description, nameof(description));
-            Preconditions.AtLeast(description.Length, 3, nameof(description));
+            Preconditions.AtLeast(description.Length, 1, nameof(description));
             Preconditions.AtMost(description.Length, MaxDescriptionLength, nameof(description));
 
             // make sure theres only one option with default set to true
@@ -296,12 +296,12 @@ namespace Discord
             set
             {
                 if (value?.Length > SlashCommandBuilder.MaxNameLength)
-                    throw new ArgumentException("Name length must be less than or equal to 32");
+                    throw new ArgumentException($"Name length must be less than or equal to {SlashCommandBuilder.MaxNameLength}");
                 if (value?.Length < 1)
                     throw new ArgumentException("Name length must at least 1 characters in length");
 
                 if (value != null)
-                    if (!Regex.IsMatch(value, @"^[\w-]{3,32}$"))
+                    if (!Regex.IsMatch(value, @"^[\w-]{1,32}$"))
                         throw new ArgumentException("Option name cannot contian any special characters or whitespaces!");
 
                 _name = value;
@@ -317,9 +317,9 @@ namespace Discord
             set
             {
                 if (value?.Length > SlashCommandBuilder.MaxDescriptionLength)
-                    throw new ArgumentException("Description length must be less than or equal to 100");
+                    throw new ArgumentException($"Description length must be less than or equal to {SlashCommandBuilder.MaxDescriptionLength}");
                 if (value?.Length < 1)
-                    throw new ArgumentException("Name length must at least 1 character in length");
+                    throw new ArgumentException("Description length must at least 1 character in length");
 
                 _description = value;
             }
@@ -392,17 +392,17 @@ namespace Discord
         {
             // Make sure the name matches the requirements from discord
             Preconditions.NotNullOrEmpty(name, nameof(name));
-            Preconditions.AtLeast(name.Length, 3, nameof(name));
+            Preconditions.AtLeast(name.Length, 1, nameof(name));
             Preconditions.AtMost(name.Length, SlashCommandBuilder.MaxNameLength, nameof(name));
 
             // Discord updated the docs, this regex prevents special characters like @!$%( and s p a c e s.. etc,
             // https://discord.com/developers/docs/interactions/slash-commands#applicationcommand
-            if (!Regex.IsMatch(name, @"^[\w-]{3,32}$"))
+            if (!Regex.IsMatch(name, @"^[\w-]{1,32}$"))
                 throw new ArgumentException("Command name cannot contian any special characters or whitespaces!", nameof(name));
 
             // same with description
             Preconditions.NotNullOrEmpty(description, nameof(description));
-            Preconditions.AtLeast(description.Length, 3, nameof(description));
+            Preconditions.AtLeast(description.Length, 1, nameof(description));
             Preconditions.AtMost(description.Length, SlashCommandBuilder.MaxDescriptionLength, nameof(description));
 
             // make sure theres only one option with default set to true
