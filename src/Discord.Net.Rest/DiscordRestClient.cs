@@ -30,7 +30,7 @@ namespace Discord.Rest
         internal DiscordRestClient(DiscordRestConfig config, API.DiscordRestApiClient api) : base(config, api) { }
 
         private static API.DiscordRestApiClient CreateApiClient(DiscordRestConfig config)
-            => new API.DiscordRestApiClient(config.RestClientProvider, DiscordRestConfig.UserAgent, useSystemClock: config.UseSystemClock, useInternalRatelimiting: config.UseInternalRatelimiting);
+            => new API.DiscordRestApiClient(config.RestClientProvider, DiscordRestConfig.UserAgent, useSystemClock: config.UseSystemClock);
 
         internal override void Dispose(bool disposing)
         {

@@ -125,15 +125,6 @@ namespace Discord
         public RetryMode DefaultRetryMode { get; set; } = RetryMode.AlwaysRetry;
 
         /// <summary>
-        ///     Gets or sets whether or not the library will limit your requests. When set to <see langword="true"/> the library will prevent
-        ///     your bot from getting ratelimited by discord.
-        /// </summary>
-        /// <returns>
-        ///     The currently set internal ratelimit configuration.
-        /// </returns>
-        public bool UseInternalRatelimiting { get; set; } = true;
-
-        /// <summary>
         ///     Gets or sets the minimum log level severity that will be sent to the Log event.
         /// </summary>
         /// <returns>

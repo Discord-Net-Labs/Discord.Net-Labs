@@ -79,7 +79,7 @@ namespace Discord.WebSocket
             : base(config, client) => BaseConfig = config;
         private static DiscordSocketApiClient CreateApiClient(DiscordSocketConfig config)
             => new DiscordSocketApiClient(config.RestClientProvider, config.WebSocketProvider, DiscordRestConfig.UserAgent,
-				useSystemClock: config.UseSystemClock, useInternalRatelimiting: config.UseInternalRatelimiting);
+                useSystemClock: config.UseSystemClock);
 
         /// <summary>
         ///     Gets a Discord application information for the logged-in user.
