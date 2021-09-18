@@ -50,7 +50,8 @@ namespace Discord.SlashCommands
         public static ApplicationCommandProperties ToApplicationCommandProps (this ContextCommandInfo commandInfo) =>
             new ContextCommandProperties(commandInfo.CommandType)
             {
-                Name = commandInfo.Name
+                Name = commandInfo.Name,
+                DefaultPermission = commandInfo.DefaultPermission
             };
 
         // Modules
@@ -141,7 +142,8 @@ namespace Discord.SlashCommands
                 case ApplicationCommandType.Message:
                     return new ContextCommandProperties(command.Type)
                     {
-                        Name = command.Name
+                        Name = command.Name,
+                        DefaultPermission = command.DefaultPermission
                     };
                 default:
                     throw new InvalidOperationException($"Cannot create command properties for command type {command.Type}");
