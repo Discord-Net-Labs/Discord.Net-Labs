@@ -2,6 +2,7 @@ using Discord.SlashCommands.Builders;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 
 namespace Discord.SlashCommands
 {
@@ -10,6 +11,8 @@ namespace Discord.SlashCommands
     /// </summary>
     public class ModuleInfo
     {
+        internal ILookup<string, PreconditionAttribute> _groupedPreconditions { get; }
+
         /// <summary>
         /// Command service this module belongs to
         /// </summary>
@@ -109,13 +112,9 @@ namespace Discord.SlashCommands
             SubModules = BuildSubModules(builder).ToImmutableArray();;
             Attributes = BuildAttributes(builder).ToImmutableArray();
             Preconditions = BuildPreconditions(builder).ToImmutableArray();
-            IsTopLevel = ( parent == null || !parent.IsTopLevel ) && IsSlashGroup;
+            IsTopLevel = CheckTopLevel(parent);
 
-            if (IsSlashGroup)
-            {
-                Discord.Preconditions.SlashCommandName(SlashGroupName, nameof(SlashGroupName));
-                Discord.Preconditions.SlashCommandDescription(Description, nameof(Description));
-            }
+            _groupedPreconditions = builder.Preconditions.ToLookup(x => x.Group, x => x, StringComparer.Ordinal);
         }
 
         private IEnumerable<ModuleInfo> BuildSubModules(ModuleBuilder builder, SlashCommandService commandService = null)
@@ -185,6 +184,18 @@ namespace Discord.SlashCommands
             }
 
             return preconditions;
-        } 
+        }
+
+        private bool CheckTopLevel(ModuleInfo parent)
+        {
+            var currentParent = parent;
+
+            while (currentParent != null)
+            {
+                if (currentParent.IsTopLevel)
+                    return false;
+            }
+            return true;
+        }
     }
 }

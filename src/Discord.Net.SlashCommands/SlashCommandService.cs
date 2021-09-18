@@ -117,16 +117,20 @@ namespace Discord.SlashCommands
             _wildCardExp = config.WildCardExpression;
             _useCompiledLambda = config.UseCompiledLambda;
 
-            _genericTypeReaders = new ConcurrentDictionary<Type, Type>();
-            _genericTypeReaders[typeof(IChannel)] = typeof(DefaultChannelReader<>);
-            _genericTypeReaders[typeof(IRole)] = typeof(DefaultRoleReader<>);
-            _genericTypeReaders[typeof(IUser)] = typeof(DefaultUserReader<>);
-            _genericTypeReaders[typeof(IMentionable)] = typeof(DefaultMentionableReader<>);
-            _genericTypeReaders[typeof(IConvertible)] = typeof(DefaultValueTypeReader<>);
-            _genericTypeReaders[typeof(Enum)] = typeof(EnumTypeReader<>);
+            _genericTypeReaders = new ConcurrentDictionary<Type, Type>
+            {
+                [typeof(IChannel)] = typeof(DefaultChannelReader<>),
+                [typeof(IRole)] = typeof(DefaultRoleReader<>),
+                [typeof(IUser)] = typeof(DefaultUserReader<>),
+                [typeof(IMentionable)] = typeof(DefaultMentionableReader<>),
+                [typeof(IConvertible)] = typeof(DefaultValueTypeReader<>),
+                [typeof(Enum)] = typeof(EnumTypeReader<>)
+            };
 
-            _typeReaders = new ConcurrentDictionary<Type, TypeReader>();
-            _typeReaders[typeof(TimeSpan)] = new TimeSpanTypeReader();
+            _typeReaders = new ConcurrentDictionary<Type, TypeReader>
+            {
+                [typeof(TimeSpan)] = new TimeSpanTypeReader()
+            };
         }
 
         /// <summary>
@@ -209,7 +213,7 @@ namespace Discord.SlashCommands
         /// </returns>
         public async Task<IReadOnlyCollection<RestGuildCommand>> RegisterCommandsToGuildAsync (ulong guildId, bool deleteMissing = true)
         {
-            CheckApplicationId();
+            EnsureClientReady();
 
             var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
 
@@ -232,7 +236,7 @@ namespace Discord.SlashCommands
         /// </returns>
         public async Task<IReadOnlyCollection<RestGlobalCommand>> RegisterCommandsGloballyAsync (bool deleteMissing = true)
         {
-            CheckApplicationId();
+            EnsureClientReady();
 
             var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
 
@@ -260,10 +264,10 @@ namespace Discord.SlashCommands
         /// </returns>
         public async Task<IReadOnlyCollection<RestGuildCommand>> AddCommandsToGuildAsync (IGuild guild, params SlashCommandInfo[] commands)
         {
-            CheckApplicationId();
+            EnsureClientReady();
 
-            if (guild == null)
-                throw new ArgumentException($"{nameof(guild)} cannot be null to call this function.");
+            if (guild is null)
+                throw new ArgumentNullException(nameof(guild));
 
             var existing = await ClientHelper.GetGuildApplicationCommands(Client, guild.Id).ConfigureAwait(false);
             var props = commands.Select(x => x.ToApplicationCommandProps()).ToList();
@@ -287,13 +291,13 @@ namespace Discord.SlashCommands
         /// </returns>
         public async Task<IReadOnlyCollection<RestGuildCommand>> AddModulesToGuildAsync (IGuild guild, params ModuleInfo[] modules)
         {
-            CheckApplicationId();
+            EnsureClientReady();
 
-            if (guild == null)
-                throw new ArgumentException($"{nameof(guild)} cannot be null to call this function.");
+            if (guild is null)
+                throw new ArgumentNullException(nameof(guild));
 
             var existing = await ClientHelper.GetGuildApplicationCommands(Client, guild.Id).ConfigureAwait(false);
-            var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
+            var props = modules.SelectMany(x => x.ToApplicationCommandProps()).ToList();
 
             foreach (var command in existing)
                 props.Add(command.ToApplicationCommandProps());
@@ -574,42 +578,42 @@ namespace Discord.SlashCommands
         /// Get the created <see cref="SlashCommandInfo"/> instance for a Slash Command handler
         /// </summary>
         /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="SlashModuleBase{T}"/></typeparam>
-        /// <param name="name">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
+        /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
         /// <returns>The loaded <see cref="SlashCommandInfo"/> instance for this method</returns>
         /// <exception cref="InvalidOperationException">The module is not registered to the command service or the slash command could not be found</exception>
-        public SlashCommandInfo GetSlashCommandInfo<TModule> (string name) where TModule : SlashModuleBase
+        public SlashCommandInfo GetSlashCommandInfo<TModule> (string methodName) where TModule : SlashModuleBase
         {
             var module = GetModuleInfo<TModule>();
 
-            return module.SlashCommands.First(x => x.MethodName == name);
+            return module.SlashCommands.First(x => x.MethodName == methodName);
         }
 
         /// <summary>
         /// Get the created <see cref="ContextCommandInfo"/> instance for a Context Command handler
         /// </summary>
         /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="SlashModuleBase{T}"/></typeparam>
-        /// <param name="name">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
+        /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
         /// <returns>The loaded <see cref="ContextCommandInfo"/> instance for this method</returns>
         /// <exception cref="InvalidOperationException">The module is not registered to the command service or the context command could not be found</exception>
-        public ContextCommandInfo GetContextCommandInfo<TModule> (string name) where TModule : SlashModuleBase
+        public ContextCommandInfo GetContextCommandInfo<TModule> (string methodName) where TModule : SlashModuleBase
         {
             var module = GetModuleInfo<TModule>();
 
-            return module.ContextCommands.First(x => x.MethodName == name);
+            return module.ContextCommands.First(x => x.MethodName == methodName);
         }
 
         /// <summary>
         /// Get the created <see cref="InteractionInfo"/> instance for a Message Component interaction handler
         /// </summary>
         /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="SlashModuleBase{T}"/></typeparam>
-        /// <param name="name">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
+        /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
         /// <returns>The loaded <see cref="InteractionInfo"/> instance for this method</returns>
         /// <exception cref="InvalidOperationException">The module is not registered to the command service or the interaction could not be found</exception>
-        public InteractionInfo GetInteractionInfo<TModule> (string name) where TModule : SlashModuleBase
+        public InteractionInfo GetInteractionInfo<TModule> (string methodName) where TModule : SlashModuleBase
         {
             var module = GetModuleInfo<TModule>();
 
-            return module.Interactions.First(x => x.MethodName == name);
+            return module.Interactions.First(x => x.MethodName == methodName);
         }
 
         /// <summary>
@@ -649,7 +653,7 @@ namespace Discord.SlashCommands
             return scorePairs.OrderBy(x => x.Value).ElementAt(0).Key;
         }
 
-        private void CheckApplicationId ( )
+        private void EnsureClientReady ( )
         {
             if (Client.CurrentUser == null || Client.CurrentUser?.Id == 0)
                 throw new InvalidOperationException($"Provided client is not ready to execute this operation, invoke this operation after a `Client Ready` event");

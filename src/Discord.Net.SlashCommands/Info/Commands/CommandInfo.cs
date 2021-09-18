@@ -27,6 +27,8 @@ namespace Discord.SlashCommands
     {
         private readonly ExecuteCallback _action;
 
+        internal ILookup<string, PreconditionAttribute> _groupedPreconditions { get; }
+
         /// <inheritdoc/>
         public ModuleInfo Module { get; }
 
@@ -76,6 +78,7 @@ namespace Discord.SlashCommands
             Preconditions = builder.Preconditions.ToImmutableArray();
 
             _action = builder.Callback;
+            _groupedPreconditions = builder.Preconditions.ToLookup(x => x.Group, x => x, StringComparer.Ordinal);
         }
 
         /// <inheritdoc/>
@@ -86,9 +89,9 @@ namespace Discord.SlashCommands
         /// <inheritdoc/>
         public async Task<PreconditionResult> CheckPreconditionsAsync (ISlashCommandContext context, IServiceProvider services)
         {
-            async Task<PreconditionResult> CheckGroups (IEnumerable<PreconditionAttribute> preconditions, string type)
+            async Task<PreconditionResult> CheckGroups (ILookup<string, PreconditionAttribute> preconditions, string type)
             {
-                foreach (IGrouping<string, PreconditionAttribute> preconditionGroup in preconditions.GroupBy(p => p.Group, StringComparer.Ordinal))
+                foreach (IGrouping<string, PreconditionAttribute> preconditionGroup in preconditions)
                 {
                     if (preconditionGroup.Key == null)
                     {
@@ -119,11 +122,11 @@ namespace Discord.SlashCommands
                     return result;
             }
 
-            var moduleResult = await CheckGroups(Module.Preconditions, "Module").ConfigureAwait(false);
+            var moduleResult = await CheckGroups(Module._groupedPreconditions, "Module").ConfigureAwait(false);
             if (!moduleResult.IsSuccess)
                 return moduleResult;
 
-            var commandResult = await CheckGroups(Preconditions, "Command").ConfigureAwait(false);
+            var commandResult = await CheckGroups(_groupedPreconditions, "Command").ConfigureAwait(false);
             if (!commandResult.IsSuccess)
                 return commandResult;
 
