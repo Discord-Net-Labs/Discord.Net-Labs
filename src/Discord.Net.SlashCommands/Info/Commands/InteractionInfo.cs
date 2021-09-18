@@ -72,7 +72,7 @@ namespace Discord.SlashCommands
                 if (argList?.ElementAt(index) == null)
                 {
                     if (!parameter.IsRequired)
-                        result[index] = Type.Missing;
+                        result[index] = parameter.DefaultValue;
                     else
                         throw new InvalidOperationException($"Interaction handler is executed with too few args.");
                 }
