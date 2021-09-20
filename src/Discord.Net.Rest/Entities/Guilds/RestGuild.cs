@@ -962,7 +962,7 @@ namespace Discord.Rest
         public override string ToString() => Name;
         private string DebuggerDisplay => $"{Name} ({Id})";
 
-        //Emotes
+        #region Emotes
         /// <inheritdoc />
         public Task<IReadOnlyCollection<GuildEmote>> GetEmotesAsync(RequestOptions options = null)
             => GuildHelper.GetEmotesAsync(this, Discord, options);
@@ -979,8 +979,9 @@ namespace Discord.Rest
         /// <inheritdoc />
         public Task DeleteEmoteAsync(GuildEmote emote, RequestOptions options = null)
             => GuildHelper.DeleteEmoteAsync(this, Discord, emote.Id, options);
+        #endregion
 
-        //Stickers
+        #region Stickers
         /// <summary>
         ///     Creates a new sticker in this guild.
         /// </summary>
@@ -1087,8 +1088,9 @@ namespace Discord.Rest
         /// </returns>
         public Task DeleteStickerAsync(CustomSticker sticker, RequestOptions options = null)
             => sticker.DeleteAsync(options);
+        #endregion
 
-        //IGuild
+        #region IGuild
         /// <inheritdoc />
         bool IGuild.Available => Available;
         /// <inheritdoc />
@@ -1399,5 +1401,6 @@ namespace Discord.Rest
             else
                 return null;
         }
+        #endregion
     }
 }
