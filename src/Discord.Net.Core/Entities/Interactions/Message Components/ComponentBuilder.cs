@@ -11,11 +11,6 @@ namespace Discord
     public class ComponentBuilder
     {
         /// <summary>
-        ///     The max length of a <see cref="ButtonComponent.Label"/>.
-        /// </summary>
-        public const int MaxButtonLabelLength = 80;
-
-        /// <summary>
         ///     The max length of a <see cref="ButtonComponent.CustomId"/>.
         /// </summary>
         public const int MaxCustomIdLength = 100;
@@ -353,19 +348,26 @@ namespace Discord
         /// <summary>
         ///     The max length of a <see cref="ButtonComponent.Label"/>.
         /// </summary>
-        public const int MaxLabelLength = 80;
+        public const int MaxButtonLabelLength = 80;
 
         /// <summary>
         ///     Gets or sets the label of the current button.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set"><see cref="Label"/> length exceeds <see cref="ComponentBuilder.MaxButtonLabelLength"/>.</exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Label"/> length exceeds <see cref="MaxButtonLabelLength"/>.</exception>
         public string Label
         {
             get => _label;
             set
             {
-                if (value != null && value.Length > ComponentBuilder.MaxButtonLabelLength)
-                    throw new ArgumentException(message: $"Button label must be {ComponentBuilder.MaxButtonLabelLength} characters or less!", paramName: nameof(Label));
+                if (value != null)
+                {
+                    if (value.Length > MaxButtonLabelLength)
+                        throw new ArgumentException($"Button label must be {MaxButtonLabelLength} characters or less!", paramName: nameof(Label));
+                    if (value.Length < 1)
+                        throw new ArgumentException("Button label must be 1 character or more!", paramName: nameof(Label));
+                }
+                else
+                    throw new ArgumentException("Button label must not be null or empty!", paramName: nameof(Label));
 
                 _label = value;
             }
