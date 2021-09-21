@@ -114,6 +114,8 @@ namespace Discord.WebSocket
 
             this.Update(command);
         }
+        #endregion
+
         #region  IApplicationCommand
         IReadOnlyCollection<IApplicationCommandOption> IApplicationCommand.Options => Options;
         #endregion
