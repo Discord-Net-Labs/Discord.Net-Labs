@@ -14,6 +14,7 @@ namespace Discord.Rest
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
     public class RestTextChannel : RestGuildChannel, IRestMessageChannel, ITextChannel
     {
+        #region RestTextChannel
         /// <inheritdoc />
         public string Topic { get; private set; }
         /// <inheritdoc />
@@ -210,8 +211,9 @@ namespace Discord.Rest
         /// <inheritdoc />
         public Task SyncPermissionsAsync(RequestOptions options = null)
             => ChannelHelper.SyncPermissionsAsync(this, Discord, options);
+        #endregion
 
-        //Invites
+        #region Invites
         /// <inheritdoc />
         public virtual async Task<IInviteMetadata> CreateInviteAsync(int? maxAge = 86400, int? maxUses = null, bool isTemporary = false, bool isUnique = false, RequestOptions options = null)
             => await ChannelHelper.CreateInviteAsync(this, Discord, maxAge, maxUses, isTemporary, isUnique, options).ConfigureAwait(false);
@@ -261,8 +263,9 @@ namespace Discord.Rest
             var model = await ThreadHelper.CreateThreadAsync(Discord, this, name, type, autoArchiveDuration, message, options);
             return RestThreadChannel.Create(Discord, this.Guild, model);
         }
+        #endregion
 
-        //ITextChannel
+        #region ITextChannel
         /// <inheritdoc />
         async Task<IWebhook> ITextChannel.CreateWebhookAsync(string name, Stream avatar, RequestOptions options)
             => await CreateWebhookAsync(name, avatar, options).ConfigureAwait(false);
@@ -360,8 +363,9 @@ namespace Discord.Rest
             else
                 return AsyncEnumerable.Empty<IReadOnlyCollection<IGuildUser>>();
         }
+        #endregion
 
-        // INestedChannel
+        #region ITextChannel
         /// <inheritdoc />
         async Task<ICategoryChannel> INestedChannel.GetCategoryAsync(CacheMode mode, RequestOptions options)
         {
@@ -369,5 +373,6 @@ namespace Discord.Rest
                 return (await Guild.GetChannelAsync(CategoryId.Value, mode, options).ConfigureAwait(false)) as ICategoryChannel;
             return null;
         }
+        #endregion
     }
 }
