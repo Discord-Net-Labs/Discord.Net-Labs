@@ -39,6 +39,9 @@ namespace Discord.WebSocket
         public string Content { get; private set; }
 
         /// <inheritdoc />
+        public string CleanContent { get; private set; }
+
+        /// <inheritdoc />
         public DateTimeOffset CreatedAt => SnowflakeUtils.FromSnowflake(Id);
         /// <inheritdoc />
         public virtual bool IsTTS => false;
@@ -139,7 +142,11 @@ namespace Discord.WebSocket
                 _timestampTicks = model.Timestamp.Value.UtcTicks;
 
             if (model.Content.IsSpecified)
+            {
                 Content = model.Content.Value;
+                //Update CleanContent Property
+                SanatizeMessage();
+            }
 
             if (model.Application.IsSpecified)
             {
@@ -264,6 +271,14 @@ namespace Discord.WebSocket
 
         /// <inheritdoc />
         IReadOnlyCollection<IStickerItem> IMessage.Stickers => Stickers;
+
+        internal void SanatizeMessage()
+        {
+            var newContent = Content;
+            //Do emojii's need to be Sanatized?
+            newContent = MentionUtils.Resolve(this, 0, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize);
+            CleanContent = newContent;
+        }
 
         internal void AddReaction(SocketReaction reaction)
         {
