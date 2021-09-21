@@ -2820,9 +2820,8 @@ namespace Discord.WebSocket
         }
 
         internal int GetAudioId() => _nextAudioId++;
-#endregion
 
-        #region 
+        #region IDiscordClient
         /// <inheritdoc />
         async Task<IApplication> IDiscordClient.GetApplicationInfoAsync(RequestOptions options)
             => await GetApplicationInfoAsync().ConfigureAwait(false);
