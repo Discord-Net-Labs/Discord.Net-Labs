@@ -145,7 +145,7 @@ namespace Discord.WebSocket
             {
                 Content = model.Content.Value;
                 //Update CleanContent Property
-                SanatizeMessage();
+                SanitizeMessage();
             }
 
             if (model.Application.IsSpecified)
@@ -272,11 +272,10 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         IReadOnlyCollection<IStickerItem> IMessage.Stickers => Stickers;
 
-        internal void SanatizeMessage()
+        internal void SanitizeMessage()
         {
-            var newContent = Content;
             //Do emojii's need to be Sanatized?
-            newContent = MentionUtils.Resolve(this, 0, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize);
+            var newContent = MentionUtils.Resolve(this, 0, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize);
             CleanContent = newContent;
         }
 
