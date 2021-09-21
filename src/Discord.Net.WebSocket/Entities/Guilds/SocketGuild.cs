@@ -1247,7 +1247,9 @@ namespace Discord.WebSocket
         public Task DeleteEmoteAsync(GuildEmote emote, RequestOptions options = null)
             => GuildHelper.DeleteEmoteAsync(this, Discord, emote.Id, options);
 
-        //Stickers
+        #endregion
+
+        #region Stickers
         /// <summary>
         ///     Gets a specific sticker within this guild.
         /// </summary>
