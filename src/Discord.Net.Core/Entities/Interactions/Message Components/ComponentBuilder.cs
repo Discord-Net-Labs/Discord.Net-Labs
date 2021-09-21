@@ -898,6 +898,7 @@ namespace Discord
         ///     Gets or sets the label of the current select menu.
         /// </summary>
         /// <exception cref="ArgumentException" accessor="set"><see cref="Label"/> length exceeds <see cref="MaxSelectLabelLength"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Label"/> length subceeds 1.</exception>
         public string Label
         {
             get => _label;
@@ -921,6 +922,7 @@ namespace Discord
         ///     Gets or sets the custom id of the current select menu.
         /// </summary>
         /// <exception cref="ArgumentException" accessor="set"><see cref="Value"/> length exceeds <see cref="MaxSelectValueLength"/>.</exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Value"/> length subceeds 1.</exception>
         public string Value
         {
             get => _value;
@@ -944,6 +946,7 @@ namespace Discord
         ///     Gets or sets this menu options description.
         /// </summary>
         /// <exception cref="ArgumentException" accessor="set"><see cref="Description"/> length exceeds <see cref="MaxDescriptionLength"/>.</exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Label"/> length subceeds 1.</exception>
         public string Description
         {
             get => _description;
