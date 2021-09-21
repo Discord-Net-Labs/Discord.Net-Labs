@@ -882,7 +882,7 @@ namespace Discord
         /// <summary>
         ///     The maximum length of a <see cref="SelectMenuOption.Label"/>.
         /// </summary>
-        public const int MaxLabelLength = 100;
+        public const int MaxSelectLabelLength = 100;
 
         /// <summary>
         ///     The maximum length of a <see cref="SelectMenuOption.Description"/>.
@@ -890,9 +890,9 @@ namespace Discord
         public const int MaxDescriptionLength = 100;
         
         /// <summary>
-        ///     The maximum length of a <see cref="SelectMenuOption.Label"/>.
+        ///     The maximum length of a <see cref="SelectMenuOption.Value"/>.
         /// </summary>
-        public const int MaxSelectLabelLength = 100;
+        public const int MaxSelectValueLength = 100;
 
         /// <summary>
         ///     Gets or sets the label of the current select menu.
@@ -914,14 +914,14 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the custom id of the current select menu.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set"><see cref="Value"/> length exceeds <see cref="ComponentBuilder.MaxCustomIdLength"/>.</exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Value"/> length exceeds <see cref="MaxSelectValueLength"/>.</exception>
         public string Value
         {
             get => _value;
             set
             {
-                if (value != null && value.Length > ComponentBuilder.MaxCustomIdLength)
-                    throw new ArgumentException(message: $"Value must be {ComponentBuilder.MaxCustomIdLength} characters or less!", paramName: nameof(Value));
+                if (value != null && value.Length > MaxSelectValueLength)
+                    throw new ArgumentException(message: $"Value must be {MaxSelectValueLength} characters or less!", paramName: nameof(Value));
                 _value = value;
             }
         }
