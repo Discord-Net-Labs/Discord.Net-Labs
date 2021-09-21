@@ -904,8 +904,14 @@ namespace Discord
             set
             {
                 if (value != null)
+                {
                     if (value.Length > MaxSelectLabelLength)
-                        throw new ArgumentException(message: $"Button label must be {MaxSelectLabelLength} characters or less!", paramName: nameof(Label));
+                        throw new ArgumentException($"Select option label must be {MaxSelectLabelLength} characters or less!", paramName: nameof(Label));
+                    if (value.Length < 1)
+                        throw new ArgumentException("Select option label must be 1 character or more!", paramName: nameof(Label));
+                }
+                else
+                    throw new ArgumentException("Select option label must not be null or empty!", paramName: nameof(Label));
 
                 _label = value;
             }
@@ -920,8 +926,16 @@ namespace Discord
             get => _value;
             set
             {
-                if (value != null && value.Length > MaxSelectValueLength)
-                    throw new ArgumentException(message: $"Value must be {MaxSelectValueLength} characters or less!", paramName: nameof(Value));
+                if (value != null)
+                {
+                    if (value.Length > MaxSelectValueLength)
+                        throw new ArgumentException($"Select option value must be {MaxSelectValueLength} characters or less!", paramName: nameof(Label));
+                    if (value.Length < 1)
+                        throw new ArgumentException("Select option value must be 1 character or more!", paramName: nameof(Label));
+                }
+                else
+                    throw new ArgumentException("Select option value must not be null or empty!", paramName: nameof(Label));
+
                 _value = value;
             }
         }
@@ -935,8 +949,15 @@ namespace Discord
             get => _description;
             set
             {
-                if (value != null && value.Length > MaxDescriptionLength)
-                    throw new ArgumentException($"Description must be {MaxDescriptionLength} characters or less!", nameof(Description));
+                if (value != null)
+                {
+                    if (value.Length > MaxDescriptionLength)
+                        throw new ArgumentException($"The description must be {MaxDescriptionLength} characters or less!", paramName: nameof(Label));
+                    if (value.Length < 1)
+                        throw new ArgumentException("The description must be 1 character or more!", paramName: nameof(Label));
+                }
+                else
+                    throw new ArgumentException("The description must not be null or empty!", paramName: nameof(Label));
 
                 _description = value;
             }
