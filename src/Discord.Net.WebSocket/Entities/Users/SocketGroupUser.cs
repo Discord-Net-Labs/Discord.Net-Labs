@@ -54,7 +54,7 @@ namespace Discord.WebSocket
 
         private string DebuggerDisplay => $"{Username}#{Discriminator} ({Id}{(IsBot ? ", Bot" : "")}, Group)";
         internal new SocketGroupUser Clone() => MemberwiseClone() as SocketGroupUser;
-#endregion
+        #endregion
 
         #region IVoiceState
         /// <inheritdoc />
