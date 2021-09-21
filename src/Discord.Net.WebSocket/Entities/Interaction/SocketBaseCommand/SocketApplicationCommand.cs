@@ -15,6 +15,7 @@ namespace Discord.WebSocket
     /// </summary>
     public class SocketApplicationCommand : SocketEntity<ulong>, IApplicationCommand
     {
+        #region SocketApplicationCommand
         /// <summary>
         ///    <see langword="true"/> if this command is a global command, otherwise <see langword="false"/>.
         /// </summary>
@@ -113,8 +114,8 @@ namespace Discord.WebSocket
 
             this.Update(command);
         }
-
-        // IApplicationCommand
+        #region  IApplicationCommand
         IReadOnlyCollection<IApplicationCommandOption> IApplicationCommand.Options => Options;
+        #endregion
     }
 }
