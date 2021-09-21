@@ -354,6 +354,7 @@ namespace Discord
         ///     Gets or sets the label of the current button.
         /// </summary>
         /// <exception cref="ArgumentException" accessor="set"><see cref="Label"/> length exceeds <see cref="MaxButtonLabelLength"/>.</exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Label"/> length exceeds <see cref="MaxButtonLabelLength"/>.</exception>
         public string Label
         {
             get => _label;
@@ -377,13 +378,21 @@ namespace Discord
         ///     Gets or sets the custom id of the current button.
         /// </summary>
         /// <exception cref="ArgumentException" accessor="set"><see cref="CustomId"/> length exceeds <see cref="ComponentBuilder.MaxCustomIdLength"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="CustomId"/> length subceeds 1.</exception>
         public string CustomId
         {
             get => _customId;
             set
             {
-                if (value != null && value.Length > ComponentBuilder.MaxCustomIdLength)
-                    throw new ArgumentException(message: $"Custom Id must be {ComponentBuilder.MaxCustomIdLength} characters or less!", paramName: nameof(CustomId));
+                if (value != null)
+                {
+                    if (value.Length > ComponentBuilder.MaxCustomIdLength)
+                        throw new ArgumentException($"Custom Id must be {ComponentBuilder.MaxCustomIdLength} characters or less!", paramName: nameof(CustomId));
+                    if (value.Length < 1)
+                        throw new ArgumentException("Custom Id must be 1 character or more!", paramName: nameof(CustomId));
+                }
+                else
+                    throw new ArgumentException("Custom Id must not be null or empty!", paramName: nameof(CustomId));
                 _customId = value;
             }
         }
@@ -621,14 +630,22 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the custom id of the current select menu.
         /// </summary>
-        /// <exception cref="ArgumentException" accessor="set"><see cref="CustomId"/> length exceeds <see cref="ComponentBuilder.MaxCustomIdLength"/>.</exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="CustomId"/> length exceeds <see cref="ComponentBuilder.MaxCustomIdLength"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="CustomId"/> length subceeds 1.</exception>
         public string CustomId
         {
             get => _customId;
             set
             {
-                if (value != null && value.Length > ComponentBuilder.MaxCustomIdLength)
-                    throw new ArgumentException(message: $"Custom Id must be {ComponentBuilder.MaxCustomIdLength} characters or less!", paramName: nameof(CustomId));
+                if (value != null)
+                {
+                    if (value.Length > ComponentBuilder.MaxCustomIdLength)
+                        throw new ArgumentException($"Custom Id must be {ComponentBuilder.MaxCustomIdLength} characters or less!", paramName: nameof(CustomId));
+                    if (value.Length < 1)
+                        throw new ArgumentException("Custom Id must be 1 character or more!", paramName: nameof(CustomId));
+                }
+                else
+                    throw new ArgumentException("Custom Id must not be null or empty!", paramName: nameof(CustomId));
                 _customId = value;
             }
         }
@@ -637,13 +654,21 @@ namespace Discord
         ///     Gets or sets the placeholder text of the current select menu.
         /// </summary>
         /// <exception cref="ArgumentException" accessor="set"><see cref="Placeholder"/> length exceeds <see cref="MaxPlaceholderLength"/>.</exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Placeholder"/> length subceeds 1.</exception>
         public string Placeholder
         {
             get => _placeholder;
             set
             {
-                if (value?.Length > MaxPlaceholderLength)
-                    throw new ArgumentException(message: $"Placeholder must be {MaxPlaceholderLength} characters or less!", paramName: nameof(Placeholder));
+                if (value != null)
+                {
+                    if (value.Length > MaxPlaceholderLength)
+                        throw new ArgumentException($"The placeholder must be {MaxPlaceholderLength} characters or less!", paramName: nameof(Placeholder));
+                    if (value.Length < 1)
+                        throw new ArgumentException("The placeholder must be 1 character or more!", paramName: nameof(Placeholder));
+                }
+                else
+                    throw new ArgumentException("The placeholder must not be null or empty!", paramName: nameof(Placeholder));
 
                 _placeholder = value;
             }
