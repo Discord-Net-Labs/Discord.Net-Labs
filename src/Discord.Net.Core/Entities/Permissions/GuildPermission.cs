@@ -191,7 +191,7 @@ namespace Discord
         ///     authentication when used on a guild that has server-wide 2FA enabled.
         /// </remarks>
         ManageThreads           = 0x04_00_00_00_00,
-        /// /// <summary>
+        /// <summary>
         ///     Allows for creating public threads.
         /// </summary>
         CreatePublicThreads = 0x08_00_00_00_00,
