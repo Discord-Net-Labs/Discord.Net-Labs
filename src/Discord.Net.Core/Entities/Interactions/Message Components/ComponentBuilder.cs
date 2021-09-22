@@ -969,7 +969,7 @@ namespace Discord
         ///     Gets or sets this menu options description.
         /// </summary>
         /// <exception cref="ArgumentException" accessor="set"><see cref="Description"/> length exceeds <see cref="MaxDescriptionLength"/>.</exception>
-        /// <exception cref="ArgumentException" accessor="set"><see cref="Label"/> length subceeds 1.</exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="Description"/> length subceeds 1.</exception>
         public string Description
         {
             get => _description;
