@@ -5,6 +5,8 @@ using Model = Discord.API.Interaction;
 using DataModel = Discord.API.MessageComponentInteractionData;
 using Discord.Rest;
 using System.Collections.Generic;
+using Discord.Net.Rest;
+using System.IO;
 
 namespace Discord.WebSocket
 {
@@ -84,12 +86,6 @@ namespace Discord.WebSocket
             if (embeds == null && embed != null)
                 embeds = new[] { embed };
 
-            if (Discord.AlwaysAcknowledgeInteractions)
-            {
-                await FollowupAsync(text, embeds, isTTS, ephemeral, allowedMentions, options);
-                return;
-            }
-
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
             Preconditions.AtMost(embeds?.Length ?? 0, 10, nameof(embeds), "A max of 10 embeds are allowed.");
@@ -154,7 +150,7 @@ namespace Discord.WebSocket
             var embeds = args.Embeds;
 
             bool hasText = args.Content.IsSpecified ? !string.IsNullOrEmpty(args.Content.Value) : !string.IsNullOrEmpty(Message.Content);
-            bool hasEmbeds = (embed.IsSpecified && embed.Value != null) || (embeds.IsSpecified && embeds.Value?.Length > 0) || Message.Embeds.Any();
+            bool hasEmbeds = embed.IsSpecified && embed.Value != null || embeds.IsSpecified && embeds.Value?.Length > 0 || Message.Embeds.Any();
 
             if (!hasText && !hasEmbeds)
                 Preconditions.NotNullOrEmpty(args.Content.IsSpecified ? args.Content.Value : string.Empty, nameof(args.Content));
@@ -199,7 +195,7 @@ namespace Discord.WebSocket
                     AllowedMentions = args.AllowedMentions.IsSpecified ? args.AllowedMentions.Value?.ToModel() : Optional<API.AllowedMentions>.Unspecified,
                     Embeds = apiEmbeds?.ToArray() ?? Optional<API.Embed[]>.Unspecified,
                     Components = args.Components.IsSpecified
-                        ? args.Components.Value?.Components.Select(x => new API.ActionRowComponent(x)).ToArray()
+                        ? args.Components.Value?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? new API.ActionRowComponent[0]
                         : Optional<API.ActionRowComponent[]>.Unspecified,
                     Flags = args.Flags.IsSpecified ? args.Flags.Value ?? Optional<MessageFlags>.Unspecified : Optional<MessageFlags>.Unspecified
                 }
@@ -243,6 +239,85 @@ namespace Discord.WebSocket
             return await InteractionHelper.SendFollowupAsync(Discord.Rest, args, Token, Channel, options);
         }
 
+        /// <inheritdoc/>
+        public override async Task<RestFollowupMessage> FollowupWithFileAsync(
+            string text = null,
+            Stream fileStream = null,
+            string fileName = null,
+            Embed[] embeds = null,
+            bool isTTS = false,
+            bool ephemeral = false,
+            AllowedMentions allowedMentions = null,
+            RequestOptions options = null,
+            MessageComponent component = null,
+            Embed embed = null)
+        {
+            if (!IsValidToken)
+                throw new InvalidOperationException("Interaction token is no longer valid");
+
+            if (embeds == null && embed != null)
+                embeds = new[] { embed };
+            Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
+            Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
+            Preconditions.AtMost(embeds?.Length ?? 0, 10, nameof(embeds), "A max of 10 embeds are allowed.");
+            Preconditions.NotNull(fileStream, nameof(fileStream), "File Stream must have data");
+            Preconditions.NotNullOrWhitespace(fileName, nameof(fileName), "File Name must not be empty or null");
+
+            var args = new API.Rest.CreateWebhookMessageParams
+            {
+                Content = text,
+                AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
+                IsTTS = isTTS,
+                Embeds = embeds?.Select(x => x.ToModel()).ToArray() ?? Optional<API.Embed[]>.Unspecified,
+                Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified,
+                File = fileStream is not null ? new MultipartFile(fileStream, fileName) : Optional<MultipartFile>.Unspecified
+            };
+
+            if (ephemeral)
+                args.Flags = MessageFlags.Ephemeral;
+
+            return await InteractionHelper.SendFollowupAsync(Discord.Rest, args, Token, Channel, options);
+        }
+
+        /// <inheritdoc/>
+        public override async Task<RestFollowupMessage> FollowupWithFileAsync(
+            string text = null,
+            string filePath = null,
+            string fileName = null,
+            Embed[] embeds = null,
+            bool isTTS = false,
+            bool ephemeral = false,
+            AllowedMentions allowedMentions = null,
+            RequestOptions options = null,
+            MessageComponent component = null,
+            Embed embed = null)
+        {
+            if (!IsValidToken)
+                throw new InvalidOperationException("Interaction token is no longer valid");
+
+            if (embeds == null && embed != null)
+                embeds = new[] { embed };
+            Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
+            Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
+            Preconditions.AtMost(embeds?.Length ?? 0, 10, nameof(embeds), "A max of 10 embeds are allowed.");
+            Preconditions.NotNullOrWhitespace(filePath, nameof(filePath), "Path must exist");
+
+            var args = new API.Rest.CreateWebhookMessageParams
+            {
+                Content = text,
+                AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
+                IsTTS = isTTS,
+                Embeds = embeds?.Select(x => x.ToModel()).ToArray() ?? Optional<API.Embed[]>.Unspecified,
+                Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified,
+                File = !string.IsNullOrEmpty(filePath) ? new MultipartFile(new MemoryStream(File.ReadAllBytes(filePath), false), fileName) : Optional<MultipartFile>.Unspecified
+            };
+
+            if (ephemeral)
+                args.Flags = MessageFlags.Ephemeral;
+
+            return await InteractionHelper.SendFollowupAsync(Discord.Rest, args, Token, Channel, options);
+        }
+
         /// <summary>
         ///     Defers an interaction and responds with type 5 (<see cref="InteractionResponseType.DeferredChannelMessageWithSource"/>)
         /// </summary>
@@ -260,7 +335,7 @@ namespace Discord.WebSocket
 
             };
 
-            return Discord.Rest.ApiClient.CreateInteractionResponse(response, this.Id, this.Token, options);
+            return Discord.Rest.ApiClient.CreateInteractionResponseAsync(response, this.Id, this.Token, options);
         }
 
         /// <inheritdoc/>
@@ -273,7 +348,7 @@ namespace Discord.WebSocket
 
             };
 
-            return Discord.Rest.ApiClient.CreateInteractionResponse(response, this.Id, this.Token, options);
+            return Discord.Rest.ApiClient.CreateInteractionResponseAsync(response, this.Id, this.Token, options);
         }
     }
 }

@@ -72,8 +72,6 @@ namespace Discord.WebSocket
         internal WebSocketProvider WebSocketProvider { get; private set; }
         internal bool AlwaysDownloadUsers { get; private set; }
         internal int? HandlerTimeout { get; private set; }
-        internal bool AlwaysAcknowledgeInteractions { get; private set; }
-
         internal new DiscordSocketApiClient ApiClient => base.ApiClient as DiscordSocketApiClient;
         /// <inheritdoc />
         public override IReadOnlyCollection<SocketGuild> Guilds => State.Guilds;
@@ -143,7 +141,6 @@ namespace Discord.WebSocket
             UdpSocketProvider = config.UdpSocketProvider;
             WebSocketProvider = config.WebSocketProvider;
             AlwaysDownloadUsers = config.AlwaysDownloadUsers;
-            AlwaysAcknowledgeInteractions = config.AlwaysAcknowledgeInteractions;
             HandlerTimeout = config.HandlerTimeout;
             State = new ClientState(0, 0);
             Rest = new DiscordSocketRestClient(config, ApiClient);
@@ -2095,9 +2092,6 @@ namespace Discord.WebSocket
 
                                         var interaction = SocketInteraction.Create(this, data, channel as ISocketMessageChannel);
 
-                                        if (this.AlwaysAcknowledgeInteractions)
-                                            await interaction.DeferAsync().ConfigureAwait(false);
-
                                         await TimedInvokeAsync(_interactionCreatedEvent, nameof(InteractionCreated), interaction).ConfigureAwait(false);
 
                                         switch (interaction)
@@ -2243,10 +2237,25 @@ namespace Discord.WebSocket
                                         return;
                                     }
 
-                                    var channel = (SocketThreadChannel)guild.GetChannel(data.Id);
+                                    var threadChannel = guild.ThreadChannels.FirstOrDefault(x => x.Id == data.Id);
+                                    var before = threadChannel != null
+                                        ? new Cacheable<SocketThreadChannel, ulong>(threadChannel.Clone(), data.Id, true, () => Task.FromResult((SocketThreadChannel)null))
+                                        : new Cacheable<SocketThreadChannel, ulong>(null, data.Id, false, () => Task.FromResult((SocketThreadChannel)null));
 
-                                    var before = channel.Clone();
-                                    channel.Update(State, data);
+                                    if (threadChannel != null)
+                                    {
+                                        threadChannel.Update(State, data);
+
+                                        if (data.ThreadMember.IsSpecified)
+                                            threadChannel.AddOrUpdateThreadMember(data.ThreadMember.Value, guild.CurrentUser);
+                                    }
+                                    else
+                                    {
+                                        // Thread is updated but was not cached, likely meaning the thread was unarchived.
+                                        threadChannel = (SocketThreadChannel)guild.AddChannel(State, data);
+                                        if (data.ThreadMember.IsSpecified)
+                                            threadChannel.AddOrUpdateThreadMember(data.ThreadMember.Value, guild.CurrentUser);
+                                    }
 
                                     if (!(guild?.IsSynced ?? true))
                                     {
@@ -2254,7 +2263,7 @@ namespace Discord.WebSocket
                                         return;
                                     }
 
-                                    await TimedInvokeAsync(_threadUpdated, nameof(ThreadUpdated), before, channel).ConfigureAwait(false);
+                                    await TimedInvokeAsync(_threadUpdated, nameof(ThreadUpdated), before, threadChannel).ConfigureAwait(false);
                                 }
                                 break;
                             case "THREAD_DELETE":
@@ -2806,7 +2815,7 @@ namespace Discord.WebSocket
 
         internal int GetAudioId() => _nextAudioId++;
 
-        //IDiscordClient
+        #region IDiscordClient
         /// <inheritdoc />
         async Task<IApplication> IDiscordClient.GetApplicationInfoAsync(RequestOptions options)
             => await GetApplicationInfoAsync().ConfigureAwait(false);
@@ -2869,5 +2878,6 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         async Task IDiscordClient.StopAsync()
             => await StopAsync().ConfigureAwait(false);
+        #endregion
     }
 }

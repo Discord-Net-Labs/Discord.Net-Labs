@@ -14,6 +14,7 @@ namespace Discord.Rest
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
     public class RestGuildUser : RestUser, IGuildUser
     {
+        #region RestGuildUser
         private long? _premiumSinceTicks;
         private long? _joinedAtTicks;
         private ImmutableArray<ulong> _roleIds;
@@ -31,6 +32,18 @@ namespace Discord.Rest
         public ulong GuildId => Guild.Id;
         /// <inheritdoc />
         public bool? IsPending { get; private set; }
+        /// <inheritdoc />
+        public int Hierarchy
+        {
+            get
+            {
+                if (Guild.OwnerId == Id)
+                    return int.MaxValue;
+
+                var orderedRoles = Guild.Roles.OrderByDescending(x => x.Position);
+                return orderedRoles.Where(x => RoleIds.Contains(x.Id)).Max(x => x.Position);
+            }
+        }
 
         /// <inheritdoc />
         /// <exception cref="InvalidOperationException" accessor="get">Resolving permissions requires the parent guild to be downloaded.</exception>
@@ -143,8 +156,9 @@ namespace Discord.Rest
             var guildPerms = GuildPermissions;
             return new ChannelPermissions(Permissions.ResolveChannel(Guild, this, channel, guildPerms.RawValue));
         }
+#endregion
 
-        //IGuildUser
+        #region IGuildUser
         /// <inheritdoc />
         IGuild IGuildUser.Guild
         {
@@ -155,8 +169,9 @@ namespace Discord.Rest
                 throw new InvalidOperationException("Unable to return this entity's parent unless it was fetched through that object.");
             }
         }
+        #endregion
 
-        //IVoiceState
+        #region IVoiceState
         /// <inheritdoc />
         bool IVoiceState.IsSelfDeafened => false;
         /// <inheritdoc />
@@ -171,5 +186,6 @@ namespace Discord.Rest
         bool IVoiceState.IsStreaming => false;
         /// <inheritdoc />
         DateTimeOffset? IVoiceState.RequestToSpeakTimestamp => null;
+        #endregion
     }
 }

@@ -9,7 +9,7 @@ namespace Discord
     /// <summary>
     ///     Represents a select menu component defined at <see href="https://discord.com/developers/docs/interactions/message-components#select-menu-object"/>
     /// </summary>
-    public class SelectMenu : IMessageComponent
+    public class SelectMenuComponent : IMessageComponent
     {
         /// <inheritdoc/>
         public ComponentType Type => ComponentType.SelectMenu;
@@ -44,7 +44,22 @@ namespace Discord
         /// </summary>
         public bool Disabled { get; }
 
-        internal SelectMenu(string customId, List<SelectMenuOption> options, string placeholder, int minValues, int maxValues, bool disabled)
+        /// <summary>
+        ///     Turns this select menu into a builder.
+        /// </summary>
+        /// <returns>
+        ///     A newly create builder with the same properties as this select menu.
+        /// </returns>
+        public SelectMenuBuilder ToBuilder()
+            => new SelectMenuBuilder(
+                this.CustomId,
+                this.Options.Select(x => new SelectMenuOptionBuilder(x.Label, x.Value, x.Description, x.Emote, x.Default)).ToList(),
+                this.Placeholder,
+                this.MaxValues,
+                this.MinValues,
+                this.Disabled);
+
+        internal SelectMenuComponent(string customId, List<SelectMenuOption> options, string placeholder, int minValues, int maxValues, bool disabled)
         {
             this.CustomId = customId;
             this.Options = options;

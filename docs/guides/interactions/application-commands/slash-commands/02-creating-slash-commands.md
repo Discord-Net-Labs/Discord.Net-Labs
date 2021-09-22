@@ -12,6 +12,8 @@ Guild commands are specific to the guild you specify when making them. Guild com
 
 **Note**: Apps can have a maximum of 100 global commands, and an additional 100 guild-specific commands per guild.
 
+**Note**: Global commands will take up to 1 hour to create, delete or modify on guilds. If you need to update a command quickly for testing you can create it as a guild command.
+
 If you don't have the code for a bot ready yet please follow [this guide](https://docs.stillu.cc/guides/getting_started/first-bot.html).
 
 ## SlashCommandBuilder
@@ -45,8 +47,8 @@ client.Ready += Client_Ready;
 
 public async Task Client_Ready()
 {
-    // Let's build a guild command! We're going to need a guild id so lets just put that in a variable.
-    ulong guildId = 848176216011046962;
+    // Let's build a guild command! We're going to need a guild so lets just put that in a variable.
+    var guild = client.GetGuild(guildId);
 
     // Next, lets create our slash command builder. This is like the embed builder but for slash commands.
     var guildCommand = new SlashCommandBuilder();
@@ -64,11 +66,11 @@ public async Task Client_Ready()
 
     try
     {
-        // Now that we have our builder, we can call the rest API to make our slash command.
-        await client.Rest.CreateGuildCommand(guildCommand.Build(), guildId);
+        // Now that we have our builder, we can call the CreateApplicationCommandAsync method to make our slash command.
+        await guild.CreateApplicationCommandAsync(guildCommand.Build());
 
-        // With global commands we dont need the guild id.
-        await client.Rest.CreateGlobalCommand(globalCommand.Build());
+        // With global commands we dont need the guild.
+        await client.CreateGlobalApplicationCommandAsync(globalCommand.Build());
     }
     catch(ApplicationCommandException exception)
     {
@@ -81,4 +83,5 @@ public async Task Client_Ready()
 }
 
 ```
+
 **Note**: Slash commands only need to be created once. They do _not_ have to be 'created' on every startup or connection. The example simple shows creating them in the ready event as it's simpler than creating normal bot commands to register slash commands.

@@ -4,6 +4,8 @@
 
 This repo is a custom fork of Discord.Net that introduces the newest features of discord for testing and experimenting. Nothing here is guaranteed to work but you are more than welcome to submit bugs in the issues tabs
 
+If this projects benefits you (*and you're financially stable*) consider donating or becoming a sponsor as it really helps out!
+
 ## Known issues
 Labs will not work with normal package of Playwo's [InteractivityAddon](https://www.nuget.org/packages/Discord.InteractivityAddon). The reason is that his package depends on the base discord.net lib. You can instead use the [InteractivityAddon.Labs](https://www.nuget.org/packages/Discord.InteractivityAddon.Labs) package which implements some of the features added in Discord.Net-Labs.
 
@@ -17,7 +19,7 @@ Setting up labs in your project is really simple, here's how to do it:
 ### Dev
 This branch is kept up to date with dnets dev branch. we pull of it to ensure that labs will work with pre existing dnet code.
 
-### release/2.x
+### release/3.x
 This branch is what will be pushed to nuget, sometimes its not up to date as we wait for other features to be finished.
 
 ### old/SlashCommandService
@@ -26,7 +28,10 @@ This branch is on pause and does not work currently, There is a pull request ope
 ### feature/xyz
 These branches are features for new things, you are more than welcome to clone them and give feedback in the discord server or issues tab.
 
-## Listening for interactions
+## Listening for Interactions
+
+Interaction docs can be found [here](https://github.com/Discord-Net-Labs/Discord.Net-Labs/tree/release/3.x/docs/guides/interactions). They are much more in depth than this readme.
+
 ```cs
 // Subscribe to the InteractionCreated event
 client.InteractionCreated += Client_InteractionCreated;
@@ -124,5 +129,8 @@ await Context.Channel.SendMessageAsync("Test selection!", component: builder.Bui
 
 > Note: You can only have 5 buttons per row and 5 rows per message. If a row contains a selection dropdown it cannot contain any buttons.
 
-## Slash commands
-Slash command example how to's can be found [here](https://github.com/Discord-Net-Labs/Discord.Net-Labs/tree/Interactions/docs/guides/slash-commands). 
+## Slash Commands & Context Menu Commands
+Slash command & Context command examples and how to's can be found [here](https://github.com/Discord-Net-Labs/Discord.Net-Labs/tree/release/3.x/docs/guides/interactions/application-commands). 
+
+## Message Components
+Message components (buttons, menus, etc) examples and how to's can be found [here](https://github.com/Discord-Net-Labs/Discord.Net-Labs/tree/release/3.x/docs/guides/interactions/message-components)

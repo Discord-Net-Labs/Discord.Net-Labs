@@ -13,6 +13,7 @@ namespace Discord.WebSocket
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
     public class SocketWebhookUser : SocketUser, IWebhookUser
     {
+        #region SocketWebhookUser
         /// <summary> Gets the guild of this webhook. </summary>
         public SocketGuild Guild { get; }
         /// <inheritdoc />
@@ -66,9 +67,9 @@ namespace Discord.WebSocket
 
         private string DebuggerDisplay => $"{Username}#{Discriminator} ({Id}{(IsBot ? ", Bot" : "")}, Webhook)";
         internal new SocketWebhookUser Clone() => MemberwiseClone() as SocketWebhookUser;
+#endregion
 
-
-        //IGuildUser
+        #region IGuildUser
         /// <inheritdoc />
         IGuild IGuildUser.Guild => Guild;
         /// <inheritdoc />
@@ -83,6 +84,8 @@ namespace Discord.WebSocket
         DateTimeOffset? IGuildUser.PremiumSince => null;
         /// <inheritdoc />
         bool? IGuildUser.IsPending => null;
+        /// <inheritdoc />
+        int IGuildUser.Hierarchy => 0;
         /// <inheritdoc />
         GuildPermissions IGuildUser.GuildPermissions => GuildPermissions.Webhook;
 
@@ -137,8 +140,9 @@ namespace Discord.WebSocket
         /// <exception cref="NotSupportedException">Roles are not supported on webhook users.</exception>
         Task IGuildUser.RemoveRolesAsync(IEnumerable<IRole> roles, RequestOptions options) =>
             throw new NotSupportedException("Roles are not supported on webhook users.");
+        #endregion
 
-        //IVoiceState
+        #region IVoiceState
         /// <inheritdoc />
         bool IVoiceState.IsDeafened => false;
         /// <inheritdoc />
@@ -157,5 +161,6 @@ namespace Discord.WebSocket
         bool IVoiceState.IsStreaming => false;
         /// <inheritdoc />
         DateTimeOffset? IVoiceState.RequestToSpeakTimestamp => null;
+        #endregion
     }
 }

@@ -14,6 +14,7 @@ namespace Discord.WebSocket
     /// </summary>
     public abstract class SocketMessage : SocketEntity<ulong>, IMessage
     {
+        #region SocketMessage
         private long _timestampTicks;
         private readonly List<SocketReaction> _reactions = new List<SocketReaction>();
 
@@ -198,7 +199,7 @@ namespace Discord.WebSocket
                         case ComponentType.SelectMenu:
                             {
                                 var parsed = (API.SelectMenuComponent)y;
-                                return new SelectMenu(
+                                return new SelectMenuComponent(
                                     parsed.CustomId,
                                     parsed.Options.Select(z => new SelectMenuOption(
                                         z.Label,
@@ -240,8 +241,9 @@ namespace Discord.WebSocket
         /// </returns>
         public override string ToString() => Content;
         internal SocketMessage Clone() => MemberwiseClone() as SocketMessage;
+#endregion
 
-        //IMessage
+        #region IMessage
         /// <inheritdoc />
         IUser IMessage.Author => Author;
         /// <inheritdoc />
@@ -299,5 +301,6 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public IAsyncEnumerable<IReadOnlyCollection<IUser>> GetReactionUsersAsync(IEmote emote, int limit, RequestOptions options = null)
             => MessageHelper.GetReactionUsersAsync(this, emote, limit, Discord, options);
+        #endregion
     }
 }
