@@ -24,6 +24,7 @@ namespace Discord.WebSocket
     /// </summary>
     public partial class DiscordSocketClient : BaseSocketClient, IDiscordClient
     {
+        #region DiscordSocketClient
         private readonly ConcurrentQueue<ulong> _largeGuilds;
         internal readonly JsonSerializer _serializer;
         private readonly DiscordShardedClient _shardedClient;
@@ -62,6 +63,7 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public override IActivity Activity { get => _activity.GetValueOrDefault(); protected set => _activity = Optional.Create(value); }
         private Optional<IActivity> _activity;
+        #endregion
 
         //From DiscordSocketConfig
         internal int TotalShards { get; private set; }
@@ -700,6 +702,7 @@ namespace Discord.WebSocket
                     game);
         }
 
+        #region ProcessMessageAsync
         private async Task ProcessMessageAsync(GatewayOpCode opCode, int? seq, string type, object payload)
         {
             if (seq != null)
@@ -2549,7 +2552,7 @@ namespace Discord.WebSocket
                             default:
                                 await _gatewayLogger.WarningAsync($"Unknown Dispatch ({type})").ConfigureAwait(false);
                                 break;
-                            #endregion
+                                #endregion
                         }
                         break;
                     default:
@@ -2563,6 +2566,7 @@ namespace Discord.WebSocket
                 Console.WriteLine(ex);
             }
         }
+        #endregion
 
         private async Task RunHeartbeatAsync(int intervalMillis, CancellationToken cancelToken)
         {
