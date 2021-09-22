@@ -200,6 +200,16 @@ namespace Discord
         /// </summary>
         CreatePrivateThreads = 0x10_00_00_00_00,
         /// <summary>
+        ///     Allows for creating public threads.
+        /// </summary>
+        [Obsolete("UsePublicThreads has been replaced by CreatePublicThreads and SendMessagesInThreads", false)]
+        UsePublicThreads = 0x08_00_00_00_00,
+        /// <summary>
+        ///     Allows for creating private threads.
+        /// </summary>
+        [Obsolete("UsePrivateThreads has been replaced by CreatePrivateThreads and SendMessagesInThreads", false)]
+        UsePrivateThreads = 0x10_00_00_00_00,
+        /// <summary>
         ///     Allows the usage of custom stickers from other servers.
         /// </summary>
         UseExternalStickers     = 0x20_00_00_00_00,
