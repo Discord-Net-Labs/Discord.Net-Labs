@@ -667,8 +667,6 @@ namespace Discord
                     if (value.Length < 1)
                         throw new ArgumentException("The placeholder must be 1 character or more!", paramName: nameof(Placeholder));
                 }
-                else
-                    throw new ArgumentException("The placeholder must not be null or empty!", paramName: nameof(Placeholder));
 
                 _placeholder = value;
             }
@@ -938,8 +936,6 @@ namespace Discord
                     if (value.Length < 1)
                         throw new ArgumentException("Select option label must be 1 character or more!", paramName: nameof(Label));
                 }
-                else
-                    throw new ArgumentException("Select option label must not be null or empty!", paramName: nameof(Label));
 
                 _label = value;
             }
@@ -986,8 +982,6 @@ namespace Discord
                     if (value.Length < 1)
                         throw new ArgumentException("The description must be 1 character or more!", paramName: nameof(Label));
                 }
-                else
-                    throw new ArgumentException("The description must not be null or empty!", paramName: nameof(Label));
 
                 _description = value;
             }
