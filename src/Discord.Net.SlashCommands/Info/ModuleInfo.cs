@@ -95,7 +95,9 @@ namespace Discord.SlashCommands
         /// <summary>
         /// <see langword="true"/> if this module has a valid Group name and represent a top level application command in Discord
         /// </summary>
-        public bool IsTopLevel { get; }
+        public bool IsTopLevelCommand { get; }
+
+        public bool DontAutoRegister { get; }
 
         internal ModuleInfo (ModuleBuilder builder, SlashCommandService commandService = null,  ModuleInfo parent = null)
         {
@@ -112,7 +114,8 @@ namespace Discord.SlashCommands
             SubModules = BuildSubModules(builder).ToImmutableArray();;
             Attributes = BuildAttributes(builder).ToImmutableArray();
             Preconditions = BuildPreconditions(builder).ToImmutableArray();
-            IsTopLevel = CheckTopLevel(parent);
+            IsTopLevelCommand = CheckTopLevel(parent) && IsSlashGroup;
+            DontAutoRegister = builder.DontAutoRegister;
 
             _groupedPreconditions = builder.Preconditions.ToLookup(x => x.Group, x => x, StringComparer.Ordinal);
         }
@@ -192,8 +195,10 @@ namespace Discord.SlashCommands
 
             while (currentParent != null)
             {
-                if (currentParent.IsTopLevel)
+                if (currentParent.IsTopLevelCommand)
                     return false;
+
+                currentParent = currentParent.Parent;
             }
             return true;
         }

@@ -34,12 +34,28 @@ namespace Discord.SlashCommands
             ErrorReason = reason;
         }
 
+        /// <summary>
+        /// Create a <see cref="IResult"/> indicating the read process was successful
+        /// </summary>
+        /// <param name="value">The resulting object</param>
+        /// <returns>The result instance</returns>
         public static TypeConverterResult FromSuccess (object value) =>
             new TypeConverterResult(value, null, null);
 
+        /// <summary>
+        /// Create a <see cref="IResult"/> indicating the read process failed due to an error
+        /// </summary>
+        /// <param name="ex">The exception which caused the error</param>
+        /// <returns>The result instance</returns>
         public static TypeConverterResult FromError (Exception ex) =>
             new TypeConverterResult(null, SlashCommandError.Exception, ex.Message);
 
+        /// <summary>
+        /// Create a <see cref="IResult"/> indicating the read process failed due to an error
+        /// </summary>
+        /// <param name="error">Type of the error</param>
+        /// <param name="reason">Error reason</param>
+        /// <returns>The result instance</returns>
         public static TypeConverterResult FromError (SlashCommandError error, string reason) =>
             new TypeConverterResult(null, error, reason);
 

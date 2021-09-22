@@ -50,7 +50,7 @@ namespace Discord.SlashCommands
                 return await ExecuteAsync(context, Parameters, args, services);
             }
             else
-                throw new ArgumentException("Cannot execute command from the provided command context");
+                throw new ArgumentException("Cannot execute Component Interaction handler from the provided command context");
         }
 
         /// <inheritdoc/>
@@ -74,7 +74,7 @@ namespace Discord.SlashCommands
                     if (!parameter.IsRequired)
                         result[index] = parameter.DefaultValue;
                     else
-                        throw new InvalidOperationException($"Interaction handler is executed with too few args.");
+                        throw new InvalidOperationException($"Component Interaction handler is executed with too few args.");
                 }
                 else if (parameter.IsParameterArray)
                 {

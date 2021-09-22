@@ -1,6 +1,6 @@
 namespace Discord.SlashCommands
 {
-    internal interface ISlashModuleBase
+    public interface ISlashModuleBase
     {
 
         void SetContext (ISlashCommandContext context);

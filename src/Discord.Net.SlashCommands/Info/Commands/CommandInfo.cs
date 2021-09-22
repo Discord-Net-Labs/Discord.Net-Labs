@@ -48,7 +48,7 @@ namespace Discord.SlashCommands
         public abstract bool SupportsWildCards { get; }
 
         /// <inheritdoc/>
-        public bool IsTopLevel => IgnoreGroupNames || !Module.IsTopLevel;
+        public bool IsTopLevelCommand => IgnoreGroupNames || !Module.IsTopLevelCommand;
 
         /// <inheritdoc/>
         public RunMode RunMode { get; }

@@ -7,14 +7,23 @@ namespace Discord.SlashCommands
     /// Base class for any Slash command handling modules
     /// </summary>
     /// <typeparam name="T">Type of slash command context to be injected into the module</typeparam>
-    public abstract class SlashModuleBase<T> : SlashModuleBase where T : class, ISlashCommandContext
+    public abstract class SlashModuleBase<T> : ISlashModuleBase where T : class, ISlashCommandContext
     {
         /// <summary>
         /// Command execution context for an user interaction.
         /// </summary>
         public T Context { get; private set; }
 
-        public override void SetContext (ISlashCommandContext context)
+        /// <inheritdoc/>
+        public virtual void AfterExecute (ICommandInfo command) { }
+
+        /// <inheritdoc/>
+        public virtual void BeforeExecute (ICommandInfo command) { }
+
+        /// <inheritdoc/>
+        public virtual void OnModuleBuilding (SlashCommandService commandService, ModuleInfo module) { }
+
+        public void SetContext (ISlashCommandContext context)
         {
             var newValue = context as T;
             Context = newValue ?? throw new InvalidOperationException($"Invalid context type. Expected {typeof(T).Name}, got {context.GetType().Name}.");
@@ -41,20 +50,5 @@ namespace Discord.SlashCommands
             var response = await Context.Interaction.GetOriginalResponseAsync().ConfigureAwait(false);
             await response.DeleteAsync().ConfigureAwait(false);
         }
-    }
-
-    public abstract class SlashModuleBase : ISlashModuleBase
-    {
-        /// <inheritdoc/>
-        public virtual void AfterExecute (ICommandInfo command) { }
-
-        /// <inheritdoc/>
-        public virtual void BeforeExecute (ICommandInfo command) { }
-
-        /// <inheritdoc/>
-        public virtual void OnModuleBuilding (SlashCommandService commandService, ModuleInfo module) { }
-
-        /// <inheritdoc/>
-        public abstract void SetContext (ISlashCommandContext context);
     }
 }

@@ -32,7 +32,7 @@ namespace Discord.SlashCommands
         /// <summary>
         /// <see langword="true"/> if this command is a top level application command and has not parent module with a Group name
         /// </summary>
-        bool IsTopLevel { get; }
+        bool IsTopLevelCommand { get; }
 
         /// <summary>
         /// Module the method belongs to
