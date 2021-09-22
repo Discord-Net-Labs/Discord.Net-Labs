@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
 {
-    internal sealed class TimeSpanTypeReader : TypeReader<TimeSpan>
+    internal sealed class TimeSpanConverter : TypeConverter<TimeSpan>
     {
         public override ApplicationCommandOptionType GetDiscordType ( ) => ApplicationCommandOptionType.String;
-        public override Task<TypeReaderResult> ReadAsync (ISlashCommandContext context, SocketSlashCommandDataOption option, IServiceProvider services)
+        public override Task<TypeConverterResult> ReadAsync (ISlashCommandContext context, SocketSlashCommandDataOption option, IServiceProvider services)
         {
             return ( TimeSpan.TryParseExact(( option.Value as string ).ToLowerInvariant(), Formats, CultureInfo.InvariantCulture, out var timeSpan) )
-                ? Task.FromResult(TypeReaderResult.FromSuccess(timeSpan))
-                : Task.FromResult(TypeReaderResult.FromError(SlashCommandError.ParseFailed, "Failed to parse TimeSpan"));
+                ? Task.FromResult(TypeConverterResult.FromSuccess(timeSpan))
+                : Task.FromResult(TypeConverterResult.FromError(SlashCommandError.ParseFailed, "Failed to parse TimeSpan"));
         }
 
         private static readonly string[] Formats = {

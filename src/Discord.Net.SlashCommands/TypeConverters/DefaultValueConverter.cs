@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
 {
-    internal class DefaultValueTypeReader<T> : TypeReader<T> where T : IConvertible
+    internal class DefaultValueConverter<T> : TypeConverter<T> where T : IConvertible
     {
         public override ApplicationCommandOptionType GetDiscordType ( )
         {
@@ -38,7 +38,7 @@ namespace Discord.SlashCommands
                     throw new InvalidOperationException($"Parameter Type {typeof(T).FullName} is not supported by Discord.");
             }
         }
-        public override Task<TypeReaderResult> ReadAsync (ISlashCommandContext context, SocketSlashCommandDataOption option, IServiceProvider services)
+        public override Task<TypeConverterResult> ReadAsync (ISlashCommandContext context, SocketSlashCommandDataOption option, IServiceProvider services)
         {
             object value;
 
@@ -50,11 +50,11 @@ namespace Discord.SlashCommands
             try
             {
                 var converted = Convert.ChangeType(value, typeof(T));
-                return Task.FromResult(TypeReaderResult.FromSuccess(converted));
+                return Task.FromResult(TypeConverterResult.FromSuccess(converted));
             }
             catch (InvalidCastException castEx)
             {
-                return Task.FromResult(TypeReaderResult.FromError(castEx));
+                return Task.FromResult(TypeConverterResult.FromError(castEx));
             }
         }
     }

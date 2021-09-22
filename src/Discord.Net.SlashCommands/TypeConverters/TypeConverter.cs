@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 namespace Discord.SlashCommands
 {
     /// <summary>
-    /// Base class for creating TypeReaders. <see cref="SlashCommandService"/> uses TypeReaders to interface with Slash Command parameters
+    /// Base class for creating TypeConverters. <see cref="SlashCommandService"/> uses TypeConverters to interface with Slash Command parameters
     /// </summary>
-    public abstract class TypeReader
+    public abstract class TypeConverter
     {
         /// <summary>
-        /// Will be used to search for alternative TypeReaders whenever the Command Service encounters an unknown parameter type
+        /// Will be used to search for alternative TypeConverters whenever the Command Service encounters an unknown parameter type
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
@@ -29,7 +29,7 @@ namespace Discord.SlashCommands
         /// <param name="option">Recieved option payload</param>
         /// <param name="services">Service provider that will be used to initialize the command module</param>
         /// <returns>The result of the read process</returns>
-        public abstract Task<TypeReaderResult> ReadAsync (ISlashCommandContext context, SocketSlashCommandDataOption option, IServiceProvider services);
+        public abstract Task<TypeConverterResult> ReadAsync (ISlashCommandContext context, SocketSlashCommandDataOption option, IServiceProvider services);
 
         /// <summary>
         /// Will be used to manipulate the outgoing command option, before the command gets registered to Discord
@@ -39,7 +39,7 @@ namespace Discord.SlashCommands
     }
 
     /// <inheritdoc/>
-    public abstract class TypeReader<T> : TypeReader
+    public abstract class TypeConverter<T> : TypeConverter
     {
         public sealed override bool CanConvertTo (Type type) =>
             typeof(T).IsAssignableFrom(type);

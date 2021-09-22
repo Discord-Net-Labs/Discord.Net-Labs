@@ -9,7 +9,7 @@ namespace Discord.SlashCommands.Builders
 
         public string Description { get; set; }
         public IReadOnlyCollection<ParameterChoice> Choices => _choices;
-        public TypeReader TypeReader { get; private set; }
+        public TypeConverter TypeConverter { get; private set; }
         protected override SlashCommandParameterBuilder Instance => this;
 
         internal SlashCommandParameterBuilder ( ICommandBuilder command ) : base(command)
@@ -32,7 +32,7 @@ namespace Discord.SlashCommands.Builders
         public override SlashCommandParameterBuilder SetParameterType (Type type)
         {
             base.SetParameterType(type);
-            TypeReader = Command.Module.CommandService.GetTypeReader(ParameterType);
+            TypeConverter = Command.Module.CommandService.GetTypeConverter(ParameterType);
             return this;
         }
 

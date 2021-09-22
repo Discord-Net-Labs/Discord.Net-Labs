@@ -46,8 +46,8 @@ namespace Discord.SlashCommands
         private readonly SlashCommandMap<ContextCommandInfo> _contextCommandMap;
         private readonly SlashCommandMap<InteractionInfo> _interactionCommandMap;
         private readonly HashSet<ModuleInfo> _moduleDefs;
-        private readonly ConcurrentDictionary<Type, TypeReader> _typeReaders;
-        private readonly ConcurrentDictionary<Type, Type> _genericTypeReaders;
+        private readonly ConcurrentDictionary<Type, TypeConverter> _typeConverters;
+        private readonly ConcurrentDictionary<Type, Type> _genericTypeConverters;
         private readonly SemaphoreSlim _lock;
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
@@ -117,19 +117,19 @@ namespace Discord.SlashCommands
             _wildCardExp = config.WildCardExpression;
             _useCompiledLambda = config.UseCompiledLambda;
 
-            _genericTypeReaders = new ConcurrentDictionary<Type, Type>
+            _genericTypeConverters = new ConcurrentDictionary<Type, Type>
             {
-                [typeof(IChannel)] = typeof(DefaultChannelReader<>),
-                [typeof(IRole)] = typeof(DefaultRoleReader<>),
-                [typeof(IUser)] = typeof(DefaultUserReader<>),
-                [typeof(IMentionable)] = typeof(DefaultMentionableReader<>),
-                [typeof(IConvertible)] = typeof(DefaultValueTypeReader<>),
-                [typeof(Enum)] = typeof(EnumTypeReader<>)
+                [typeof(IChannel)] = typeof(DefaultChannelConverter<>),
+                [typeof(IRole)] = typeof(DefaultRoleConverter<>),
+                [typeof(IUser)] = typeof(DefaultUserConverter<>),
+                [typeof(IMentionable)] = typeof(DefaultMentionableConverter<>),
+                [typeof(IConvertible)] = typeof(DefaultValueConverter<>),
+                [typeof(Enum)] = typeof(EnumConverter<>)
             };
 
-            _typeReaders = new ConcurrentDictionary<Type, TypeReader>
+            _typeConverters = new ConcurrentDictionary<Type, TypeConverter>
             {
-                [typeof(TimeSpan)] = new TimeSpanTypeReader()
+                [typeof(TimeSpan)] = new TimeSpanConverter()
             };
         }
 
@@ -239,7 +239,7 @@ namespace Discord.SlashCommands
             EnsureClientReady();
 
             var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
-
+            
             if (!deleteMissing)
             {
                 var existing = await ClientHelper.GetGlobalApplicationCommands(Client).ConfigureAwait(false);
@@ -262,7 +262,7 @@ namespace Discord.SlashCommands
         /// <returns>A task representing the command registration process, with a collection of <see cref="RestGuildCommand"/> containing the
         /// commands that are currently registered to the provided guild as its result.
         /// </returns>
-        public async Task<IReadOnlyCollection<RestGuildCommand>> AddCommandsToGuildAsync (IGuild guild, params SlashCommandInfo[] commands)
+        public async Task<IReadOnlyCollection<RestGuildCommand>> AddCommandsToGuildAsync (IGuild guild, params IApplicationCommandInfo[] commands)
         {
             EnsureClientReady();
 
@@ -270,7 +270,23 @@ namespace Discord.SlashCommands
                 throw new ArgumentNullException(nameof(guild));
 
             var existing = await ClientHelper.GetGuildApplicationCommands(Client, guild.Id).ConfigureAwait(false);
-            var props = commands.Select(x => x.ToApplicationCommandProps()).ToList();
+
+            var props = new List<ApplicationCommandProperties>();
+
+            foreach(var command in commands)
+            {
+                switch (command)
+                {
+                    case SlashCommandInfo slashCommand:
+                        props.Add(slashCommand.ToApplicationCommandProps());
+                        break;
+                    case ContextCommandInfo contextCommand:
+                        props.Add(contextCommand.ToApplicationCommandProps());
+                        break;
+                    default:
+                        throw new InvalidOperationException($"Command type {command.GetType().FullName} isn't supported yet");
+                }
+            }
 
             if (existing != null)
             {
@@ -297,7 +313,7 @@ namespace Discord.SlashCommands
                 throw new ArgumentNullException(nameof(guild));
 
             var existing = await ClientHelper.GetGuildApplicationCommands(Client, guild.Id).ConfigureAwait(false);
-            var props = modules.SelectMany(x => x.ToApplicationCommandProps()).ToList();
+            var props = modules.SelectMany(x => x.ToApplicationCommandProps(true)).ToList();
 
             foreach (var command in existing)
                 props.Add(command.ToApplicationCommandProps());
@@ -441,75 +457,72 @@ namespace Discord.SlashCommands
             return await result.Command.ExecuteAsync(context, services, result.RegexCaptureGroups).ConfigureAwait(false);
         }
 
-        internal TypeReader GetTypeReader (Type type)
+        internal TypeConverter GetTypeConverter (Type type)
         {
-            if (_typeReaders.TryGetValue(type, out var specific))
+            if (_typeConverters.TryGetValue(type, out var specific))
                 return specific;
 
-            else if (_typeReaders.Any(x => x.Value.CanConvertTo(type)))
-                return _typeReaders.First(x => x.Value.CanConvertTo(type)).Value;
+            else if (_typeConverters.Any(x => x.Value.CanConvertTo(type)))
+                return _typeConverters.First(x => x.Value.CanConvertTo(type)).Value;
 
-            else if (_genericTypeReaders.Any(x => x.Key.IsAssignableFrom(type)))
+            else if (_genericTypeConverters.Any(x => x.Key.IsAssignableFrom(type)))
             {
-                var readerType = GetMostSpecificTypeReader(type);
-                var reader = readerType.MakeGenericType(type).GetConstructor(Array.Empty<Type>()).Invoke(Array.Empty<object>()) as TypeReader;
-                _typeReaders[type] = reader;
-                return reader;
+                var converterType = GetMostSpecificTypeConverter(type);
+                var converter = converterType.MakeGenericType(type).GetConstructor(Array.Empty<Type>()).Invoke(Array.Empty<object>()) as TypeConverter;
+                _typeConverters[type] = converter;
+                return converter;
             }
 
-            throw new ArgumentException($"No type reader is defined for this {nameof(Type)}", "type");
+            throw new ArgumentException($"No type {nameof(TypeConverter)} is defined for this {type.FullName}", "type");
         }
 
         /// <summary>
-        /// Add a concrete type <see cref="TypeReader"/> to the command service
+        /// Add a concrete type <see cref="TypeConverter"/> to the command service
         /// </summary>
-        /// <typeparam name="T">The type this <see cref="TypeReader"/> will be used to handle></typeparam>
-        /// <param name="reader">The <see cref="TypeReader"/> instance</param>
-        public void AddTypeReader<T> (TypeReader reader) =>
-            AddTypeReader(typeof(T), reader);
+        /// <typeparam name="T">The type this <see cref="TypeConverter"/> will be used to handle</typeparam>
+        /// <param name="converter">The <see cref="TypeConverter"/> instance</param>
+        public void AddTypeConverter<T> (TypeConverter converter) =>
+            AddTypeConverter(typeof(T), converter);
 
         /// <summary>
-        /// Add a concrete type <see cref="TypeReader"/> to the command service
+        /// Add a concrete type <see cref="TypeConverter"/> to the command service
         /// </summary>
-        /// <param name="type">The type this <see cref="TypeReader"/> will be used to handle</param>
-        /// <param name="reader">The <see cref="TypeReader"/> instance</param>
-        public void AddTypeReader (Type type, TypeReader reader)
+        /// <param name="type">The type this <see cref="TypeConverter"/> will be used to handle</param>
+        /// <param name="converter">The <see cref="TypeConverter"/> instance</param>
+        public void AddTypeConverter (Type type, TypeConverter converter)
         {
-            if (!reader.CanConvertTo(type))
-                throw new ArgumentException($"This {nameof(TypeReader)} cannot read {type.FullName} and cannot be registered as its type readers");
+            if (!converter.CanConvertTo(type))
+                throw new ArgumentException($"This {converter.GetType().FullName} cannot read {type.FullName} and cannot be registered as its {nameof(TypeConverter)}");
 
-            _typeReaders[type] = reader;
+            _typeConverters[type] = converter;
         }
 
-        /// <summary>
-        /// Add a generic type <see cref="TypeReader{T}"/> to the command service
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="typeReader"></param>
-        public void AddGenericTypeReader<T> (Type typeReader) =>
-            AddGenericTypeReader(typeof(T), typeReader);
+        public void AddGenericTypeConverter<T, TConverter> ( ) where TConverter : TypeConverter, new() =>
+            AddGenericTypeConverter<TConverter>(typeof(T));
 
         /// <summary>
-        /// Add a generic type <see cref="TypeReader{T}"/> to the command service
+        /// Add a generic type <see cref="TypeConverter{T}"/> to the command service
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="readerType"></param>
-        public void AddGenericTypeReader (Type type, Type readerType)
+        /// <typeparam name="TConverter"></typeparam>
+        public void AddGenericTypeConverter<TConverter> (Type type) where TConverter : TypeConverter, new()
         {
-            if (!readerType.IsGenericTypeDefinition)
-                throw new ArgumentException($"{nameof(TypeReader)} is not generic.");
+            var converterType = typeof(TConverter);
 
-            var genericArguments = readerType.GetGenericArguments();
+            if (!converterType.IsGenericTypeDefinition)
+                throw new ArgumentException($"{converterType.FullName} is not generic.");
+
+            var genericArguments = converterType.GetGenericArguments();
 
             if (genericArguments.Count() > 1)
-                throw new InvalidOperationException($"Valid generic {nameof(TypeReader)}s cannot have more than 1 generic type parameter");
+                throw new InvalidOperationException($"Valid generic {converterType.FullName}s cannot have more than 1 generic type parameter");
 
             var constraints = genericArguments.SelectMany(x => x.GetGenericParameterConstraints());
 
             if (!constraints.Any(x => x.IsAssignableFrom(type)))
                 throw new InvalidOperationException($"This generic class does not support type {type.FullName}");
 
-            _genericTypeReaders[type] = readerType;
+            _genericTypeConverters[type] = converterType;
         }
 
         /// <summary>
@@ -525,7 +538,7 @@ namespace Discord.SlashCommands
             if (!module.IsSlashGroup)
                 throw new InvalidOperationException($"This module does not have a {nameof(SlashGroupAttribute)} and does not represent an Application Command");
 
-            if (!module.IsTopLevel)
+            if (!module.IsTopLevelCommand)
                 throw new InvalidOperationException("This module is not a top level application command. You cannot change its permissions");
 
             if (guild == null)
@@ -559,17 +572,17 @@ namespace Discord.SlashCommands
             params ApplicationCommandPermission[] permissions) =>
             await ModifyApplicationCommandPermissionsAsync(command, guild, permissions).ConfigureAwait(false);
 
-        private async Task<GuildApplicationCommandPermission> ModifyApplicationCommandPermissionsAsync (ICommandInfo command, IGuild guild,
-            params ApplicationCommandPermission[] permissions)
+        private async Task<GuildApplicationCommandPermission> ModifyApplicationCommandPermissionsAsync<T> (T command, IGuild guild,
+            params ApplicationCommandPermission[] permissions) where T : class, IApplicationCommandInfo, ICommandInfo
         {
-            if (!command.IsTopLevel)
+            if (!command.IsTopLevelCommand)
                 throw new InvalidOperationException("This command is not a top level application command. You cannot change its permissions");
 
             if (guild == null)
                 throw new ArgumentNullException("guild");
 
             var commands = await ClientHelper.GetGuildApplicationCommands(Client, guild.Id).ConfigureAwait(false);
-            var appCommand = commands.First(x => x.Name == command.Name);
+            var appCommand = commands.First(x => x.Name == (command as IApplicationCommandInfo).Name);
 
             return await appCommand.ModifyCommandPermissions(permissions).ConfigureAwait(false);
         }
@@ -581,7 +594,7 @@ namespace Discord.SlashCommands
         /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
         /// <returns>The loaded <see cref="SlashCommandInfo"/> instance for this method</returns>
         /// <exception cref="InvalidOperationException">The module is not registered to the command service or the slash command could not be found</exception>
-        public SlashCommandInfo GetSlashCommandInfo<TModule> (string methodName) where TModule : SlashModuleBase
+        public SlashCommandInfo GetSlashCommandInfo<TModule> (string methodName) where TModule : class, ISlashModuleBase
         {
             var module = GetModuleInfo<TModule>();
 
@@ -595,7 +608,7 @@ namespace Discord.SlashCommands
         /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
         /// <returns>The loaded <see cref="ContextCommandInfo"/> instance for this method</returns>
         /// <exception cref="InvalidOperationException">The module is not registered to the command service or the context command could not be found</exception>
-        public ContextCommandInfo GetContextCommandInfo<TModule> (string methodName) where TModule : SlashModuleBase
+        public ContextCommandInfo GetContextCommandInfo<TModule> (string methodName) where TModule : class, ISlashModuleBase
         {
             var module = GetModuleInfo<TModule>();
 
@@ -609,7 +622,7 @@ namespace Discord.SlashCommands
         /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
         /// <returns>The loaded <see cref="InteractionInfo"/> instance for this method</returns>
         /// <exception cref="InvalidOperationException">The module is not registered to the command service or the interaction could not be found</exception>
-        public InteractionInfo GetInteractionInfo<TModule> (string methodName) where TModule : SlashModuleBase
+        public InteractionInfo GetInteractionInfo<TModule> (string methodName) where TModule : class, ISlashModuleBase
         {
             var module = GetModuleInfo<TModule>();
 
@@ -621,7 +634,7 @@ namespace Discord.SlashCommands
         /// </summary>
         /// <typeparam name="TModule">Type of the module, must be a type of <see cref="SlashModuleBase{T}"/></typeparam>
         /// <returns>The loaded <see cref="ModuleInfo"/> instance for this method</returns>
-        public ModuleInfo GetModuleInfo<TModule> ( ) where TModule : SlashModuleBase
+        public ModuleInfo GetModuleInfo<TModule> ( ) where TModule : class, ISlashModuleBase
         {
             if (!typeof(ISlashModuleBase).IsAssignableFrom(typeof(TModule)))
                 throw new ArgumentException("Type parameter must be a type of Slash Module", "TModule");
@@ -639,15 +652,15 @@ namespace Discord.SlashCommands
             _lock.Dispose();
         }
 
-        private Type GetMostSpecificTypeReader (Type type)
+        private Type GetMostSpecificTypeConverter (Type type)
         {
             var scorePairs = new Dictionary<Type, int>();
-            var validReaders = _genericTypeReaders.Where(x => x.Key.IsAssignableFrom(type));
+            var validConverters = _genericTypeConverters.Where(x => x.Key.IsAssignableFrom(type));
 
-            foreach (var typeReaderPair in validReaders)
+            foreach (var typeConverterPair in validConverters)
             {
-                var score = validReaders.Count(x => typeReaderPair.Key.IsAssignableFrom(x.Key));
-                scorePairs.Add(typeReaderPair.Value, score);
+                var score = validConverters.Count(x => typeConverterPair.Key.IsAssignableFrom(x.Key));
+                scorePairs.Add(typeConverterPair.Value, score);
             }
 
             return scorePairs.OrderBy(x => x.Value).ElementAt(0).Key;

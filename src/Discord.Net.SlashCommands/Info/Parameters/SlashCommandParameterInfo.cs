@@ -19,12 +19,12 @@ namespace Discord.SlashCommands
         /// <summary>
         /// 
         /// </summary>
-        public TypeReader TypeReader { get; }
+        public TypeConverter TypeConverter { get; }
 
         /// <summary>
         /// 
         /// </summary>
-        public ApplicationCommandOptionType DiscordOptionType => TypeReader.GetDiscordType();
+        public ApplicationCommandOptionType DiscordOptionType => TypeConverter.GetDiscordType();
 
         /// <summary>
         /// 
@@ -33,7 +33,7 @@ namespace Discord.SlashCommands
 
         internal SlashCommandParameterInfo (Builders.SlashCommandParameterBuilder builder, SlashCommandInfo command) : base(builder, command)
         {
-            TypeReader = builder.TypeReader;
+            TypeConverter = builder.TypeConverter;
             Description = builder.Description;
             Choices = builder.Choices.ToImmutableArray();
         }

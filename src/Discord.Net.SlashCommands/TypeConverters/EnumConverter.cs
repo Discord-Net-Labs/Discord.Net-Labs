@@ -5,19 +5,19 @@ using System.Threading.Tasks;
 
 namespace Discord.SlashCommands
 {
-    internal sealed class EnumTypeReader<T> : TypeReader<T> where T : Enum
+    internal sealed class EnumConverter<T> : TypeConverter<T> where T : Enum
     {
         public override ApplicationCommandOptionType GetDiscordType ( ) => ApplicationCommandOptionType.String;
-        public override Task<TypeReaderResult> ReadAsync (ISlashCommandContext context, SocketSlashCommandDataOption option, IServiceProvider services)
+        public override Task<TypeConverterResult> ReadAsync (ISlashCommandContext context, SocketSlashCommandDataOption option, IServiceProvider services)
         {
             try
             {
                 var result = Enum.Parse(typeof(T), (string)option.Value, true);
-                return Task.FromResult(TypeReaderResult.FromSuccess(result));
+                return Task.FromResult(TypeConverterResult.FromSuccess(result));
             }
             catch (Exception ex)
             {
-                return Task.FromResult(TypeReaderResult.FromError(ex));
+                return Task.FromResult(TypeConverterResult.FromError(ex));
             }
         }
 

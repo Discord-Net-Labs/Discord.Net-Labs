@@ -5,7 +5,7 @@ namespace Discord.SlashCommands
     /// <summary>
     /// 
     /// </summary>
-    public struct TypeReaderResult : IResult
+    public struct TypeConverterResult : IResult
     {
         /// <summary>
         /// 
@@ -27,24 +27,24 @@ namespace Discord.SlashCommands
         /// </summary>
         public bool IsSuccess => !Error.HasValue;
 
-        private TypeReaderResult (object value, SlashCommandError? error, string reason)
+        private TypeConverterResult (object value, SlashCommandError? error, string reason)
         {
             Value = value;
             Error = error;
             ErrorReason = reason;
         }
 
-        public static TypeReaderResult FromSuccess (object value) =>
-            new TypeReaderResult(value, null, null);
+        public static TypeConverterResult FromSuccess (object value) =>
+            new TypeConverterResult(value, null, null);
 
-        public static TypeReaderResult FromError (Exception ex) =>
-            new TypeReaderResult(null, SlashCommandError.Exception, ex.Message);
+        public static TypeConverterResult FromError (Exception ex) =>
+            new TypeConverterResult(null, SlashCommandError.Exception, ex.Message);
 
-        public static TypeReaderResult FromError (SlashCommandError error, string reason) =>
-            new TypeReaderResult(null, error, reason);
+        public static TypeConverterResult FromError (SlashCommandError error, string reason) =>
+            new TypeConverterResult(null, error, reason);
 
-        public static TypeReaderResult FromError (IResult result) =>
-            new TypeReaderResult(null, result.Error, result.ErrorReason);
+        public static TypeConverterResult FromError (IResult result) =>
+            new TypeConverterResult(null, result.Error, result.ErrorReason);
 
         public override string ToString ( ) => IsSuccess ? "Success" : $"{Error}: {ErrorReason}";
     }

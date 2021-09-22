@@ -21,7 +21,7 @@ namespace Discord.SlashCommands
                     Value = x.Value
                 })?.ToList()
             };
-            parameterInfo.TypeReader.Write(props);
+            parameterInfo.TypeConverter.Write(props);
 
             return props;
         }

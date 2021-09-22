@@ -84,12 +84,12 @@ namespace Discord.SlashCommands
                 }
                 else
                 {
-                    var typeReader = parameter.TypeReader;
+                    var typeConverter = parameter.TypeConverter;
 
-                    if (!typeReader.CanConvertTo(parameter.ParameterType))
-                        throw new InvalidOperationException($"Type {nameof(parameter.ParameterType)} cannot be read by the registered Type Reader");
+                    if (!typeConverter.CanConvertTo(parameter.ParameterType))
+                        throw new InvalidOperationException($"Type {parameter.ParameterType.FullName} cannot be read by the registered {nameof(TypeConverter)}");
 
-                    var readResult = await typeReader.ReadAsync(context, arg, services).ConfigureAwait(false);
+                    var readResult = await typeConverter.ReadAsync(context, arg, services).ConfigureAwait(false);
 
                     if (!readResult.IsSuccess)
                         throw new InvalidOperationException($"Argument was not read successfully: {readResult.ErrorReason}");
