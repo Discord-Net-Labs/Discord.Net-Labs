@@ -367,8 +367,6 @@ namespace Discord
                     if (value.Length < 1)
                         throw new ArgumentException("Button label must be 1 character or more!", paramName: nameof(Label));
                 }
-                else
-                    throw new ArgumentException("Button label must not be null or empty!", paramName: nameof(Label));
 
                 _label = value;
             }
@@ -391,8 +389,6 @@ namespace Discord
                     if (value.Length < 1)
                         throw new ArgumentException("Custom Id must be 1 character or more!", paramName: nameof(CustomId));
                 }
-                else
-                    throw new ArgumentException("Custom Id must not be null or empty!", paramName: nameof(CustomId));
                 _customId = value;
             }
         }
@@ -644,8 +640,6 @@ namespace Discord
                     if (value.Length < 1)
                         throw new ArgumentException("Custom Id must be 1 character or more!", paramName: nameof(CustomId));
                 }
-                else
-                    throw new ArgumentException("Custom Id must not be null or empty!", paramName: nameof(CustomId));
                 _customId = value;
             }
         }
