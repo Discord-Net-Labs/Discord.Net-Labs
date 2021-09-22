@@ -97,6 +97,9 @@ namespace Discord.SlashCommands.Builders
                     case PreconditionAttribute precondition:
                         builder.AddPreconditions(precondition);
                         break;
+                    case DontAutoRegisterAttribute dontAutoRegister:
+                        builder.DontAutoRegister = true;
+                        break;
                     default:
                         builder.AddAttributes(attribute);
                         break;

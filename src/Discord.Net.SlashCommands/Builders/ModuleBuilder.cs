@@ -22,6 +22,7 @@ namespace Discord.SlashCommands.Builders
         public bool IsSlashGroup => !string.IsNullOrEmpty(SlashGroupName);
         public string Description { get; set; }
         public bool DefaultPermission { get; set; } = true;
+        public bool DontAutoRegister { get; set; } = false;
 
         public IReadOnlyList<Attribute> Attributes => _attributes;
         public IReadOnlyCollection<PreconditionAttribute> Preconditions => _preconditions;

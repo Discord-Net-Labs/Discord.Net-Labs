@@ -56,16 +56,19 @@ namespace Discord.SlashCommands
 
         // Modules
 
-        public static IReadOnlyCollection<ApplicationCommandProperties> ToApplicationCommandProps (this ModuleInfo moduleInfo)
+        public static IReadOnlyCollection<ApplicationCommandProperties> ToApplicationCommandProps (this ModuleInfo moduleInfo, bool ignoreDontRegister = false)
         {
             var args = new List<ApplicationCommandProperties>();
 
-            ParseModuleModel(args, moduleInfo);
+            moduleInfo.ParseModuleModel(args, ignoreDontRegister);
             return args;
         }
 
-        private static void ParseModuleModel (List<ApplicationCommandProperties> args, ModuleInfo moduleInfo)
+        private static void ParseModuleModel (this ModuleInfo moduleInfo, List<ApplicationCommandProperties> args, bool ignoreDontRegister)
         {
+            if (moduleInfo.DontAutoRegister && !ignoreDontRegister)
+                return;
+
             args.AddRange(moduleInfo.ContextCommands?.Select(x => x.ToApplicationCommandProps()));
 
             if (!moduleInfo.IsSlashGroup)
@@ -73,7 +76,7 @@ namespace Discord.SlashCommands
                 args.AddRange(moduleInfo.SlashCommands?.Select(x => x.ToApplicationCommandProps()));
 
                 foreach (var submodule in moduleInfo.SubModules)
-                    ParseModuleModel(args, submodule);
+                    submodule.ParseModuleModel(args, ignoreDontRegister);
             }
             else
             {
@@ -87,7 +90,7 @@ namespace Discord.SlashCommands
                         options.Add(command.ToApplicationCommandOptionProps());
                 }
 
-                options.AddRange(moduleInfo.SubModules?.SelectMany(x => x.ParseSubModule(args)));
+                options.AddRange(moduleInfo.SubModules?.SelectMany(x => x.ParseSubModule(args, ignoreDontRegister)));
 
                 args.Add(new SlashCommandProperties
                 {
@@ -99,12 +102,16 @@ namespace Discord.SlashCommands
             }
         }
 
-        private static IReadOnlyCollection<ApplicationCommandOptionProperties> ParseSubModule (this ModuleInfo moduleInfo, List<ApplicationCommandProperties> args)
+        private static IReadOnlyCollection<ApplicationCommandOptionProperties> ParseSubModule (this ModuleInfo moduleInfo, List<ApplicationCommandProperties> args,
+            bool ignoreDontRegister)
         {
+            if (moduleInfo.DontAutoRegister && !ignoreDontRegister)
+                return Array.Empty<ApplicationCommandOptionProperties>();
+
             args.AddRange(moduleInfo.ContextCommands?.Select(x => x.ToApplicationCommandProps()));
 
             var options = new List<ApplicationCommandOptionProperties>();
-            options.AddRange(moduleInfo.SubModules?.SelectMany(x => x.ParseSubModule(args)));
+            options.AddRange(moduleInfo.SubModules?.SelectMany(x => x.ParseSubModule(args, ignoreDontRegister)));
 
             foreach (var command in moduleInfo.SlashCommands)
             {
@@ -114,7 +121,7 @@ namespace Discord.SlashCommands
                     options.Add(command.ToApplicationCommandOptionProps());
             }
 
-            if (!moduleInfo.IsSubModule)
+            if (!moduleInfo.IsSlashGroup)
                 return options;
             else
                 return new List<ApplicationCommandOptionProperties>() { new ApplicationCommandOptionProperties
