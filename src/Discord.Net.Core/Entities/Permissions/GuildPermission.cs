@@ -191,18 +191,26 @@ namespace Discord
         ///     authentication when used on a guild that has server-wide 2FA enabled.
         /// </remarks>
         ManageThreads           = 0x04_00_00_00_00,
-        /// <summary>
-        /// Allows for creating and participating in threads.
+        /// /// <summary>
+        ///     Allows for creating public threads.
         /// </summary>
-        UsePublicThreads        = 0x08_00_00_00_00,
+        CreatePublicThreads = 0x08_00_00_00_00,
         /// <summary>
-        ///     Allows for creating and participating in private threads.
+        ///     Allows for creating private threads.
         /// </summary>
-        UsePrivateThreads       = 0x10_00_00_00_00,
+        CreatePrivateThreads = 0x10_00_00_00_00,
         /// <summary>
         ///     Allows the usage of custom stickers from other servers.
         /// </summary>
-        UseExternalStickers     = 0x20_00_00_00_00
+        UseExternalStickers     = 0x20_00_00_00_00,
+        /// <summary>
+        ///     Allows for sending messages in threads.
+        /// </summary>
+        SendMessagesInThreads = 0x40_00_00_00_00,
+        /// <summary>
+        ///     Allows for launching activities (applications with the EMBEDDED flag) in a voice channel.
+        /// </summary>
+        StartEmbeddedActivities = 0x80_00_00_00_00
 
     }
 }
