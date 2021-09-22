@@ -7,13 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Model = Discord.API.Channel;
 using StageInstance = Discord.API.StageInstance;
+using CacheModel = Discord.WebSocket.CacheModels.StageChannel;
 
 namespace Discord.WebSocket
 {
     /// <summary>
     ///     Represents a stage channel recieved over the gateway.
     /// </summary>
-    public class SocketStageChannel : SocketVoiceChannel, IStageChannel
+    public class SocketStageChannel : SocketVoiceChannel, IStageChannel, ICacheableEntity<CacheModel, SocketStageChannel>
     {
         /// <inheritdoc/>
         public string Topic { get; private set; }
@@ -42,15 +43,15 @@ namespace Discord.WebSocket
         internal new SocketStageChannel Clone() => MemberwiseClone() as SocketStageChannel;
 
 
-        internal SocketStageChannel(DiscordSocketClient discord, ulong id, SocketGuild guild)
-            : base(discord, id, guild)
+        internal SocketStageChannel(DiscordSocketClient discord, ulong id, ulong guildId, ChannelType type)
+            : base(discord, id, guildId, type)
         {
 
         }
 
-        internal new static SocketStageChannel Create(SocketGuild guild, ClientState state, Model model)
+        internal new static SocketStageChannel Create(DiscordSocketClient client, ClientState state, Model model)
         {
-            var entity = new SocketStageChannel(guild.Discord, model.Id, guild);
+            var entity = new SocketStageChannel(client, model.Id, model.GuildId.Value, model.Type);
             entity.Update(state, model);
             return entity;
         }
@@ -164,5 +165,18 @@ namespace Discord.WebSocket
 
             return Discord.ApiClient.ModifyUserVoiceState(this.Guild.Id, user.Id, args);
         }
+
+        internal new CacheModel ToCacheable()
+        {
+            var channelModel = base.ToCacheable();
+            var model = new CacheModel(channelModel);
+            model.Live = this.Live;
+            model.DiscoverableDisabled = this.DiscoverableDisabled;
+            model.StageTopic = this.Topic;
+            model.PrivacyLevel = this.PrivacyLevel;
+            return model;
+        }
+
+        CacheModel ICacheableEntity<CacheModel, SocketStageChannel>.ToCacheable() => ToCacheable();
     }
 }

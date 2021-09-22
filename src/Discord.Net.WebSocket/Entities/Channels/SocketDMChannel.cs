@@ -20,7 +20,7 @@ namespace Discord.WebSocket
         /// <summary>
         ///     Gets the recipient of the channel.
         /// </summary>
-        public SocketUser Recipient { get; }
+        public SocketUser Recipient { get }
 
         /// <inheritdoc />
         public IReadOnlyCollection<SocketMessage> CachedMessages => ImmutableArray.Create<SocketMessage>();
@@ -30,14 +30,16 @@ namespace Discord.WebSocket
         /// </summary>
         public new IReadOnlyCollection<SocketUser> Users => ImmutableArray.Create(Discord.CurrentUser, Recipient);
 
-        internal SocketDMChannel(DiscordSocketClient discord, ulong id, SocketUser recipient)
-            : base(discord, id)
+        private ulong RecipientId;
+
+        internal SocketDMChannel(DiscordSocketClient discord, ulong id, ulong recipientId, ChannelType type)
+            : base(discord, id, type)
         {
-            Recipient = recipient;
+            this.RecipientId = recipientId;
         }
         internal static SocketDMChannel Create(DiscordSocketClient discord, ClientState state, Model model)
         {
-            var entity = new SocketDMChannel(discord, model.Id, discord.GetOrCreateTemporaryUser(state, model.Recipients.Value[0]));
+            var entity = new SocketDMChannel(discord, model.Id, model.Recipients.Value[0].Id, model.Type);
             entity.Update(state, model);
             return entity;
         }
@@ -47,7 +49,7 @@ namespace Discord.WebSocket
         }
         internal static SocketDMChannel Create(DiscordSocketClient discord, ClientState state, ulong channelId, API.User recipient)
         {
-            var entity = new SocketDMChannel(discord, channelId, discord.GetOrCreateTemporaryUser(state, recipient));
+            var entity = new SocketDMChannel(discord, channelId, recipient.Id, ChannelType.DM);
             entity.Update(state, recipient);
             return entity;
         }

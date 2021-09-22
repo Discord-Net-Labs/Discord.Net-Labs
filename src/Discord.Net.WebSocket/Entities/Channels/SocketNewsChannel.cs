@@ -17,13 +17,13 @@ namespace Discord.WebSocket
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
     public class SocketNewsChannel : SocketTextChannel, INewsChannel
     {
-        internal SocketNewsChannel(DiscordSocketClient discord, ulong id, SocketGuild guild)
-            :base(discord, id, guild)
+        internal SocketNewsChannel(DiscordSocketClient discord, ulong id, ulong guildId)
+            :base(discord, id, guildId)
         {
         }
-        internal new static SocketNewsChannel Create(SocketGuild guild, ClientState state, Model model)
+        internal new static SocketNewsChannel Create(DiscordSocketClient client, ClientState state, Model model)
         {
-            var entity = new SocketNewsChannel(guild.Discord, model.Id, guild);
+            var entity = new SocketNewsChannel(client, model.Id, model.GuildId.Value);
             entity.Update(state, model);
             return entity;
         }

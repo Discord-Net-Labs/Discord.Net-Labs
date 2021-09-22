@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Discord.WebSocket
+namespace Discord
 {
-    public interface ICacheProvider
+    internal interface ICacheableEntity<TModel, TType> 
     {
-        
+        TModel ToCacheable();
     }
 }

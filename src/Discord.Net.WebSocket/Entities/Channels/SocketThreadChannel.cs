@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Model = Discord.API.Channel;
 using ThreadMember = Discord.API.ThreadMember;
 using MemberUpdates = Discord.API.Gateway.ThreadMembersUpdated;
+using CacheModel = Discord.WebSocket.CacheModels.ThreadChannel;
 using System.Collections.Concurrent;
 
 namespace Discord.WebSocket
@@ -26,13 +27,12 @@ namespace Discord.WebSocket
         /// <summary>
         ///     Gets the owner of the current thread.
         /// </summary>
-        public SocketThreadUser Owner { get; private set; }
+        public SocketThreadUser Owner { get }
 
         /// <summary>
         ///     Gets the current users within this thread.
         /// </summary>
-        public SocketThreadUser CurrentUser
-            => Users.FirstOrDefault(x => x.Id == Discord.CurrentUser.Id);
+        public SocketThreadUser CurrentUser { get }
 
         /// <inheritdoc/>
         public bool Joined { get; private set; }
@@ -46,7 +46,7 @@ namespace Discord.WebSocket
         /// <summary>
         ///     Gets the parent channel this thread resides in.
         /// </summary>
-        public SocketTextChannel ParentChannel { get; private set; }
+        public SocketTextChannel ParentChannel { get }
 
         /// <inheritdoc/>
         public int MessageCount { get; private set; }
@@ -69,11 +69,7 @@ namespace Discord.WebSocket
         /// <summary>
         ///     Gets a collection of cached users within this thread.
         /// </summary>
-        public new IReadOnlyCollection<SocketThreadUser> Users =>
-            _members.Values.ToImmutableArray();
-
-
-        private ConcurrentDictionary<ulong, SocketThreadUser> _members;
+        public new IReadOnlyCollection<SocketThreadUser> Users { get}
 
         private string DebuggerDisplay => $"{Name} ({Id}, Thread)";
 
@@ -81,17 +77,14 @@ namespace Discord.WebSocket
 
         private object _downloadLock = new object();
 
-        internal SocketThreadChannel(DiscordSocketClient discord, SocketGuild guild, ulong id, SocketTextChannel parent)
-            : base(discord, id, guild)
+        internal SocketThreadChannel(DiscordSocketClient discord, ulong id, ulong guildId)
+            : base(discord, id, guildId)
         {
-            this.ParentChannel = parent;
-            this._members = new ConcurrentDictionary<ulong, SocketThreadUser>();
         }
 
-        internal new static SocketThreadChannel Create(SocketGuild guild, ClientState state, Model model)
+        internal new static SocketThreadChannel Create(DiscordSocketClient client, ClientState state, Model model)
         {
-            var parent = (SocketTextChannel)guild.GetChannel(model.CategoryId.Value);
-            var entity = new SocketThreadChannel(guild.Discord, guild, model.Id, parent);
+            var entity = new SocketThreadChannel(client, model.Id, model.GuildId.Value);
             entity.Update(state, model);
             return entity;
         }
@@ -108,13 +101,8 @@ namespace Discord.WebSocket
             {
                 this.Archived = model.ThreadMetadata.Value.Archived;
                 this.ArchiveTimestamp = model.ThreadMetadata.Value.ArchiveTimestamp;
-                this.AutoArchiveDuration = (ThreadArchiveDuration)model.ThreadMetadata.Value.AutoArchiveDuration;
+                this.AutoArchiveDuration = model.ThreadMetadata.Value.AutoArchiveDuration;
                 this.Locked = model.ThreadMetadata.Value.Locked.GetValueOrDefault(false);
-            }
-
-            if (model.OwnerId.IsSpecified)
-            {
-                this.Owner = GetUser(model.OwnerId.Value);
             }
 
             this.Joined = model.ThreadMember.IsSpecified;
@@ -338,6 +326,13 @@ namespace Discord.WebSocket
         /// </remarks>
         public override Task SyncPermissionsAsync(RequestOptions options = null)
             => throw new NotImplementedException();
+
+        internal override Model ToCacheable()
+        {
+            var model = base.ToCacheable();
+            model.ThreadMember
+        }
+
 
         string IChannel.Name => this.Name;
     }

@@ -29,8 +29,7 @@ namespace Discord.WebSocket
         /// <returns>
         ///     A category channel representing the parent of this channel; <c>null</c> if none is set.
         /// </returns>
-        public ICategoryChannel Category
-            => CategoryId.HasValue ? Guild.GetChannel(CategoryId.Value) as ICategoryChannel : null;
+        public ICategoryChannel Category { get}
         /// <inheritdoc />
         public Task SyncPermissionsAsync(RequestOptions options = null)
             => ChannelHelper.SyncPermissionsAsync(this, Discord, options);
@@ -41,16 +40,15 @@ namespace Discord.WebSocket
         /// <returns>
         ///     A read-only collection of users that are currently connected to this voice channel.
         /// </returns>
-        public override IReadOnlyCollection<SocketGuildUser> Users
-            => Guild.Users.Where(x => x.VoiceChannel?.Id == Id).ToImmutableArray();
+        public override IReadOnlyCollection<SocketGuildUser> Users { get}
 
-        internal SocketVoiceChannel(DiscordSocketClient discord, ulong id, SocketGuild guild)
-            : base(discord, id, guild)
+        internal SocketVoiceChannel(DiscordSocketClient discord, ulong id, ulong guildId, ChannelType type)
+            : base(discord, id, guildId, type)
         {
         }
-        internal new static SocketVoiceChannel Create(SocketGuild guild, ClientState state, Model model)
+        internal new static SocketVoiceChannel Create(DiscordSocketClient client, ClientState state, Model model)
         {
-            var entity = new SocketVoiceChannel(guild.Discord, model.Id, guild);
+            var entity = new SocketVoiceChannel(client, model.Id, model.GuildId.Value, model.Type);
             entity.Update(state, model);
             return entity;
         }
@@ -118,6 +116,20 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         Task<ICategoryChannel> INestedChannel.GetCategoryAsync(CacheMode mode, RequestOptions options)
             => Task.FromResult(Category);
+        #endregion
+
+        #region Cache
+
+        internal override Model ToCacheable()
+        {
+            var model = base.ToCacheable();
+            model.Bitrate = this.Bitrate;
+
+            if (this.UserLimit.HasValue)
+                model.UserLimit = this.UserLimit.Value;
+
+        }
+
         #endregion
     }
 }

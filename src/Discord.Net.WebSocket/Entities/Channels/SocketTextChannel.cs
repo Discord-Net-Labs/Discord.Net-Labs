@@ -14,7 +14,7 @@ namespace Discord.WebSocket
     ///     Represents a WebSocket-based channel in a guild that can send and receive messages.
     /// </summary>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    public class SocketTextChannel : SocketGuildChannel, ITextChannel, ISocketMessageChannel
+    public class SocketTextChannel : SocketGuildChannel, ITextChannel, ISocketMessageChannel, ICacheableEntity<Model, SocketTextChannel>
     {
         #region SocketTextChannel
         private readonly MessageCache _messages;
@@ -44,28 +44,24 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public string Mention => MentionUtils.MentionChannel(Id);
         /// <inheritdoc />
-        public IReadOnlyCollection<SocketMessage> CachedMessages => _messages?.Messages ?? ImmutableArray.Create<SocketMessage>();
+        public IReadOnlyCollection<SocketMessage> CachedMessages { get }
         /// <inheritdoc />
-        public override IReadOnlyCollection<SocketGuildUser> Users
-            => Guild.Users.Where(x => Permissions.GetValue(
-                Permissions.ResolveChannel(Guild, x, this, Permissions.ResolveGuild(Guild, x)),
-                ChannelPermission.ViewChannel)).ToImmutableArray();
+        public override IReadOnlyCollection<SocketGuildUser> Users { get }
 
         /// <summary>
         ///     Gets a collection of threads within this text channel.
         /// </summary>
-        public IReadOnlyCollection<SocketThreadChannel> Threads
-            => Guild.ThreadChannels.Where(x => x.ParentChannel.Id == this.Id).ToImmutableArray();
+        public IReadOnlyCollection<SocketThreadChannel> Threads { get }
 
-        internal SocketTextChannel(DiscordSocketClient discord, ulong id, SocketGuild guild)
-            : base(discord, id, guild)
+        internal SocketTextChannel(DiscordSocketClient discord, ulong id, ulong guildId)
+            : base(discord, id, guildId)
         {
             if (Discord.MessageCacheSize > 0)
                 _messages = new MessageCache(Discord);
         }
-        internal new static SocketTextChannel Create(SocketGuild guild, ClientState state, Model model)
+        internal new static SocketTextChannel Create(DiscordSocketClient client, ClientState state, Model model)
         {
-            var entity = new SocketTextChannel(guild.Discord, model.Id, guild);
+            var entity = new SocketTextChannel(client, model.Id, model.GuildId.Value);
             entity.Update(state, model);
             return entity;
         }
@@ -385,6 +381,19 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         Task<ICategoryChannel> INestedChannel.GetCategoryAsync(CacheMode mode, RequestOptions options)
             => Task.FromResult(Category);
+        #endregion
+
+        #region Cache
+        internal override Model ToCacheable()
+        {
+            var model = base.ToCacheable();
+            model.CategoryId = this.CategoryId;
+            model.Nsfw = this._nsfw;
+            model.Topic = this.Topic;
+            model.SlowMode = this.SlowModeInterval;
+            return model;
+        }
+        Model ICacheableEntity<Model, SocketTextChannel>.ToCacheable() => throw new NotImplementedException();
         #endregion
     }
 }

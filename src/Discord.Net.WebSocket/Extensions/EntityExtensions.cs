@@ -129,5 +129,16 @@ namespace Discord.WebSocket
         {
             return new GameTimestamps(model.Start.ToNullable(), model.End.ToNullable());
         }
+
+        public static API.Overwrite ToModel(this Overwrite overwrite)
+        {
+            return new API.Overwrite()
+            {
+                TargetId = overwrite.TargetId,
+                TargetType = overwrite.TargetType,
+                Allow = $"{overwrite.Permissions.AllowValue}",
+                Deny = $"{overwrite.Permissions.DenyValue}"
+            };
+        }
     }
 }

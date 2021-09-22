@@ -17,6 +17,7 @@ namespace Discord.WebSocket
     {
         #region SocketGuildChannel
         private ImmutableArray<Overwrite> _overwrites;
+        private readonly ulong GuildId;
 
         /// <summary>
         ///     Gets the guild associated with this channel.
@@ -24,7 +25,7 @@ namespace Discord.WebSocket
         /// <returns>
         ///     A guild object that this channel belongs to.
         /// </returns>
-        public SocketGuild Guild { get; }
+        public SocketGuild Guild { get }
         /// <inheritdoc />
         public string Name { get; private set; }
         /// <inheritdoc />
@@ -40,29 +41,29 @@ namespace Discord.WebSocket
         /// </returns>
         public new virtual IReadOnlyCollection<SocketGuildUser> Users => ImmutableArray.Create<SocketGuildUser>();
 
-        internal SocketGuildChannel(DiscordSocketClient discord, ulong id, SocketGuild guild)
-            : base(discord, id)
+        internal SocketGuildChannel(DiscordSocketClient discord, ulong id, ulong guildId, ChannelType type)
+            : base(discord, id, type)
         {
-            Guild = guild;
+            GuildId = guildId;
         }
-        internal static SocketGuildChannel Create(SocketGuild guild, ClientState state, Model model)
+        internal static SocketGuildChannel Create(DiscordSocketClient client, ulong guildId, ClientState state, Model model)
         {
             switch (model.Type)
             {
                 case ChannelType.News:
-                    return SocketNewsChannel.Create(guild, state, model);
+                    return SocketNewsChannel.Create(client, state, model);
                 case ChannelType.Text:
-                    return SocketTextChannel.Create(guild, state, model);
+                    return SocketTextChannel.Create(client, state, model);
                 case ChannelType.Voice:
-                    return SocketVoiceChannel.Create(guild, state, model);
+                    return SocketVoiceChannel.Create(client, state, model);
                 case ChannelType.Category:
-                    return SocketCategoryChannel.Create(guild, state, model);
+                    return SocketCategoryChannel.Create(client, state, model);
                 case ChannelType.PrivateThread or ChannelType.PublicThread or ChannelType.NewsThread:
-                    return SocketThreadChannel.Create(guild, state, model);
+                    return SocketThreadChannel.Create(client, state, model);
                 case ChannelType.Stage:
-                    return SocketStageChannel.Create(guild, state, model);
+                    return SocketStageChannel.Create(client, state, model);
                 default:
-                    return new SocketGuildChannel(guild.Discord, model.Id, guild);
+                    return new SocketGuildChannel(client, model.Id, guildId, model.Type);
             }
         }
         /// <inheritdoc />
@@ -181,7 +182,7 @@ namespace Discord.WebSocket
         public override string ToString() => Name;
         private string DebuggerDisplay => $"{Name} ({Id}, Guild)";
         internal new SocketGuildChannel Clone() => MemberwiseClone() as SocketGuildChannel;
-#endregion
+        #endregion
 
         #region SocketChannel
         /// <inheritdoc />
@@ -230,6 +231,21 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         Task<IUser> IChannel.GetUserAsync(ulong id, CacheMode mode, RequestOptions options)
             => Task.FromResult<IUser>(GetUser(id)); //Overridden in Text/Voice
+
+        #endregion
+
+        #region Cache
+
+        internal override Model ToCacheable()
+        {
+            var model = base.ToCacheable();
+            model.Name = this.Name;
+            model.GuildId = this.GuildId;
+            model.Position = this.Position;
+            model.PermissionOverwrites = this.PermissionOverwrites.Select(x => x.ToModel()).ToArray();
+            return model;
+        }
+
         #endregion
     }
 }

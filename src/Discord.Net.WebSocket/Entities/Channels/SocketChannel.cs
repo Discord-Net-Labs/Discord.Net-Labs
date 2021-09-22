@@ -11,7 +11,7 @@ namespace Discord.WebSocket
     ///     Represents a WebSocket-based channel.
     /// </summary>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    public abstract class SocketChannel : SocketEntity<ulong>, IChannel
+    public abstract class SocketChannel : SocketEntity<ulong>, IChannel, ICacheableEntity<Model, SocketChannel>
     {
         #region SocketChannel
         /// <summary>
@@ -23,9 +23,12 @@ namespace Discord.WebSocket
         /// </summary>
         public IReadOnlyCollection<SocketUser> Users => GetUsersInternal();
 
-        internal SocketChannel(DiscordSocketClient discord, ulong id)
+        private ChannelType Type;
+
+        internal SocketChannel(DiscordSocketClient discord, ulong id, ChannelType type)
             : base(discord, id)
         {
+            this.Type = type;
         }
 
         /// <exception cref="InvalidOperationException">Unexpected channel type is created.</exception>
@@ -70,6 +73,19 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         IAsyncEnumerable<IReadOnlyCollection<IUser>> IChannel.GetUsersAsync(CacheMode mode, RequestOptions options)
             => AsyncEnumerable.Empty<IReadOnlyCollection<IUser>>(); //Overridden
+        #endregion
+
+        #region Cache
+        internal virtual Model ToCacheable()
+        {
+            return new Model()
+            {
+                Id = this.Id,
+                Type = this.Type
+            };
+        }
+
+        Model ICacheableEntity<Model, SocketChannel>.ToCacheable() => ToCacheable();
         #endregion
     }
 }

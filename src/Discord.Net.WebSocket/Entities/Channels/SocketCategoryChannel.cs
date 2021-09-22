@@ -32,13 +32,13 @@ namespace Discord.WebSocket
         public IReadOnlyCollection<SocketGuildChannel> Channels
             => Guild.Channels.Where(x => x is INestedChannel nestedChannel && nestedChannel.CategoryId == Id).ToImmutableArray();
 
-        internal SocketCategoryChannel(DiscordSocketClient discord, ulong id, SocketGuild guild)
-            : base(discord, id, guild)
+        internal SocketCategoryChannel(DiscordSocketClient discord, ulong id, ulong guildId)
+            : base(discord, id, guildId)
         {
         }
-        internal new static SocketCategoryChannel Create(SocketGuild guild, ClientState state, Model model)
+        internal new static SocketCategoryChannel Create(DiscordSocketClient client, ClientState state, Model model)
         {
-            var entity = new SocketCategoryChannel(guild.Discord, model.Id, guild);
+            var entity = new SocketCategoryChannel(client, model.Id, model.GuildId.Value);
             entity.Update(state, model);
             return entity;
         }
