@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord
 {
@@ -12,8 +11,8 @@ namespace Discord
     {
         public static object Decode<TModel>(IEnumerable<byte> data) where TModel : class
         {
-            int l = 0;
-            return Decode<TModel>(data, ref l);
+            int length = 0;
+            return Decode<TModel>(data, ref length);
         }
         public static object Decode<TModel>(IEnumerable<byte> data, ref int length) where TModel : class
         {
@@ -27,10 +26,10 @@ namespace Discord
             var props = type.GetProperties();
             var model = Activator.CreateInstance(type);
 
-            int indx = 4 + length;
+            int index = 4 + length;
             foreach (var prop in props)
             {
-                var result = Decode(prop.PropertyType, data.ToArray(), ref indx);
+                var result = Decode(prop.PropertyType, data.ToArray(), ref index);
 
                 if (result.value == null && result.length == 0)
                     throw new Exception($"Failed to parse property {prop.Name} with type {prop.PropertyType}");
@@ -41,29 +40,18 @@ namespace Discord
             return model;
         }
 
-        private static (object value, int length) Decode(Type type, byte[] data, ref int indx)
+        private static (object value, int length) Decode(Type type, byte[] data, ref int index)
         {
             int length = 0;
             if (Deserializers.ContainsKey(type))
             {
-                var d = data.Skip(indx);
+                var d = data.Skip(index);
 
-                if (type == typeof(string))
-                {
-                    length = Array.IndexOf(d.ToArray(), d.FirstOrDefault(x => x == 0)) + 1;
-                }
-                else if (type == typeof(bool))
-                {
-                    length = 1;
-                }
-                else if (type.IsValueType)
-                {
-                    length = Marshal.SizeOf(type);
-                }
+                length = GetTypeLength(type.GenericTypeArguments[0], data) ?? 0;
 
                 var val = Deserializers[type].Invoke(d.Take(length).ToArray());
 
-                indx += length;
+                index += length;
 
                 return (val, length);
             }
@@ -77,22 +65,22 @@ namespace Discord
             }
             else if (type.IsClass && !type.FullName.StartsWith("System."))
             {
-                var args = new object[] { data.Skip(indx), indx };
-                var m = typeof(EntityConverter)
+                var args = new object[] { data.Skip(index), index };
+                var obj = typeof(EntityConverter)
                             .GetMethod(nameof(EntityConverter.Decode), BindingFlags.NonPublic | BindingFlags.Static)
                             .MakeGenericMethod(type)
                             .Invoke(null, args);
 
-                var l = (int)args[1];
-                indx += l;
-                return (m, l);
+                var firstArgsLength = (int)args[1];
+                index += firstArgsLength;
+                return (obj, firstArgsLength);
             }
             else if (type.IsEnum)
             {
                 var encodingType = Enum.GetUnderlyingType(type);
                 length = Marshal.SizeOf(encodingType);
-                var enumData = Deserializers[encodingType].Invoke(data.Skip(indx).Take(length).ToArray());
-                indx += length;
+                var enumData = Deserializers[encodingType].Invoke(data.Skip(index).Take(length).ToArray());
+                index += length;
                 return (enumData, length);
             }
 
@@ -114,48 +102,48 @@ namespace Discord
 
             var hash = type.GetHashCode();
 
-            List<byte> l = new List<byte>();
-            l.AddRange(BitConverter.GetBytes(hash));
+            List<byte> byteList = new List<byte>();
+            byteList.AddRange(BitConverter.GetBytes(hash));
 
             foreach (var prop in props)
             {
-                l.AddRange(EncodeProperty(prop.PropertyType, prop.GetValue(model)));
+                byteList.AddRange(EncodeProperty(prop.PropertyType, prop.GetValue(model)));
             }
 
-            return l.ToArray();
+            return byteList.ToArray();
         }
 
         private static byte[] EncodeProperty(Type type, object value)
         {
-            List<byte> l = new List<byte>();
+            List<byte> byteList = new List<byte>();
 
             if (Serializers.ContainsKey(type))
             {
                 var buff = Serializers[type].Invoke(value);
-                l.AddRange(buff);
+                byteList.AddRange(buff);
             }
             else if (IsOptional(type))
             {
                 var hasValue = (bool)type.GetProperty("IsSpecified").GetValue(value);
                 var optValue = type.GetMethod("GetValueOrDefault").Invoke(value, new object[0]);
-                l.AddRange(EncodeOptional(type.GenericTypeArguments[0], hasValue, optValue));
+                byteList.AddRange(EncodeOptional(type.GenericTypeArguments[0], hasValue, optValue));
             }
             else if (type.IsClass && !type.FullName.StartsWith("System."))
             {
-                var m = typeof(EntityConverter)
+                var methodInfo = typeof(EntityConverter)
                              .GetMethod(nameof(EntityConverter.Encode), BindingFlags.NonPublic | BindingFlags.Static);
-                var buff = m.MakeGenericMethod(type)
+                var buff = methodInfo.MakeGenericMethod(type)
                             .Invoke(null, new object[] { value }) as byte[];
-                l.AddRange(buff);
+                byteList.AddRange(buff);
             }
             else if (type.IsEnum)
             {
                 var encodingType = Enum.GetUnderlyingType(type);
                 var buff = Serializers[encodingType].Invoke(value);
-                l.AddRange(buff);
+                byteList.AddRange(buff);
             }
 
-            return l.ToArray();
+            return byteList.ToArray();
         }
 
         private static Dictionary<Type, Func<object, IEnumerable<byte>>> Serializers = new Dictionary<Type, Func<object, IEnumerable<byte>>>()
@@ -198,17 +186,11 @@ namespace Discord
         private static int? GetTypeLength(Type type, byte[] d)
         {
             if (type == typeof(string))
-            {
                 return Array.IndexOf(d.ToArray(), d.FirstOrDefault(x => x == 0)) + 1;
-            }
             else if (type == typeof(bool))
-            {
                 return 1;
-            }
             else if (type.IsValueType)
-            {
                 return Marshal.SizeOf(type);
-            }
 
             return null;
         }
@@ -250,9 +232,7 @@ namespace Discord
             var hasValue = (bool)Deserializers[typeof(bool)].Invoke(arr);
 
             if (!hasValue)
-            {
                 return Optional<TValue>.Unspecified;
-            }
             else
             {
                 var type = typeof(TValue);
@@ -274,19 +254,15 @@ namespace Discord
             var hashCode = type.GetHashCode();
 
             if (CacheModelTypemap.ContainsKey(hashCode))
-            {
                 return CacheModelTypemap[hashCode];
-            }
             else
             {
-                var infType = typeof(ICacheableEntity<,>);
+                var interfaceType = typeof(ICacheableEntity<,>);
 
-                var intf = type.ImplementedInterfaces.FirstOrDefault(x => x.Name == infType.Name);
+                var @interface = type.ImplementedInterfaces.FirstOrDefault(x => x.Name == interfaceType.Name);
 
-                if (intf != null)
-                {
-                    return intf.GenericTypeArguments.First();
-                }
+                if (@interface != null)
+                    return @interface.GenericTypeArguments.First();
                 else
                     return type;
             }
@@ -303,10 +279,10 @@ namespace Discord
         {
             CacheModelTypemap = new Dictionary<int, Type>();
 
-            var infType = typeof(ICacheableEntity<,>);
-            var types = Assembly.GetExecutingAssembly().DefinedTypes.Where(y => y.ImplementedInterfaces.Any(x => x.Name == infType.Name));
+            var interfaceType  = typeof(ICacheableEntity<,>);
+            var types = Assembly.GetExecutingAssembly().DefinedTypes.Where(y => y.ImplementedInterfaces.Any(x => x.Name == interfaceType .Name));
 
-            foreach(var type in types)
+            foreach (var type in types)
             {
                 var modelType = type.GenericTypeArguments.First();
                 var hash = modelType.GetHashCode();
