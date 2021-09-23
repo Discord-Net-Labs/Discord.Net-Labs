@@ -259,10 +259,10 @@ namespace Discord
             {
                 var interfaceType = typeof(ICacheableEntity<,>);
 
-                var @interface = type.ImplementedInterfaces.FirstOrDefault(x => x.Name == interfaceType.Name);
+                var cacheInterface = type.ImplementedInterfaces.FirstOrDefault(x => x.Name == interfaceType.Name);
 
-                if (@interface != null)
-                    return @interface.GenericTypeArguments.First();
+                if (cacheInterface != null)
+                    return cacheInterface.GenericTypeArguments.First();
                 else
                     return type;
             }
