@@ -71,9 +71,9 @@ namespace Discord
                             .MakeGenericMethod(type)
                             .Invoke(null, args);
 
-                var firstArgsLength = (int)args[1];
-                index += firstArgsLength;
-                return (obj, firstArgsLength);
+                var lengthRef = (int)args[1];
+                index += lengthRef;
+                return (obj, lengthRef);
             }
             else if (type.IsEnum)
             {
