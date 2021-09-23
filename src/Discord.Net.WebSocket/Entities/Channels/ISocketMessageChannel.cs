@@ -28,6 +28,7 @@ namespace Discord.WebSocket
         /// <param name="text">The message to be sent.</param>
         /// <param name="isTTS">Determines whether the message should be read aloud by Discord or not.</param>
         /// <param name="embed">The <see cref="Discord.EmbedType.Rich"/> <see cref="Embed"/> to be sent.</param>
+        /// <param name="embeds">A array of <see cref="Embed"/>s to send with this response. Max 10</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <param name="allowedMentions">
         ///     Specifies if notifications are sent for mentioned users and roles in the message <paramref name="text"/>.
@@ -40,7 +41,7 @@ namespace Discord.WebSocket
         ///     A task that represents an asynchronous send operation for delivering the message. The task result
         ///     contains the sent message.
         /// </returns>
-        new Task<RestUserMessage> SendMessageAsync(string text = null, bool isTTS = false, Embed embed = null, RequestOptions options = null, AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null, ISticker[] stickers = null);
+        new Task<RestUserMessage> SendMessageAsync(string text = null, bool isTTS = false, Embed embed = null, Embed[] embeds = null, RequestOptions options = null, AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null, ISticker[] stickers = null);
         /// <summary>
         ///     Sends a file to this message channel with an optional caption.
         /// </summary>
