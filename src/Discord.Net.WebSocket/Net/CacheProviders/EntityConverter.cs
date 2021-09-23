@@ -99,9 +99,17 @@ namespace Discord
             return (null, 0);
         }
 
-        public static byte[] Encode<TModel>(TModel model) where TModel : class
+        public static byte[] Encode<TEntity>(TEntity entity) where TEntity : class
         {
-            var type = model.GetType();
+            var type = GetModelTypeOrDefault<TEntity>();
+
+            var modelMethod = type.GetMethod("ToCacheable");
+
+            if (modelMethod == null)
+                throw new ArgumentException($"{nameof(entity)} doesn't implement ICacheableEntity");
+
+            var model = modelMethod.Invoke(entity, new object[0]);
+
             var props = type.GetProperties();
 
             var hash = type.GetHashCode();
@@ -263,16 +271,48 @@ namespace Discord
         private static Type GetModelTypeOrDefault<TType>()
         {
             var type = typeof(TType).GetTypeInfo();
-            var infType = typeof(ICacheableEntity<,>);
+            var hashCode = type.GetHashCode();
 
-            var intf = type.ImplementedInterfaces.FirstOrDefault(x => x.Name == infType.Name);
-
-            if (intf != null)
+            if (CacheModelTypemap.ContainsKey(hashCode))
             {
-                return intf.GenericTypeArguments.First();
+                return CacheModelTypemap[hashCode];
             }
             else
-                return type;
+            {
+                var infType = typeof(ICacheableEntity<,>);
+
+                var intf = type.ImplementedInterfaces.FirstOrDefault(x => x.Name == infType.Name);
+
+                if (intf != null)
+                {
+                    return intf.GenericTypeArguments.First();
+                }
+                else
+                    return type;
+            }
+        }
+
+        static EntityConverter()
+        {
+            PopulateTypemap();
+        }
+
+        private static Dictionary<int, Type> CacheModelTypemap;
+
+        private static void PopulateTypemap()
+        {
+            CacheModelTypemap = new Dictionary<int, Type>();
+
+            var infType = typeof(ICacheableEntity<,>);
+            var types = Assembly.GetExecutingAssembly().DefinedTypes.Where(y => y.ImplementedInterfaces.Any(x => x.Name == infType.Name));
+
+            foreach(var type in types)
+            {
+                var modelType = type.GenericTypeArguments.First();
+                var hash = modelType.GetHashCode();
+                if (!CacheModelTypemap.ContainsKey(hash))
+                    CacheModelTypemap.Add(hash, modelType);
+            }
         }
     }
 }

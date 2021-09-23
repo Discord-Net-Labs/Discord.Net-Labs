@@ -25,6 +25,5 @@ namespace Discord
         PrivateThread = 12,
         /// <summary> The channel is a stage voice channel. </summary>
         Stage = 13
-
     }
 }

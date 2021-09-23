@@ -17,6 +17,7 @@ namespace Discord.WebSocket.Net.CacheProviders
         private readonly SynchronizedDictionary<ulong, IEnumerable<byte>> _guilds;
         private readonly SynchronizedDictionary<(ulong id, ulong guildId), IEnumerable<byte>> _guildChannels;
         private readonly SynchronizedDictionary<(ulong id, ulong guildId), IEnumerable<byte>> _guildUsers;
+        private readonly SynchronizedDictionary<(ulong id, ulong guildId, ulong threadId), IEnumerable<byte>> _threadUsers;
         private readonly SynchronizedDictionary<(ulong id, ulong guildId), IEnumerable<byte>> _guildRoles;
         private readonly SynchronizedDictionary<(ulong id, ulong guildId), IEnumerable<byte>> _guildEmotes;
         private readonly SynchronizedDictionary<(ulong id, ulong guildId), IEnumerable<byte>> _guildStickers;
@@ -45,34 +46,32 @@ namespace Discord.WebSocket.Net.CacheProviders
         }
 
         #region Methods
-        public virtual ValueTask CreateChannelAsync(ulong id, IEnumerable<byte> entity)
+        public virtual void CreateChannel(ulong id, IEnumerable<byte> entity)
         {
             _channels.TryAdd(id, entity);
-            return new ValueTask(Task.CompletedTask);
         }
-        public virtual ValueTask CreateEmoteAsync(ulong id, ulong guildId, IEnumerable<byte> entity)
+        public virtual void CreateEmote(ulong id, ulong guildId, IEnumerable<byte> entity)
         {
             _guildEmotes.TryAdd((id, guildId), entity);
-            return new ValueTask(Task.CompletedTask);
         }
-        public virtual ValueTask CreateGuildAsync(ulong id, IEnumerable<byte> entity)
+        public virtual void CreateGuild(ulong id, IEnumerable<byte> entity)
         {
             _guilds.TryAdd(id, entity);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask CreateGuildChannelAsync(ulong id, ulong guildId, IEnumerable<byte> entity)
+        public virtual void CreateGuildChannel(ulong id, ulong guildId, IEnumerable<byte> entity)
         {
             _guildChannels.TryAdd((id, guildId), entity);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask CreateGuildUserAsync(ulong id, ulong guildId, IEnumerable<byte> entity)
+        public virtual void CreateGuildUser(ulong id, ulong guildId, IEnumerable<byte> entity)
         {
             _guildUsers.TryAdd((id, guildId), entity);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask CreateMessageAsync(ulong messageId, ulong channelId, IEnumerable<byte> entity)
+        public virtual void CreateMessage(ulong messageId, ulong channelId, IEnumerable<byte> entity)
         {
-            if(_messages.ContainsKey(channelId))
+            if (_messages.ContainsKey(channelId))
             {
                 _messages[channelId].TryAdd(messageId, entity);
 
@@ -90,152 +89,165 @@ namespace Discord.WebSocket.Net.CacheProviders
                 _messages[channelId].TryAdd(messageId, entity);
             }
 
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask CreateRoleAsync(ulong id, ulong guildId, IEnumerable<byte> entity)
+        public virtual void CreateRole(ulong id, ulong guildId, IEnumerable<byte> entity)
         {
             _guildRoles.TryAdd((id, guildId), entity);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask CreateStickerAsync(ulong id, ulong guildId, IEnumerable<byte> entity)
+        public virtual void CreateSticker(ulong id, ulong guildId, IEnumerable<byte> entity)
         {
             _guildStickers.TryAdd((id, guildId), entity);
-            return new ValueTask(Task.CompletedTask);
         }
-        public virtual ValueTask CreateUserAsync(ulong id, IEnumerable<byte> entity)
+
+        public void CreateThreadMember(ulong id, ulong guildId, ulong threadId, IEnumerable<byte> entity)
+        {
+            _threadUsers.TryAdd((id, guildId, threadId), entity);
+        }
+
+        public virtual void CreateUser(ulong id, IEnumerable<byte> entity)
         {
             _users.TryAdd(id, entity);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask<IEnumerable<byte>> DeleteChannelAsync(ulong id)
+        public virtual IEnumerable<byte> DeleteChannel(ulong id)
         {
             if (_channels.TryRemove(id, out var old))
-                return new ValueTask<IEnumerable<byte>>(old);
+                return old;
 
-            return new ValueTask<IEnumerable<byte>>(result: null);
+            return null;
         }
-        public virtual ValueTask<IEnumerable<byte>> DeleteEmoteAsync(ulong id, ulong guildId)
+        public virtual IEnumerable<byte> DeleteEmote(ulong id, ulong guildId)
         {
             if (_guildEmotes.TryRemove((id, guildId), out var old))
-                return new ValueTask<IEnumerable<byte>>(old);
+                return old;
 
-            return new ValueTask<IEnumerable<byte>>(result: null);
+            return null;
         }
-        public virtual ValueTask<IEnumerable<byte>> DeleteGuildAsync(ulong id)
+        public virtual IEnumerable<byte> DeleteGuild(ulong id)
         {
             if (_guilds.TryRemove(id, out var old))
-                return new ValueTask<IEnumerable<byte>>(old);
+                return old;
 
-            return new ValueTask<IEnumerable<byte>>(result: null);
+            return null;
         }
-        public virtual ValueTask<IEnumerable<byte>> DeleteGuildChannelAsync(ulong id, ulong guildId)
+        public virtual IEnumerable<byte> DeleteGuildChannel(ulong id, ulong guildId)
         {
             if (_guildChannels.TryRemove((id, guildId), out var old))
-                return new ValueTask<IEnumerable<byte>>(old);
+                return old;
 
-            return new ValueTask<IEnumerable<byte>>(result: null);
+            return null;
         }
-        public virtual ValueTask<IEnumerable<byte>> DeleteGuildUserAsync(ulong id, ulong guildId)
+        public virtual IEnumerable<byte> DeleteGuildUser(ulong id, ulong guildId)
         {
             if (_guildUsers.TryRemove((id, guildId), out var old))
-                return new ValueTask<IEnumerable<byte>>(old);
+                return old;
 
-            return new ValueTask<IEnumerable<byte>>(result: null);
+            return null;
         }
-        public virtual ValueTask<IEnumerable<byte>> DeleteMessageAsync(ulong messageId, ulong channelId)
+        public virtual IEnumerable<byte> DeleteMessage(ulong messageId, ulong channelId)
         {
-            if(_messages.ContainsKey(channelId))
+            if (_messages.ContainsKey(channelId))
                 if (_messages[channelId].TryRemove(messageId, out var old))
-                    return new ValueTask<IEnumerable<byte>>(old);
+                    return old;
 
-            return new ValueTask<IEnumerable<byte>>(result: null);
+            return null;
         }
-        public virtual ValueTask<IEnumerable<byte>> DeleteRoleAsync(ulong id, ulong guildId)
+        public virtual IEnumerable<byte> DeleteRole(ulong id, ulong guildId)
         {
             if (_guildRoles.TryRemove((id, guildId), out var old))
-                return new ValueTask<IEnumerable<byte>>(old);
+                return old;
 
-            return new ValueTask<IEnumerable<byte>>(result: null);
+            return null;
         }
-        public virtual ValueTask<IEnumerable<byte>> DeleteStickerAsync(ulong id, ulong guildId)
+        public virtual IEnumerable<byte> DeleteSticker(ulong id, ulong guildId)
         {
             if (_guildStickers.TryRemove((id, guildId), out var old))
-                return new ValueTask<IEnumerable<byte>>(old);
+                return old;
 
-            return new ValueTask<IEnumerable<byte>>(result: null);
+            return null;
         }
-        public virtual ValueTask<IEnumerable<byte>> DeleteUserAsync(ulong id)
+
+        public IEnumerable<byte> DeleteThreadMember(ulong id, ulong guildId, ulong threadId)
+        {
+            if (_threadUsers.TryRemove((id, guildId, threadId), out var old))
+                return old;
+            return null;
+        }
+
+        public virtual IEnumerable<byte> DeleteUser(ulong id)
         {
             if (_users.TryRemove(id, out var old))
-                return new ValueTask<IEnumerable<byte>>(old);
+                return old;
 
-            return new ValueTask<IEnumerable<byte>>(result: null);
+            return null;
         }
-        public virtual ValueTask<IEnumerable<byte>> GetChannelAsync(ulong id)
+        public virtual IEnumerable<byte> GetChannel(ulong id)
         {
             if (_channels.TryGetValue(id, out var entity))
-                return new ValueTask<IEnumerable<byte>>(entity);
-            return new ValueTask<IEnumerable<byte>>(result: null);
+                return entity;
+            return null;
         }
-        public virtual ValueTask<IEnumerable<byte>> GetEmoteAsync(ulong id, ulong guildId)
+        public virtual IEnumerable<byte> GetEmote(ulong id, ulong guildId)
         {
             if (_guildEmotes.TryGetValue((id, guildId), out var entity))
-                return new ValueTask<IEnumerable<byte>>(entity);
-            return new ValueTask<IEnumerable<byte>>(result: null);
+                return entity;
+            return null;
         }
-        public virtual ValueTask<IEnumerable<IEnumerable<byte>>> GetEmotesAsync(ulong guildId)
+        public virtual IEnumerable<IEnumerable<byte>> GetEmotes(ulong guildId)
         {
-            return new ValueTask<IEnumerable<IEnumerable<byte>>>(result: _guildEmotes.Where(x => x.Key.guildId == guildId).Select(x => x.Value));
+            return _guildEmotes.Where(x => x.Key.guildId == guildId).Select(x => x.Value);
         }
-        public virtual ValueTask<IEnumerable<byte>> GetGuildAsync(ulong id)
+        public virtual IEnumerable<byte> GetGuild(ulong id)
         {
             if (_guilds.TryGetValue(id, out var entity))
-                return new ValueTask<IEnumerable<byte>>(entity);
-            return new ValueTask<IEnumerable<byte>>(result: null);
+                return entity;
+            return null;
         }
-        public virtual ValueTask<IEnumerable<byte>> GetGuildChannelAsync(ulong id, ulong guildId)
+        public virtual IEnumerable<byte> GetGuildChannel(ulong id, ulong guildId)
         {
             if (_guildChannels.TryGetValue((id, guildId), out var entity))
-                return new ValueTask<IEnumerable<byte>>(entity);
-            return new ValueTask<IEnumerable<byte>>(result: null);
+                return entity;
+            return null;
         }
-        public virtual ValueTask<IEnumerable<IEnumerable<byte>>> GetGuildChannelsAsync(ulong guildId)
+        public virtual IEnumerable<IEnumerable<byte>> GetGuildChannels(ulong guildId)
         {
-            return new ValueTask<IEnumerable<IEnumerable<byte>>>(result: _guildChannels.Where(x => x.Key.guildId == guildId).Select(x => x.Value));
+            return _guildChannels.Where(x => x.Key.guildId == guildId).Select(x => x.Value);
         }
-        public virtual ValueTask<IEnumerable<IEnumerable<byte>>> GetGuildsAsync()
+        public virtual IEnumerable<IEnumerable<byte>> GetGuilds()
         {
-            return new ValueTask<IEnumerable<IEnumerable<byte>>>(result: _guilds.Select(x => x.Value));
+            return _guilds.Select(x => x.Value);
         }
-        public virtual ValueTask<IEnumerable<byte>> GetGuildUserAsync(ulong id, ulong guildId)
+        public virtual IEnumerable<byte> GetGuildUser(ulong id, ulong guildId)
         {
             if (_guildUsers.TryGetValue((id, guildId), out var entity))
-                return new ValueTask<IEnumerable<byte>>(entity);
-            return new ValueTask<IEnumerable<byte>>(result: null);
+                return entity;
+            return null;
         }
-        public virtual ValueTask<IEnumerable<IEnumerable<byte>>> GetGuildUsersAsync(ulong guildId)
+        public virtual IEnumerable<IEnumerable<byte>> GetGuildUsers(ulong guildId)
         {
-            return new ValueTask<IEnumerable<IEnumerable<byte>>>(result: _guildUsers.Where(x => x.Key.guildId == guildId).Select(x => x.Value));
+            return _guildUsers.Where(x => x.Key.guildId == guildId).Select(x => x.Value);
         }
-        public virtual ValueTask<IEnumerable<byte>> GetMessageAsync(ulong messageId, ulong channelId)
+        public virtual IEnumerable<byte> GetMessage(ulong messageId, ulong channelId)
         {
-            if(_messages.ContainsKey(channelId))
+            if (_messages.ContainsKey(channelId))
                 if (_messages[channelId].TryGetValue(messageId, out var entity))
-                    return new ValueTask<IEnumerable<byte>>(entity);
-            return new ValueTask<IEnumerable<byte>>(result: null);
+                    return entity;
+            return null;
         }
-        public virtual ValueTask<IEnumerable<IEnumerable<byte>>> GetMessagesAsync(ulong from, ulong to, ulong channelId)
+        public virtual IEnumerable<IEnumerable<byte>> GetMessages(ulong from, ulong to, ulong channelId)
         {
             if (_messages.ContainsKey(channelId))
             {
                 var messages = _messages[channelId].Where(x => x.Key > from && x.Key < to).Select(x => x.Value);
 
-                return new ValueTask<IEnumerable<IEnumerable<byte>>>(messages);
+                return messages;
             }
 
-            return new ValueTask<IEnumerable<IEnumerable<byte>>>(new byte[0][]);
+            return new byte[0][];
         }
-        public virtual ValueTask<IEnumerable<IEnumerable<byte>>> GetMessagesAsync(ulong from, Direction dir, ulong channelId, int limit = DiscordConfig.MaxMessagesPerBatch)
+        public virtual IEnumerable<IEnumerable<byte>> GetMessages(ulong from, Direction dir, ulong channelId, int limit = DiscordConfig.MaxMessagesPerBatch)
         {
             if (_messages.ContainsKey(channelId))
             {
@@ -244,97 +256,115 @@ namespace Discord.WebSocket.Net.CacheProviders
                 switch (dir)
                 {
                     case Direction.After:
-                        return new ValueTask<IEnumerable<IEnumerable<byte>>>(messages.Where(x => x.Key > from).Take(limit).Select(x => x.Value));
+                        return messages.Where(x => x.Key > from).Take(limit).Select(x => x.Value);
                     case Direction.Before:
-                        return new ValueTask<IEnumerable<IEnumerable<byte>>>(messages.Where(x => x.Key < from).Take(limit).Select(x => x.Value));
+                        return messages.Where(x => x.Key < from).Take(limit).Select(x => x.Value);
                     case Direction.Around:
                         var l = limit / 2;
                         var a1 = messages.Where(x => x.Key > from).Take(l).Select(x => x.Value);
                         var a2 = messages.Where(x => x.Key < from).Take(l).Select(x => x.Value);
-                        return new ValueTask<IEnumerable<IEnumerable<byte>>>(a1.Concat(a2));
+                        return a1.Concat(a2);
 
                     default:
-                        return new ValueTask<IEnumerable<IEnumerable<byte>>>(result: null);
+                        return null;
                 }
             }
 
-            return new ValueTask<IEnumerable<IEnumerable<byte>>>(new byte[0][]);
+            return new byte[0][];
         }
-        public virtual ValueTask<IEnumerable<byte>> GetRoleAsync(ulong id, ulong guildId)
+        public virtual IEnumerable<byte> GetRole(ulong id, ulong guildId)
         {
             if (_guildRoles.TryGetValue((id, guildId), out var entity))
-                return new ValueTask<IEnumerable<byte>>(entity);
-            return new ValueTask<IEnumerable<byte>>(result: null);
+                return entity;
+            return null;
         }
-        public virtual ValueTask<IEnumerable<IEnumerable<byte>>> GetRolesAsync(ulong guildId)
+        public virtual IEnumerable<IEnumerable<byte>> GetRoles(ulong guildId)
         {
-            return new ValueTask<IEnumerable<IEnumerable<byte>>>(_guildRoles.Where(x => x.Key.guildId == guildId).Select(x => x.Value));
+            return _guildRoles.Where(x => x.Key.guildId == guildId).Select(x => x.Value);
         }
-        public virtual ValueTask<IEnumerable<byte>> GetStickerAsync(ulong id, ulong guildId)
+        public virtual IEnumerable<byte> GetSticker(ulong id, ulong guildId)
         {
             if (_guildStickers.TryGetValue((id, guildId), out var entity))
-                return new ValueTask<IEnumerable<byte>>(entity);
-            return new ValueTask<IEnumerable<byte>>(result: null);
+                return entity;
+            return null;
         }
-        public virtual ValueTask<IEnumerable<IEnumerable<byte>>> GetStickersAsync(ulong guildId)
+        public virtual IEnumerable<IEnumerable<byte>> GetStickers(ulong guildId)
         {
-            return new ValueTask<IEnumerable<IEnumerable<byte>>>(_guildStickers.Where(x => x.Key.guildId == guildId).Select(x => x.Value));
+            return _guildStickers.Where(x => x.Key.guildId == guildId).Select(x => x.Value);
         }
-        public virtual ValueTask<IEnumerable<byte>> GetUserAsync(ulong id)
+
+        public IEnumerable<byte> GetThreadMember(ulong id, ulong guildId, ulong threadId)
+        {
+            if (_threadUsers.TryGetValue((id, guildId, threadId), out var entity))
+                return entity;
+            return null;
+        }
+        public IEnumerable<IEnumerable<byte>> GetThreadMember(ulong guildId, ulong threadId)
+        {
+            return _threadUsers.Where(x => x.Key.guildId == guildId && x.Key.threadId == threadId).Select(x => x.Value);
+        }
+
+        public virtual IEnumerable<byte> GetUser(ulong id)
         {
             if (_users.TryGetValue(id, out var entity))
-                return new ValueTask<IEnumerable<byte>>(entity);
-            return new ValueTask<IEnumerable<byte>>(result: null);
+                return entity;
+            return null;
         }
-        public virtual ValueTask<IEnumerable<IEnumerable<byte>>> GetUsersAsync()
+        public virtual IEnumerable<IEnumerable<byte>> GetUsers()
         {
-            return new ValueTask<IEnumerable<IEnumerable<byte>>>(_users.Select(x => x.Value));
+            return _users.Select(x => x.Value);
         }
-        public virtual ValueTask UpdateChannelAsync(ulong id, IEnumerable<byte> entity)
+        public virtual void UpdateChannel(ulong id, IEnumerable<byte> entity)
         {
             _channels.TryUpdate(id, entity, out var _);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask UpdateEmoteAsync(ulong id, ulong guildId, IEnumerable<byte> entity)
+        public virtual void UpdateEmote(ulong id, ulong guildId, IEnumerable<byte> entity)
         {
             _guildEmotes.TryUpdate((id, guildId), entity, out var _);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask UpdateGuildAsync(ulong id, IEnumerable<byte> entity)
+        public virtual void UpdateGuild(ulong id, IEnumerable<byte> entity)
         {
             _guilds.TryUpdate(id, entity, out var _);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask UpdateGuildChannelAsync(ulong id, ulong guildId, IEnumerable<byte> entity)
+        public virtual void UpdateGuildChannel(ulong id, ulong guildId, IEnumerable<byte> entity)
         {
             _guildChannels.TryUpdate((id, guildId), entity, out var _);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask UpdateGuildUserAsync(ulong id, ulong guildId, IEnumerable<byte> entity)
+        public virtual void UpdateGuildUser(ulong id, ulong guildId, IEnumerable<byte> entity)
         {
             _guildUsers.TryUpdate((id, guildId), entity, out var _);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask UpdateMessageAsync(ulong messageId, ulong channelId, IEnumerable<byte> entity)
+        public virtual void UpdateMessage(ulong messageId, ulong channelId, IEnumerable<byte> entity)
         {
             if(_messages.ContainsKey(channelId))
                 _messages[channelId].TryUpdate(messageId, entity, out var _);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask UpdateRoleAsync(ulong id, ulong guildId, IEnumerable<byte> entity)
+        public virtual void UpdateRole(ulong id, ulong guildId, IEnumerable<byte> entity)
         {
             _guildRoles.TryUpdate((id, guildId), entity, out var _);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask UpdateStickerAsync(ulong id, ulong guildId, IEnumerable<byte> entity)
+        public virtual void UpdateSticker(ulong id, ulong guildId, IEnumerable<byte> entity)
         {
             _guildStickers.TryUpdate((id, guildId), entity, out var _);
-            return new ValueTask(Task.CompletedTask);
+
         }
-        public virtual ValueTask UpdateUserAsync(ulong id, IEnumerable<byte> entity)
+
+        public void UpdateThreadMember(ulong id, ulong guildId, ulong threadId, IEnumerable<byte> entity)
+        {
+            _threadUsers.TryUpdate((id, guildId, threadId), entity, out var _);
+        }
+
+        public virtual void UpdateUser(ulong id, IEnumerable<byte> entity)
         {
             _users.TryUpdate(id, entity, out var _);
-            return new ValueTask(Task.CompletedTask);
+
         }
         #endregion
     }

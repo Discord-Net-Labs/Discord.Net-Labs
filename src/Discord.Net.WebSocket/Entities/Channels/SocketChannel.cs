@@ -44,6 +44,20 @@ namespace Discord.WebSocket
                     throw new InvalidOperationException($"Unexpected channel type: {model.Type}");
             }
         }
+        internal static SocketChannel FromCacheable(DiscordSocketClient client, ClientState state, object cacheModel)
+        {
+            if (cacheModel is not Model model)
+                throw new ArgumentException("Cache model isnt a model!");
+
+            return model.Type switch
+            {
+                ChannelType.DM                   => SocketDMChannel.Create(client, state, model),
+                ChannelType.Group                => SocketGroupChannel.Create(client, state, model),
+                _ when model.GuildId.IsSpecified => SocketGuildChannel.Create(client, model.GuildId.Value, state, model),
+                _ => throw new InvalidOperationException($"Unexpected channel type: {model.Type}")
+            };
+        }
+
         internal abstract void Update(ClientState state, Model model);
         #endregion
 

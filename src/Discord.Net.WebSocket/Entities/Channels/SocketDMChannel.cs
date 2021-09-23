@@ -269,5 +269,13 @@ namespace Discord.WebSocket
         IAsyncEnumerable<IReadOnlyCollection<IUser>> IChannel.GetUsersAsync(CacheMode mode, RequestOptions options)
             => ImmutableArray.Create<IReadOnlyCollection<IUser>>(Users).ToAsyncEnumerable();
         #endregion
+
+        #region Cache
+        internal override Model ToCacheable()
+        {
+            var model = base.ToCacheable();
+            model.Recipients
+        }
+        #endregion
     }
 }

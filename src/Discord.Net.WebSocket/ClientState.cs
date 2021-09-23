@@ -8,8 +8,8 @@ namespace Discord.WebSocket
 {
     internal class ClientState
     {
-        private readonly ICacheProvider cacheProvider;
-
+        private readonly ICacheProvider CacheProvider;
+        private readonly DiscordSocketClient Client;
         internal IReadOnlyCollection<SocketChannel> Channels => _channels.ToReadOnlyCollection();
         internal IReadOnlyCollection<SocketDMChannel> DMChannels => _dmChannels.ToReadOnlyCollection();
         internal IReadOnlyCollection<SocketGroupChannel> GroupChannels => _groupChannels.Select(x => GetChannel(x) as SocketGroupChannel).ToReadOnlyCollection(_groupChannels);
@@ -21,15 +21,15 @@ namespace Discord.WebSocket
                 _groupChannels.Select(x => GetChannel(x) as ISocketPrivateChannel))
             .ToReadOnlyCollection(() => _dmChannels.Count + _groupChannels.Count);
 
-        public ClientState(ICacheProvider provider)
+        public ClientState(DiscordSocketClient client, ICacheProvider provider)
         {
-            cacheProvider = provider;
+            CacheProvider = provider;
+            Client = client;
         }
 
-        internal async Task<SocketChannel> GetChannel(ulong id)
+        internal SocketChannel GetChannel(ulong id)
         {
-            var data = await cacheProvider.GetChannelAsync(id).ConfigureAwait(false);
-
+            var data = CacheProvider.GetChannel(id);
             return EntityConverter.Decode<SocketChannel>(data) as SocketChannel;
         }
         internal async Task<SocketDMChannel> GetDMChannel(ulong userId)

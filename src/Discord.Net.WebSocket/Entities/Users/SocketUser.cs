@@ -14,7 +14,7 @@ namespace Discord.WebSocket
     ///     Represents a WebSocket-based user.
     /// </summary>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    public abstract class SocketUser : SocketEntity<ulong>, IUser
+    public abstract class SocketUser : SocketEntity<ulong>, IUser, ICacheableEntity<Model, SocketUser>
     {
         /// <inheritdoc />
         public abstract bool IsBot { get; internal set; }
@@ -130,5 +130,22 @@ namespace Discord.WebSocket
         public override string ToString() => $"{Username}#{Discriminator}";
         private string DebuggerDisplay => $"{Username}#{Discriminator} ({Id}{(IsBot ? ", Bot" : "")})";
         internal SocketUser Clone() => MemberwiseClone() as SocketUser;
+
+        internal virtual Model ToCacheable()
+        {
+            return new Model()
+            {
+                Id = this.Id,
+                AccentColor = this.AccentColor.HasValue ? this.AccentColor.Value.RawValue : Optional<uint?>.Unspecified,
+                Avatar = this.AvatarId,
+                Banner = this.BannerId,
+                Bot = this.IsBot,
+                Discriminator = this.Discriminator,
+                PublicFlags = this.PublicFlags.HasValue ? this.PublicFlags.Value : Optional<UserProperties>.Unspecified,
+                Username = this.Username,
+            };
+        }
+
+        Model ICacheableEntity<Model, SocketUser>.ToCacheable() => ToCacheable();
     }
 }
