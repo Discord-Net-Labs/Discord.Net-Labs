@@ -266,7 +266,7 @@ namespace Discord.Rest
 
         /// <exception cref="ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="DiscordConfig.MaxMessageSize"/>.</exception>
         public static async Task<RestUserMessage> SendMessageAsync(IMessageChannel channel, BaseDiscordClient client,
-            string text, bool isTTS, Embed embed, Embed[] embeds, AllowedMentions allowedMentions, MessageReference messageReference, MessageComponent component, ISticker[] stickers, RequestOptions options)
+            string text, bool isTTS, Embed embed, AllowedMentions allowedMentions, MessageReference messageReference, MessageComponent component, ISticker[] stickers, RequestOptions options, Embed[] embeds)
         {
             if (embeds == null && embed != null)
                 embeds = new[] { embed };

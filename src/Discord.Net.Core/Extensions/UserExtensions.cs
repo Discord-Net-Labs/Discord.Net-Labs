@@ -46,7 +46,7 @@ namespace Discord
             AllowedMentions allowedMentions = null,
             MessageComponent component = null)
         {
-            return await (await user.CreateDMChannelAsync().ConfigureAwait(false)).SendMessageAsync(text, isTTS, embed, embeds, options, allowedMentions, component: component).ConfigureAwait(false);
+            return await (await user.CreateDMChannelAsync().ConfigureAwait(false)).SendMessageAsync(text, isTTS, embed, options, allowedMentions, component: component, embeds: embeds).ConfigureAwait(false);
         }
 
         /// <summary>
