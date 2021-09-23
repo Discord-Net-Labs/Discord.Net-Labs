@@ -39,9 +39,10 @@ namespace Discord.Commands
         /// <param name="messageReference">The message references to be included. Used to reply to specific messages.</param>
         /// <param name="component">The message components to be included with this message. Used for interactions</param>
         /// <param name="stickers">A collection of stickers to send with the file.</param>
-        protected virtual async Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, Embed embed = null, RequestOptions options = null, AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null, ISticker[] stickers = null)
+        /// <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
+        protected virtual async Task<IUserMessage> ReplyAsync(string message = null, bool isTTS = false, Embed embed = null, RequestOptions options = null, AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null, ISticker[] stickers = null, bool ephemeral = false)
         {
-            return await Context.Channel.SendMessageAsync(message, isTTS, embed, options, allowedMentions, messageReference, component, stickers).ConfigureAwait(false);
+            return await Context.Channel.SendMessageAsync(message, isTTS, embed, options, allowedMentions, messageReference, component, stickers, ephemeral).ConfigureAwait(false);
         }
         /// <summary>
         ///     The method to execute before executing the command.

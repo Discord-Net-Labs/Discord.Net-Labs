@@ -27,6 +27,9 @@ namespace Discord.API.Rest
         [JsonProperty("components")]
         public Optional<API.ActionRowComponent[]> Components { get; set; }
 
+        [JsonProperty("flags")]
+        public Optional<MessageFlags> Flags { get; set; }
+
         [JsonProperty("sticker_ids")]
         public Optional<ulong[]> Stickers { get; set; }
 
