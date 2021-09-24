@@ -444,7 +444,7 @@ namespace Discord.Interactions
         /// <see cref="SocketMessageComponentData.CustomId"/> )</param>
         /// <param name="services">Services that will be injected into the declaring type</param>
         /// <returns>A task representing the command execution process, with an <see cref="IResult"/> containg the execution information as it result.</returns>
-        public async Task<IResult> ExecuteInteractionAsync (IInteractionCommandContext context, string input, IServiceProvider services)
+        public async Task<IResult> ExecuteComponentCommandAsync (IInteractionCommandContext context, string input, IServiceProvider services)
         {
             var result = _componentCommandMap.GetCommand(input);
 
