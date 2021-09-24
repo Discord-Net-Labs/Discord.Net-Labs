@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -277,34 +278,37 @@ namespace Discord.Interactions.Builders
 
             async Task<IResult> ExecuteCallback (IInteractionCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo)
             {
-                var instance = createInstance(serviceProvider);
-                instance.SetContext(context);
-
-                try
+                using(var scope = serviceProvider.CreateScope())
                 {
-                    instance.BeforeExecute(commandInfo);
-                    var task = commandInvoker(instance, args) ?? Task.Delay(0);
+                    var instance = createInstance(scope.ServiceProvider);
+                    instance.SetContext(context);
 
-                    if (task is Task<RuntimeResult> runtimeTask)
+                    try
                     {
-                        return await runtimeTask.ConfigureAwait(false);
-                    }
-                    else
-                    {
-                        await task.ConfigureAwait(false);
-                        return ExecuteResult.FromSuccess();
+                        instance.BeforeExecute(commandInfo);
+                        var task = commandInvoker(instance, args) ?? Task.Delay(0);
 
+                        if (task is Task<RuntimeResult> runtimeTask)
+                        {
+                            return await runtimeTask.ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            await task.ConfigureAwait(false);
+                            return ExecuteResult.FromSuccess();
+
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    await commandService._cmdLogger.ErrorAsync(ex).ConfigureAwait(false);
-                    return ExecuteResult.FromError(ex);
-                }
-                finally
-                {
-                    instance.AfterExecute(commandInfo);
-                    ( instance as IDisposable )?.Dispose();
+                    catch (Exception ex)
+                    {
+                        await commandService._cmdLogger.ErrorAsync(ex).ConfigureAwait(false);
+                        return ExecuteResult.FromError(ex);
+                    }
+                    finally
+                    {
+                        instance.AfterExecute(commandInfo);
+                        ( instance as IDisposable )?.Dispose();
+                    }
                 }
             }
 

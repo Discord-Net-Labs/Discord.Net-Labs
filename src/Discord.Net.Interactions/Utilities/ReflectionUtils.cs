@@ -23,17 +23,14 @@ namespace Discord.Interactions
 
             return (services) =>
             {
-                using(var scope = services.CreateScope())
-                {
-                    var args = new object[parameters.Length];
-                    for (int i = 0; i < parameters.Length; i++)
-                        args[i] = GetMember(commandService, scope.ServiceProvider, parameters[i].ParameterType, typeInfo);
+                var args = new object[parameters.Length];
+                for (int i = 0; i < parameters.Length; i++)
+                    args[i] = GetMember(commandService, services, parameters[i].ParameterType, typeInfo);
 
-                    var obj = InvokeConstructor(constructor, args, typeInfo);
-                    foreach (var property in properties)
-                        property.SetValue(obj, GetMember(commandService, scope.ServiceProvider, property.PropertyType, typeInfo));
-                    return obj;
-                }
+                var obj = InvokeConstructor(constructor, args, typeInfo);
+                foreach (var property in properties)
+                    property.SetValue(obj, GetMember(commandService, services, property.PropertyType, typeInfo));
+                return obj;
             };
         }
 
@@ -143,21 +140,18 @@ namespace Discord.Interactions
 
             return (services) =>
             {
-                using(var scope = services.CreateScope())
-                {
-                    var args = new object[parameters.Length];
-                    var props = new object[properties.Length];
+                var args = new object[parameters.Length];
+                var props = new object[properties.Length];
 
-                    for (int i = 0; i < parameters.Length; i++)
-                        args[i] = GetMember(commandService, scope.ServiceProvider, parameters[i].ParameterType, typeInfo);
+                for (int i = 0; i < parameters.Length; i++)
+                    args[i] = GetMember(commandService, services, parameters[i].ParameterType, typeInfo);
 
-                    for (int i = 0; i < properties.Length; i++)
-                        props[i] = GetMember(commandService, scope.ServiceProvider, properties[i].PropertyType, typeInfo);
+                for (int i = 0; i < properties.Length; i++)
+                    props[i] = GetMember(commandService, services, properties[i].PropertyType, typeInfo);
 
-                    var instance = lambda(args, props);
+                var instance = lambda(args, props);
 
-                    return instance;
-                }
+                return instance;
             };
         }
     }
