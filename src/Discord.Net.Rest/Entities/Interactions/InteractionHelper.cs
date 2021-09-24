@@ -43,7 +43,7 @@ namespace Discord.Rest
             RestFollowupMessage entity = RestFollowupMessage.Create(client, model, token, channel);
             return entity;
         }
-#endregion
+        #endregion
 
         #region Global commands
         public static async Task<RestGlobalCommand> GetGlobalCommandAsync(BaseDiscordClient client, ulong id,
@@ -168,13 +168,17 @@ namespace Discord.Rest
         {
             bool isBaseClass = typeof(TArg) == typeof(ApplicationCommandProperties);
 
-            return true switch
+            switch (true)
             {
-                true when (typeof(TArg) == typeof(SlashCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.Slash => new SlashCommandProperties() as TArg,
-                true when (typeof(TArg) == typeof(MessageCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.Message => new MessageCommandProperties() as TArg,
-                true when (typeof(TArg) == typeof(UserCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.User => new UserCommandProperties() as TArg,
-                _ => throw new InvalidOperationException($"Cannot modify application command of type {command.Type} with the parameter type {typeof(TArg).FullName}"),
-            };
+                case true when (typeof(TArg) == typeof(SlashCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.Slash:
+                    return new SlashCommandProperties() as TArg;
+                case true when (typeof(TArg) == typeof(MessageCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.Message:
+                    return new MessageCommandProperties() as TArg;
+                case true when (typeof(TArg) == typeof(UserCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.User:
+                    return new UserCommandProperties() as TArg;
+                default:
+                    throw new InvalidOperationException($"Cannot modify application command of type {command.Type} with the parameter type {typeof(TArg).FullName}");
+            }
         }
 
         public static Task<ApplicationCommand> ModifyGlobalCommand<TArg>(BaseDiscordClient client, IApplicationCommand command,
