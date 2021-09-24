@@ -178,7 +178,12 @@ namespace Discord
         /// <summary>
         ///     Allows members to use slash commands in text channels.	
         /// </summary>
+        [Obsolete("UseSlashCommands has been replaced by UseApplicationCommands")]
         UseSlashCommands        = 0x80_00_00_00,
+        /// <summary>
+        ///     Allows members to use application commands like slash commands and context menus in text channels.	
+        /// </summary>
+        UseApplicationCommands = 0x80_00_00_00,
         /// <summary>
         ///     Allows for requesting to speak in stage channels. <i>(This permission is under active development and may be changed or removed.)</i>.
         /// </summary>

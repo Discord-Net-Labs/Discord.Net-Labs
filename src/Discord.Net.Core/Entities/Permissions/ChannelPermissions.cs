@@ -11,9 +11,11 @@ namespace Discord
         /// <returns> A <see cref="ChannelPermissions"/> structure that does not contain any set permissions. </returns>
         public static readonly ChannelPermissions None = new ChannelPermissions();
         /// <summary> Gets a <see cref="ChannelPermissions"/> that grants all permissions for text channels. </summary>
-        public static readonly ChannelPermissions Text = new ChannelPermissions(0b01100_0000000_1111111110001_010001);
+        public static readonly ChannelPermissions Text = new ChannelPermissions(0b0_11111_0101100_0000000_1111111110001_010001);
         /// <summary> Gets a <see cref="ChannelPermissions"/> that grants all permissions for voice channels. </summary>
-        public static readonly ChannelPermissions Voice = new ChannelPermissions(0b00100_1111110_0000000011100_010001);
+        public static readonly ChannelPermissions Voice = new ChannelPermissions(0b1_00000_0000100_1111110_0000000011100_010001);
+        /// <summary> Gets a <see cref="ChannelPermissions"/> that grants all permissions for stage channels. </summary>
+        public static readonly ChannelPermissions Stage = new ChannelPermissions(0b0_00000_1000100_0111010_0000000010000_010001);
         /// <summary> Gets a <see cref="ChannelPermissions"/> that grants all permissions for category channels. </summary>
         public static readonly ChannelPermissions Category = new ChannelPermissions(0b01100_1111110_1111111110001_010001);
         /// <summary> Gets a <see cref="ChannelPermissions"/> that grants all permissions for direct message channels. </summary>
@@ -27,6 +29,7 @@ namespace Discord
             return channel switch
             {
                 ITextChannel _ => Text,
+                IStageChannel _ => Stage,
                 IVoiceChannel _ => Voice,
                 ICategoryChannel _ => Category,
                 IDMChannel _ => DM,
@@ -86,6 +89,26 @@ namespace Discord
         public bool ManageRoles => Permissions.GetValue(RawValue, ChannelPermission.ManageRoles);
         /// <summary> If <c>true</c>, a user may edit the webhooks for this channel. </summary>
         public bool ManageWebhooks => Permissions.GetValue(RawValue, ChannelPermission.ManageWebhooks);
+        /// <summary> If <c>true</c>, a user may use slash commands in this guild. </summary>
+        public bool UseSlashCommands => Permissions.GetValue(RawValue, ChannelPermission.UseSlashCommands);
+        /// <summary> If <c>true</c>, a user may request to speak in stage channels. </summary>
+        public bool RequestToSpeak => Permissions.GetValue(RawValue, ChannelPermission.RequestToSpeak);
+        /// <summary> If <c>true</c>, a user may manage threads in this guild. </summary>
+        public bool ManageThreads => Permissions.GetValue(RawValue, ChannelPermission.ManageThreads);
+        /// <summary> If <c>true</c>, a user may create public threads in this guild. </summary>
+        public bool CreatePublicThreads => Permissions.GetValue(RawValue, ChannelPermission.CreatePublicThreads);
+        /// <summary> If <c>true</c>, a user may create private threads in this guild. </summary>
+        public bool CreatePrivateThreads => Permissions.GetValue(RawValue, ChannelPermission.CreatePrivateThreads);
+        /// <summary> If <c>true</c>, a user may use public threads in this guild. </summary>
+        public bool UsePublicThreads => Permissions.GetValue(RawValue, ChannelPermission.UsePublicThreads);
+        /// <summary> If <c>true</c>, a user may use private threads in this guild. </summary>
+        public bool UsePrivateThreads => Permissions.GetValue(RawValue, ChannelPermission.UsePrivateThreads);
+        /// <summary> If <c>true</c>, a user may use external stickers in this guild. </summary>
+        public bool UseExternalStickers => Permissions.GetValue(RawValue, ChannelPermission.UseExternalStickers);
+        /// <summary> If <c>true</c>, a user may send messages in threads in this guild. </summary>
+        public bool SendMessagesInThreads => Permissions.GetValue(RawValue, ChannelPermission.SendMessagesInThreads);
+        /// <summary> If <c>true</c>, a user launch application activites in voice channels in this guild. </summary>
+        public bool StartEmbeddedActivities => Permissions.GetValue(RawValue, ChannelPermission.StartEmbeddedActivities);
 
         /// <summary> Creates a new <see cref="ChannelPermissions"/> with the provided packed value. </summary>
         public ChannelPermissions(ulong rawValue) { RawValue = rawValue; }
@@ -112,7 +135,18 @@ namespace Discord
             bool? prioritySpeaker = null,
             bool? stream = null,
             bool? manageRoles = null,
-            bool? manageWebhooks = null)
+            bool? manageWebhooks = null,
+            bool? useSlashCommands = null,
+            bool? useApplicationCommands = null,
+            bool? requestToSpeak = null,
+            bool? manageThreads = null,
+            bool? createPublicThreads = null,
+            bool? createPrivateThreads = null,
+            bool? usePublicThreads = null,
+            bool? usePrivateThreads = null,
+            bool? useExternalStickers = null,
+            bool? sendMessagesInThreads = null,
+            bool? startEmbeddedActivities = null)
         {
             ulong value = initialValue;
 
@@ -138,6 +172,17 @@ namespace Discord
             Permissions.SetValue(ref value, stream, ChannelPermission.Stream);
             Permissions.SetValue(ref value, manageRoles, ChannelPermission.ManageRoles);
             Permissions.SetValue(ref value, manageWebhooks, ChannelPermission.ManageWebhooks);
+            Permissions.SetValue(ref value, useSlashCommands, ChannelPermission.UseSlashCommands);
+            Permissions.SetValue(ref value, useApplicationCommands, ChannelPermission.UseApplicationCommands);
+            Permissions.SetValue(ref value, requestToSpeak, ChannelPermission.RequestToSpeak);
+            Permissions.SetValue(ref value, manageThreads, ChannelPermission.ManageThreads);
+            Permissions.SetValue(ref value, createPublicThreads, ChannelPermission.CreatePublicThreads);
+            Permissions.SetValue(ref value, createPrivateThreads, ChannelPermission.CreatePrivateThreads);
+            Permissions.SetValue(ref value, usePublicThreads, ChannelPermission.UsePublicThreads);
+            Permissions.SetValue(ref value, usePrivateThreads, ChannelPermission.UsePrivateThreads);
+            Permissions.SetValue(ref value, useExternalStickers, ChannelPermission.UseExternalStickers);
+            Permissions.SetValue(ref value, sendMessagesInThreads, ChannelPermission.SendMessagesInThreads);
+            Permissions.SetValue(ref value, startEmbeddedActivities, ChannelPermission.StartEmbeddedActivities);
 
             RawValue = value;
         }
@@ -165,10 +210,23 @@ namespace Discord
             bool prioritySpeaker = false,
             bool stream = false,
             bool manageRoles = false,
-            bool manageWebhooks = false)
+            bool manageWebhooks = false,
+            bool useSlashCommands = false,
+            bool useApplicationCommands = false,
+            bool requestToSpeak = false,
+            bool manageThreads = false,
+            bool createPublicThreads = false,
+            bool createPrivateThreads = false,
+            bool usePublicThreads = false,
+            bool usePrivateThreads = false,
+            bool useExternalStickers = false,
+            bool sendMessagesInThreads = false,
+            bool startEmbeddedActivities = false)
             : this(0, createInstantInvite, manageChannel, addReactions, viewChannel, sendMessages, sendTTSMessages, manageMessages,
                 embedLinks, attachFiles, readMessageHistory, mentionEveryone, useExternalEmojis, connect,
-                speak, muteMembers, deafenMembers, moveMembers, useVoiceActivation, prioritySpeaker, stream, manageRoles, manageWebhooks)
+                speak, muteMembers, deafenMembers, moveMembers, useVoiceActivation, prioritySpeaker, stream, manageRoles, manageWebhooks,
+                useSlashCommands, useApplicationCommands, requestToSpeak, manageThreads, createPublicThreads, createPrivateThreads, usePublicThreads, usePrivateThreads, useExternalStickers, sendMessagesInThreads,
+                startEmbeddedActivities)
         { }
 
         /// <summary> Creates a new <see cref="ChannelPermissions"/> from this one, changing the provided non-null permissions. </summary>
@@ -194,7 +252,18 @@ namespace Discord
             bool? prioritySpeaker = null,
             bool? stream = null,
             bool? manageRoles = null,
-            bool? manageWebhooks = null)
+            bool? manageWebhooks = null,
+            bool? useSlashCommands = null,
+            bool? useApplicationCommands = null,
+            bool? requestToSpeak = null,
+            bool? manageThreads = null,
+            bool? createPublicThreads = null,
+            bool? createPrivateThreads = null,
+            bool? usePublicThreads = null,
+            bool? usePrivateThreads = null,
+            bool? useExternalStickers = null,
+            bool? sendMessagesInThreads = null,
+            bool? startEmbeddedActivities = null)
             => new ChannelPermissions(RawValue,
                 createInstantInvite,
                 manageChannel,
@@ -217,7 +286,18 @@ namespace Discord
                 prioritySpeaker,
                 stream,
                 manageRoles,
-                manageWebhooks);
+                manageWebhooks,
+                useSlashCommands,
+                useApplicationCommands,
+                requestToSpeak,
+                manageThreads,
+                createPublicThreads,
+                createPrivateThreads,
+                usePublicThreads,
+                usePrivateThreads,
+                useExternalStickers,
+                sendMessagesInThreads,
+                startEmbeddedActivities);
 
         public bool Has(ChannelPermission permission) => Permissions.GetValue(RawValue, permission);
 
