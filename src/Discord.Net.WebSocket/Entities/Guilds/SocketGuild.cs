@@ -1666,10 +1666,10 @@ namespace Discord.WebSocket
         Task<IVoiceChannel> IGuild.GetVoiceChannelAsync(ulong id, CacheMode mode, RequestOptions options)
             => Task.FromResult<IVoiceChannel>(GetVoiceChannel(id));
         /// <inheritdoc />
-        Task<IStageChannel> IGuild.GetStageChannelAsync(ulong id, CacheMode mode = CacheMode.AllowDownload, RequestOptions options = null)
+        Task<IStageChannel> IGuild.GetStageChannelAsync(ulong id, CacheMode mode, RequestOptions options)
             => Task.FromResult<IStageChannel>(GetStageChannel(id));
         /// <inheritdoc />
-        Task<IReadOnlyCollection<IStageChannel>> IGuild.GetStageChannelsAsync(CacheMode mode = CacheMode.AllowDownload, RequestOptions options = null)
+        Task<IReadOnlyCollection<IStageChannel>> IGuild.GetStageChannelsAsync(CacheMode mode, RequestOptions options)
             => Task.FromResult<IReadOnlyCollection<IStageChannel>>(StageChannels);
         /// <inheritdoc />
         Task<IVoiceChannel> IGuild.GetAFKChannelAsync(CacheMode mode, RequestOptions options)

@@ -118,7 +118,7 @@ namespace Discord.WebSocket
         /// <summary>
         ///     Responds to an Interaction with type <see cref="InteractionResponseType.ChannelMessageWithSource"/>.
         /// <para>
-        ///     If you have <see cref="DiscordSocketConfig.AlwaysAcknowledgeInteractions"/> set to <see langword="true"/>, You should use
+        ///     If you have DiscordSocketConfig.AlwaysAcknowledgeInteractions set to <see langword="true"/>, You should use
         ///     <see cref="FollowupAsync"/> instead.
         /// </para>
         /// </summary>

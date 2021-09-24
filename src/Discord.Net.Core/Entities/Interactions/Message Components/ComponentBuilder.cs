@@ -240,7 +240,7 @@ namespace Discord
         /// <summary>
         ///     Builds this builder into a <see cref="MessageComponent"/> used to send your components.
         /// </summary>
-        /// <returns>A <see cref="MessageComponent"/> that can be sent with <see cref="IMessageChannel.SendMessageAsync(string, bool, Embed, RequestOptions, AllowedMentions, MessageReference, MessageComponent)"/>.</returns>
+        /// <returns>A <see cref="MessageComponent"/> that can be sent with <see cref="IMessageChannel.SendMessageAsync"/>.</returns>
         public MessageComponent Build()
         {
             if (this._actionRows != null)

@@ -85,6 +85,7 @@ namespace Discord
         /// <param name="isTTS">Whether the message should be read aloud by Discord or not.</param>
         /// <param name="embed">The <see cref="EmbedType.Rich"/> <see cref="Embed"/> to be sent.</param>
         /// <param name="options">The options to be used when sending the request.</param>
+        /// <param name="component">The message component to be included with this message. Used for interactions</param>
         /// <returns>
         ///     A task that represents an asynchronous send operation for delivering the message. The task result
         ///     contains the sent message.
@@ -142,6 +143,7 @@ namespace Discord
         /// <param name="isTTS">Whether the message should be read aloud by Discord or not.</param>
         /// <param name="embed">The <see cref="EmbedType.Rich"/> <see cref="Embed"/> to be sent.</param>
         /// <param name="options">The options to be used when sending the request.</param>
+        /// <param name="component">The message component to be included with this message. Used for interactions</param>
         /// <returns>
         ///     A task that represents an asynchronous send operation for delivering the message. The task result
         ///     contains the sent message.
