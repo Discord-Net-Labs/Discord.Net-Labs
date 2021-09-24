@@ -11,13 +11,14 @@ namespace Discord.API
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("type")]
-        public ApplicationCommandType Type { get; set; }
-
         [JsonProperty("options")]
         public Optional<ApplicationCommandInteractionDataOption[]> Options { get; set; }
 
         [JsonProperty("resolved")]
         public Optional<ApplicationCommandInteractionDataResolved> Resolved { get; set; }
+
+        [JsonProperty("type")]
+        public ApplicationCommandType Type { get; set; }
+
     }
 }
