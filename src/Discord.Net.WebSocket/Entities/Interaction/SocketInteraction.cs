@@ -117,10 +117,6 @@ namespace Discord.WebSocket
 
         /// <summary>
         ///     Responds to an Interaction with type <see cref="InteractionResponseType.ChannelMessageWithSource"/>.
-        /// <para>
-        ///     If you have DiscordSocketConfig.AlwaysAcknowledgeInteractions set to <see langword="true"/>, You should use
-        ///     <see cref="FollowupAsync"/> instead.
-        /// </para>
         /// </summary>
         /// <param name="text">The text of the message to be sent.</param>
         /// <param name="embeds">A array of embeds to send with this response. Max 10</param>
