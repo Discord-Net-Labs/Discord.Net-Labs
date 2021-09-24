@@ -1144,9 +1144,9 @@
             </param>
             <param name="options">The request options for this async request.</param>
             <param name="messageReference">The message references to be included. Used to reply to specific messages.</param>
-            <param name="component">The message components to be included with this message. Used for interactions</param>
+            <param name="component">The message components to be included with this message. Used for interactions.</param>
             <param name="stickers">A collection of stickers to send with the file.</param>
-            <param name="embeds">A array of <see cref="T:Discord.Embed"/>s to send with this response. Max 10</param>
+            <param name="embeds">A array of <see cref="T:Discord.Embed"/>s to send with this response. Max 10.</param>
         </member>
         <member name="M:Discord.Commands.ModuleBase`1.BeforeExecute(Discord.Commands.CommandInfo)">
             <summary>

@@ -1376,7 +1376,7 @@ namespace Discord.WebSocket
         /// <param name="description">The description of the sticker.</param>
         /// <param name="tags">The tags of the sticker.</param>
         /// <param name="stream">The stream containing the file data.</param>
-        /// <param name="filename">The name of the file <b>with</b> the extension, ex: image.png</param>
+        /// <param name="filename">The name of the file <b>with</b> the extension, ex: image.png.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
         ///     A task that represents the asynchronous creation operation. The task result contains the created sticker.
