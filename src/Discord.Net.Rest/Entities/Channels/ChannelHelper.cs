@@ -268,8 +268,16 @@ namespace Discord.Rest
         public static async Task<RestUserMessage> SendMessageAsync(IMessageChannel channel, BaseDiscordClient client,
             string text, bool isTTS, Embed embed, AllowedMentions allowedMentions, MessageReference messageReference, MessageComponent component, ISticker[] stickers, RequestOptions options, Embed[] embeds)
         {
-            if (embeds == null && embed != null)
-                embeds = new[] { embed };
+            if (embed != null)
+            {
+                if (embeds == null)
+                    embeds = new[] { embed };
+                else
+                {
+                    List<Embed> listEmbeds = embeds.ToList();
+                    listEmbeds.Insert(0, embed);
+                }
+            }
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
