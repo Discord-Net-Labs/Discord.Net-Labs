@@ -9,7 +9,7 @@ namespace Discord
     /// <summary>
     ///     Represents a select menu component defined at <see href="https://discord.com/developers/docs/interactions/message-components#select-menu-object"/>
     /// </summary>
-    public class SelectMenu : IMessageComponent
+    public class SelectMenuComponent : IMessageComponent
     {
         /// <inheritdoc/>
         public ComponentType Type => ComponentType.SelectMenu;
@@ -52,21 +52,21 @@ namespace Discord
         /// </returns>
         public SelectMenuBuilder ToBuilder()
             => new SelectMenuBuilder(
-                this.CustomId,
-                this.Options.Select(x => new SelectMenuOptionBuilder(x.Label, x.Value, x.Description, x.Emote, x.Default)).ToList(),
-                this.Placeholder,
-                this.MaxValues,
-                this.MinValues,
-                this.Disabled);
+                CustomId,
+                Options.Select(x => new SelectMenuOptionBuilder(x.Label, x.Value, x.Description, x.Emote, x.Default)).ToList(),
+                Placeholder,
+                MaxValues,
+                MinValues,
+                Disabled);
 
-        internal SelectMenu(string customId, List<SelectMenuOption> options, string placeholder, int minValues, int maxValues, bool disabled)
+        internal SelectMenuComponent(string customId, List<SelectMenuOption> options, string placeholder, int minValues, int maxValues, bool disabled)
         {
-            this.CustomId = customId;
-            this.Options = options;
-            this.Placeholder = placeholder;
-            this.MinValues = minValues;
-            this.MaxValues = maxValues;
-            this.Disabled = disabled;
+            CustomId = customId;
+            Options = options;
+            Placeholder = placeholder;
+            MinValues = minValues;
+            MaxValues = maxValues;
+            Disabled = disabled;
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Discord.WebSocket
         public virtual ulong PackId { get; private set; }
 
         /// <inheritdoc/>
-        public string Name { get; internal set; }
+        public string Name { get; protected set; }
 
         /// <inheritdoc/>
         public virtual string Description { get; private set; }
@@ -29,17 +29,20 @@ namespace Discord.WebSocket
         public virtual IReadOnlyCollection<string> Tags { get; private set; }
 
         /// <inheritdoc/>
-        public virtual string Asset { get; private set; }
+        public virtual StickerType Type { get; private set; }
 
         /// <inheritdoc/>
-        public virtual string PreviewAsset { get; private set; }
+        public StickerFormatType Format { get; protected set; }
 
         /// <inheritdoc/>
-        public StickerFormatType Format { get; internal set; }
+        public virtual bool? Available { get; protected set; }
+
+        /// <inheritdoc/>
+        public virtual int? SortOrder { get; private set; }
 
         /// <inheritdoc/>
         public string GetStickerUrl()
-            => CDN.GetStickerUrl(this.Id, this.Format);
+            => CDN.GetStickerUrl(Id, Format);
 
         internal SocketSticker(DiscordSocketClient client, ulong id)
             : base(client, id) { }
@@ -59,20 +62,21 @@ namespace Discord.WebSocket
 
         internal virtual void Update(Model model)
         {
-            this.Name = model.Name;
-            this.Description = model.Desription;
-            this.PackId = model.PackId;
-            this.Asset = model.Asset;
-            this.PreviewAsset = model.PreviewAsset;
-            this.Format = model.FormatType;
+            Name = model.Name;
+            Description = model.Desription;
+            PackId = model.PackId;
+            Available = model.Available;
+            Format = model.FormatType;
+            Type = model.Type;
+            SortOrder = model.SortValue;
 
             if (model.Tags.IsSpecified)
             {
-                this.Tags = model.Tags.Value.Split(',').Select(x => x.Trim()).ToImmutableArray();
+                Tags = model.Tags.Value.Split(',').Select(x => x.Trim()).ToImmutableArray();
             }
             else
             {
-                this.Tags = ImmutableArray<string>.Empty;
+                Tags = ImmutableArray<string>.Empty;
             }
         }
 
@@ -83,16 +87,15 @@ namespace Discord.WebSocket
         {
             if (obj is API.Sticker stickerModel)
             {
-                return stickerModel.Name == this.Name &&
-                    stickerModel.Desription == this.Description &&
-                    stickerModel.FormatType == this.Format &&
-                    stickerModel.Id == this.Id &&
-                    stickerModel.PackId == this.PackId &&
-                    stickerModel.Asset == this.Asset &&
-                    stickerModel.PreviewAsset == this.PreviewAsset &&
-                    (stickerModel.Tags.IsSpecified ?
-                        stickerModel.Tags.Value == string.Join(", ", this.Tags) :
-                        true);
+                return stickerModel.Name == Name &&
+                    stickerModel.Desription == Description &&
+                    stickerModel.FormatType == Format &&
+                    stickerModel.Id == Id &&
+                    stickerModel.PackId == PackId &&
+                    stickerModel.Type == Type &&
+                    stickerModel.SortValue == SortOrder &&
+                    stickerModel.Available == Available &&
+                    (!stickerModel.Tags.IsSpecified || stickerModel.Tags.Value == string.Join(", ", Tags));
             }
             else
                 return base.Equals(obj);

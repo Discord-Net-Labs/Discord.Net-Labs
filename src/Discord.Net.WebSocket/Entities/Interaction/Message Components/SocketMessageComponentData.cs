@@ -23,15 +23,15 @@ namespace Discord.WebSocket
         public ComponentType Type { get; }
 
         /// <summary>
-        ///     The value(s) of a <see cref="SelectMenu"/> interaction response.
+        ///     The value(s) of a <see cref="SelectMenuComponent"/> interaction response.
         /// </summary>
         public IReadOnlyCollection<string> Values { get; }
 
         internal SocketMessageComponentData(Model model)
         {
-            this.CustomId = model.CustomId;
-            this.Type = model.ComponentType;
-            this.Values = model.Values.GetValueOrDefault();
+            CustomId = model.CustomId;
+            Type = model.ComponentType;
+            Values = model.Values.GetValueOrDefault();
         }
     }
 }

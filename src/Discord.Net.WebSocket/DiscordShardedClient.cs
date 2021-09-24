@@ -12,6 +12,7 @@ namespace Discord.WebSocket
 {
     public partial class DiscordShardedClient : BaseSocketClient, IDiscordClient
     {
+        #region DiscordShardedClient
         private readonly DiscordSocketConfig _baseConfig;
         private readonly Dictionary<int, int> _shardIdsToIndex;
         private readonly bool _automaticShards;
@@ -169,7 +170,7 @@ namespace Discord.WebSocket
             for (int i = 0; i < _shards.Length; i++)
                 await _shards[i].LoginAsync(tokenType, token);
 
-            if(this._defaultStickers.Length == 0)
+            if(_defaultStickers.Length == 0)
                 await DownloadDefaultStickersAsync().ConfigureAwait(false);
 
         }
@@ -490,8 +491,9 @@ namespace Discord.WebSocket
             client.GuildStickerDeleted += (sticker) => _guildStickerDeleted.InvokeAsync(sticker);
             client.GuildStickerUpdated += (before, after) => _guildStickerUpdated.InvokeAsync(before, after);
         }
+#endregion
 
-        //IDiscordClient
+        #region IDiscordClient
         /// <inheritdoc />
         async Task<IApplication> IDiscordClient.GetApplicationInfoAsync(RequestOptions options)
             => await GetApplicationInfoAsync().ConfigureAwait(false);
@@ -538,7 +540,9 @@ namespace Discord.WebSocket
         {
             return await GetVoiceRegionAsync(id).ConfigureAwait(false);
         }
+        #endregion
 
+        #region Dispose
         internal override void Dispose(bool disposing)
         {
             if (!_isDisposed)
@@ -557,5 +561,6 @@ namespace Discord.WebSocket
 
             base.Dispose(disposing);
         }
+        #endregion
     }
 }

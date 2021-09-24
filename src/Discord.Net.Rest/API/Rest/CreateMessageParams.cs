@@ -1,4 +1,3 @@
-#pragma warning disable CS1591
 using Newtonsoft.Json;
 
 namespace Discord.API.Rest
@@ -15,8 +14,8 @@ namespace Discord.API.Rest
         [JsonProperty("tts")]
         public Optional<bool> IsTTS { get; set; }
 
-        [JsonProperty("embed")]
-        public Optional<Embed> Embed { get; set; }
+        [JsonProperty("embeds")]
+        public Optional<Embed[]> Embeds { get; set; }
 
         [JsonProperty("allowed_mentions")]
         public Optional<AllowedMentions> AllowedMentions { get; set; }
@@ -26,6 +25,10 @@ namespace Discord.API.Rest
 
         [JsonProperty("components")]
         public Optional<API.ActionRowComponent[]> Components { get; set; }
+
+        [JsonProperty("sticker_ids")]
+        public Optional<ulong[]> Stickers { get; set; }
+
         public CreateMessageParams(string content)
         {
             Content = content;

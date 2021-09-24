@@ -18,6 +18,7 @@ namespace Discord.Rest
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
     public class RestGuild : RestEntity<ulong>, IGuild, IUpdateable
     {
+        #region RestGuild
         private ImmutableDictionary<ulong, RestRole> _roles;
         private ImmutableArray<GuildEmote> _emotes;
         private ImmutableArray<CustomSticker> _stickers;
@@ -217,8 +218,9 @@ namespace Discord.Rest
             WidgetChannelId = model.ChannelId;
             IsWidgetEnabled = model.Enabled;
         }
+        #endregion
 
-        //General
+        #region General
         /// <inheritdoc />
         public async Task UpdateAsync(RequestOptions options = null)
             => Update(await Discord.ApiClient.GetGuildAsync(Id, false, options).ConfigureAwait(false));
@@ -277,8 +279,9 @@ namespace Discord.Rest
         /// <inheritdoc />
         public Task LeaveAsync(RequestOptions options = null)
             => GuildHelper.LeaveAsync(this, Discord, options);
+        #endregion
 
-        //Interactions
+        #region Interactions
         /// <summary>
         ///     Deletes all slash commands in the current guild.
         /// </summary>
@@ -287,7 +290,7 @@ namespace Discord.Rest
         ///     A task that represents the asynchronous delete operation.
         /// </returns>
         public Task DeleteSlashCommandsAsync(RequestOptions options = null)
-            => InteractionHelper.DeleteAllGuildCommandsAsync(Discord, this.Id, options);
+            => InteractionHelper.DeleteAllGuildCommandsAsync(Discord, Id, options);
 
         /// <summary>
         ///     Gets a collection of slash commands created by the current user in this guild.
@@ -311,8 +314,9 @@ namespace Discord.Rest
         /// </returns>
         public Task<RestGuildCommand> GetSlashCommandAsync(ulong id, RequestOptions options = null)
             => GuildHelper.GetSlashCommandAsync(this, id, Discord, options);
+        #endregion
 
-        //Bans
+        #region Bans
         /// <summary>
         ///     Gets a collection of all users banned in this guild.
         /// </summary>
@@ -360,8 +364,9 @@ namespace Discord.Rest
         /// <inheritdoc />
         public Task RemoveBanAsync(ulong userId, RequestOptions options = null)
             => GuildHelper.RemoveBanAsync(this, Discord, userId, options);
+        #endregion
 
-        //Channels
+        #region Channels
         /// <summary>
         ///     Gets a collection of all channels in this guild.
         /// </summary>
@@ -489,7 +494,6 @@ namespace Discord.Rest
         /// <summary>
         ///     Gets a collection of all stage channels in this guild.
         /// </summary>
-        /// <param name="mode">The <see cref="CacheMode"/> that determines whether the object should be fetched from cache.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
         ///     A task that represents the asynchronous get operation. The task result contains a read-only collection of
@@ -663,6 +667,18 @@ namespace Discord.Rest
         public Task<RestVoiceChannel> CreateVoiceChannelAsync(string name, Action<VoiceChannelProperties> func = null, RequestOptions options = null)
             => GuildHelper.CreateVoiceChannelAsync(this, Discord, name, options, func);
         /// <summary>
+        ///     Creates a new stage channel in this guild.
+        /// </summary>
+        /// <param name="name">The new name for the stage channel.</param>
+        /// <param name="func">The delegate containing the properties to be applied to the channel upon its creation.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous creation operation. The task result contains the newly created
+        ///     stage channel.
+        /// </returns>
+        public Task<RestStageChannel> CreateStageChannelAsync(string name, Action<VoiceChannelProperties> func = null, RequestOptions options = null)
+            => GuildHelper.CreateStageChannelAsync(this, Discord, name, options, func);
+        /// <summary>
         ///     Creates a category channel with the provided name.
         /// </summary>
         /// <param name="name">The name of the new channel.</param>
@@ -685,14 +701,16 @@ namespace Discord.Rest
         /// </returns>
         public Task<IReadOnlyCollection<RestVoiceRegion>> GetVoiceRegionsAsync(RequestOptions options = null)
             => GuildHelper.GetVoiceRegionsAsync(this, Discord, options);
+        #endregion
 
-        //Integrations
+        #region Integrations
         public Task<IReadOnlyCollection<RestGuildIntegration>> GetIntegrationsAsync(RequestOptions options = null)
             => GuildHelper.GetIntegrationsAsync(this, Discord, options);
         public Task<RestGuildIntegration> CreateIntegrationAsync(ulong id, string type, RequestOptions options = null)
             => GuildHelper.CreateIntegrationAsync(this, Discord, id, type, options);
+        #endregion
 
-        //Invites
+        #region Invites
         /// <summary>
         ///     Gets a collection of all invites in this guild.
         /// </summary>
@@ -712,8 +730,9 @@ namespace Discord.Rest
         /// </returns>
         public Task<RestInviteMetadata> GetVanityInviteAsync(RequestOptions options = null)
             => GuildHelper.GetVanityInviteAsync(this, Discord, options);
+        #endregion
 
-        //Roles
+        #region Roles
         /// <summary>
         ///     Gets a role in this guild.
         /// </summary>
@@ -753,8 +772,9 @@ namespace Discord.Rest
             _roles = _roles.Add(role.Id, role);
             return role;
         }
+        #endregion
 
-        //Users
+        #region Users
         /// <summary>
         ///     Gets a collection of all users in this guild.
         /// </summary>
@@ -848,8 +868,9 @@ namespace Discord.Rest
         /// </returns>
         public Task<IReadOnlyCollection<RestGuildUser>> SearchUsersAsync(string query, int limit = DiscordConfig.MaxUsersPerBatch, RequestOptions options = null)
             => GuildHelper.SearchUsersAsync(this, Discord, query, limit, options);
+        #endregion
 
-        //Audit logs
+        #region Audit logs
         /// <summary>
         ///     Gets the specified number of audit log entries for this guild.
         /// </summary>
@@ -864,8 +885,9 @@ namespace Discord.Rest
         /// </returns>
         public IAsyncEnumerable<IReadOnlyCollection<RestAuditLogEntry>> GetAuditLogsAsync(int limit, RequestOptions options = null, ulong? beforeId = null, ulong? userId = null, ActionType? actionType = null)
             => GuildHelper.GetAuditLogsAsync(this, Discord, beforeId, limit, options, userId: userId, actionType: actionType);
+        #endregion
 
-        //Webhooks
+        #region Webhooks
         /// <summary>
         ///     Gets a webhook found within this guild.
         /// </summary>
@@ -888,8 +910,9 @@ namespace Discord.Rest
         /// </returns>
         public Task<IReadOnlyCollection<RestWebhook>> GetWebhooksAsync(RequestOptions options = null)
             => GuildHelper.GetWebhooksAsync(this, Discord, options);
+        #endregion
 
-        //Interactions
+        #region Interactions
         /// <summary>
         ///     Gets this guilds slash commands commands
         /// </summary>
@@ -910,7 +933,7 @@ namespace Discord.Rest
         ///     if found, otherwise <see langword="null"/>.
         /// </returns>
         public async Task<RestGuildCommand> GetApplicationCommandAsync(ulong id, RequestOptions options = null)
-            => await ClientHelper.GetGuildApplicationCommand(Discord, id, this.Id, options);
+            => await ClientHelper.GetGuildApplicationCommand(Discord, id, Id, options);
         /// <summary>
         ///     Creates an application command within this guild.
         /// </summary>
@@ -921,9 +944,9 @@ namespace Discord.Rest
         /// </returns>
         public async Task<RestGuildCommand> CreateApplicationCommandAsync(ApplicationCommandProperties properties, RequestOptions options = null)
         {
-            var model = await InteractionHelper.CreateGuildCommand(Discord, this.Id, properties, options);
+            var model = await InteractionHelper.CreateGuildCommand(Discord, Id, properties, options);
 
-            return RestGuildCommand.Create(Discord, model, this.Id);
+            return RestGuildCommand.Create(Discord, model, Id);
         }
         /// <summary>
         ///     Overwrites the application commands within this guild.
@@ -936,9 +959,9 @@ namespace Discord.Rest
         public async Task<IReadOnlyCollection<RestGuildCommand>> BulkOverwriteApplicationCommandsAsync(ApplicationCommandProperties[] properties,
             RequestOptions options = null)
         {
-            var models = await InteractionHelper.BulkOverwriteGuildCommands(Discord, this.Id, properties, options);
+            var models = await InteractionHelper.BulkOverwriteGuildCommands(Discord, Id, properties, options);
 
-            return models.Select(x => RestGuildCommand.Create(Discord, x, this.Id)).ToImmutableArray();
+            return models.Select(x => RestGuildCommand.Create(Discord, x, Id)).ToImmutableArray();
         }
 
         /// <summary>
@@ -949,8 +972,9 @@ namespace Discord.Rest
         /// </returns>
         public override string ToString() => Name;
         private string DebuggerDisplay => $"{Name} ({Id})";
+        #endregion
 
-        //Emotes
+        #region Emotes
         /// <inheritdoc />
         public Task<IReadOnlyCollection<GuildEmote>> GetEmotesAsync(RequestOptions options = null)
             => GuildHelper.GetEmotesAsync(this, Discord, options);
@@ -964,11 +988,20 @@ namespace Discord.Rest
         /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
         public Task<GuildEmote> ModifyEmoteAsync(GuildEmote emote, Action<EmoteProperties> func, RequestOptions options = null)
             => GuildHelper.ModifyEmoteAsync(this, Discord, emote.Id, func, options);
+        /// <summary>
+        /// Moves the user to the voice channel.
+        /// </summary>
+        /// <param name="user">The user to move.</param>
+        /// <param name="targetChannel">the channel where the user gets moved to.</param>
+        /// <returns>A task that represents the asynchronous operation for moving a user.</returns>
+        public Task MoveAsync(IGuildUser user, IVoiceChannel targetChannel)
+            => user.ModifyAsync(x => x.Channel = new Optional<IVoiceChannel>(targetChannel));
         /// <inheritdoc />
         public Task DeleteEmoteAsync(GuildEmote emote, RequestOptions options = null)
             => GuildHelper.DeleteEmoteAsync(this, Discord, emote.Id, options);
+        #endregion
 
-        //Stickers
+        #region Stickers
         /// <summary>
         ///     Creates a new sticker in this guild.
         /// </summary>
@@ -1010,7 +1043,7 @@ namespace Discord.Rest
         /// <param name="description">The description of the sticker.</param>
         /// <param name="tags">The tags of the sticker.</param>
         /// <param name="stream">The stream containing the file data.</param>
-        /// <param name="filename">The name of the file <b>with</b> the extension, ex: image.png</param>
+        /// <param name="filename">The name of the file <b>with</b> the extension, ex: image.png.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
         ///     A task that represents the asynchronous creation operation. The task result contains the created sticker.
@@ -1033,7 +1066,7 @@ namespace Discord.Rest
         /// </returns>
         public async Task<CustomSticker> GetStickerAsync(ulong id, RequestOptions options = null)
         {
-            var model = await Discord.ApiClient.GetGuildStickerAsync(this.Id, id, options).ConfigureAwait(false);
+            var model = await Discord.ApiClient.GetGuildStickerAsync(Id, id, options).ConfigureAwait(false);
 
             if (model == null)
                 return null;
@@ -1050,7 +1083,7 @@ namespace Discord.Rest
         /// </returns>
         public async Task<IReadOnlyCollection<CustomSticker>> GetStickersAsync(RequestOptions options = null)
         {
-            var models = await Discord.ApiClient.ListGuildStickersAsync(this.Id, options).ConfigureAwait(false);
+            var models = await Discord.ApiClient.ListGuildStickersAsync(Id, options).ConfigureAwait(false);
 
             if (models.Length == 0)
                 return null;
@@ -1075,8 +1108,9 @@ namespace Discord.Rest
         /// </returns>
         public Task DeleteStickerAsync(CustomSticker sticker, RequestOptions options = null)
             => sticker.DeleteAsync(options);
+        #endregion
 
-        //IGuild
+        #region IGuild
         /// <inheritdoc />
         bool IGuild.Available => Available;
         /// <inheritdoc />
@@ -1241,6 +1275,9 @@ namespace Discord.Rest
         async Task<IVoiceChannel> IGuild.CreateVoiceChannelAsync(string name, Action<VoiceChannelProperties> func, RequestOptions options)
             => await CreateVoiceChannelAsync(name, func, options).ConfigureAwait(false);
         /// <inheritdoc />
+        async Task<IStageChannel> IGuild.CreateStageChannelAsync(string name, Action<VoiceChannelProperties> func, RequestOptions options)
+            => await CreateStageChannelAsync(name, func, options).ConfigureAwait(false);
+        /// <inheritdoc />
         async Task<ICategoryChannel> IGuild.CreateCategoryAsync(string name, Action<GuildChannelProperties> func, RequestOptions options)
             => await CreateCategoryChannelAsync(name, func, options).ConfigureAwait(false);
 
@@ -1275,6 +1312,13 @@ namespace Discord.Rest
         /// <inheritdoc />
         async Task<IGuildUser> IGuild.AddGuildUserAsync(ulong userId, string accessToken, Action<AddGuildUserProperties> func, RequestOptions options)
             => await AddGuildUserAsync(userId, accessToken, func, options);
+
+        /// <summary>
+        /// Disconnects the user from its current voice channel
+        /// </summary>
+        /// <param name="user">The user to disconnect.</param>
+        /// <returns>A task that represents the asynchronous operation for disconnecting a user.</returns>
+        async Task IGuild.DisconnectAsync(IGuildUser user) => await user.ModifyAsync(x => x.Channel = new Optional<IVoiceChannel>());
 
         /// <inheritdoc />
         async Task<IGuildUser> IGuild.GetUserAsync(ulong id, CacheMode mode, RequestOptions options)
@@ -1384,5 +1428,6 @@ namespace Discord.Rest
             else
                 return null;
         }
+        #endregion
     }
 }

@@ -1,4 +1,3 @@
-#pragma warning disable CS1591
 using Discord.API.Gateway;
 using Discord.Net.Queue;
 using Discord.Net.Rest;
@@ -217,7 +216,7 @@ namespace Discord.API
             ConnectionState = ConnectionState.Disconnected;
         }
 
-        //Core
+        #region Core
         public Task SendGatewayAsync(GatewayOpCode opCode, object payload, RequestOptions options = null)
             => SendGatewayInternalAsync(opCode, payload, options);
         private async Task SendGatewayInternalAsync(GatewayOpCode opCode, object payload, RequestOptions options)
@@ -327,5 +326,6 @@ namespace Discord.API
             options = RequestOptions.CreateOrClone(options);
             await SendGatewayAsync(GatewayOpCode.GuildSync, guildIds, options: options).ConfigureAwait(false);
         }
+        #endregion
     }
 }

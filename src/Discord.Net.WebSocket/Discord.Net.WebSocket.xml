@@ -1393,29 +1393,6 @@
                 </note>
             </remarks>
         </member>
-        <member name="P:Discord.WebSocket.DiscordSocketConfig.AlwaysAcknowledgeInteractions">
-            <summary>
-                Gets or sets whether or not interactions are acknowledge with source. 
-            </summary>
-            <remarks>
-                <para>
-                    Discord interactions will not appear in chat until the client responds to them. With this option set to 
-                    <see langword="true"/>, the client will automatically acknowledge the interaction with <see cref="F:Discord.InteractionResponseType.DeferredChannelMessageWithSource"/>.
-                    See <see href="https://discord.com/developers/docs/interactions/slash-commands#interaction-interactionresponsetype">the docs</see> on
-                    responding to interactions for more info.
-                </para>
-                <para>
-                    With this option set to <see langword="false"/>, you will have to acknowledge the interaction with
-                    <see cref="!:SocketInteraction.RespondAsync(string, bool, Embed, InteractionResponseType, AllowedMentions, RequestOptions)"/>.
-                    Only after the interaction is acknowledged, the original slash command message will be visible.
-                </para>
-                <note>
-                    Please note that manually acknowledging the interaction with a message reply will not provide any return data.
-                    Automatically acknowledging the interaction without sending the message will allow for follow up responses to
-                    be used; follow up responses return the message data sent.
-                </note>
-            </remarks>
-        </member>
         <member name="P:Discord.WebSocket.DiscordSocketConfig.HandlerTimeout">
             <summary>
                 Gets or sets the timeout for event handlers, in milliseconds, after which a warning will be logged.
@@ -1480,12 +1457,12 @@
                 A read-only collection of WebSocket-based messages.
             </returns>
         </member>
-        <member name="M:Discord.WebSocket.ISocketMessageChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.ISocketMessageChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[],Discord.Embed[])">
             <summary>
                 Sends a message to this message channel.
             </summary>
             <remarks>
-                This method follows the same behavior as described in <see cref="M:Discord.IMessageChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)"/>.
+                This method follows the same behavior as described in <see cref="M:Discord.IMessageChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[],Discord.Embed[])"/>.
                 Please visit its documentation for more details on this method.
             </remarks>
             <param name="text">The message to be sent.</param>
@@ -1497,18 +1474,20 @@
                 If <c>null</c>, all mentioned roles and users will be notified.
             </param>
             <param name="messageReference">The message references to be included. Used to reply to specific messages.</param>
-            <param name="component">The message components to be included with this message. Used for interactions</param>
+            <param name="component">The message components to be included with this message. Used for interactions.</param>
+            <param name="stickers">A collection of stickers to send with the message.</param>
+            <param name="embeds">A array of <see cref="T:Discord.Embed"/>s to send with this response. Max 10.</param>
             <returns>
                 A task that represents an asynchronous send operation for delivering the message. The task result
                 contains the sent message.
             </returns>
         </member>
-        <member name="M:Discord.WebSocket.ISocketMessageChannel.SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.ISocketMessageChannel.SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <summary>
                 Sends a file to this message channel with an optional caption.
             </summary>
             <remarks>
-                This method follows the same behavior as described in <see cref="M:Discord.IMessageChannel.SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)"/>.
+                This method follows the same behavior as described in <see cref="M:Discord.IMessageChannel.SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])"/>.
                 Please visit its documentation for more details on this method.
             </remarks>
             <param name="filePath">The file path of the file.</param>
@@ -1522,18 +1501,19 @@
                 If <c>null</c>, all mentioned roles and users will be notified.
             </param>
             <param name="messageReference">The message references to be included. Used to reply to specific messages.</param>
-            <param name="component">The message components to be included with this message. Used for interactions</param>
+            <param name="component">The message components to be included with this message. Used for interactions.</param>
+            <param name="stickers">A collection of stickers to send with the file.</param>
             <returns>
                 A task that represents an asynchronous send operation for delivering the message. The task result
                 contains the sent message.
             </returns>
         </member>
-        <member name="M:Discord.WebSocket.ISocketMessageChannel.SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.ISocketMessageChannel.SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <summary>
                 Sends a file to this message channel with an optional caption.
             </summary>
             <remarks>
-                This method follows the same behavior as described in <see cref="M:Discord.IMessageChannel.SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)"/>.
+                This method follows the same behavior as described in <see cref="M:Discord.IMessageChannel.SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])"/>.
                 Please visit its documentation for more details on this method.
             </remarks>
             <param name="stream">The <see cref="T:System.IO.Stream" /> of the file to be sent.</param>
@@ -1548,7 +1528,8 @@
                 If <c>null</c>, all mentioned roles and users will be notified.
             </param>
             <param name="messageReference">The message references to be included. Used to reply to specific messages.</param>
-            <param name="component">The message components to be included with this message. Used for interactions</param>
+            <param name="component">The message components to be included with this message. Used for interactions.</param>
+            <param name="stickers">A collection of stickers to send with the file.</param>
             <returns>
                 A task that represents an asynchronous send operation for delivering the message. The task result
                 contains the sent message.
@@ -1831,14 +1812,14 @@
         <member name="M:Discord.WebSocket.SocketDMChannel.GetPinnedMessagesAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketDMChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketDMChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[],Discord.Embed[])">
             <inheritdoc />
             <exception cref="T:System.ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="F:Discord.DiscordConfig.MaxMessageSize"/>.</exception>
         </member>
-        <member name="M:Discord.WebSocket.SocketDMChannel.SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketDMChannel.SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketDMChannel.SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketDMChannel.SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <inheritdoc />
             <exception cref="T:System.ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="F:Discord.DiscordConfig.MaxMessageSize"/>.</exception>
         </member>
@@ -1901,13 +1882,13 @@
         <member name="M:Discord.WebSocket.SocketDMChannel.Discord#IMessageChannel#GetPinnedMessagesAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketDMChannel.Discord#IMessageChannel#SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketDMChannel.Discord#IMessageChannel#SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketDMChannel.Discord#IMessageChannel#SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketDMChannel.Discord#IMessageChannel#SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketDMChannel.Discord#IMessageChannel#SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketDMChannel.Discord#IMessageChannel#SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[],Discord.Embed[])">
             <inheritdoc />
         </member>
         <member name="P:Discord.WebSocket.SocketDMChannel.Discord#IChannel#Name">
@@ -2022,15 +2003,16 @@
         <member name="M:Discord.WebSocket.SocketGroupChannel.GetPinnedMessagesAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketGroupChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketGroupChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[],Discord.Embed[])">
             <inheritdoc />
             <exception cref="T:System.ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="F:Discord.DiscordConfig.MaxMessageSize"/>.</exception>
         </member>
-        <member name="M:Discord.WebSocket.SocketGroupChannel.SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketGroupChannel.SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketGroupChannel.SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketGroupChannel.SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <inheritdoc />
+            <exception cref="T:System.ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="F:Discord.DiscordConfig.MaxMessageSize"/>.</exception>
         </member>
         <member name="M:Discord.WebSocket.SocketGroupChannel.DeleteMessageAsync(System.UInt64,Discord.RequestOptions)">
             <inheritdoc />
@@ -2088,13 +2070,13 @@
         <member name="M:Discord.WebSocket.SocketGroupChannel.Discord#IMessageChannel#GetPinnedMessagesAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketGroupChannel.Discord#IMessageChannel#SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketGroupChannel.Discord#IMessageChannel#SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketGroupChannel.Discord#IMessageChannel#SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketGroupChannel.Discord#IMessageChannel#SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketGroupChannel.Discord#IMessageChannel#SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketGroupChannel.Discord#IMessageChannel#SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[],Discord.Embed[])">
             <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.SocketGroupChannel.Discord#IAudioChannel#ConnectAsync(System.Boolean,System.Boolean,System.Boolean)">
@@ -2478,14 +2460,14 @@
         <member name="M:Discord.WebSocket.SocketTextChannel.GetPinnedMessagesAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketTextChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketTextChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[],Discord.Embed[])">
             <inheritdoc />
             <exception cref="T:System.ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="F:Discord.DiscordConfig.MaxMessageSize"/>.</exception>
         </member>
-        <member name="M:Discord.WebSocket.SocketTextChannel.SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketTextChannel.SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketTextChannel.SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketTextChannel.SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <inheritdoc />
             <exception cref="T:System.ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="F:Discord.DiscordConfig.MaxMessageSize"/>.</exception>
         </member>
@@ -2591,13 +2573,13 @@
         <member name="M:Discord.WebSocket.SocketTextChannel.Discord#IMessageChannel#GetPinnedMessagesAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketTextChannel.Discord#IMessageChannel#SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketTextChannel.Discord#IMessageChannel#SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketTextChannel.Discord#IMessageChannel#SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketTextChannel.Discord#IMessageChannel#SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
             <inheritdoc />
         </member>
-        <member name="M:Discord.WebSocket.SocketTextChannel.Discord#IMessageChannel#SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+        <member name="M:Discord.WebSocket.SocketTextChannel.Discord#IMessageChannel#SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[],Discord.Embed[])">
             <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.SocketTextChannel.Discord#INestedChannel#GetCategoryAsync(Discord.CacheMode,Discord.RequestOptions)">
@@ -2820,6 +2802,9 @@
             <returns>
                 A category channel representing the parent of this channel; <c>null</c> if none is set.
             </returns>
+        </member>
+        <member name="P:Discord.WebSocket.SocketVoiceChannel.Mention">
+            <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.SocketVoiceChannel.SyncPermissionsAsync(Discord.RequestOptions)">
             <inheritdoc />
@@ -3328,6 +3313,18 @@
                 voice channel.
             </returns>
         </member>
+        <member name="M:Discord.WebSocket.SocketGuild.CreateStageChannelAsync(System.String,System.Action{Discord.VoiceChannelProperties},Discord.RequestOptions)">
+            <summary>
+                Creates a new stage channel in this guild.
+            </summary>
+            <param name="name">The new name for the stage channel.</param>
+            <param name="func">The delegate containing the properties to be applied to the channel upon its creation.</param>
+            <param name="options">The options to be used when sending the request.</param>
+            <returns>
+                A task that represents the asynchronous creation operation. The task result contains the newly created
+                stage channel.
+            </returns>
+        </member>
         <member name="M:Discord.WebSocket.SocketGuild.CreateCategoryChannelAsync(System.String,System.Action{Discord.GuildChannelProperties},Discord.RequestOptions)">
             <summary>
                 Creates a new channel category in this guild.
@@ -3556,6 +3553,21 @@
         <member name="M:Discord.WebSocket.SocketGuild.DeleteEmoteAsync(Discord.GuildEmote,Discord.RequestOptions)">
             <inheritdoc />
         </member>
+        <member name="M:Discord.WebSocket.SocketGuild.MoveAsync(Discord.IGuildUser,Discord.IVoiceChannel)">
+            <summary>
+            Moves the user to the voice channel.
+            </summary>
+            <param name="user">The user to move.</param>
+            <param name="targetChannel">the channel where the user gets moved to.</param>
+            <returns>A task that represents the asynchronous operation for moving a user.</returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#DisconnectAsync(Discord.IGuildUser)">
+            <summary>
+            Disconnects the user from its current voice channel
+            </summary>
+            <param name="user">The user to disconnect.</param>
+            <returns>A task that represents the asynchronous operation for disconnecting a user.</returns>
+        </member>
         <member name="M:Discord.WebSocket.SocketGuild.GetStickerAsync(System.UInt64,Discord.CacheMode,Discord.RequestOptions)">
             <summary>
                 Gets a specific sticker within this guild.
@@ -3620,7 +3632,7 @@
             <param name="description">The description of the sticker.</param>
             <param name="tags">The tags of the sticker.</param>
             <param name="stream">The stream containing the file data.</param>
-            <param name="filename">The name of the file <b>with</b> the extension, ex: image.png</param>
+            <param name="filename">The name of the file <b>with</b> the extension, ex: image.png.</param>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
                 A task that represents the asynchronous creation operation. The task result contains the created sticker.
@@ -3744,6 +3756,9 @@
             <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#CreateVoiceChannelAsync(System.String,System.Action{Discord.VoiceChannelProperties},Discord.RequestOptions)">
+            <inheritdoc />
+        </member>
+        <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#CreateStageChannelAsync(System.String,System.Action{Discord.VoiceChannelProperties},Discord.RequestOptions)">
             <inheritdoc />
         </member>
         <member name="M:Discord.WebSocket.SocketGuild.Discord#IGuild#CreateCategoryAsync(System.String,System.Action{Discord.GuildChannelProperties},Discord.RequestOptions)">
@@ -3947,7 +3962,99 @@
         </member>
         <member name="P:Discord.WebSocket.SocketMessageComponentData.Values">
             <summary>
-                The value(s) of a <see cref="T:Discord.SelectMenu"/> interaction response.
+                The value(s) of a <see cref="T:Discord.SelectMenuComponent"/> interaction response.
+            </summary>
+        </member>
+        <member name="T:Discord.WebSocket.SocketAutocompleteInteraction">
+            <summary>
+                Represents a <see cref="F:Discord.InteractionType.ApplicationCommandAutocomplete"/> received over the gateway.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketAutocompleteInteraction.Data">
+            <summary>
+                The autocomplete data of this interaction.
+            </summary>
+        </member>
+        <member name="M:Discord.WebSocket.SocketAutocompleteInteraction.RespondAsync(System.Collections.Generic.IEnumerable{Discord.AutocompleteResult},Discord.RequestOptions)">
+            <summary>
+                Responds to this interaction with a set of choices.
+            </summary>
+            <param name="result">
+                The set of choices for the user to pick from.
+                <remarks>
+                    A max of 20 choices are allowed. Passing <see langword="null"/> for this argument will show the executing user that
+                    there is no choices for their autocompleted input.
+                </remarks>
+            </param>
+            <param name="options">The request options for this response.</param>
+            <returns>
+                A task that represents the asynchronous operation of responding to this interaction.
+            </returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketAutocompleteInteraction.RespondAsync(Discord.RequestOptions,Discord.AutocompleteResult[])">
+            <summary>
+                Responds to this interaction with a set of choices.
+            </summary>
+            <param name="options">The request options for this response.</param>
+            <param name="result">
+             The set of choices for the user to pick from.
+                <remarks>
+                    A max of 20 choices are allowed. Passing <see langword="null"/> for this argument will show the executing user that
+                    there is no choices for their autocompleted input.
+                </remarks>
+            </param>
+            <returns>
+                A task that represents the asynchronous operation of responding to this interaction.
+            </returns>
+        </member>
+        <member name="M:Discord.WebSocket.SocketAutocompleteInteraction.DeferAsync(System.Boolean,Discord.RequestOptions)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketAutocompleteInteraction.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketAutocompleteInteraction.FollowupWithFileAsync(System.String,System.IO.Stream,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketAutocompleteInteraction.FollowupWithFileAsync(System.String,System.String,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.WebSocket.SocketAutocompleteInteraction.RespondAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.WebSocket.SocketAutocompleteInteractionData">
+            <summary>
+                Represents data for a slash commands autocomplete interaction.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketAutocompleteInteractionData.CommandName">
+            <summary>
+                Gets the name of the invoked command.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketAutocompleteInteractionData.CommandId">
+            <summary>
+                Gets the id of the invoked command.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketAutocompleteInteractionData.Type">
+            <summary>
+                Gets the type of the invoked command.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketAutocompleteInteractionData.Version">
+            <summary>
+                Gets the version of the invoked command.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketAutocompleteInteractionData.Current">
+            <summary>
+                Gets the current autocomplete option that is activly being filled out.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketAutocompleteInteractionData.Options">
+            <summary>
+                Gets a collection of all the other options the executing users has filled out.
             </summary>
         </member>
         <member name="T:Discord.WebSocket.SocketSlashCommand">
@@ -4077,7 +4184,17 @@
         </member>
         <member name="T:Discord.WebSocket.SocketCommandBase">
             <summary>
-                Base class for User, Message, and Slash command interactions
+                Base class for User, Message, and Slash command interactions.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketCommandBase.CommandName">
+            <summary>
+                Gets the name of the invoked command.
+            </summary>
+        </member>
+        <member name="P:Discord.WebSocket.SocketCommandBase.CommandId">
+            <summary>
+                Gets the id of the invoked command.
             </summary>
         </member>
         <member name="P:Discord.WebSocket.SocketCommandBase.Data">
@@ -4170,17 +4287,17 @@
             <summary>
                 Responds to an Interaction with type <see cref="F:Discord.InteractionResponseType.ChannelMessageWithSource"/>.
             <para>
-                If you have <see cref="P:Discord.WebSocket.DiscordSocketConfig.AlwaysAcknowledgeInteractions"/> set to <see langword="true"/>, You should use
+                If you have <see cref="!:DiscordSocketConfig.AlwaysAcknowledgeInteractions"/> set to <see langword="true"/>, You should use
                 <see cref="M:Discord.WebSocket.SocketInteraction.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)"/> instead.
             </para>
             </summary>
             <param name="text">The text of the message to be sent.</param>
-            <param name="embeds">A array of embeds to send with this response. Max 10</param>
+            <param name="embeds">A array of embeds to send with this response. Max 10.</param>
             <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
             <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
             <param name="allowedMentions">The allowed mentions for this response.</param>
             <param name="options">The request options for this response.</param>
-            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response</param>
+            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response.</param>
             <param name="embed">A single embed to send with this response. If this is passed alongside an array of embeds, the single embed will be ignored.</param>
             <exception cref="T:System.ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="F:Discord.DiscordConfig.MaxMessageSize"/>.</exception>
             <exception cref="T:System.InvalidOperationException">The parameters provided were invalid or the token was invalid.</exception>
@@ -4189,13 +4306,13 @@
             <summary>
                 Sends a followup message for this interaction.
             </summary>
-            <param name="text">The text of the message to be sent</param>
-            <param name="embeds">A array of embeds to send with this response. Max 10</param>
+            <param name="text">The text of the message to be sent.</param>
+            <param name="embeds">A array of embeds to send with this response. Max 10.</param>
             <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
             <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
             <param name="allowedMentions">The allowed mentions for this response.</param>
             <param name="options">The request options for this response.</param>
-            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response</param>
+            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response.</param>
             <param name="embed">A single embed to send with this response. If this is passed alongside an array of embeds, the single embed will be ignored.</param>
             <returns>
                 The sent message.
@@ -4205,15 +4322,15 @@
             <summary>
                 Sends a followup message for this interaction.
             </summary>
-            <param name="text">The text of the message to be sent</param>
-            <param name="fileStream">The file to upload</param>
-            <param name="fileName">The file name of the attachment</param>
-            <param name="embeds">A array of embeds to send with this response. Max 10</param>
+            <param name="text">The text of the message to be sent.</param>
+            <param name="fileStream">The file to upload.</param>
+            <param name="fileName">The file name of the attachment.</param>
+            <param name="embeds">A array of embeds to send with this response. Max 10.</param>
             <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
             <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
             <param name="allowedMentions">The allowed mentions for this response.</param>
             <param name="options">The request options for this response.</param>
-            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response</param>
+            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response.</param>
             <param name="embed">A single embed to send with this response. If this is passed alongside an array of embeds, the single embed will be ignored.</param>
             <returns>
                 The sent message.
@@ -4223,15 +4340,15 @@
             <summary>
                 Sends a followup message for this interaction.
             </summary>
-            <param name="text">The text of the message to be sent</param>
-            <param name="filePath">The file to upload</param>
-            <param name="fileName">The file name of the attachment</param>
-            <param name="embeds">A array of embeds to send with this response. Max 10</param>
+            <param name="text">The text of the message to be sent.</param>
+            <param name="filePath">The file to upload.</param>
+            <param name="fileName">The file name of the attachment.</param>
+            <param name="embeds">A array of embeds to send with this response. Max 10.</param>
             <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
             <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
             <param name="allowedMentions">The allowed mentions for this response.</param>
             <param name="options">The request options for this response.</param>
-            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response</param>
+            <param name="component">A <see cref="T:Discord.MessageComponent"/> to be sent with this response.</param>
             <param name="embed">A single embed to send with this response. If this is passed alongside an array of embeds, the single embed will be ignored.</param>
             <returns>
                 The sent message.
@@ -4251,14 +4368,6 @@
             <param name="func">A delegate containing the properties to modify the message with.</param>
             <param name="options">The request options for this async request.</param>
             <returns>A <see cref="T:Discord.Rest.RestInteractionMessage"/> that represents the initial response.</returns>
-        </member>
-        <member name="M:Discord.WebSocket.SocketInteraction.AcknowledgeAsync(Discord.RequestOptions)">
-            <summary>
-                Acknowledges this interaction.
-            </summary>
-            <returns>
-                A task that represents the asynchronous operation of acknowledging the interaction.
-            </returns>
         </member>
         <member name="M:Discord.WebSocket.SocketInteraction.DeferAsync(System.Boolean,Discord.RequestOptions)">
             <summary>
@@ -4805,7 +4914,7 @@
         </member>
         <member name="P:Discord.WebSocket.SocketCustomSticker.Guild">
             <summary>
-                Gets the guild the sticker lives in.
+                Gets the guild the sticker was created in.
             </summary>
         </member>
         <member name="P:Discord.WebSocket.SocketCustomSticker.AuthorId">
@@ -4834,13 +4943,16 @@
         <member name="P:Discord.WebSocket.SocketSticker.Tags">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketSticker.Asset">
-            <inheritdoc/>
-        </member>
-        <member name="P:Discord.WebSocket.SocketSticker.PreviewAsset">
+        <member name="P:Discord.WebSocket.SocketSticker.Type">
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketSticker.Format">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSticker.Available">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketSticker.SortOrder">
             <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.SocketSticker.GetStickerUrl">
@@ -4854,9 +4966,6 @@
                 Represents an unknown sticker received over the gateway.
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketUnknownSticker.Asset">
-            <inheritdoc/>
-        </member>
         <member name="P:Discord.WebSocket.SocketUnknownSticker.Tags">
             <inheritdoc/>
         </member>
@@ -4866,7 +4975,13 @@
         <member name="P:Discord.WebSocket.SocketUnknownSticker.PackId">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketUnknownSticker.PreviewAsset">
+        <member name="P:Discord.WebSocket.SocketUnknownSticker.Available">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketUnknownSticker.SortOrder">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.WebSocket.SocketUnknownSticker.Type">
             <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.SocketUnknownSticker.ResolveAsync(Discord.CacheMode,Discord.RequestOptions)">
