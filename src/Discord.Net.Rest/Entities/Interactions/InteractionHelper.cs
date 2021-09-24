@@ -168,17 +168,13 @@ namespace Discord.Rest
         {
             bool isBaseClass = typeof(TArg) == typeof(ApplicationCommandProperties);
 
-            switch (true)
+            return true switch
             {
-                case true when (typeof(TArg) == typeof(SlashCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.Slash:
-                    return new SlashCommandProperties() as TArg;
-                case true when (typeof(TArg) == typeof(MessageCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.Message:
-                    return new MessageCommandProperties() as TArg;
-                case true when (typeof(TArg) == typeof(UserCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.User:
-                    return new UserCommandProperties() as TArg;
-                default:
-                    throw new InvalidOperationException($"Cannot modify application command of type {command.Type} with the parameter type {typeof(TArg).FullName}");
-            }
+                true when (typeof(TArg) == typeof(SlashCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.Slash => new SlashCommandProperties() as TArg,
+                true when (typeof(TArg) == typeof(MessageCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.Message => new MessageCommandProperties() as TArg,
+                true when (typeof(TArg) == typeof(UserCommandProperties) || isBaseClass) && command.Type == ApplicationCommandType.User => new UserCommandProperties() as TArg,
+                _ => throw new InvalidOperationException($"Cannot modify application command of type {command.Type} with the parameter type {typeof(TArg).FullName}"),
+            };
         }
 
         public static Task<ApplicationCommand> ModifyGlobalCommand<TArg>(BaseDiscordClient client, IApplicationCommand command,
