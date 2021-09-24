@@ -95,9 +95,7 @@ namespace Discord.WebSocket
                     stickerModel.Type == Type &&
                     stickerModel.SortValue == SortOrder &&
                     stickerModel.Available == Available &&
-                    (stickerModel.Tags.IsSpecified ?
-                        stickerModel.Tags.Value == string.Join(", ", Tags) :
-                        true);
+                    (!stickerModel.Tags.IsSpecified || stickerModel.Tags.Value == string.Join(", ", Tags));
             }
             else
                 return base.Equals(obj);
