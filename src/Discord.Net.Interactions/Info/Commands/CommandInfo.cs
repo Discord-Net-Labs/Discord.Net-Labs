@@ -138,37 +138,29 @@ namespace Discord.Interactions
         {
             services = services ?? EmptyServiceProvider.Instance;
 
-            using(var scope = services.CreateScope())
+            try
             {
-                var result = await CheckPreconditionsAsync(context, scope.ServiceProvider).ConfigureAwait(false);
-                if (!result.IsSuccess)
+                switch (RunMode)
                 {
-                    await InvokeModuleEvent(context, result).ConfigureAwait(false);
-                    return result;
-                }
-
-                try
-                {
-                    switch (RunMode)
-                    {
-                        case RunMode.Sync:
+                    case RunMode.Sync:
+                        using(var scope = services.CreateScope())
                             return await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
-                        case RunMode.Async:
-                            _ = Task.Run(async ( ) =>
-                            {
+                    case RunMode.Async:
+                        _ = Task.Run(async ( ) =>
+                        {
+                            using(var scope = services.CreateScope())
                                 await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
-                            });
-                            break;
-                        default:
-                            throw new InvalidOperationException($"RunMode {RunMode} is not supported.");
-                    }
+                        });
+                        break;
+                    default:
+                        throw new InvalidOperationException($"RunMode {RunMode} is not supported.");
+                }
 
-                    return ExecuteResult.FromSuccess();
-                }
-                catch (Exception ex)
-                {
-                    return ExecuteResult.FromError(ex);
-                }
+                return ExecuteResult.FromSuccess();
+            }
+            catch (Exception ex)
+            {
+                return ExecuteResult.FromError(ex);
             }
         }
 
@@ -178,6 +170,13 @@ namespace Discord.Interactions
 
             try
             {
+                var preconditionResult = await CheckPreconditionsAsync(context, services).ConfigureAwait(false);
+                if (!preconditionResult.IsSuccess)
+                {
+                    await InvokeModuleEvent(context, preconditionResult).ConfigureAwait(false);
+                    return preconditionResult;
+                }
+
                 var task = _action(context, args, services, this);
 
                 if (task is Task<IResult> resultTask)
