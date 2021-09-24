@@ -116,7 +116,7 @@ namespace Discord.Commands
                         builder.AddAliases(alias.Aliases);
                         break;
                     case GroupAttribute group:
-                        builder.Name = builder.Name ?? group.Prefix;
+                        builder.Name ??= group.Prefix;
                         builder.Group = group.Prefix;
                         builder.AddAliases(group.Prefix);
                         break;
