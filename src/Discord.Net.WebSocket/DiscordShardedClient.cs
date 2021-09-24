@@ -105,12 +105,6 @@ namespace Discord.WebSocket
                     RegisterEvents(_shards[i], i == 0);
                 }
             }
-
-            ShardReady += (client) =>
-            {
-                ApiClient.CurrentUserId = CurrentUser?.Id;
-                return Task.CompletedTask;
-            };
         }
         private static API.DiscordSocketApiClient CreateApiClient(DiscordSocketConfig config)
             => new API.DiscordSocketApiClient(config.RestClientProvider, config.WebSocketProvider, DiscordRestConfig.UserAgent);

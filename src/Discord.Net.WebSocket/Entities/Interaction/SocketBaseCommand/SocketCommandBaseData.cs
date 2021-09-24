@@ -20,7 +20,7 @@ namespace Discord.WebSocket
 
         internal readonly SocketResolvableData<Model> ResolvableData;
 
-        public ApplicationCommandType Type { get; set; }
+        private ApplicationCommandType Type { get; set; }
 
         internal SocketCommandBaseData(DiscordSocketClient client, Model model, ulong? guildId)
             : base(client, model.Id)
