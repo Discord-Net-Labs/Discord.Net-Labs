@@ -158,7 +158,7 @@ namespace Discord.Commands
                     case CommandAttribute command:
                         builder.AddAliases(command.Text);
                         builder.RunMode = command.RunMode;
-                        builder.Name = builder.Name ?? command.Text;
+                        builder.Name ??= command.Text;
                         builder.IgnoreExtraArgs = command.IgnoreExtraArgs ?? service._ignoreExtraArgs;
                         break;
                     case NameAttribute name:
