@@ -1,0 +1,1376 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Discord.Net.Interactions</name>
+    </assembly>
+    <members>
+        <member name="T:Discord.Interactions.ChoiceAttribute">
+            <summary>
+            Add a pre-determined argument value to a command parameter
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ChoiceAttribute.Name">
+            <summary>
+            Name of the choice
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ChoiceAttribute.Type">
+            <summary>
+            Type of this choice
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ChoiceAttribute.Value">
+            <summary>
+            Value that will be used whenever this choice is selected
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.ChoiceAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Create a parameter choice with type <see cref="F:Discord.Interactions.SlashCommandChoiceType.String"/>
+            </summary>
+            <param name="name">Name of the choice</param>
+            <param name="value">Predefined value of the choice</param>
+        </member>
+        <member name="M:Discord.Interactions.ChoiceAttribute.#ctor(System.String,System.Int32)">
+            <summary>
+            Create a parameter choice with type <see cref="F:Discord.Interactions.SlashCommandChoiceType.Integer"/>
+            </summary>
+            <param name="name">Name of the choice</param>
+            <param name="value">Predefined value of the choice</param>
+        </member>
+        <member name="M:Discord.Interactions.ChoiceAttribute.#ctor(System.String,System.Double)">
+            <summary>
+            Create a parameter choice with type <see cref="F:Discord.Interactions.SlashCommandChoiceType.Number"/>
+            </summary>
+            <param name="name">Name of the choice</param>
+            <param name="value">Predefined value of the choice</param>
+        </member>
+        <member name="T:Discord.Interactions.ComponentInteractionAttribute">
+            <summary>
+            Create a Message Component interaction handler, CustomId represents
+            the CustomId of the Message Component that will be handled
+            </summary>
+            <remarks>
+            This will be affected by <see cref="T:Discord.Interactions.GroupAttribute"/>.
+            CustomID supports a Wild Card pattern where you can use the <see cref="P:Discord.Interactions.InteractionServiceConfig.WildCardExpression"/> to match a set of CustomIDs
+            </remarks>
+        </member>
+        <member name="P:Discord.Interactions.ComponentInteractionAttribute.CustomId">
+            <summary>
+            String to compare the Message Component CustomIDs with
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ComponentInteractionAttribute.IgnoreGroupNames">
+            <summary>
+            If <see langword="true"/> <see cref="T:Discord.Interactions.GroupAttribute"/>s will be ignored while creating this command and this method will be treated as a top level command
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.ComponentInteractionAttribute.#ctor(System.String)">
+            <summary>
+            Create a command for interaction handling
+            </summary>
+            <param name="customId">String to compare the Message Component CustomIDs with</param>
+        </member>
+        <member name="T:Discord.Interactions.ContextCommandAttribute">
+            <summary>
+            Base attribute for creating a Context Commands
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ContextCommandAttribute.Name">
+            <summary>
+            Name of this context command
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ContextCommandAttribute.CommandType">
+            <summary>
+            Get the type of this context command
+            </summary>
+        </member>
+        <member name="T:Discord.Interactions.MessageCommandAttribute">
+            <summary>
+            Use to create an Message Context Command.
+            </summary>
+            <remarks>
+            Not affected by the <see cref="T:Discord.Interactions.GroupAttribute"/>
+            </remarks>
+        </member>
+        <member name="M:Discord.Interactions.MessageCommandAttribute.#ctor(System.String)">
+            <summary>
+            Register a method as a Message Context Command
+            </summary>
+            <param name="name">Name of the context command</param>
+        </member>
+        <member name="T:Discord.Interactions.SlashCommandAttribute">
+            <summary>
+            Use to create an Application Command.
+            </summary>
+            /// <remarks>
+            Can be used alongside with <see cref="T:Discord.Interactions.GroupAttribute"/> to create nested Discord commands
+            </remarks>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandAttribute.Name">
+            <summary>
+            Name of the Slash Command
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandAttribute.Description">
+            <summary>
+            Description of the Slash Command
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandAttribute.CommandType">
+            <summary>
+            Get the command type of this Slash Command
+            </summary>
+            <remarks>
+            Will always be <see cref="F:Discord.ApplicationCommandType.Slash"/>
+            </remarks>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandAttribute.IgnoreGroupNames">
+            <summary>
+            If <see langword="true"/>, <see cref="T:Discord.Interactions.GroupAttribute"/>s will be ignored while creating this command and this method will be treated as a top level command
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.SlashCommandAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Register a method as a Slash Command
+            </summary>
+            <param name="name">Name of the command</param>
+            <param name="description">Description of the command</param>
+        </member>
+        <member name="T:Discord.Interactions.UserCommandAttribute">
+            <summary>
+            Use to create an User Context Command.
+            </summary>
+            <remarks>
+            Not affected by the <see cref="T:Discord.Interactions.GroupAttribute"/>
+            </remarks>
+        </member>
+        <member name="M:Discord.Interactions.UserCommandAttribute.#ctor(System.String)">
+            <summary>
+            Register a command as a User Context Command
+            </summary>
+            <param name="name">Name of this context command</param>
+        </member>
+        <member name="T:Discord.Interactions.DefaultPermissionAttribute">
+            <summary>
+            Set the "Default Permission" property of an Application Command
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.DefaultPermissionAttribute.Allow">
+            <summary>
+            Whether the users are allowed to use a Slash Command by default or not
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.DefaultPermissionAttribute.#ctor(System.Boolean)">
+            <summary>
+            Set the default permission of a Slash Command
+            </summary>
+            <param name="allow"><see cref="!:true"/> if the users are allowed to use this command</param>
+        </member>
+        <member name="T:Discord.Interactions.DontAutoRegisterAttribute">
+            <summary>
+            <see cref="T:Discord.Interactions.InteractionModuleBase`1"/>s with this attribute will not be registered by the <see cref="M:Discord.Interactions.InteractionService.RegisterCommandsGloballyAsync(System.Boolean)"/> or
+            <see cref="M:Discord.Interactions.InteractionService.RegisterCommandsToGuildAsync(System.UInt64,System.Boolean)"/>
+            </summary>
+        </member>
+        <member name="T:Discord.Interactions.GroupAttribute">
+            <summary>
+            Create nested Application Commands by marking the module as a command group
+            </summary>
+            <remarks>
+            Groups dont apply to <see cref="T:Discord.Interactions.ContextCommandAttribute"/> commands. 
+            </remarks>
+        </member>
+        <member name="P:Discord.Interactions.GroupAttribute.Name">
+            <summary>
+            Name of the group
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.GroupAttribute.Description">
+            <summary>
+            Description of the group
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.GroupAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Initialize a command group with the provided name and description
+            </summary>
+            <param name="name">Name of the group</param>
+            <param name="description">Description of the group</param>
+        </member>
+        <member name="T:Discord.Interactions.ParameterPreconditionAttribute">
+            <summary>
+                Requires the parameter to pass the specified precondition before execution can begin.
+            </summary>
+            <seealso cref="T:Discord.Interactions.PreconditionAttribute"/>
+        </member>
+        <member name="P:Discord.Interactions.ParameterPreconditionAttribute.ErrorMessage">
+            <summary>
+            When overridden in a derived class, uses the supplied string
+            as the error message if the precondition doesn't pass.
+            Setting this for a class that doesn't override
+            this property is a no-op.
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.ParameterPreconditionAttribute.CheckRequirementsAsync(Discord.IInteractionCommandContext,Discord.Interactions.IParameterInfo,System.IServiceProvider)">
+            <summary>
+                Checks whether the condition is met before execution of the command.
+            </summary>
+            <param name="context">The context of the command.</param>
+            <param name="parameter">The parameter of the command being checked against.</param>
+            <param name="value">The raw value of the parameter.</param>
+            <param name="services">The service collection used for dependency injection.</param>
+        </member>
+        <member name="T:Discord.Interactions.PreconditionAttribute">
+            <summary>
+                Requires the module or class to pass the specified precondition before execution can begin.
+            </summary>
+            <seealso cref="T:Discord.Interactions.ParameterPreconditionAttribute"/>
+        </member>
+        <member name="P:Discord.Interactions.PreconditionAttribute.Group">
+            <summary>
+                Specifies a group that this precondition belongs to.
+            </summary>
+            <remarks>
+                <see cref="T:Discord.Preconditions" /> of the same group require only one of the preconditions to pass in order to
+                be successful (A || B). Specifying <see cref="P:Discord.Interactions.PreconditionAttribute.Group" /> = <c>null</c> or not at all will
+                require *all* preconditions to pass, just like normal (A &amp;&amp; B).
+            </remarks>
+        </member>
+        <member name="P:Discord.Interactions.PreconditionAttribute.ErrorMessage">
+            <summary>
+            When overridden in a derived class, uses the supplied string
+            as the error message if the precondition doesn't pass.
+            Setting this for a class that doesn't override
+            this property is a no-op.
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.PreconditionAttribute.CheckRequirementsAsync(Discord.IInteractionCommandContext,Discord.Interactions.ICommandInfo,System.IServiceProvider)">
+            <summary>
+                Checks if the <paramref name="command"/> has the sufficient permission to be executed.
+            </summary>
+            <param name="context">The context of the command.</param>
+            <param name="commandInfo">The command being executed.</param>
+            <param name="services">The service collection used for dependency injection.</param>
+        </member>
+        <member name="T:Discord.Interactions.SummaryAttribute">
+            <summary>
+            Change the default name and description of an Application Command parameter
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.SummaryAttribute.Name">
+            <summary>
+            Custom name of the parameter
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.SummaryAttribute.Description">
+            <summary>
+            Custom description of the parameter
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.SummaryAttribute.#ctor(System.String,System.String)">
+            <summary>
+            Modify the default name and description values of a Slash Command parameter
+            </summary>
+            <param name="name">Name of the parameter</param>
+            <param name="description">Description of the parameter</param>
+        </member>
+        <member name="T:Discord.Interactions.ParameterChoice">
+            <summary>
+            Represents a Slash Command parameter choice
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ParameterChoice.Name">
+            <summary>
+            Name of the choice
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ParameterChoice.Value">
+            <summary>
+            The underlying value of the choice
+            </summary>
+        </member>
+        <member name="T:Discord.Interactions.SlashCommandChoiceType">
+            <summary>
+            Supported types of pre-defined parameter choices
+            </summary>
+        </member>
+        <member name="F:Discord.Interactions.SlashCommandChoiceType.String">
+            <summary>
+            Discord type for <see cref="T:System.String"/>
+            </summary>
+        </member>
+        <member name="F:Discord.Interactions.SlashCommandChoiceType.Integer">
+            <summary>
+            Discord type for <see cref="T:System.Int32"/>
+            </summary>
+        </member>
+        <member name="F:Discord.Interactions.SlashCommandChoiceType.Number">
+            <summary>
+            Discord type for <see cref="T:System.Double"/>
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.IInteractionModuleBase.BeforeExecute(Discord.Interactions.ICommandInfo)">
+            <summary>
+            Method body to be executed before executing an application command
+            </summary>
+            <param name="command">Command information related to the Discord Application Command</param>
+        </member>
+        <member name="M:Discord.Interactions.IInteractionModuleBase.AfterExecute(Discord.Interactions.ICommandInfo)">
+            <summary>
+            Method body to be executed after an application command execution
+            </summary>
+            <param name="command">Command information related to the Discord Application Command</param>
+        </member>
+        <member name="M:Discord.Interactions.IInteractionModuleBase.OnModuleBuilding(Discord.Interactions.InteractionService,Discord.Interactions.ModuleInfo)">
+            <summary>
+            Method body to be executed before the derived module is built
+            </summary>
+            <param name="commandService">Command Service instance that built this module</param>
+            <param name="module">Info class of this module</param>
+        </member>
+        <member name="T:Discord.Interactions.ExecuteCallback">
+            <summary>
+            Represents a cached method execution delegate
+            </summary>
+            <param name="context">Execution context that will be injected to the module class</param>
+            <param name="args">Method arguments array</param>
+            <param name="serviceProvider">Service collection for initializing the module</param>
+            <param name="commandInfo">Command info class of the executed method</param>
+            <returns>A task representing the execution operation</returns>
+        </member>
+        <member name="T:Discord.Interactions.CommandInfo`1">
+            <summary>
+            The base information class for <see cref="T:Discord.Interactions.InteractionService"/> commands
+            </summary>
+            <typeparam name="TParameter">The type of <see cref="T:Discord.Interactions.IParameterInfo"/> that is used by this command type</typeparam>
+        </member>
+        <member name="P:Discord.Interactions.CommandInfo`1.Module">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandInfo`1.CommandService">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandInfo`1.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandInfo`1.MethodName">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandInfo`1.IgnoreGroupNames">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandInfo`1.SupportsWildCards">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandInfo`1.IsTopLevelCommand">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandInfo`1.RunMode">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandInfo`1.Attributes">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandInfo`1.Preconditions">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandInfo`1.Parameters">
+            <inheritdoc cref="P:Discord.Interactions.ICommandInfo.Parameters"/>
+        </member>
+        <member name="P:Discord.Interactions.CommandInfo`1.Discord#Interactions#ICommandInfo#Parameters">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.CommandInfo`1.ExecuteAsync(Discord.IInteractionCommandContext,System.IServiceProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.CommandInfo`1.CheckPreconditionsAsync(Discord.IInteractionCommandContext,System.IServiceProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Interactions.ComponentCommandInfo">
+            <summary>
+            Porvides the information of a Interaction handler
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ComponentCommandInfo.Parameters">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.ComponentCommandInfo.SupportsWildCards">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.ComponentCommandInfo.ExecuteAsync(Discord.IInteractionCommandContext,System.IServiceProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.ComponentCommandInfo.ExecuteAsync(Discord.IInteractionCommandContext,System.IServiceProvider,System.String[])">
+            <summary>
+            Execute this command using dependency injection
+            </summary>
+            <param name="context">Context that will be injected to the <see cref="T:Discord.Interactions.InteractionModuleBase`1"/></param>
+            <param name="services">Services that will be used while initializing the <see cref="T:Discord.Interactions.InteractionModuleBase`1"/></param>
+            <param name="additionalArgs">Provide additional string parameters to the method along with the auto generated parameters</param>
+            <returns>A task representing the asyncronous command execution process</returns>
+        </member>
+        <member name="M:Discord.Interactions.ComponentCommandInfo.ExecuteAsync(Discord.IInteractionCommandContext,System.Collections.Generic.IEnumerable{Discord.Interactions.CommandParameterInfo},System.Collections.Generic.IEnumerable{System.String},System.IServiceProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Interactions.ContextCommandInfo">
+            <summary>
+            Base information class for attribute based context command handlers
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ContextCommandInfo.CommandType">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.ContextCommandInfo.DefaultPermission">
+            <summary>
+            Get the initial value of this commands default permission
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ContextCommandInfo.SupportsWildCards">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.ContextCommandInfo.InvokeModuleEvent(Discord.IInteractionCommandContext,Discord.Interactions.IResult)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Interactions.MessageCommandInfo">
+            <summary>
+            Represents the information class of an attribute based method for command type <see cref="F:Discord.ApplicationCommandType.Message"/>
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.MessageCommandInfo.ExecuteAsync(Discord.IInteractionCommandContext,System.IServiceProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.MessageCommandInfo.GetLogString(Discord.IInteractionCommandContext)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Interactions.UserCommandInfo">
+            <summary>
+            Represents the information class of an attribute based method for command type <see cref="F:Discord.ApplicationCommandType.User"/>
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.UserCommandInfo.ExecuteAsync(Discord.IInteractionCommandContext,System.IServiceProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.UserCommandInfo.GetLogString(Discord.IInteractionCommandContext)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Interactions.SlashCommandInfo">
+            <summary>
+            Provides the information of a Slash Command
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandInfo.Description">
+            <summary>
+            The command description that will be displayed on Discord
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandInfo.CommandType">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandInfo.DefaultPermission">
+            <summary>
+            Whether this command is executable by default or not
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandInfo.SupportsWildCards">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.SlashCommandInfo.ExecuteAsync(Discord.IInteractionCommandContext,System.IServiceProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Interactions.IApplicationCommandInfo">
+            <summary>
+            Represents a <see cref="T:Discord.Interactions.InteractionService"/> command that can be registered to Discord
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IApplicationCommandInfo.Name">
+            <summary>
+            Get the name of this command
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IApplicationCommandInfo.CommandType">
+            <summary>
+            Get the type of this command
+            </summary>
+        </member>
+        <member name="T:Discord.Interactions.ICommandInfo">
+            <summary>
+            Represent a command information object that can be executed
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ICommandInfo.Name">
+            <summary>
+            Name of the command
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ICommandInfo.MethodName">
+            <summary>
+            Name of the command handler method
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ICommandInfo.IgnoreGroupNames">
+            <summary>
+            If true, this command will be registered and executed as a standalone command, unaffected by the <see cref="T:Discord.Interactions.GroupAttribute"/>s of its declaring types
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ICommandInfo.SupportsWildCards">
+            <summary>
+            Get whether this command type supports wild card pattern
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ICommandInfo.IsTopLevelCommand">
+            <summary>
+            <see langword="true"/> if this command is a top level command and has not parent module with a Group name
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ICommandInfo.Module">
+            <summary>
+            Module the method belongs to
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ICommandInfo.CommandService">
+            <summary>
+            Get the the underlying command service
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ICommandInfo.RunMode">
+            <summary>
+            Get the <see cref="P:Discord.Interactions.ICommandInfo.RunMode"/> that will be used by this command
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ICommandInfo.Attributes">
+            <summary>
+            Get a collection of the attributes of this command
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ICommandInfo.Preconditions">
+            <summary>
+            Get a collection of the preconditions of this command
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ICommandInfo.Parameters">
+            <summary>
+            Get a collection of the parameters of this command
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.ICommandInfo.ExecuteAsync(Discord.IInteractionCommandContext,System.IServiceProvider)">
+            <summary>
+            Executes the command with the provided context
+            </summary>
+            <param name="context">Context of the command</param>
+            <param name="services">Dependencies that will be used to create the module instance</param>
+            <returns>A task representing the execution process with a <see cref="T:Discord.Interactions.IResult"/> result</returns>
+        </member>
+        <member name="M:Discord.Interactions.ICommandInfo.CheckPreconditionsAsync(Discord.IInteractionCommandContext,System.IServiceProvider)">
+            <summary>
+            Check if an execution context meets the command precondition requirements
+            </summary>
+            <param name="context">The execution context</param>
+            <param name="services">The service collection that is used for dependency injection</param>
+            <returns>A task representing the precondition checking process with a <see cref="T:Discord.Interactions.PreconditionResult"/> result</returns>
+        </member>
+        <member name="T:Discord.Interactions.IParameterInfo">
+            <summary>
+            Represents a <see cref="T:Discord.Interactions.ICommandInfo"/> parameter
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IParameterInfo.Command">
+            <summary>
+            Command this paramter belongs to
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IParameterInfo.Name">
+            <summary>
+            Get the name of this parameter
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IParameterInfo.ParameterType">
+            <summary>
+            Type of this parameter
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IParameterInfo.IsRequired">
+            <summary>
+            Whether this parameter is required or not
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IParameterInfo.IsParameterArray">
+            <summary>
+            Whether this parameter is marked with a <see langword="params"/> keyword
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IParameterInfo.DefaultValue">
+            <summary>
+            Default value of this parameter if the parameter is optional
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IParameterInfo.Attributes">
+            <summary>
+            Get a list of the attributes this parameter has
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IParameterInfo.Preconditions">
+            <summary>
+            Get a list of the preconditions this parameter has
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.IParameterInfo.CheckPreconditionsAsync(Discord.IInteractionCommandContext,System.IServiceProvider)">
+            <summary>
+            Check if an execution context meets the parameter precondition requirements
+            </summary>
+            <param name="context">The execution context</param>
+            <param name="services">The service collection that is used for dependency injection</param>
+            <returns>A task representing the precondition checking process with a <see cref="T:Discord.Interactions.PreconditionResult"/> result</returns>
+        </member>
+        <member name="T:Discord.Interactions.ModuleInfo">
+            <summary>
+            Contains the information of a Slash command module
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.CommandService">
+            <summary>
+            Command service this module belongs to
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.Name">
+            <summary>
+            Get the name of this module class
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.SlashGroupName">
+            <summary>
+            Get the name of this module that will be displayed on Discord
+            </summary>
+            <remarks>
+            This value may be missing if the commands are registered as standalone
+            </remarks>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.IsSlashGroup">
+            <summary>
+            Whether this module has a <see cref="T:Discord.Interactions.GroupAttribute"/> or not
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.Description">
+            <summary>
+            Description of this module
+            </summary>
+            <remarks>
+            This value may be missing if the commands are registered as standalone
+            </remarks>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.DefaultPermission">
+            <summary>
+            Check if the Application Command for this module can be executed by default
+            </summary>
+            <remarks>
+            If this module does not have a <see cref="T:Discord.Interactions.GroupAttribute"/> or it has a parent that does, this property will be unaffective
+            </remarks>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.SubModules">
+            <summary>
+            Get the collection of Sub Modules of this module
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.SlashCommands">
+            <summary>
+            Get the information list of the Slash Commands that belong to this module
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.ContextCommands">
+            <summary>
+            Get the information list of the Context Commands that belong to this module
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.ComponentCommands">
+            <summary>
+            Get the information list of the Message Component handlers that belong to this module
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.Parent">
+            <summary>
+            Get the declaring type of this module, if this is a Sub Module
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.IsSubModule">
+            <summary>
+            <see langword="true"/> if this module is declared under another <see cref="T:Discord.Interactions.InteractionModuleBase`1"/>
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.Attributes">
+            <summary>
+            Get a collection of the attributes of this module
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.Preconditions">
+            <summary>
+            Get a collection of the preconditions of this module
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.IsTopLevelGroup">
+            <summary>
+            <see langword="true"/> if this module has a valid <see cref="T:Discord.Interactions.GroupAttribute"/> and has no parent with a <see cref="T:Discord.Interactions.GroupAttribute"/>
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ModuleInfo.DontAutoRegister">
+            <summary>
+            If <see langword="true"/>, this module will not be registered whenever <see cref="M:Discord.Interactions.InteractionService.RegisterCommandsGloballyAsync(System.Boolean)"/>
+            or <see cref="M:Discord.Interactions.InteractionService.RegisterCommandsToGuildAsync(System.UInt64,System.Boolean)"/> is used
+            </summary>
+        </member>
+        <member name="T:Discord.Interactions.CommandParameterInfo">
+            <summary>
+            Represents the base parameter info class for <see cref="T:Discord.Interactions.InteractionService"/> commands
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.CommandParameterInfo.Command">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandParameterInfo.Name">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandParameterInfo.ParameterType">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandParameterInfo.IsRequired">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandParameterInfo.IsParameterArray">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandParameterInfo.DefaultValue">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandParameterInfo.Attributes">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.CommandParameterInfo.Preconditions">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.CommandParameterInfo.CheckPreconditionsAsync(Discord.IInteractionCommandContext,System.IServiceProvider)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Interactions.SlashCommandParameterInfo">
+            <summary>
+            Represents an executable <see cref="T:Discord.Interactions.ICommandInfo"/> for a Slash Command
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandParameterInfo.Command">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandParameterInfo.Description">
+            <summary>
+            Description of the Slash Command Parameter
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandParameterInfo.TypeConverter">
+            <summary>
+            <see cref="T:Discord.Interactions.TypeConverter`1"/> that will be used to convert the incoming <see cref="T:Discord.WebSocket.SocketSlashCommandDataOption"/> into <see cref="P:Discord.Interactions.CommandParameterInfo.ParameterType"/>
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandParameterInfo.DiscordOptionType">
+            <summary>
+            Discord option type this parameter represents
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.SlashCommandParameterInfo.Choices">
+            <summary>
+            Get the collection of the choices this parameter has
+            </summary>
+        </member>
+        <member name="T:Discord.Interactions.InteractionCommandContext">
+            <inheritdoc cref="T:Discord.IInteractionCommandContext"/>
+        </member>
+        <member name="P:Discord.Interactions.InteractionCommandContext.Client">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.InteractionCommandContext.Guild">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.InteractionCommandContext.Channel">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.InteractionCommandContext.User">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.InteractionCommandContext.Interaction">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.InteractionCommandContext.IsPrivate">
+            <summary>
+            Whether the origin channel of the Interaction is a private channel
+            </summary>
+        </member>
+        <member name="T:Discord.Interactions.InteractionCommandError">
+            <summary>
+            Error types for the <see cref="T:Discord.Interactions.InteractionService"/> executables
+            </summary>
+        </member>
+        <member name="F:Discord.Interactions.InteractionCommandError.UnknownCommand">
+            <summary>
+            Thrown when no registered command is found for a given input
+            </summary>
+        </member>
+        <member name="F:Discord.Interactions.InteractionCommandError.ParseFailed">
+            <summary>
+            Thrown when a Discord Application Command fails to be parsed from an <see cref="T:Discord.Interactions.ICommandInfo"/>
+            </summary>
+        </member>
+        <member name="F:Discord.Interactions.InteractionCommandError.BadArgs">
+            <summary>
+            Thrown when the provided command arguments does not match the method arguments
+            </summary>
+        </member>
+        <member name="F:Discord.Interactions.InteractionCommandError.Exception">
+            <summary>
+            Thrown whenever an exception occurs during the command execution process
+            </summary>
+        </member>
+        <member name="F:Discord.Interactions.InteractionCommandError.Unsuccessful">
+            <summary>
+            Thrown when the command is not successfully executed on runtime.
+            </summary>
+        </member>
+        <member name="T:Discord.Interactions.InteractionModuleBase`1">
+            <summary>
+            Base class for any Slash command handling modules
+            </summary>
+            <typeparam name="T">Type of slash command context to be injected into the module</typeparam>
+        </member>
+        <member name="P:Discord.Interactions.InteractionModuleBase`1.Context">
+            <summary>
+            Command execution context for an user interaction.
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.InteractionModuleBase`1.AfterExecute(Discord.Interactions.ICommandInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.InteractionModuleBase`1.BeforeExecute(Discord.Interactions.ICommandInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.InteractionModuleBase`1.OnModuleBuilding(Discord.Interactions.InteractionService,Discord.Interactions.ModuleInfo)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.InteractionModuleBase`1.RespondAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
+            <inheritdoc cref="M:Discord.IDiscordInteraction.RespondAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)"/>
+        </member>
+        <member name="M:Discord.Interactions.InteractionModuleBase`1.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
+            <inheritdoc cref="M:Discord.IDiscordInteraction.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)"/>
+        </member>
+        <member name="M:Discord.Interactions.InteractionModuleBase`1.ReplyAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)">
+            <inheritdoc cref="M:Discord.IMessageChannel.SendMessageAsync(System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent)"/>
+        </member>
+        <member name="M:Discord.Interactions.InteractionModuleBase`1.DeleteOriginalResponseAsync">
+            <inheritdoc cref="M:Discord.IDeletable.DeleteAsync(Discord.RequestOptions)"/>
+        </member>
+        <member name="T:Discord.Interactions.InteractionService">
+            <summary>
+            Provides the framework for self registering and self-executing Discord Application Commands
+            </summary>
+        </member>
+        <member name="E:Discord.Interactions.InteractionService.Log">
+            <summary>
+            Occurs when a Slash Command related information is recieved
+            </summary>
+        </member>
+        <member name="E:Discord.Interactions.InteractionService.SlashCommandExecuted">
+            <summary>
+            Occurs when a Slash Command is executed
+            </summary>
+        </member>
+        <member name="E:Discord.Interactions.InteractionService.ContextCommandExecuted">
+            <summary>
+            Occurs when a Context Command is executed
+            </summary>
+        </member>
+        <member name="E:Discord.Interactions.InteractionService.ComponentCommandExecuted">
+            <summary>
+            Occurs when a Message Component command is executed
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.InteractionService.Modules">
+            <summary>
+            Represents all of the modules that are loaded in the <see cref="T:Discord.Interactions.InteractionService"/>
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.InteractionService.SlashCommands">
+            <summary>
+            Get all of the executeable Slash Commands that are loaded in the <see cref="T:Discord.Interactions.InteractionService"/> modules
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.InteractionService.ContextCommands">
+            <summary>
+            Get all of the executeable Context Commands that are loaded in the <see cref="T:Discord.Interactions.InteractionService"/> modules
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.InteractionService.ComponentCommands">
+            <summary>
+            Get all of the Interaction handlers that are loaded in the <see cref="T:Discord.Interactions.InteractionService"/>
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.InteractionService.Client">
+            <summary>
+            Client that the Application Commands will be registered for
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.#ctor(Discord.WebSocket.BaseSocketClient)">
+            <summary>
+            Initialize a <see cref="T:Discord.Interactions.InteractionService"/> with the default configurations
+            </summary>
+            <param name="discord">The client that will be used to register commands</param>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.#ctor(Discord.WebSocket.BaseSocketClient,Discord.Interactions.InteractionServiceConfig)">
+            <summary>
+            Initialize a <see cref="T:Discord.Interactions.InteractionService"/> with configurations from a provided <see cref="T:Discord.Interactions.InteractionServiceConfig"/>
+            </summary>
+            <param name="discord">The client that will be used to register commands</param>
+            <param name="config">The configuration class</param>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.AddModulesAsync(System.Reflection.Assembly,System.IServiceProvider)">
+            <summary>
+            Discover and load all of the <see cref="T:Discord.Interactions.InteractionModuleBase`1"/>s from a given assembly
+            </summary>
+            <param name="assembly"><see cref="T:System.Reflection.Assembly"/> the command modules are defined in</param>
+            <param name="services"><see cref="T:System.IServiceProvider"/> to be used when instantiating a command module</param>
+            <returns>Module information for the <see cref="T:Discord.Interactions.InteractionModuleBase`1"/> types that are loaded to <see cref="T:Discord.Interactions.InteractionService"/></returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.AddModuleAsync``1(System.IServiceProvider)">
+            <summary>
+            Add a command module manually to the command service
+            </summary>
+            <typeparam name="T">Type of the module</typeparam>
+            <param name="services">Service provider that will be used to build this module</param>
+            <returns>A task representing the module loading process</returns>
+            <exception cref="T:System.ArgumentException">Thrown when a module that is already present in the command service is trying to be added</exception>
+            <exception cref="T:System.InvalidOperationException">Thrown when the <typeparamref name="T"/> is not a valid module definition</exception>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.RegisterCommandsToGuildAsync(System.UInt64,System.Boolean)">
+            <summary>
+            Register/update the Application Commands to Discord
+            </summary>
+            <param name="guildId">The Id that belongs to the guild, the commands will be registered to</param>
+            <param name="deleteMissing">If true, delete all of the commands that are not registered in the <see cref="T:Discord.Interactions.InteractionService"/></param>
+            <returns>A task representing the command registration process, with a collection of <see cref="T:Discord.Rest.RestGuildCommand"/> containing the
+            commands that are currently registered to the provided guild as its result.
+            </returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.RegisterCommandsGloballyAsync(System.Boolean)">
+            <summary>
+            Register/update the Application Commands to Discord
+            </summary>
+            <param name="deleteMissing">If true, delete all of the commands that are not registered in the <see cref="T:Discord.Interactions.InteractionService"/></param>
+            <returns>A task representing the command registration process, with a collection of <see cref="T:Discord.Rest.RestGlobalCommand"/> containing the
+            global commands that are currently registered to the Discord
+            </returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.AddCommandsToGuildAsync(Discord.IGuild,Discord.Interactions.IApplicationCommandInfo[])">
+            <summary>
+            Register a set of commands as "Guild Commands" to a guild
+            </summary>
+            <remarks>
+            Commands will be registered as standalone commands, if you want the <see cref="T:Discord.Interactions.GroupAttribute"/> to take effect,
+            use <see cref="!:AddModulesToGuild(IGuild, ModuleInfo[])"/>
+            </remarks>
+            <param name="guild">Guild the commands will be registered to</param>
+            <param name="commands">Commands that will be registered</param>
+            <returns>A task representing the command registration process, with a collection of <see cref="T:Discord.Rest.RestGuildCommand"/> containing the
+            commands that are currently registered to the provided guild as its result.
+            </returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.AddModulesToGuildAsync(Discord.IGuild,Discord.Interactions.ModuleInfo[])">
+            <summary>
+            Register a set of modules as "Guild Commands" to a guild
+            </summary>
+            <param name="guild">Guild the commands will be registered to</param>
+            <param name="modules">Modules that will be registered</param>
+            <returns>A task representing the command registration process, with a collection of <see cref="T:Discord.Rest.RestGuildCommand"/> containing the
+            commands that are currently registered to the provided guild as its result.
+            </returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.RemoveModuleAsync(System.Type)">
+            <summary>
+            Remove a loaded module from <see cref="P:Discord.Interactions.InteractionService.Modules"/>
+            </summary>
+            <param name="type"><see cref="T:Discord.Interactions.InteractionModuleBase`1"/> that will be removed</param>
+            <returns></returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.ExecuteSlashCommandAsync(Discord.IInteractionCommandContext,System.String[],System.IServiceProvider)">
+            <summary>
+            Execute a slash command from a given <see cref="T:Discord.IInteractionCommandContext"/>
+            </summary>
+            <param name="context">A command context that will be used to execute the command, <see cref="P:Discord.IInteractionCommandContext.Interaction"/>
+            must be type of <see cref="T:Discord.WebSocket.SocketSlashCommand"/></param>
+            <param name="input">Command string that will be used to parse the <see cref="T:Discord.Interactions.SlashCommandInfo"/>. Use the
+            <see cref="M:Discord.WebSocket.WebSocketExtensions.GetCommandKeywords(Discord.WebSocket.SocketSlashCommand)"/> to get the input </param>
+            <param name="services">Services that will be injected into the declaring type</param>
+            <returns>A task representing the command execution process, with an <see cref="T:Discord.Interactions.IResult"/> containg the execution information as it result.</returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.ExecuteContextCommandAsync(Discord.IInteractionCommandContext,System.String,System.IServiceProvider)">
+            <summary>
+            Execute a context command from a given <see cref="T:Discord.IInteractionCommandContext"/>
+            </summary>
+            <param name="context">A command context that will be used to execute the command, <see cref="P:Discord.IInteractionCommandContext.Interaction"/>
+            must be type of <see cref="T:Discord.WebSocket.SocketUserCommand"/> or <see cref="T:Discord.WebSocket.SocketMessageCommand"/></param>
+            <param name="input">Command string that will be used to parse the <see cref="T:Discord.Interactions.SlashCommandInfo"/>.( In normal use, this should be equal to
+            <see cref="P:Discord.IDiscordInteractionData.Name"/> )</param>
+            <param name="services">Services that will be injected into the declaring type</param>
+            <returns>A task representing the command execution process, with an <see cref="T:Discord.Interactions.IResult"/> containg the execution information as it result.</returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.ExecuteContextCommandAsync(Discord.IInteractionCommandContext,System.String[],System.IServiceProvider)">
+            <summary>
+            Execute a context command from a given <see cref="T:Discord.IInteractionCommandContext"/>
+            </summary>
+            <param name="context">A command context that will be used to execute the command, <see cref="P:Discord.IInteractionCommandContext.Interaction"/>
+            must be type of <see cref="T:Discord.WebSocket.SocketUserCommand"/> or <see cref="T:Discord.WebSocket.SocketMessageCommand"/></param>
+            <param name="input">A collection of keywords that will be used for command traversel</param>
+            <param name="services">Services that will be injected into the declaring type</param>
+            <returns>A task representing the command execution process, with an <see cref="T:Discord.Interactions.IResult"/> containg the execution information as it result.</returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.ExecuteInteractionAsync(Discord.IInteractionCommandContext,System.String,System.IServiceProvider)">
+            <summary>
+            Execute a Message Component Interaction handler from a given <see cref="T:Discord.IInteractionCommandContext"/>
+            </summary>
+            <param name="context">A command context that will be used to execute the command, <see cref="P:Discord.IInteractionCommandContext.Interaction"/>
+            must be type of <see cref="T:Discord.WebSocket.SocketMessageComponent"/></param>
+            <param name="input">Command string that will be used to parse the <see cref="T:Discord.Interactions.SlashCommandInfo"/>.( In normal use, this should be equal to
+            <see cref="P:Discord.WebSocket.SocketMessageComponentData.CustomId"/> )</param>
+            <param name="services">Services that will be injected into the declaring type</param>
+            <returns>A task representing the command execution process, with an <see cref="T:Discord.Interactions.IResult"/> containg the execution information as it result.</returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.AddTypeConverter``1(Discord.Interactions.TypeConverter)">
+            <summary>
+            Add a concrete type <see cref="T:Discord.Interactions.TypeConverter"/> to the command service
+            </summary>
+            <typeparam name="T">The type this <see cref="T:Discord.Interactions.TypeConverter"/> will be used to handle</typeparam>
+            <param name="converter">The <see cref="T:Discord.Interactions.TypeConverter"/> instance</param>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.AddTypeConverter(System.Type,Discord.Interactions.TypeConverter)">
+            <summary>
+            Add a concrete type <see cref="T:Discord.Interactions.TypeConverter"/> to the command service
+            </summary>
+            <param name="type">The type this <see cref="T:Discord.Interactions.TypeConverter"/> will be used to handle</param>
+            <param name="converter">The <see cref="T:Discord.Interactions.TypeConverter"/> instance</param>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.AddGenericTypeConverter``1(System.Type)">
+            <summary>
+            Add a generic type <see cref="T:Discord.Interactions.TypeConverter`1"/> to the command service
+            </summary>
+            <param name="type"></param>
+            <typeparam name="TConverter"></typeparam>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.ModifySlashCommandPermissionsAsync(Discord.Interactions.ModuleInfo,Discord.IGuild,Discord.ApplicationCommandPermission[])">
+            <summary>
+            Modify the command permissions of the matching Discord Slash Command
+            </summary>
+            <param name="module">Module representing the top level Slash Command</param>
+            <param name="guild">Target guild</param>
+            <param name="permissions">Set of permissions to be modified</param>
+            <returns>The active command permissions after the modification</returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.ModifySlashCommandPermissionsAsync(Discord.Interactions.SlashCommandInfo,Discord.IGuild,Discord.ApplicationCommandPermission[])">
+            <summary>
+            Modify the command permissions of the matching Discord Slash Command
+            </summary>
+            <param name="command">Command representing the top level Slash Command</param>
+            <param name="guild">Target guild</param>
+            <param name="permissions">Set of permissions to be modified</param>
+            <returns>The active command permissions after the modification</returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.ModifyContextCommandPermissionsAsync(Discord.Interactions.ContextCommandInfo,Discord.IGuild,Discord.ApplicationCommandPermission[])">
+            <summary>
+            Modify the command permissions of the matching Discord Context Command
+            </summary>
+            <param name="command">Command representing the top level Context Command</param>
+            <param name="guild">Target guild</param>
+            <param name="permissions">Set of permissions to be modified</param>
+            <returns>The active command permissions after the modification</returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.GetSlashCommandInfo``1(System.String)">
+            <summary>
+            Get the created <see cref="T:Discord.Interactions.SlashCommandInfo"/> instance for a Slash Command handler
+            </summary>
+            <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="T:Discord.Interactions.InteractionModuleBase`1"/></typeparam>
+            <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
+            <returns>The loaded <see cref="T:Discord.Interactions.SlashCommandInfo"/> instance for this method</returns>
+            <exception cref="T:System.InvalidOperationException">The module is not registered to the command service or the slash command could not be found</exception>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.GetContextCommandInfo``1(System.String)">
+            <summary>
+            Get the created <see cref="T:Discord.Interactions.ContextCommandInfo"/> instance for a Context Command handler
+            </summary>
+            <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="T:Discord.Interactions.InteractionModuleBase`1"/></typeparam>
+            <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
+            <returns>The loaded <see cref="T:Discord.Interactions.ContextCommandInfo"/> instance for this method</returns>
+            <exception cref="T:System.InvalidOperationException">The module is not registered to the command service or the context command could not be found</exception>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.GetInteractionInfo``1(System.String)">
+            <summary>
+            Get the created <see cref="T:Discord.Interactions.ComponentCommandInfo"/> instance for a Message Component interaction handler
+            </summary>
+            <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="T:Discord.Interactions.InteractionModuleBase`1"/></typeparam>
+            <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
+            <returns>The loaded <see cref="T:Discord.Interactions.ComponentCommandInfo"/> instance for this method</returns>
+            <exception cref="T:System.InvalidOperationException">The module is not registered to the command service or the interaction could not be found</exception>
+        </member>
+        <member name="M:Discord.Interactions.InteractionService.GetModuleInfo``1">
+            <summary>
+            Get the created <see cref="T:Discord.Interactions.ModuleInfo"/> instance for a module type
+            </summary>
+            <typeparam name="TModule">Type of the module, must be a type of <see cref="T:Discord.Interactions.InteractionModuleBase`1"/></typeparam>
+            <returns>The loaded <see cref="T:Discord.Interactions.ModuleInfo"/> instance for this method</returns>
+        </member>
+        <member name="T:Discord.Interactions.InteractionServiceConfig">
+            <summary>
+            Holds the general information to be used while initializing <see cref="T:Discord.Interactions.InteractionCommandContext"/>
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.InteractionServiceConfig.LogLevel">
+            <summary>
+            Log severity for the logger
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.InteractionServiceConfig.RunMode">
+            <summary>
+            Run mode that will be used when executing the commands
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.InteractionServiceConfig.InteractionCustomIdDelimiters">
+            <summary>
+            Delimiters that will be used to seperate group names and the method name when a Message Component Interaction is recieved
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.InteractionServiceConfig.WildCardExpression">
+            <summary>
+            The string expression that will be treated as a wild card
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.InteractionServiceConfig.DeleteUnknownSlashCommandAck">
+            <summary>
+            Delete Slash Command acknowledgements if no Slash Command handler is found in the <see cref="T:Discord.Interactions.InteractionService"/>
+            </summary>
+        </member>
+        <member name="T:Discord.Interactions.ExecuteResult">
+            <summary>
+            Represents the result of a command execution operation
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ExecuteResult.Exception">
+            <summary>
+            Get the exception that caused the execution to fail, if the operation was not successful
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.ExecuteResult.Error">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.ExecuteResult.ErrorReason">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.ExecuteResult.IsSuccess">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Interactions.FetchResult">
+            <summary>
+            Represents the result of a Application Command fetch process from an <see cref="T:Discord.Interactions.ICommandInfo"/>
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.FetchResult.Command">
+            <summary>
+            Get the parsed application command if the operation was successful
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.FetchResult.Error">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.FetchResult.ErrorReason">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.FetchResult.IsSuccess">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Interactions.IResult">
+            <summary>
+            Represents an operation result
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IResult.Error">
+            <summary>
+            Type of the error that caused the process to fail
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IResult.ErrorReason">
+            <summary>
+            The reason of the error
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.IResult.IsSuccess">
+            <summary>
+            <see langword="true"/> if the operation was successful
+            </summary>
+        </member>
+        <member name="T:Discord.Interactions.PreconditionResult">
+            <summary>
+            The result type returned by a command precondition
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.PreconditionResult.Error">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.PreconditionResult.ErrorReason">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.PreconditionResult.IsSuccess">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Interactions.RuntimeResult">
+            <summary>
+            Represents the result returned by a command method
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.RuntimeResult.Error">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.RuntimeResult.ErrorReason">
+            <inheritdoc/>
+        </member>
+        <member name="P:Discord.Interactions.RuntimeResult.IsSuccess">
+            <inheritdoc/>
+        </member>
+        <member name="T:Discord.Interactions.TypeConverterResult">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.TypeConverterResult.Value">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.TypeConverterResult.Error">
+            <summary>
+            Type of the error that caused reading process to fail
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.TypeConverterResult.ErrorReason">
+            <summary>
+            The reason of the error
+            </summary>
+        </member>
+        <member name="P:Discord.Interactions.TypeConverterResult.IsSuccess">
+            <summary>
+            <see langword="true"/> if the option was read successfully
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.TypeConverterResult.FromSuccess(System.Object)">
+            <summary>
+            Create a <see cref="T:Discord.Interactions.IResult"/> indicating the read process was successful
+            </summary>
+            <param name="value">The resulting object</param>
+            <returns>The result instance</returns>
+        </member>
+        <member name="M:Discord.Interactions.TypeConverterResult.FromError(System.Exception)">
+            <summary>
+            Create a <see cref="T:Discord.Interactions.IResult"/> indicating the read process failed due to an error
+            </summary>
+            <param name="ex">The exception which caused the error</param>
+            <returns>The result instance</returns>
+        </member>
+        <member name="M:Discord.Interactions.TypeConverterResult.FromError(Discord.Interactions.InteractionCommandError,System.String)">
+            <summary>
+            Create a <see cref="T:Discord.Interactions.IResult"/> indicating the read process failed due to an error
+            </summary>
+            <param name="error">Type of the error</param>
+            <param name="reason">Error reason</param>
+            <returns>The result instance</returns>
+        </member>
+        <member name="T:Discord.Interactions.TypeConverter">
+            <summary>
+            Base class for creating TypeConverters. <see cref="T:Discord.Interactions.InteractionService"/> uses TypeConverters to interface with Slash Command parameters
+            </summary>
+        </member>
+        <member name="M:Discord.Interactions.TypeConverter.CanConvertTo(System.Type)">
+            <summary>
+            Will be used to search for alternative TypeConverters whenever the Command Service encounters an unknown parameter type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Discord.Interactions.TypeConverter.GetDiscordType">
+            <summary>
+            Will be used to get the Application Command Option type
+            </summary>
+            <returns>The option type</returns>
+        </member>
+        <member name="M:Discord.Interactions.TypeConverter.ReadAsync(Discord.IInteractionCommandContext,Discord.WebSocket.SocketSlashCommandDataOption,System.IServiceProvider)">
+            <summary>
+            Will be used to read the incoming payload before executing the method body
+            </summary>
+            <param name="context">Command exexution context</param>
+            <param name="option">Recieved option payload</param>
+            <param name="services">Service provider that will be used to initialize the command module</param>
+            <returns>The result of the read process</returns>
+        </member>
+        <member name="M:Discord.Interactions.TypeConverter.Write(Discord.ApplicationCommandOptionProperties)">
+            <summary>
+            Will be used to manipulate the outgoing command option, before the command gets registered to Discord
+            </summary>
+            <param name="properties"></param>
+        </member>
+        <member name="T:Discord.Interactions.TypeConverter`1">
+            <inheritdoc/>
+        </member>
+        <member name="M:Discord.Interactions.InteractionUtility.WaitForInteractionAsync(Discord.WebSocket.BaseSocketClient,System.TimeSpan,System.Predicate{Discord.WebSocket.SocketInteraction},System.Threading.CancellationToken)">
+            <summary>
+            Wait for an Interaction event for a given amount of time as an asynchronous opration
+            </summary>
+            <param name="client">Client that should be listened to for the <see cref="E:Discord.WebSocket.BaseSocketClient.InteractionCreated"/> event</param>
+            <param name="timeout">Timeout duration for this operation</param>
+            <param name="predicate">Delegate for cheking whether an Interaction meets the requirements</param>
+            <param name="cancellationToken">Token for canceling the wait operation</param>
+            <returns>
+            A Task representing the asyncronous waiting operation with a <see cref="T:Discord.IDiscordInteraction"/> result,
+            the result is null if the process timed out before receiving a valid Interaction.
+            </returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionUtility.WaitForMessageComponentAsync(Discord.WebSocket.BaseSocketClient,Discord.IInteractionCommandContext,System.TimeSpan,System.Boolean,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Wait for an Message Component Interaction event for a given amount of time as an asynchronous opration
+            </summary>
+            <param name="client">Client that should be listened to for the <see cref="E:Discord.WebSocket.BaseSocketClient.InteractionCreated"/> event</param>
+            <param name="ctx">Command context that will be used to determine the target user and the target channel</param>
+            <param name="timeout">Timeout duration for this operation</param>
+            <param name="sameUser">Wait for an interaction that is from the same user as in the <paramref name="ctx"/></param>
+            <param name="sameChannel">Wait for an interaction that is from the same channel as in the <paramref name="ctx"/></param>
+            <param name="cancellationToken">Token for canceling the wait operation</param>
+            <returns>
+            A Task representing the asyncronous waiting operation with a <see cref="T:Discord.IDiscordInteraction"/> result,
+            the result is null if the process timed out before receiving a valid Interaction.
+            </returns>
+        </member>
+        <member name="M:Discord.Interactions.InteractionUtility.ConfirmAsync(Discord.WebSocket.BaseSocketClient,Discord.IInteractionCommandContext,System.TimeSpan,System.String,System.Threading.CancellationToken)">
+            <summary>
+            Create a confirmation dialog and wait for user input asynchronously
+            </summary>
+            <param name="client">Client that should be listened to for the <see cref="E:Discord.WebSocket.BaseSocketClient.InteractionCreated"/> event</param>
+            <param name="ctx">Command context that will be used to determine the target user and the target channel</param>
+            <param name="timeout">Timeout duration of this operation</param>
+            <param name="message">Optional custom prompt message</param>
+            <param name="cancellationToken">Token for canceling the wait operation</param>
+            <returns>
+            A Task representing the asyncronous waiting operation with a <see cref="T:System.Boolean"/> result,
+            the result is <see cref="!:false"/> if the user declined the prompt or didnt answer in time, <see cref="!:true"/> if the user confirmed the prompt
+            </returns>
+        </member>
+        <member name="M:Discord.Interactions.ReflectionUtils`1.CreateLambdaBuilder(System.Reflection.TypeInfo,Discord.Interactions.InteractionService)">
+            <summary>
+            Create a type initializer using compiled lambda expressions
+            </summary>
+        </member>
+        <member name="M:Discord.WebSocket.WebSocketExtensions.GetCommandKeywords(Discord.WebSocket.SocketSlashCommand)">
+            <summary>
+            Get the name of the executed command and its parents in hierarchical order
+            </summary>
+            <param name="command"></param>
+            <returns>The name of the executed command and its parents in hierarchical order</returns>
+        </member>
+    </members>
+</doc>
