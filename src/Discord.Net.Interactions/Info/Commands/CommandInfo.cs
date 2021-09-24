@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -137,34 +138,37 @@ namespace Discord.Interactions
         {
             services = services ?? EmptyServiceProvider.Instance;
 
-            var result = await CheckPreconditionsAsync(context, services).ConfigureAwait(false);
-            if (!result.IsSuccess)
+            using(var scope = services.CreateScope())
             {
-                await InvokeModuleEvent(context, result).ConfigureAwait(false);
-                return result;
-            }
-
-            try
-            {
-                switch (RunMode)
+                var result = await CheckPreconditionsAsync(context, scope.ServiceProvider).ConfigureAwait(false);
+                if (!result.IsSuccess)
                 {
-                    case RunMode.Sync:
-                        return await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
-                    case RunMode.Async:
-                        _ = Task.Run(async ( ) =>
-                        {
-                            await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
-                        });
-                        break;
-                    default:
-                        throw new InvalidOperationException($"RunMode {RunMode} is not supported.");
+                    await InvokeModuleEvent(context, result).ConfigureAwait(false);
+                    return result;
                 }
 
-                return ExecuteResult.FromSuccess();
-            }
-            catch (Exception ex)
-            {
-                return ExecuteResult.FromError(ex);
+                try
+                {
+                    switch (RunMode)
+                    {
+                        case RunMode.Sync:
+                            return await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
+                        case RunMode.Async:
+                            _ = Task.Run(async ( ) =>
+                            {
+                                await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
+                            });
+                            break;
+                        default:
+                            throw new InvalidOperationException($"RunMode {RunMode} is not supported.");
+                    }
+
+                    return ExecuteResult.FromSuccess();
+                }
+                catch (Exception ex)
+                {
+                    return ExecuteResult.FromError(ex);
+                }
             }
         }
 
