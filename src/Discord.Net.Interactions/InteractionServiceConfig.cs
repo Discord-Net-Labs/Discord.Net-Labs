@@ -36,6 +36,9 @@ namespace Discord.Interactions
         /// </summary>
         public bool DeleteUnknownSlashCommandAck { get; set; } = true;
 
+        /// <summary>
+        ///     Use compiled lambda expressions to create module instances and execute commands. This method improves performance at the cost of memory
+        /// </summary>
         public bool UseCompiledLambda { get; set; } = false;
     }
 }

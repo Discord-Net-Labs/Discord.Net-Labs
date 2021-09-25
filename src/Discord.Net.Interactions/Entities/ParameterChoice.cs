@@ -8,7 +8,7 @@ namespace Discord.Interactions
         /// <summary>
         ///     Name of the choice
         /// </summary>
-        public string Name { get; set; }
+        public string Name { get; }
 
         /// <summary>
         ///     Value of the choice

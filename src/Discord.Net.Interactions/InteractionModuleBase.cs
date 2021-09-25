@@ -23,7 +23,7 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public virtual void OnModuleBuilding (InteractionService commandService, ModuleInfo module) { }
 
-        public void SetContext (IInteractionCommandContext context)
+        internal void SetContext (IInteractionCommandContext context)
         {
             var newValue = context as T;
             Context = newValue ?? throw new InvalidOperationException($"Invalid context type. Expected {typeof(T).Name}, got {context.GetType().Name}.");
@@ -39,7 +39,7 @@ namespace Discord.Interactions
             AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null) =>
             await Context.Interaction.FollowupAsync(text, embeds, isTTS, ephemeral, allowedMentions, options, component, embed).ConfigureAwait(false);
 
-        /// <inheritdoc cref="IMessageChannel.SendMessageAsync(string, bool, Embed, RequestOptions, AllowedMentions, MessageReference, MessageComponent)"/>
+        /// <inheritdoc cref="IMessageChannel.SendMessageAsync(string, bool, Embed, RequestOptions, AllowedMentions, MessageReference, MessageComponent, ISticker[], Embed[])"/>
         protected virtual async Task<IUserMessage> ReplyAsync (string text = null, bool isTTS = false, Embed embed = null, RequestOptions options = null,
             AllowedMentions allowedMentions = null, MessageReference messageReference = null, MessageComponent component = null) =>
             await Context.Channel.SendMessageAsync(text, false, embed, options, allowedMentions, messageReference, component).ConfigureAwait(false);
@@ -50,5 +50,10 @@ namespace Discord.Interactions
             var response = await Context.Interaction.GetOriginalResponseAsync().ConfigureAwait(false);
             await response.DeleteAsync().ConfigureAwait(false);
         }
+
+        //IInteractionModuleBase
+
+        /// <inheritdoc/>
+        void IInteractionModuleBase.SetContext (IInteractionCommandContext context) => SetContext(context);
     }
 }

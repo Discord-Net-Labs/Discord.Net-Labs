@@ -34,7 +34,10 @@ namespace Discord.Interactions
         public static PreconditionResult FromSuccess ( ) =>
             new PreconditionResult(null, null);
 
-
+        /// <summary>
+        ///     Returns a <see cref="PreconditionResult" /> with <see cref="InteractionCommandError.Exception" /> and the <see cref="Exception.Message"/>.
+        /// </summary>
+        /// <param name="exception">The exception that caused the precondition check to fail.</param>
         public static PreconditionResult FromError (Exception exception) =>
             new PreconditionResult(InteractionCommandError.Exception, exception.Message);
 

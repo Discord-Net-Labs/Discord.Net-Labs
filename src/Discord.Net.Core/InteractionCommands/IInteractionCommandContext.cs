@@ -1,31 +1,35 @@
 namespace Discord
 {
     /// <summary>
-    /// Represents the context of an Interaction
+    ///     Represents the context of an Interaction
     /// </summary>
     public interface IInteractionCommandContext
     {
         /// <summary>
-        /// Client that will be used to handle this interaction
+        ///     Client that will be used to handle this interaction
         /// </summary>
         IDiscordClient Client { get; }
+
         /// <summary>
-        /// Guild the interaction originated from
+        ///     Guild the interaction originated from
         /// </summary>
         /// <remarks>
-        /// Will be <see langword="null"/> if the interaction originated from a DM channel
+        ///     Will be <see langword="null"/> if the interaction originated from a DM channel or the interaction was a Context Command interaction
         /// </remarks>
         IGuild Guild { get; }
+
         /// <summary>
-        /// Channel the interaction originated from
+        ///     Channel the interaction originated from
         /// </summary>
         IMessageChannel Channel { get; }
+
         /// <summary>
-        /// User who invoked the interaction event
+        ///     User who invoked the interaction event
         /// </summary>
         IUser User { get; }
+
         /// <summary>
-        /// The underlying interaction
+        ///     The underlying interaction
         /// </summary>
         IDiscordInteraction Interaction { get; }
     }

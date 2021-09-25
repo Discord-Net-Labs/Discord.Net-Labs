@@ -43,7 +43,7 @@ namespace Discord.Interactions
 
         private readonly ConcurrentDictionary<Type, ModuleInfo> _typedModuleDefs;
         private readonly CommandMap<SlashCommandInfo> _slashCommandMap;
-        private readonly CommandMap<ContextCommandInfo> _contextCommandMap;
+        private readonly ConcurrentDictionary<ApplicationCommandType, CommandMap<ContextCommandInfo>> _contextCommandMaps;
         private readonly CommandMap<ComponentCommandInfo> _componentCommandMap;
         private readonly HashSet<ModuleInfo> _moduleDefs;
         private readonly ConcurrentDictionary<Type, TypeConverter> _typeConverters;
@@ -103,7 +103,7 @@ namespace Discord.Interactions
             _cmdLogger = _logManager.CreateLogger("App Commands");
 
             _slashCommandMap = new CommandMap<SlashCommandInfo>(this);
-            _contextCommandMap = new CommandMap<ContextCommandInfo>(this);
+            _contextCommandMaps = new ConcurrentDictionary<ApplicationCommandType, CommandMap<ContextCommandInfo>>();
             _componentCommandMap = new CommandMap<ComponentCommandInfo>(this, config.InteractionCustomIdDelimiters);
 
             Client = discord;
@@ -179,7 +179,7 @@ namespace Discord.Interactions
         /// <exception cref="InvalidOperationException">
         ///     Thrown when the <typeparamref name="T"/> is not a valid module definition
         /// </exception>
-        public async Task<ModuleInfo> AddModuleAsync<T> (IServiceProvider services) where T : class, IInteractionModuleBase
+        public async Task<ModuleInfo> AddModuleAsync<T> (IServiceProvider services) where T : class
         {
             if (!typeof(IInteractionModuleBase).IsAssignableFrom(typeof(T)))
                 throw new ArgumentException("Type parameter must be a type of Slash Module", "T");
@@ -340,7 +340,7 @@ namespace Discord.Interactions
                 _slashCommandMap.AddCommand(command, command.IgnoreGroupNames);
 
             foreach (var command in module.ContextCommands)
-                _contextCommandMap.AddCommand(command, command.IgnoreGroupNames);
+                _contextCommandMaps.GetOrAdd(command.CommandType, new CommandMap<ContextCommandInfo>(this)).AddCommand(command, command.IgnoreGroupNames);
 
             foreach (var interaction in module.ComponentCommands)
                 _componentCommandMap.AddCommand(interaction, interaction.IgnoreGroupNames);
@@ -389,24 +389,41 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Execute a Slash Command from a given <see cref="IInteractionCommandContext"/>
+        ///     Execute a Command from a given <see cref="IInteractionCommandContext"/>
         /// </summary>
-        /// <param name="context">The context of the command</param>
-        /// <param name="input">
-        ///     The command string array.
-        ///     Pass the return value of <see cref="WebSocketExtensions.GetCommandKeywords(SocketSlashCommand)"/>
-        /// </param>
+        /// <param name="context">Name context of the command</param>
         /// <param name="services">The service to be used in the command's dependency injection.</param>
         /// <returns>
         ///     A task representing the command execution process. The task result contains the result of the execution
         /// </returns>
-        public async Task<IResult> ExecuteSlashCommandAsync (IInteractionCommandContext context, string[] input, IServiceProvider services)
+        public async Task<IResult> ExecuteCommandAsync(IInteractionCommandContext context, IServiceProvider services)
         {
-            var result = _slashCommandMap.GetCommand(input);
+            var interaction = context.Interaction;
+
+            switch (interaction)
+            {
+                case SocketSlashCommand slashCommand:
+                    return await ExecuteSlashCommandAsync(context, slashCommand.Data, services).ConfigureAwait(false);
+                case SocketMessageComponent messageComponent:
+                    return await ExecuteComponentCommandAsync(context, messageComponent.Data.CustomId, services).ConfigureAwait(false);
+                case SocketUserCommand userCommand:
+                    return await ExecuteContextCommandAsync(context, userCommand.CommandName, ApplicationCommandType.User, services).ConfigureAwait(false);
+                case SocketMessageCommand messageCommand:
+                    return await ExecuteContextCommandAsync(context, messageCommand.CommandName, ApplicationCommandType.Message, services).ConfigureAwait(false);
+                default:
+                    throw new InvalidOperationException($"{interaction.Type} interaction type cannot be executed by the Interaction service");
+            }
+        }
+
+        private async Task<IResult> ExecuteSlashCommandAsync (IInteractionCommandContext context, SocketSlashCommandData data, IServiceProvider services)
+        {
+            var keywords = data.GetCommandKeywords();
+
+            var result = _slashCommandMap.GetCommand(keywords);
 
             if (!result.IsSuccess)
             {
-                await _cmdLogger.DebugAsync($"Unknown slash command, skipping execution ({string.Join(" ", input).ToUpper()})");
+                await _cmdLogger.DebugAsync($"Unknown slash command, skipping execution ({string.Join(" ", keywords).ToUpper()})");
 
                 if (_deleteUnkownSlashCommandAck)
                 {
@@ -419,38 +436,23 @@ namespace Discord.Interactions
             return await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
         }
 
-        /// <summary>
-        ///     Execute a Context Command from a given <see cref="IInteractionCommandContext"/>
-        /// </summary>
-        /// <param name="context">Name context of the command</param>
-        /// <param name="input">Name of the Context Command</param>
-        /// <param name="services">The service to be used in the command's dependency injection.</param>
-        /// <returns>
-        ///     A task representing the command execution process. The task result contains the result of the execution
-        /// </returns>
-        public async Task<IResult> ExecuteContextCommandAsync (IInteractionCommandContext context, string input, IServiceProvider services)
+        private async Task<IResult> ExecuteContextCommandAsync (IInteractionCommandContext context, string input, ApplicationCommandType commandType, IServiceProvider services)
         {
-            var result = _contextCommandMap.GetCommand(new string[] { input });
+            if(!_contextCommandMaps.TryGetValue(commandType, out var map))
+                return SearchResult<ContextCommandInfo>.FromError(input, InteractionCommandError.UnknownCommand, $"No {commandType} command found.");
+
+            var result = map.GetCommand(input);
 
             if (!result.IsSuccess)
             {
-                await _cmdLogger.DebugAsync($"Unknown context command, skipping execution ({string.Join(" ", input).ToUpper()})");
+                await _cmdLogger.DebugAsync($"Unknown context command, skipping execution ({result.Text.ToUpper()})");
 
                 return result;
             }
             return await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
         }
 
-        /// <summary>
-        ///     Execute a Context Command from a given <see cref="IInteractionCommandContext"/>
-        /// </summary>
-        /// <param name="context">The context of the command</param>
-        /// <param name="input">CustomID of the Message Component</param>
-        /// <param name="services">The service to be used in the command's dependency injection.</param>
-        /// <returns>
-        ///     A task representing the command execution process. The task result contains the result of the execution
-        /// </returns>
-        public async Task<IResult> ExecuteComponentCommandAsync (IInteractionCommandContext context, string input, IServiceProvider services)
+        private async Task<IResult> ExecuteComponentCommandAsync (IInteractionCommandContext context, string input, IServiceProvider services)
         {
             var result = _componentCommandMap.GetCommand(input);
 
@@ -613,7 +615,7 @@ namespace Discord.Interactions
         ///     <see cref="SlashCommandInfo"/> instance for this command
         /// </returns>
         /// <exception cref="InvalidOperationException">Module or Slash Command couldn't be found</exception>
-        public SlashCommandInfo GetSlashCommandInfo<TModule> (string methodName) where TModule : class, IInteractionModuleBase
+        public SlashCommandInfo GetSlashCommandInfo<TModule> (string methodName) where TModule : class
         {
             var module = GetModuleInfo<TModule>();
 
@@ -629,7 +631,7 @@ namespace Discord.Interactions
         ///     <see cref="ContextCommandInfo"/> instance for this command
         /// </returns>
         /// <exception cref="InvalidOperationException">Module or Context Command couldn't be found</exception>
-        public ContextCommandInfo GetContextCommandInfo<TModule> (string methodName) where TModule : class, IInteractionModuleBase
+        public ContextCommandInfo GetContextCommandInfo<TModule> (string methodName) where TModule : class
         {
             var module = GetModuleInfo<TModule>();
 
@@ -645,7 +647,7 @@ namespace Discord.Interactions
         ///     <see cref="ComponentCommandInfo"/> instance for this command
         /// </returns>
         /// <exception cref="InvalidOperationException">Module or Component Command couldn't be found</exception>
-        public ComponentCommandInfo GetInteractionInfo<TModule> (string methodName) where TModule : class, IInteractionModuleBase
+        public ComponentCommandInfo GetInteractionInfo<TModule> (string methodName) where TModule : class
         {
             var module = GetModuleInfo<TModule>();
 
@@ -659,7 +661,7 @@ namespace Discord.Interactions
         /// <returns>
         ///     <see cref="ModuleInfo"/> instance for this module
         /// </returns>
-        public ModuleInfo GetModuleInfo<TModule> ( ) where TModule : class, IInteractionModuleBase
+        public ModuleInfo GetModuleInfo<TModule> ( ) where TModule : class
         {
             if (!typeof(IInteractionModuleBase).IsAssignableFrom(typeof(TModule)))
                 throw new ArgumentException("Type parameter must be a type of Slash Module", "TModule");

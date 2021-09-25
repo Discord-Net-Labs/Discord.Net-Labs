@@ -19,12 +19,13 @@ namespace Discord.Interactions
         /// </summary>
         public ApplicationCommandType CommandType { get; }
 
-        public RunMode RunMode { get; set; } = RunMode.Default;
+        public RunMode RunMode { get; }
 
-        internal ContextCommandAttribute (string name, ApplicationCommandType commandType)
+        internal ContextCommandAttribute (string name, ApplicationCommandType commandType, RunMode runMode = RunMode.Default)
         {
             Name = name;
             CommandType = commandType;
+            RunMode = runMode;
         }
 
         internal virtual void CheckMethodDefinition (MethodInfo methodInfo) { }

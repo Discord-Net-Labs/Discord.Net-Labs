@@ -43,7 +43,7 @@ namespace Discord.Interactions
             object value;
 
             if (option.Value is Optional<object> optional)
-                value = optional.Value;
+                value = optional.IsSpecified ? option.Value : default(T);
             else
                 value = option.Value;
 

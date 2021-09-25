@@ -21,17 +21,21 @@ namespace Discord.Interactions
         /// <summary>
         ///     If <see langword="true"/> <see cref="GroupAttribute"/>s will be ignored while creating this command and this method will be treated as a top level command
         /// </summary>
-        public bool IgnoreGroupNames { get; set; } = false;
+        public bool IgnoreGroupNames { get; }
 
-        public RunMode RunMode { get; set; } = RunMode.Default;
+        public RunMode RunMode { get; }
 
         /// <summary>
         ///     Create a command for component interaction handling
         /// </summary>
         /// <param name="customId">String to compare the Message Component CustomIDs with</param>
-        public ComponentInteractionAttribute (string customId)
+        /// <param name="ignoreGroupNames">If <see langword="true"/> <see cref="GroupAttribute"/>s will be ignored while creating this command and this method will be treated as a top level command</param>
+        /// <param name="runMode">Set the run mode of the command</param>
+        public ComponentInteractionAttribute (string customId, bool ignoreGroupNames = false, RunMode runMode = RunMode.Default)
         {
             CustomId = customId;
+            IgnoreGroupNames = ignoreGroupNames;
+            RunMode = runMode;
         }
     }
 }

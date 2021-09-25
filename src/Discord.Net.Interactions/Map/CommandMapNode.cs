@@ -11,9 +11,9 @@ namespace Discord.Interactions
         private const string RegexWildCardExp = "(\\w+)?";
 
         private readonly string _wildCardStr = "*";
-        private ConcurrentDictionary<string, CommandMapNode<T>> _nodes;
-        private ConcurrentDictionary<string, T> _commands;
-        private ConcurrentDictionary<Regex, T> _wildCardCommands;
+        private readonly ConcurrentDictionary<string, CommandMapNode<T>> _nodes;
+        private readonly ConcurrentDictionary<string, T> _commands;
+        private readonly ConcurrentDictionary<Regex, T> _wildCardCommands;
 
         public IReadOnlyDictionary<string, CommandMapNode<T>> Nodes => _nodes;
         public IReadOnlyDictionary<string, T> Commands => _commands;

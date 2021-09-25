@@ -11,7 +11,7 @@ namespace Discord.Interactions
         /// <summary>
         ///     Name of the parameter
         /// </summary>
-        public string Name { get; set; } = null;
+        public string Name { get; } = null;
 
         /// <summary>
         ///     Description of the parameter

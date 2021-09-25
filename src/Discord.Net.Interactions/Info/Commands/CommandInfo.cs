@@ -65,9 +65,6 @@ namespace Discord.Interactions
         /// <inheritdoc cref="ICommandInfo.Parameters"/>
         public abstract IReadOnlyCollection<TParameter> Parameters { get; }
 
-        /// <inheritdoc/>
-        IReadOnlyCollection<IParameterInfo> ICommandInfo.Parameters => Parameters;
-
         internal CommandInfo (Builders.ICommandBuilder builder, ModuleInfo module, InteractionService commandService)
         {
             CommandService = commandService;
@@ -226,5 +223,10 @@ namespace Discord.Interactions
                 await CommandService._cmdLogger.VerboseAsync($"Executed {GetLogString(context)}").ConfigureAwait(false);
             }
         }
+
+        // ICommandInfo
+
+        /// <inheritdoc/>
+        IReadOnlyCollection<IParameterInfo> ICommandInfo.Parameters => Parameters;
     }
 }

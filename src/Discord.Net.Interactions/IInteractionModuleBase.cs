@@ -1,6 +1,6 @@
 namespace Discord.Interactions
 {
-    public interface IInteractionModuleBase
+    internal interface IInteractionModuleBase
     {
         void SetContext (IInteractionCommandContext context);
 
