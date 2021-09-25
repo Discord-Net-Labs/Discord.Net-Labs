@@ -10,9 +10,9 @@ using System.IO;
 
 namespace Discord.WebSocket
 {
-/// <summary>
-///     Represents a Websocket-based interaction type for Message Components.
-/// </summary>
+    /// <summary>
+    ///     Represents a Websocket-based interaction type for Message Components.
+    /// </summary>
     public class SocketMessageComponent : SocketInteraction
     {
         /// <summary>
