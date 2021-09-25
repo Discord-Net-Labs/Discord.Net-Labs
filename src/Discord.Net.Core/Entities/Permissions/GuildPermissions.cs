@@ -84,8 +84,6 @@ namespace Discord
         /// <summary> If <c>true</c>, a user may edit the emojis and stickers for this guild. </summary>
         public bool ManageEmojisAndStickers => Permissions.GetValue(RawValue, GuildPermission.ManageEmojisAndStickers);
         /// <summary> If <c>true</c>, a user may use slash commands in this guild. </summary>
-        public bool UseSlashCommands => Permissions.GetValue(RawValue, GuildPermission.UseSlashCommands);
-        /// <summary> If <c>true</c>, a user may use slash commands in this guild. </summary>
         public bool UseApplicationCommands => Permissions.GetValue(RawValue, GuildPermission.UseApplicationCommands);
         /// <summary> If <c>true</c>, a user may request to speak in stage channels. </summary>
         public bool RequestToSpeak => Permissions.GetValue(RawValue, GuildPermission.RequestToSpeak);
@@ -95,10 +93,6 @@ namespace Discord
         public bool CreatePublicThreads => Permissions.GetValue(RawValue, GuildPermission.CreatePublicThreads);
         /// <summary> If <c>true</c>, a user may create private threads in this guild. </summary>
         public bool CreatePrivateThreads => Permissions.GetValue(RawValue, GuildPermission.CreatePrivateThreads);
-        /// <summary> If <c>true</c>, a user may use public threads in this guild. </summary>
-        public bool UsePublicThreads => Permissions.GetValue(RawValue, GuildPermission.UsePublicThreads);
-        /// <summary> If <c>true</c>, a user may use private threads in this guild. </summary>
-        public bool UsePrivateThreads => Permissions.GetValue(RawValue, GuildPermission.UsePrivateThreads);
         /// <summary> If <c>true</c>, a user may use external stickers in this guild. </summary>
         public bool UseExternalStickers => Permissions.GetValue(RawValue, GuildPermission.UseExternalStickers);
         /// <summary> If <c>true</c>, a user may send messages in threads in this guild. </summary>
@@ -144,14 +138,11 @@ namespace Discord
             bool? manageRoles = null,
             bool? manageWebhooks = null,
             bool? manageEmojisAndStickers = null,
-            bool? useSlashCommands = null,
             bool? useApplicationCommands = null,
             bool? requestToSpeak = null,
             bool? manageThreads = null,
             bool? createPublicThreads = null,
             bool? createPrivateThreads = null,
-            bool? usePublicThreads = null,
-            bool? usePrivateThreads = null,
             bool? useExternalStickers = null,
             bool? sendMessagesInThreads = null,
             bool? startEmbeddedActivities = null)
@@ -189,14 +180,11 @@ namespace Discord
             Permissions.SetValue(ref value, manageRoles, GuildPermission.ManageRoles);
             Permissions.SetValue(ref value, manageWebhooks, GuildPermission.ManageWebhooks);
             Permissions.SetValue(ref value, manageEmojisAndStickers, GuildPermission.ManageEmojisAndStickers);
-            Permissions.SetValue(ref value, useSlashCommands, GuildPermission.UseSlashCommands);
             Permissions.SetValue(ref value, useApplicationCommands, GuildPermission.UseApplicationCommands);
             Permissions.SetValue(ref value, requestToSpeak, GuildPermission.RequestToSpeak);
             Permissions.SetValue(ref value, manageThreads, GuildPermission.ManageThreads);
             Permissions.SetValue(ref value, createPublicThreads, GuildPermission.CreatePublicThreads);
             Permissions.SetValue(ref value, createPrivateThreads, GuildPermission.CreatePrivateThreads);
-            Permissions.SetValue(ref value, usePublicThreads, GuildPermission.UsePublicThreads);
-            Permissions.SetValue(ref value, usePrivateThreads, GuildPermission.UsePrivateThreads);
             Permissions.SetValue(ref value, useExternalStickers, GuildPermission.UseExternalStickers);
             Permissions.SetValue(ref value, sendMessagesInThreads, GuildPermission.SendMessagesInThreads);
             Permissions.SetValue(ref value, startEmbeddedActivities, GuildPermission.StartEmbeddedActivities);
@@ -237,14 +225,11 @@ namespace Discord
             bool manageRoles = false,
             bool manageWebhooks = false,
             bool manageEmojisAndStickers = false,
-            bool useSlashCommands = false,
             bool useApplicationCommands = false,
             bool requestToSpeak = false,
             bool manageThreads = false,
             bool createPublicThreads = false,
             bool createPrivateThreads = false,
-            bool usePublicThreads = false,
-            bool usePrivateThreads = false,
             bool useExternalStickers = false,
             bool sendMessagesInThreads = false,
             bool startEmbeddedActivities = false)
@@ -280,14 +265,11 @@ namespace Discord
                 manageNicknames: manageNicknames,
                 manageWebhooks: manageWebhooks,
                 manageEmojisAndStickers: manageEmojisAndStickers,
-                useSlashCommands: useSlashCommands,
                 useApplicationCommands: useApplicationCommands,
                 requestToSpeak: requestToSpeak,
                 manageThreads: manageThreads,
                 createPublicThreads: createPublicThreads,
                 createPrivateThreads: createPrivateThreads,
-                usePublicThreads: usePublicThreads,
-                usePrivateThreads: usePrivateThreads,
 				useExternalStickers: useExternalStickers,
                 sendMessagesInThreads: sendMessagesInThreads,
                 startEmbeddedActivities: startEmbeddedActivities)
@@ -326,14 +308,11 @@ namespace Discord
             bool? manageRoles = null,
             bool? manageWebhooks = null,
             bool? manageEmojisAndStickers = null,
-            bool? useSlashCommands = null,
             bool? useApplicationCommands = null,
             bool? requestToSpeak = null,
             bool? manageThreads = null,
             bool? createPublicThreads = null,
             bool? createPrivateThreads = null,
-            bool? usePublicThreads = null,
-            bool? usePrivateThreads = null,
             bool? useExternalStickers = null,
             bool? sendMessagesInThreads = null,
             bool? startEmbeddedActivities = null)
@@ -341,7 +320,7 @@ namespace Discord
                 viewAuditLog, viewGuildInsights, viewChannel, sendMessages, sendTTSMessages, manageMessages, embedLinks, attachFiles,
                 readMessageHistory, mentionEveryone, useExternalEmojis, connect, speak, muteMembers, deafenMembers, moveMembers,
                 useVoiceActivation, prioritySpeaker, stream, changeNickname, manageNicknames, manageRoles, manageWebhooks, manageEmojisAndStickers,
-                useSlashCommands, useApplicationCommands, requestToSpeak, manageThreads, createPublicThreads, createPrivateThreads, usePublicThreads, usePrivateThreads, useExternalStickers, sendMessagesInThreads,
+                useApplicationCommands, requestToSpeak, manageThreads, createPublicThreads, createPrivateThreads, useExternalStickers, sendMessagesInThreads,
                 startEmbeddedActivities);
 
         /// <summary>

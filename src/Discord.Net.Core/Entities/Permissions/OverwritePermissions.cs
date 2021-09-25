@@ -84,8 +84,6 @@ namespace Discord
         /// <summary> If True, a user may edit the webhooks for this channel. </summary>
         public PermValue ManageWebhooks => Permissions.GetValue(AllowValue, DenyValue, ChannelPermission.ManageWebhooks);
         /// <summary> If <c>true</c>, a user may use slash commands in this guild. </summary>
-        public PermValue UseSlashCommands => Permissions.GetValue(AllowValue, DenyValue, ChannelPermission.UseSlashCommands);
-        /// <summary> If <c>true</c>, a user may use slash commands in this guild. </summary>
         public PermValue UseApplicationCommands => Permissions.GetValue(AllowValue, DenyValue, ChannelPermission.UseApplicationCommands);
         /// <summary> If <c>true</c>, a user may request to speak in stage channels. </summary>
         public PermValue RequestToSpeak => Permissions.GetValue(AllowValue, DenyValue, ChannelPermission.RequestToSpeak);
@@ -95,10 +93,6 @@ namespace Discord
         public PermValue CreatePublicThreads => Permissions.GetValue(AllowValue, DenyValue, ChannelPermission.CreatePublicThreads);
         /// <summary> If <c>true</c>, a user may create private threads in this guild. </summary>
         public PermValue CreatePrivateThreads => Permissions.GetValue(AllowValue, DenyValue, ChannelPermission.CreatePrivateThreads);
-        /// <summary> If <c>true</c>, a user may use public threads in this guild. </summary>
-        public PermValue UsePublicThreads => Permissions.GetValue(AllowValue, DenyValue, ChannelPermission.UsePublicThreads);
-        /// <summary> If <c>true</c>, a user may use private threads in this guild. </summary>
-        public PermValue UsePrivateThreads => Permissions.GetValue(AllowValue, DenyValue, ChannelPermission.UsePrivateThreads);
         /// <summary> If <c>true</c>, a user may use external stickers in this guild. </summary>
         public PermValue UseExternalStickers => Permissions.GetValue(AllowValue, DenyValue, ChannelPermission.UseExternalStickers);
         /// <summary> If <c>true</c>, a user may send messages in threads in this guild. </summary>
@@ -177,14 +171,11 @@ namespace Discord
             Permissions.SetValue(ref allowValue, ref denyValue, stream, ChannelPermission.Stream);
             Permissions.SetValue(ref allowValue, ref denyValue, manageRoles, ChannelPermission.ManageRoles);
             Permissions.SetValue(ref allowValue, ref denyValue, manageWebhooks, ChannelPermission.ManageWebhooks);
-            Permissions.SetValue(ref allowValue, ref denyValue, useSlashCommands, ChannelPermission.UseSlashCommands);
             Permissions.SetValue(ref allowValue, ref denyValue, useApplicationCommands, ChannelPermission.UseApplicationCommands);
             Permissions.SetValue(ref allowValue, ref denyValue, requestToSpeak, ChannelPermission.RequestToSpeak);
             Permissions.SetValue(ref allowValue, ref denyValue, manageThreads, ChannelPermission.ManageThreads);
             Permissions.SetValue(ref allowValue, ref denyValue, createPublicThreads, ChannelPermission.CreatePublicThreads);
             Permissions.SetValue(ref allowValue, ref denyValue, createPrivateThreads, ChannelPermission.CreatePrivateThreads);
-            Permissions.SetValue(ref allowValue, ref denyValue, usePublicThreads, ChannelPermission.UsePublicThreads);
-            Permissions.SetValue(ref allowValue, ref denyValue, usePrivateThreads, ChannelPermission.UsePrivateThreads);
             Permissions.SetValue(ref allowValue, ref denyValue, useExternalStickers, ChannelPermission.UseExternalStickers);
             Permissions.SetValue(ref allowValue, ref denyValue, sendMessagesInThreads, ChannelPermission.SendMessagesInThreads);
             Permissions.SetValue(ref allowValue, ref denyValue, startEmbeddedActivities, ChannelPermission.StartEmbeddedActivities);
