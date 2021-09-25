@@ -58,7 +58,7 @@ namespace _04_interactions_framework.Modules
 
         // User Commands can only have one parameter, which must be a type of SocketUser
         [UserCommand("SayHello")]
-        public async Task SayHello(SocketUser user)
+        public async Task SayHello(IUser user)
         {
             await RespondAsync($"Hello, {user.Mention}");
         }
@@ -66,10 +66,10 @@ namespace _04_interactions_framework.Modules
         // Message Commands can only have one parameter, which must be a type of SocketMessage
         [MessageCommand("Delete")]
         [RequireOwner]
-        public async Task DeleteMesage(SocketMessage message)
+        public async Task DeleteMesage(IMessage message)
         {
             await message.DeleteAsync();
-            await DeleteOriginalResponseAsync();
+            await RespondAsync("Deleted message.");
         }
 
         // Use [ComponentInteraction] to handle message component interactions. Message component interaction with the matching customId will be executed.

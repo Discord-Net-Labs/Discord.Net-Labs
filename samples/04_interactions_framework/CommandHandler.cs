@@ -130,26 +130,7 @@ namespace _04_interactions_framework
             {
                 // Create an execution context that matches the generic type parameter of your InteractionModuleBase<T> modules
                 var ctx = new SocketInteractionCommandContext(_client, arg);
-                switch (arg)
-                {
-                    // To execute a Slash Command Handler you need to get the string[] containing the names of the Slash Command, Sub-Slash Command Group and Sub-Slash Command.
-                    // You can use the GetCommandKeywords() extension method to obtain this array.
-                    case SocketSlashCommand command:
-                        await _commands.ExecuteSlashCommandAsync(ctx, command.GetCommandKeywords(), _services);
-                        break;
-                    // To execute a Component Interaction Handler, you need to input the CustomId of the component. (Keep in mind that, URL components don't raise interaction events)
-                    case SocketMessageComponent component:
-                        await _commands.ExecuteComponentCommandAsync(ctx, component.Data.CustomId, _services);
-                        break;
-                    // Context command handlers can be executed using a single method, in this case, ExecuteContextCommandAsync method expects you to provide the Name of the Context
-                    // command.
-                    case SocketUserCommand:
-                    case SocketMessageCommand:
-                        await _commands.ExecuteContextCommandAsync(ctx, arg.Data.Name, _services);
-                        break;
-                    default:
-                        break;
-                }
+                await _commands.ExecuteCommandAsync(ctx, _services);
             }
             catch (Exception ex)
             {
