@@ -3,26 +3,26 @@ using System;
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Create nested Application Commands by marking the module as a command group
+    ///     Create nested Slash Commands by marking a module as a command group
     /// </summary>
     /// <remarks>
-    /// Groups dont apply to <see cref="ContextCommandAttribute"/> commands. 
+    ///     <see cref="ContextCommandAttribute"/> commands wil not be affected by this
     /// </remarks>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     public class GroupAttribute : Attribute
     {
         /// <summary>
-        /// Name of the group
+        ///     Name of the group
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// Description of the group
+        ///     Description of the group
         /// </summary>
         public string Description { get; }
 
         /// <summary>
-        /// Initialize a command group with the provided name and description
+        ///     Create a command group
         /// </summary>
         /// <param name="name">Name of the group</param>
         /// <param name="description">Description of the group</param>

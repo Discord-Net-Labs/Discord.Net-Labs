@@ -7,99 +7,90 @@ using System.Linq;
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Contains the information of a Slash command module
+    ///     Contains the information of a Interactions Module
     /// </summary>
     public class ModuleInfo
     {
         internal ILookup<string, PreconditionAttribute> _groupedPreconditions { get; }
 
         /// <summary>
-        /// Command service this module belongs to
+        ///     The underlying command service
         /// </summary>
         public InteractionService CommandService { get; }
 
         /// <summary>
-        /// Get the name of this module class
+        ///     Name of this module class
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// Get the name of this module that will be displayed on Discord
+        ///     Group name of this module, if the module is marked with a <see cref="GroupAttribute"/>
         /// </summary>
-        /// <remarks>
-        /// This value may be missing if the commands are registered as standalone
-        /// </remarks>
         public string SlashGroupName { get; }
 
         /// <summary>
-        /// Whether this module has a <see cref="GroupAttribute"/> or not
+        ///     <see langword="true"/> if this module is marked with a <see cref="GroupAttribute"/>
         /// </summary>
         public bool IsSlashGroup => !string.IsNullOrEmpty(SlashGroupName);
 
         /// <summary>
-        /// Description of this module
+        ///     Description of this module if <see cref="IsSlashGroup"/> is <see langword="true"/>
         /// </summary>
-        /// <remarks>
-        /// This value may be missing if the commands are registered as standalone
-        /// </remarks>
         public string Description { get; }
 
         /// <summary>
-        /// Check if the Application Command for this module can be executed by default
+        ///     Default Permission of this module
         /// </summary>
-        /// <remarks>
-        /// If this module does not have a <see cref="GroupAttribute"/> or it has a parent that does, this property will be unaffective
-        /// </remarks>
         public bool DefaultPermission { get; }
 
         /// <summary>
-        /// Get the collection of Sub Modules of this module
+        ///     Get the collection of Sub Modules of this module
         /// </summary>
         public IReadOnlyList<ModuleInfo> SubModules { get; }
 
         /// <summary>
-        /// Get the information list of the Slash Commands that belong to this module
+        ///     Get the Slash Commands that are declared in this module
         /// </summary>
         public IReadOnlyList<SlashCommandInfo> SlashCommands { get; }
 
         /// <summary>
-        /// Get the information list of the Context Commands that belong to this module
+        ///     Get the Context Commands that are declared in this module
         /// </summary>
         public IReadOnlyList<ContextCommandInfo> ContextCommands { get;
         }
         /// <summary>
-        /// Get the information list of the Message Component handlers that belong to this module
+        ///     Get the Component Commands that are declared in this module
         /// </summary>
         public IReadOnlyCollection<ComponentCommandInfo> ComponentCommands { get; }
 
         /// <summary>
-        /// Get the declaring type of this module, if this is a Sub Module
+        ///     Get the declaring type of this module, if <see cref="IsSubModule"/> is <see langword="true"/>
         /// </summary>
         public ModuleInfo Parent { get; }
 
         /// <summary>
-        /// <see langword="true"/> if this module is declared under another <see cref="InteractionModuleBase{T}"/>
+        ///     <see langword="true"/> if this module is declared by another <see cref="InteractionModuleBase{T}"/>
         /// </summary>
         public bool IsSubModule => Parent != null;
 
         /// <summary>
-        /// Get a collection of the attributes of this module
+        ///     Get a collection of the attributes of this module
         /// </summary>
         public IReadOnlyCollection<Attribute> Attributes { get; }
 
         /// <summary>
-        /// Get a collection of the preconditions of this module
+        ///     Get a collection of the preconditions of this module
         /// </summary>
         public IReadOnlyCollection<PreconditionAttribute> Preconditions { get; }
 
         /// <summary>
-        /// <see langword="true"/> if this module has a valid <see cref="GroupAttribute"/> and has no parent with a <see cref="GroupAttribute"/>
+        ///     <see langword="true"/> if this module has a valid <see cref="GroupAttribute"/> and has no parent with a <see cref="GroupAttribute"/>
         /// </summary>
         public bool IsTopLevelGroup { get; }
 
         /// <summary>
-        /// If <see langword="true"/>, this module will not be registered whenever <see cref="InteractionService.RegisterCommandsGloballyAsync(bool)"/>
-        /// or <see cref="InteractionService.RegisterCommandsToGuildAsync(ulong, bool)"/> is used
+        ///     If <see langword="true"/>, this module will not be registered by <see cref="InteractionService.RegisterCommandsGloballyAsync(bool)"/>
+        ///     or <see cref="InteractionService.RegisterCommandsToGuildAsync(ulong, bool)"/> methods
         /// </summary>
         public bool DontAutoRegister { get; }
 

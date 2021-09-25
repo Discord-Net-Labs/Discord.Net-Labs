@@ -11,24 +11,26 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Represents a cached method execution delegate
+    ///     Represents a cached method execution delegate
     /// </summary>
-    /// <param name="context">Execution context that will be injected to the module class</param>
+    /// <param name="context">Execution context that will be injected into the module class</param>
     /// <param name="args">Method arguments array</param>
     /// <param name="serviceProvider">Service collection for initializing the module</param>
     /// <param name="commandInfo">Command info class of the executed method</param>
-    /// <returns>A task representing the execution operation</returns>
+    /// <returns>
+    ///     A task representing the execution operation
+    /// </returns>
     internal delegate Task ExecuteCallback (IInteractionCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo);
 
     /// <summary>
-    /// The base information class for <see cref="InteractionService"/> commands
+    ///     The base information class for <see cref="InteractionService"/> commands
     /// </summary>
     /// <typeparam name="TParameter">The type of <see cref="IParameterInfo"/> that is used by this command type</typeparam>
     public abstract class CommandInfo<TParameter> : ICommandInfo where TParameter : class, IParameterInfo
     {
         private readonly ExecuteCallback _action;
 
-        internal ILookup<string, PreconditionAttribute> _groupedPreconditions { get; }
+        protected ILookup<string, PreconditionAttribute> _groupedPreconditions { get; }
 
         /// <inheritdoc/>
         public ModuleInfo Module { get; }
@@ -116,13 +118,6 @@ namespace Discord.Interactions
                 return PreconditionGroupResult.FromSuccess();
             }
 
-            foreach(var parameter in Parameters)
-            {
-                var result = await parameter.CheckPreconditionsAsync(context, services).ConfigureAwait(false);
-                if (!result.IsSuccess)
-                    return result;
-            }
-
             var moduleResult = await CheckGroups(Module._groupedPreconditions, "Module").ConfigureAwait(false);
             if (!moduleResult.IsSuccess)
                 return moduleResult;
@@ -175,6 +170,14 @@ namespace Discord.Interactions
                 {
                     await InvokeModuleEvent(context, preconditionResult).ConfigureAwait(false);
                     return preconditionResult;
+                }
+
+                var index = 0;
+                foreach (var parameter in Parameters)
+                {
+                    var result = await parameter.CheckPreconditionsAsync(context, args[index++], services).ConfigureAwait(false);
+                    if (!result.IsSuccess)
+                        return result;
                 }
 
                 var task = _action(context, args, services, this);

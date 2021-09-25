@@ -7,18 +7,17 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Base information class for attribute based context command handlers
+    ///     Base information class for attribute based context command handlers
     /// </summary>
     public abstract class ContextCommandInfo : CommandInfo<CommandParameterInfo>, IApplicationCommandInfo
     {
         /// <inheritdoc/>
         public ApplicationCommandType CommandType { get; }
 
-        /// <summary>
-        /// Get the initial value of this commands default permission
-        /// </summary>
+        /// <inheritdoc/>
         public bool DefaultPermission { get; }
 
+        /// <inheritdoc/>
         public override IReadOnlyCollection<CommandParameterInfo> Parameters { get; }
 
         /// <inheritdoc/>

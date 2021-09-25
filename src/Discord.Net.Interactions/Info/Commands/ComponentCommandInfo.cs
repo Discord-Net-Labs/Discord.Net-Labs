@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Porvides the information of a Interaction handler
+    ///     Represents the info class of an attribute based method for handling Component Interaction events
     /// </summary>
     public class ComponentCommandInfo : CommandInfo<CommandParameterInfo>
     {
@@ -29,12 +29,14 @@ namespace Discord.Interactions
             => await ExecuteAsync(context, services, null).ConfigureAwait(false);
 
         /// <summary>
-        /// Execute this command using dependency injection
+        ///     Execute this command using dependency injection
         /// </summary>
         /// <param name="context">Context that will be injected to the <see cref="InteractionModuleBase{T}"/></param>
         /// <param name="services">Services that will be used while initializing the <see cref="InteractionModuleBase{T}"/></param>
         /// <param name="additionalArgs">Provide additional string parameters to the method along with the auto generated parameters</param>
-        /// <returns>A task representing the asyncronous command execution process</returns>
+        /// <returns>
+        ///     A task representing the asyncronous command execution process
+        /// </returns>
         public async Task<IResult> ExecuteAsync (IInteractionCommandContext context, IServiceProvider services, params string[] additionalArgs)
         {
             if (context.Interaction is SocketMessageComponent messageInteraction)

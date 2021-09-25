@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Base class for any Slash command handling modules
+    ///     Provides a base class for a command module to inherit from.
     /// </summary>
     /// <typeparam name="T">Type of slash command context to be injected into the module</typeparam>
     public abstract class InteractionModuleBase<T> : IInteractionModuleBase where T : class, IInteractionCommandContext
     {
         /// <summary>
-        /// Command execution context for an user interaction.
+        ///     The underlying context of the command.
         /// </summary>
         public T Context { get; private set; }
 

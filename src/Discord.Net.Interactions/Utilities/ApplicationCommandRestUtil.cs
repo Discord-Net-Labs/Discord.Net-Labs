@@ -6,7 +6,7 @@ namespace Discord.Interactions
 {
     internal static class ApplicationCommandRestUtil
     {
-        // Parameters
+        #region Parameters
         public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps (this SlashCommandParameterInfo parameterInfo)
         {
             var props = new ApplicationCommandOptionProperties
@@ -25,8 +25,9 @@ namespace Discord.Interactions
 
             return props;
         }
+        #endregion
 
-        // Commmands
+        #region Commands
 
         public static ApplicationCommandProperties ToApplicationCommandProps (this SlashCommandInfo commandInfo) =>
             new SlashCommandProperties
@@ -53,8 +54,9 @@ namespace Discord.Interactions
                 Name = commandInfo.Name,
                 DefaultPermission = commandInfo.DefaultPermission
             };
+        #endregion
 
-        // Modules
+        #region Modules
 
         public static IReadOnlyCollection<ApplicationCommandProperties> ToApplicationCommandProps (this ModuleInfo moduleInfo, bool ignoreDontRegister = false)
         {
@@ -132,6 +134,8 @@ namespace Discord.Interactions
                     Options = options
                 } };
         }
+
+        #endregion
 
         public static ApplicationCommandProperties ToApplicationCommandProps (this IApplicationCommand command)
         {

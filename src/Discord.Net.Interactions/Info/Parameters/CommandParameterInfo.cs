@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Represents the base parameter info class for <see cref="InteractionService"/> commands
+    ///     Represents the base parameter info class for <see cref="InteractionService"/> commands
     /// </summary>
     public class CommandParameterInfo : IParameterInfo
     {
@@ -48,11 +48,11 @@ namespace Discord.Interactions
         }
 
         /// <inheritdoc/>
-        public async Task<PreconditionResult> CheckPreconditionsAsync (IInteractionCommandContext context, IServiceProvider services)
+        public async Task<PreconditionResult> CheckPreconditionsAsync (IInteractionCommandContext context, object value, IServiceProvider services)
         {
             foreach (var precondition in Preconditions)
             {
-                var result = await precondition.CheckRequirementsAsync(context, this, services).ConfigureAwait(false);
+                var result = await precondition.CheckRequirementsAsync(context, this, value, services).ConfigureAwait(false);
                 if (!result.IsSuccess)
                     return result;
             }

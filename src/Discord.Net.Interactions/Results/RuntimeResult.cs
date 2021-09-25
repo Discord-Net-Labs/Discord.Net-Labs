@@ -1,8 +1,5 @@
 namespace Discord.Interactions
 {
-    /// <summary>
-    /// Represents the result returned by a command method
-    /// </summary>
     public abstract class RuntimeResult : IResult
     {
         /// <inheritdoc/>
@@ -14,6 +11,11 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public bool IsSuccess => !Error.HasValue;
 
+        /// <summary>
+        ///     Initializes a new <see cref="RuntimeResult" /> class with the type of error and reason.
+        /// </summary>
+        /// <param name="error">The type of failure, or <c>null</c> if none.</param>
+        /// <param name="reason">The reason of failure.</param>
         protected RuntimeResult (InteractionCommandError? error, string reason)
         {
             Error = error;

@@ -1,32 +1,38 @@
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Holds the general information to be used while initializing <see cref="InteractionCommandContext"/>
+    ///     Represents a configuration class for <see cref="InteractionCommandContext"/>
     /// </summary>
     public class InteractionServiceConfig
     {
         /// <summary>
-        /// Log severity for the logger
+        ///     Gets or sets the minimum log level severity that will be sent to the <see cref="InteractionService.Log"/> event.
         /// </summary>
         public LogSeverity LogLevel { get; set; } = LogSeverity.Info;
+
         /// <summary>
-        /// Run mode that will be used when executing the commands
+        ///     Gets or sets the default <see cref="RunMode" /> commands should have, if one is not specified on the
+        ///     Command attribute or builder.
         /// </summary>
-        public RunMode RunMode { get; set; } = RunMode.Async;
+        public RunMode DefaultRunMode { get; set; } = RunMode.Async;
+
+        /// <summary>
+        ///     Gets or sets whether <see cref="RunMode.Sync"/> commands should push exceptions up to the caller.
+        /// </summary>
         public bool ThrowOnError { get; set; } = true;
 
         /// <summary>
-        /// Delimiters that will be used to seperate group names and the method name when a Message Component Interaction is recieved
+        ///     Delimiters that will be used to seperate group names and the method name when a Message Component Interaction is recieved
         /// </summary>
         public char[] InteractionCustomIdDelimiters { get; set; }
 
         /// <summary>
-        /// The string expression that will be treated as a wild card
+        ///     The string expression that will be treated as a wild card
         /// </summary>
         public string WildCardExpression { get; set; }
 
         /// <summary>
-        /// Delete Slash Command acknowledgements if no Slash Command handler is found in the <see cref="InteractionService"/>
+        ///     Delete Slash Command acknowledgements if no Slash Command handler is found in the <see cref="InteractionService"/>
         /// </summary>
         public bool DeleteUnknownSlashCommandAck { get; set; } = true;
 

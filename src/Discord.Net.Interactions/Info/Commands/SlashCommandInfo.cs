@@ -9,23 +9,22 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Provides the information of a Slash Command
+    ///     Represents the info class of an attribute based method for command type <see cref="ApplicationCommandType.Slash"/>
     /// </summary>
     public class SlashCommandInfo : CommandInfo<SlashCommandParameterInfo>, IApplicationCommandInfo
     {
         /// <summary>
-        /// The command description that will be displayed on Discord
+        ///     The command description that will be displayed on Discord
         /// </summary>
         public string Description { get; }
 
         /// <inheritdoc/>
         public ApplicationCommandType CommandType { get; } = ApplicationCommandType.Slash;
 
-        /// <summary>
-        /// Whether this command is executable by default or not
-        /// </summary>
+        /// <inheritdoc/>
         public bool DefaultPermission { get; }
 
+        /// <inheritdoc/>
         public override IReadOnlyCollection<SlashCommandParameterInfo> Parameters { get; }
 
         /// <inheritdoc/>

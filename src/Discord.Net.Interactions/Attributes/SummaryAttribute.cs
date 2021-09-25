@@ -3,23 +3,23 @@ using System;
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Change the default name and description of an Application Command parameter
+    ///     Customize the name and description of an Slash Application Command parameter
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = true)]
     public class SummaryAttribute : Attribute
     {
         /// <summary>
-        /// Custom name of the parameter
+        ///     Name of the parameter
         /// </summary>
         public string Name { get; set; } = null;
 
         /// <summary>
-        /// Custom description of the parameter
+        ///     Description of the parameter
         /// </summary>
         public string Description { get; } = null;
 
         /// <summary>
-        /// Modify the default name and description values of a Slash Command parameter
+        ///     Modify the default name and description values of a Slash Command parameter
         /// </summary>
         /// <param name="name">Name of the parameter</param>
         /// <param name="description">Description of the parameter</param>

@@ -11,7 +11,7 @@ namespace Discord.Interactions
             if (option.Value != null)
                 return Task.FromResult(TypeConverterResult.FromSuccess(option.Value as T));
             else
-                return Task.FromResult(TypeConverterResult.FromError(InteractionCommandError.ParseFailed, $"Provided input cannot be read as {nameof(IChannel)}"));
+                return Task.FromResult(TypeConverterResult.FromError(InteractionCommandError.ConvertFailed, $"Provided input cannot be read as {nameof(IChannel)}"));
         }
     }
 

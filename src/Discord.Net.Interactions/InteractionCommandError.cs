@@ -1,34 +1,43 @@
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Error types for the <see cref="InteractionService"/> executables
+    ///     Defines the type of error a command can throw.
     /// </summary>
     public enum InteractionCommandError
     {
         /// <summary>
-        /// Thrown when no registered command is found for a given input
+        ///     Thrown when the command is unknown.
         /// </summary>
         UnknownCommand,
 
         /// <summary>
-        /// Thrown when a Discord Application Command fails to be parsed from an <see cref="ICommandInfo"/>
+        ///     Thrown when the Slash Command parameter fails to be converted by a TypeReader .
         /// </summary>
-        ParseFailed,
+        ConvertFailed,
 
         /// <summary>
-        /// Thrown when the provided command arguments does not match the method arguments
+        ///     Thrown when the input text has too few or too many arguments.
         /// </summary>
         BadArgs,
 
         /// <summary>
-        /// Thrown whenever an exception occurs during the command execution process
+        ///     Thrown when an exception occurs mid-command execution.
         /// </summary>
         Exception,
 
         /// <summary>
-        /// Thrown when the command is not successfully executed on runtime.
+        ///     Thrown when the command is not successfully executed on runtime.
         /// </summary>
         Unsuccessful,
-        UnmetPrecondition
+
+        /// <summary>
+        ///     Thrown when the command fails to meet a <see cref="PreconditionAttribute"/>'s conditions.
+        /// </summary>
+        UnmetPrecondition,
+
+        /// <summary>
+        ///     Thrown when the command context cannot be parsed by the <see cref="ICommandInfo"/>
+        /// </summary>
+        ParseFailed
     }
 }

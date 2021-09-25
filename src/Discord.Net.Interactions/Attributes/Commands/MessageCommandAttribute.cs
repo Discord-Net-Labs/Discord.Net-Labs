@@ -4,16 +4,16 @@ using System.Reflection;
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Use to create an Message Context Command.
+    ///     Create a Message Context Command.
     /// </summary>
     /// <remarks>
-    /// Not affected by the <see cref="GroupAttribute"/>
+    ///     <see cref="GroupAttribute"/>s won't add prefixes to this command
     /// </remarks>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class MessageCommandAttribute : ContextCommandAttribute
     {
         /// <summary>
-        /// Register a method as a Message Context Command
+        ///     Register a method as a Message Context Command
         /// </summary>
         /// <param name="name">Name of the context command</param>
         public MessageCommandAttribute (string name) : base(name, ApplicationCommandType.Message) { }

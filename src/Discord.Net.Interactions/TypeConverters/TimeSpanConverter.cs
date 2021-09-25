@@ -12,7 +12,7 @@ namespace Discord.Interactions
         {
             return ( TimeSpan.TryParseExact(( option.Value as string ).ToLowerInvariant(), Formats, CultureInfo.InvariantCulture, out var timeSpan) )
                 ? Task.FromResult(TypeConverterResult.FromSuccess(timeSpan))
-                : Task.FromResult(TypeConverterResult.FromError(InteractionCommandError.ParseFailed, "Failed to parse TimeSpan"));
+                : Task.FromResult(TypeConverterResult.FromError(InteractionCommandError.ConvertFailed, "Failed to parse TimeSpan"));
         }
 
         private static readonly string[] Formats = {

@@ -4,18 +4,18 @@ using System.Reflection;
 namespace Discord.Interactions
 {
     /// <summary>
-    /// Base attribute for creating a Context Commands
+    ///     Base attribute for creating a Context Commands
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public abstract class ContextCommandAttribute : Attribute
     {
         /// <summary>
-        /// Name of this context command
+        ///     Name of this Context Command
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// Get the type of this context command
+        ///     Type of this Context Command
         /// </summary>
         public ApplicationCommandType CommandType { get; }
 

@@ -8,15 +8,15 @@ namespace Discord.Interactions
     public static class InteractionUtility
     {
         /// <summary>
-        /// Wait for an Interaction event for a given amount of time as an asynchronous opration
+        ///     Wait for an Interaction event for a given amount of time as an asynchronous opration
         /// </summary>
         /// <param name="client">Client that should be listened to for the <see cref="BaseSocketClient.InteractionCreated"/> event</param>
         /// <param name="timeout">Timeout duration for this operation</param>
         /// <param name="predicate">Delegate for cheking whether an Interaction meets the requirements</param>
         /// <param name="cancellationToken">Token for canceling the wait operation</param>
         /// <returns>
-        /// A Task representing the asyncronous waiting operation with a <see cref="IDiscordInteraction"/> result,
-        /// the result is null if the process timed out before receiving a valid Interaction.
+        ///     A Task representing the asyncronous waiting operation. If the user responded in the given amount of time, Task result contains the user response,
+        ///     otherwise the Task result is <see langword="null"/>
         /// </returns>
         public static async Task<SocketInteraction> WaitForInteractionAsync (BaseSocketClient client, TimeSpan timeout,
             Predicate<SocketInteraction> predicate, CancellationToken cancellationToken = default)

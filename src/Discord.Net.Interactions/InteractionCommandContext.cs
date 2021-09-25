@@ -19,7 +19,7 @@ namespace Discord.Interactions
         public virtual IDiscordInteraction Interaction { get; }
 
         /// <summary>
-        /// Whether the origin channel of the Interaction is a private channel
+        ///     Indicates whether the channel that the command is executed in is a private channel.
         /// </summary>
         public bool IsPrivate => Channel is IPrivateChannel;
 
