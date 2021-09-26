@@ -369,7 +369,7 @@ namespace Discord.API
             Preconditions.NotEqual(channelId, 0, nameof(channelId));
             Preconditions.NotNull(args, nameof(args));
             Preconditions.AtLeast(args.Position, 0, nameof(args.Position));
-            Preconditions.NotNullOrEmpty(args.Name, nameof(args.Name));
+            Preconditions.NotNullOrWhitespace(args.Name, nameof(args.Name));
             options = RequestOptions.CreateOrClone(options);
 
             var ids = new BucketIds(channelId: channelId);
@@ -380,7 +380,7 @@ namespace Discord.API
             Preconditions.NotEqual(channelId, 0, nameof(channelId));
             Preconditions.NotNull(args, nameof(args));
             Preconditions.AtLeast(args.Position, 0, nameof(args.Position));
-            Preconditions.NotNullOrEmpty(args.Name, nameof(args.Name));
+            Preconditions.NotNullOrWhitespace(args.Name, nameof(args.Name));
             Preconditions.LessThan(args.Topic.Value.Length, 1024, nameof(args.Name));
             Preconditions.AtLeast(args.SlowModeInterval, 0, nameof(args.SlowModeInterval));
             Preconditions.AtMost(args.SlowModeInterval, 21600, nameof(args.SlowModeInterval));
@@ -396,7 +396,7 @@ namespace Discord.API
             Preconditions.AtLeast(args.Bitrate, 8000, nameof(args.Bitrate));
             Preconditions.AtLeast(args.UserLimit, 0, nameof(args.UserLimit));
             Preconditions.AtLeast(args.Position, 0, nameof(args.Position));
-            Preconditions.NotNullOrEmpty(args.Name, nameof(args.Name));
+            Preconditions.NotNullOrWhitespace(args.Name, nameof(args.Name));
             options = RequestOptions.CreateOrClone(options);
 
             var ids = new BucketIds(channelId: channelId);
