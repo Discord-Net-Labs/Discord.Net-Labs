@@ -94,7 +94,7 @@ namespace Discord.Interactions
         }
 
         protected override Task InvokeModuleEvent (IInteractionCommandContext context, IResult result)
-            => CommandService._interactionExecutedEvent.InvokeAsync(this, context, result);
+            => CommandService._componentCommandExecutedEvent.InvokeAsync(this, context, result);
 
         protected override string GetLogString (IInteractionCommandContext context)
         {

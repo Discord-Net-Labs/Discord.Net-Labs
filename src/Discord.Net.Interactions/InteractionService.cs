@@ -38,8 +38,8 @@ namespace Discord.Interactions
         /// <summary>
         ///     Occurs when a Message Component command is executed
         /// </summary>
-        public event Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task> ComponentCommandExecuted { add { _interactionExecutedEvent.Add(value); } remove { _interactionExecutedEvent.Remove(value); } }
-        internal readonly AsyncEvent<Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task>> _interactionExecutedEvent = new AsyncEvent<Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task>>();
+        public event Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task> ComponentCommandExecuted { add { _componentCommandExecutedEvent.Add(value); } remove { _componentCommandExecutedEvent.Remove(value); } }
+        internal readonly AsyncEvent<Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task>> _componentCommandExecutedEvent = new AsyncEvent<Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task>>();
 
         private readonly ConcurrentDictionary<Type, ModuleInfo> _typedModuleDefs;
         private readonly CommandMap<SlashCommandInfo> _slashCommandMap;

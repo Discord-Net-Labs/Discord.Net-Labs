@@ -11,7 +11,7 @@ namespace Discord.Interactions
     /// </summary>
     public class ModuleInfo
     {
-        internal ILookup<string, PreconditionAttribute> _groupedPreconditions { get; }
+        internal ILookup<string, PreconditionAttribute> GroupedPreconditions { get; }
 
         /// <summary>
         ///     The underlying command service
@@ -112,7 +112,7 @@ namespace Discord.Interactions
             IsTopLevelGroup = CheckTopLevel(parent);
             DontAutoRegister = builder.DontAutoRegister;
 
-            _groupedPreconditions = builder.Preconditions.ToLookup(x => x.Group, x => x, StringComparer.Ordinal);
+            GroupedPreconditions = builder.Preconditions.ToLookup(x => x.Group, x => x, StringComparer.Ordinal);
         }
 
         private IEnumerable<ModuleInfo> BuildSubModules(ModuleBuilder builder, InteractionService commandService = null)
