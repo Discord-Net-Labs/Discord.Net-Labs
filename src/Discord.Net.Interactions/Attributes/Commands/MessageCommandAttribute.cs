@@ -22,7 +22,7 @@ namespace Discord.Interactions
         {
             var parameters = methodInfo.GetParameters();
 
-            if (parameters.Length != 1 || !parameters[0].ParameterType.IsAssignableFrom(typeof(IMessage)))
+            if (parameters.Length != 1 || !typeof(IMessage).IsAssignableFrom(parameters[0].ParameterType))
                 throw new InvalidOperationException($"Message Commands must have only one parameter that is a type of {nameof(IMessage)}");
         }
     }
