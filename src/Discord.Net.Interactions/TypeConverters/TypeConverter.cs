@@ -20,7 +20,7 @@ namespace Discord.Interactions
         ///     Will be used to get the Application Command Option type
         /// </summary>
         /// <returns>The option type</returns>
-        public abstract ApplicationCommandOptionType GetDiscordType ();
+        public abstract ApplicationCommandOptionType GetDiscordType ( );
 
         /// <summary>
         ///     Will be used to read the incoming payload before executing the method body
@@ -35,7 +35,7 @@ namespace Discord.Interactions
         ///     Will be used to manipulate the outgoing command option, before the command gets registered to Discord
         /// </summary>
         /// <param name="properties"></param>
-        public virtual void Write(ApplicationCommandOptionProperties properties) { }
+        public virtual void Write (ApplicationCommandOptionProperties properties) { }
     }
 
     /// <inheritdoc/>

@@ -2,7 +2,7 @@ using System;
 
 namespace Discord.Interactions
 {
-    internal struct SearchResult<T> : IResult where T: class, ICommandInfo
+    internal struct SearchResult<T> : IResult where T : class, ICommandInfo
     {
         public string Text { get; }
         public T Command { get; }
@@ -13,7 +13,7 @@ namespace Discord.Interactions
 
         public bool IsSuccess => !Error.HasValue;
 
-        private SearchResult(string text, T commandInfo, string[] captureGroups, InteractionCommandError? error, string reason)
+        private SearchResult (string text, T commandInfo, string[] captureGroups, InteractionCommandError? error, string reason)
         {
             Text = text;
             Error = error;

@@ -2,7 +2,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -134,12 +133,12 @@ namespace Discord.Interactions
                 switch (RunMode)
                 {
                     case RunMode.Sync:
-                        using(var scope = services.CreateScope())
+                        using (var scope = services.CreateScope())
                             return await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
                     case RunMode.Async:
                         _ = Task.Run(async ( ) =>
                         {
-                            using(var scope = services.CreateScope())
+                            using (var scope = services.CreateScope())
                                 await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
                         });
                         break;

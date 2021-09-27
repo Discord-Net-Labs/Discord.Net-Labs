@@ -1,6 +1,6 @@
+using Discord.Interactions.Builders;
 using Discord.Logging;
 using Discord.Rest;
-using Discord.Interactions.Builders;
 using Discord.WebSocket;
 using System;
 using System.Collections.Concurrent;
@@ -195,7 +195,7 @@ namespace Discord.Interactions
                 if (_typedModuleDefs.ContainsKey(typeInfo))
                     throw new ArgumentException("Module definition for this type already exists.");
 
-                var moduleDef = (await ModuleClassBuilder.BuildAsync(new List<TypeInfo> { typeof(T).GetTypeInfo() }, this, services).ConfigureAwait(false)).FirstOrDefault();
+                var moduleDef = ( await ModuleClassBuilder.BuildAsync(new List<TypeInfo> { typeof(T).GetTypeInfo() }, this, services).ConfigureAwait(false) ).FirstOrDefault();
 
                 if (moduleDef.Value == default)
                     throw new InvalidOperationException($"Could not build the module {typeInfo.FullName}, did you pass an invalid type?");
@@ -229,7 +229,7 @@ namespace Discord.Interactions
 
             if (!deleteMissing)
             {
-                
+
                 var existing = await Client.Rest.GetGuildApplicationCommands(guildId).ConfigureAwait(false);
                 var missing = existing.Where(x => !props.Any(y => y.Name.IsSpecified && y.Name.Value == x.Name));
                 props.AddRange(missing.Select(x => x.ToApplicationCommandProps()));
@@ -250,7 +250,7 @@ namespace Discord.Interactions
             EnsureClientReady();
 
             var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
-            
+
             if (!deleteMissing)
             {
                 var existing = await Client.Rest.GetGlobalApplicationCommands().ConfigureAwait(false);
@@ -284,7 +284,7 @@ namespace Discord.Interactions
 
             var props = new List<ApplicationCommandProperties>();
 
-            foreach(var command in commands)
+            foreach (var command in commands)
             {
                 switch (command)
                 {
@@ -396,7 +396,7 @@ namespace Discord.Interactions
         /// <returns>
         ///     A task representing the command execution process. The task result contains the result of the execution
         /// </returns>
-        public async Task<IResult> ExecuteCommandAsync(IInteractionCommandContext context, IServiceProvider services)
+        public async Task<IResult> ExecuteCommandAsync (IInteractionCommandContext context, IServiceProvider services)
         {
             var interaction = context.Interaction;
 
@@ -438,7 +438,7 @@ namespace Discord.Interactions
 
         private async Task<IResult> ExecuteContextCommandAsync (IInteractionCommandContext context, string input, ApplicationCommandType commandType, IServiceProvider services)
         {
-            if(!_contextCommandMaps.TryGetValue(commandType, out var map))
+            if (!_contextCommandMaps.TryGetValue(commandType, out var map))
                 return SearchResult<ContextCommandInfo>.FromError(input, InteractionCommandError.UnknownCommand, $"No {commandType} command found.");
 
             var result = map.GetCommand(input);
@@ -601,7 +601,7 @@ namespace Discord.Interactions
                 throw new ArgumentNullException("guild");
 
             var commands = await Client.Rest.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
-            var appCommand = commands.First(x => x.Name == (command as IApplicationCommandInfo).Name);
+            var appCommand = commands.First(x => x.Name == ( command as IApplicationCommandInfo ).Name);
 
             return await appCommand.ModifyCommandPermissions(permissions).ConfigureAwait(false);
         }

@@ -25,7 +25,7 @@ namespace Discord.Interactions.Builders
             return Instance;
         }
 
-        public override SlashCommandBuilder AddParameter(Action<SlashCommandParameterBuilder> configure)
+        public override SlashCommandBuilder AddParameter (Action<SlashCommandParameterBuilder> configure)
         {
             var parameter = new SlashCommandParameterBuilder(this);
             configure(parameter);

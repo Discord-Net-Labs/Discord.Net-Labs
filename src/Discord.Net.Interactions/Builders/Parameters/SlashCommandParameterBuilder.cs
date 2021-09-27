@@ -12,7 +12,7 @@ namespace Discord.Interactions.Builders
         public TypeConverter TypeConverter { get; private set; }
         protected override SlashCommandParameterBuilder Instance => this;
 
-        internal SlashCommandParameterBuilder ( ICommandBuilder command ) : base(command) { }
+        internal SlashCommandParameterBuilder (ICommandBuilder command) : base(command) { }
 
         public SlashCommandParameterBuilder (ICommandBuilder command, string name, Type type) : base(command, name, type) { }
 

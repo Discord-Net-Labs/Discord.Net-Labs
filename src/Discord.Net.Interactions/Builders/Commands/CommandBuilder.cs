@@ -35,7 +35,7 @@ namespace Discord.Interactions.Builders
             Module = module;
         }
 
-        public CommandBuilder(ModuleBuilder module, string name, ExecuteCallback callback) : this(module)
+        public CommandBuilder (ModuleBuilder module, string name, ExecuteCallback callback) : this(module)
         {
             Name = name;
             Callback = callback;

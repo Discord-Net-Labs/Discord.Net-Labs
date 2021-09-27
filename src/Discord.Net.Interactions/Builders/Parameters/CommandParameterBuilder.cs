@@ -6,7 +6,7 @@ namespace Discord.Interactions.Builders
     {
         protected override CommandParameterBuilder Instance => this;
 
-        internal CommandParameterBuilder( ICommandBuilder command) : base( command) { }
+        internal CommandParameterBuilder (ICommandBuilder command) : base(command) { }
 
         public CommandParameterBuilder (ICommandBuilder command, string name, Type type) : base(command, name, type) { }
 

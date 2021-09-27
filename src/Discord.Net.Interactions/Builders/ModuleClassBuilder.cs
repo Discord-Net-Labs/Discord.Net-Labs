@@ -1,8 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -51,7 +49,7 @@ namespace Discord.Interactions.Builders
                 BuildSubModules(builder, type.DeclaredNestedTypes, built, commandService, services);
                 built.Add(type);
 
-                var moduleInfo = builder.Build();
+                var moduleInfo = builder.Build(commandService);
 
                 IInteractionModuleBase instance = ReflectionUtils<IInteractionModuleBase>.CreateObject(type, commandService, services);
                 try
@@ -313,7 +311,7 @@ namespace Discord.Interactions.Builders
         }
 
         #region Parameters
-        private static void BuildSlashParameter(SlashCommandParameterBuilder builder, ParameterInfo paramInfo)
+        private static void BuildSlashParameter (SlashCommandParameterBuilder builder, ParameterInfo paramInfo)
         {
             var attributes = paramInfo.GetCustomAttributes();
             var paramType = paramInfo.ParameterType;
@@ -353,7 +351,7 @@ namespace Discord.Interactions.Builders
             }
         }
 
-        private static void BuildParameter(CommandParameterBuilder builder, ParameterInfo paramInfo)
+        private static void BuildParameter (CommandParameterBuilder builder, ParameterInfo paramInfo)
         {
             var attributes = paramInfo.GetCustomAttributes();
             var paramType = paramInfo.ParameterType;
@@ -363,7 +361,7 @@ namespace Discord.Interactions.Builders
             builder.DefaultValue = paramInfo.DefaultValue;
             builder.SetParameterType(paramType);
 
-            foreach(var attribute in attributes)
+            foreach (var attribute in attributes)
             {
                 switch (attribute)
                 {

@@ -56,8 +56,7 @@ namespace Discord.Interactions
         /// <summary>
         ///     Get the Context Commands that are declared in this module
         /// </summary>
-        public IReadOnlyList<ContextCommandInfo> ContextCommands { get;
-        }
+        public IReadOnlyList<ContextCommandInfo> ContextCommands { get; }
         /// <summary>
         ///     Get the Component Commands that are declared in this module
         /// </summary>
@@ -94,7 +93,7 @@ namespace Discord.Interactions
         /// </summary>
         public bool DontAutoRegister { get; }
 
-        internal ModuleInfo (ModuleBuilder builder, InteractionService commandService = null,  ModuleInfo parent = null)
+        internal ModuleInfo (ModuleBuilder builder, InteractionService commandService = null, ModuleInfo parent = null)
         {
             CommandService = commandService ?? builder.CommandService;
 
@@ -106,7 +105,8 @@ namespace Discord.Interactions
             SlashCommands = BuildSlashCommands(builder).ToImmutableArray();
             ContextCommands = BuildContextCommands(builder).ToImmutableArray();
             ComponentCommands = BuildComponentCommands(builder).ToImmutableArray();
-            SubModules = BuildSubModules(builder).ToImmutableArray();;
+            SubModules = BuildSubModules(builder).ToImmutableArray();
+            ;
             Attributes = BuildAttributes(builder).ToImmutableArray();
             Preconditions = BuildPreconditions(builder).ToImmutableArray();
             IsTopLevelGroup = CheckTopLevel(parent);
@@ -115,7 +115,7 @@ namespace Discord.Interactions
             GroupedPreconditions = builder.Preconditions.ToLookup(x => x.Group, x => x, StringComparer.Ordinal);
         }
 
-        private IEnumerable<ModuleInfo> BuildSubModules(ModuleBuilder builder, InteractionService commandService = null)
+        private IEnumerable<ModuleInfo> BuildSubModules (ModuleBuilder builder, InteractionService commandService = null)
         {
             var result = new List<ModuleInfo>();
 
@@ -135,7 +135,7 @@ namespace Discord.Interactions
             return result;
         }
 
-        private IEnumerable<ContextCommandInfo> BuildContextCommands(ModuleBuilder builder)
+        private IEnumerable<ContextCommandInfo> BuildContextCommands (ModuleBuilder builder)
         {
             var result = new List<ContextCommandInfo>();
 
@@ -145,7 +145,7 @@ namespace Discord.Interactions
             return result;
         }
 
-        private IEnumerable<ComponentCommandInfo> BuildComponentCommands(ModuleBuilder builder)
+        private IEnumerable<ComponentCommandInfo> BuildComponentCommands (ModuleBuilder builder)
         {
             var result = new List<ComponentCommandInfo>();
 
@@ -169,7 +169,7 @@ namespace Discord.Interactions
             return result;
         }
 
-        private IEnumerable<PreconditionAttribute> BuildPreconditions(ModuleBuilder builder)
+        private IEnumerable<PreconditionAttribute> BuildPreconditions (ModuleBuilder builder)
         {
             var preconditions = new List<PreconditionAttribute>();
 
@@ -184,7 +184,7 @@ namespace Discord.Interactions
             return preconditions;
         }
 
-        private bool CheckTopLevel(ModuleInfo parent)
+        private bool CheckTopLevel (ModuleInfo parent)
         {
             var currentParent = parent;
 

@@ -20,7 +20,7 @@ namespace Discord.Interactions.Builders
         public IReadOnlyCollection<ParameterPreconditionAttribute> Preconditions => _preconditions;
         protected abstract TBuilder Instance { get; }
 
-        internal ParameterBuilder ( ICommandBuilder command)
+        internal ParameterBuilder (ICommandBuilder command)
         {
             _attributes = new List<Attribute>();
             _preconditions = new List<ParameterPreconditionAttribute>();

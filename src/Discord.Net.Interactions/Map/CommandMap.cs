@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,7 +26,7 @@ namespace Discord.Interactions
             _root = new CommandMapNode<T>(null, _commandService._wildCardExp);
         }
 
-        public void AddCommand(T command, bool ignoreGroupNames = false)
+        public void AddCommand (T command, bool ignoreGroupNames = false)
         {
             if (ignoreGroupNames)
                 AddCommandToRoot(command);
@@ -35,7 +34,7 @@ namespace Discord.Interactions
                 AddCommand(command);
         }
 
-        public void AddCommandToRoot(T command)
+        public void AddCommandToRoot (T command)
         {
             string[] key = new string[] { command.Name };
             _root.AddCommand(key, 0, command);
@@ -69,7 +68,7 @@ namespace Discord.Interactions
 
             while (currentParent != null)
             {
-                if(!string.IsNullOrEmpty(currentParent.SlashGroupName))
+                if (!string.IsNullOrEmpty(currentParent.SlashGroupName))
                     keywords.Add(currentParent.SlashGroupName);
 
                 currentParent = currentParent.Parent;

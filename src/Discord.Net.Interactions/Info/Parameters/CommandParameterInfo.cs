@@ -35,7 +35,7 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public IReadOnlyCollection<ParameterPreconditionAttribute> Preconditions { get; }
 
-        internal CommandParameterInfo(Builders.IParameterBuilder builder, ICommandInfo command)
+        internal CommandParameterInfo (Builders.IParameterBuilder builder, ICommandInfo command)
         {
             Command = command;
             Name = builder.Name;

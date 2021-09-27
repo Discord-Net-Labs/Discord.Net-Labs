@@ -17,21 +17,21 @@ namespace Discord.Interactions
 
     internal class DefaultRoleConverter<T> : DefaultEntityTypeConverter<T> where T : class, IRole
     {
-        public override ApplicationCommandOptionType GetDiscordType () => ApplicationCommandOptionType.Role;
+        public override ApplicationCommandOptionType GetDiscordType ( ) => ApplicationCommandOptionType.Role;
     }
 
     internal class DefaultUserConverter<T> : DefaultEntityTypeConverter<T> where T : class, IUser
     {
-        public override ApplicationCommandOptionType GetDiscordType () => ApplicationCommandOptionType.User;
+        public override ApplicationCommandOptionType GetDiscordType ( ) => ApplicationCommandOptionType.User;
     }
 
     internal class DefaultChannelConverter<T> : DefaultEntityTypeConverter<T> where T : class, IChannel
     {
-        public override ApplicationCommandOptionType GetDiscordType () => ApplicationCommandOptionType.Channel;
+        public override ApplicationCommandOptionType GetDiscordType ( ) => ApplicationCommandOptionType.Channel;
     }
 
     internal class DefaultMentionableConverter<T> : DefaultEntityTypeConverter<T> where T : class, IMentionable
     {
-        public override ApplicationCommandOptionType GetDiscordType () => ApplicationCommandOptionType.Mentionable;
+        public override ApplicationCommandOptionType GetDiscordType ( ) => ApplicationCommandOptionType.Mentionable;
     }
 }

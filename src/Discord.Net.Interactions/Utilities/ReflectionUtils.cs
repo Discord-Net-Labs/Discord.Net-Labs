@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Discord.Interactions
 {
@@ -80,7 +79,7 @@ namespace Discord.Interactions
             throw new InvalidOperationException($"Failed to create \"{ownerType.FullName}\", dependency \"{memberType.Name}\" was not found.");
         }
 
-        internal static Func<T, object[], Task> CreateMethodInvoker ( MethodInfo methodInfo )
+        internal static Func<T, object[], Task> CreateMethodInvoker (MethodInfo methodInfo)
         {
             var parameters = methodInfo.GetParameters();
             var paramsExp = new Expression[parameters.Length];

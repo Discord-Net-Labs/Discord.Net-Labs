@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.Interactions.Builders
 {
@@ -33,7 +31,7 @@ namespace Discord.Interactions.Builders
 
         internal TypeInfo TypeInfo { get; set; }
 
-        internal ModuleBuilder(InteractionService interactionService, ModuleBuilder parent = null)
+        internal ModuleBuilder (InteractionService interactionService, ModuleBuilder parent = null)
         {
             CommandService = interactionService;
             Parent = parent;
@@ -46,7 +44,7 @@ namespace Discord.Interactions.Builders
             _preconditions = new List<PreconditionAttribute>();
         }
 
-        public ModuleBuilder(InteractionService interactionService, string name, ModuleBuilder parent = null) : this(interactionService, parent)
+        public ModuleBuilder (InteractionService interactionService, string name, ModuleBuilder parent = null) : this(interactionService, parent)
         {
             Name = name;
         }
@@ -57,25 +55,25 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
-        public ModuleBuilder WithDescription(string description)
+        public ModuleBuilder WithDescription (string description)
         {
             Description = description;
             return this;
         }
 
-        public ModuleBuilder WithDefaultPermision(bool permission)
+        public ModuleBuilder WithDefaultPermision (bool permission)
         {
             DefaultPermission = permission;
             return this;
         }
 
-        public ModuleBuilder AddAttributes(params Attribute[] attributes)
+        public ModuleBuilder AddAttributes (params Attribute[] attributes)
         {
             _attributes.AddRange(attributes);
             return this;
         }
 
-        public ModuleBuilder AddPreconditions(params PreconditionAttribute[] preconditions)
+        public ModuleBuilder AddPreconditions (params PreconditionAttribute[] preconditions)
         {
             _preconditions.AddRange(preconditions);
             return this;
@@ -89,7 +87,7 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
-        public ModuleBuilder AddContextCommand(Action<ContextCommandBuilder> configure)
+        public ModuleBuilder AddContextCommand (Action<ContextCommandBuilder> configure)
         {
             var command = new ContextCommandBuilder(this);
             configure(command);
@@ -97,7 +95,7 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
-        public ModuleBuilder AddComponentCommand(Action<ComponentCommandBuilder> configure)
+        public ModuleBuilder AddComponentCommand (Action<ComponentCommandBuilder> configure)
         {
             var command = new ComponentCommandBuilder(this);
             configure(command);
@@ -105,7 +103,7 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
-        public ModuleBuilder AddModule ( Action<ModuleBuilder> configure)
+        public ModuleBuilder AddModule (Action<ModuleBuilder> configure)
         {
             var subModule = new ModuleBuilder(CommandService, this);
             configure(subModule);
@@ -113,8 +111,8 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
-        internal ModuleInfo Build ( InteractionService interactionService, ModuleInfo parent = null ) =>
-            new ModuleInfo (this, interactionService, parent);
+        internal ModuleInfo Build (InteractionService interactionService, ModuleInfo parent = null) =>
+            new ModuleInfo(this, interactionService, parent);
 
         public ModuleInfo Build (InteractionService interactionService) =>
             new ModuleInfo(this, interactionService);

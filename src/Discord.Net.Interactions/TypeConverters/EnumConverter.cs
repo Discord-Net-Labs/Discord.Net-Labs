@@ -24,7 +24,7 @@ namespace Discord.Interactions
         public override void Write (ApplicationCommandOptionProperties properties)
         {
             var names = Enum.GetNames(typeof(T));
-            if(names.Length <= 25)
+            if (names.Length <= 25)
             {
                 var choices = new List<ApplicationCommandOptionChoiceProperties>();
 

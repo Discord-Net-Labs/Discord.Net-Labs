@@ -8,7 +8,7 @@ namespace Discord.Interactions
     ///     Represent a command information object that can be executed
     /// </summary>
     public interface ICommandInfo
-    { 
+    {
         /// <summary>
         ///     Name of the command
         /// </summary>

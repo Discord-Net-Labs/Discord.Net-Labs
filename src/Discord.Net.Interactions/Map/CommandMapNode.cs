@@ -73,13 +73,13 @@ namespace Discord.Interactions
         {
             string name = string.Join(" ", keywords);
 
-            if(keywords.Length == index + 1)
+            if (keywords.Length == index + 1)
             {
                 if (_commands.TryGetValue(keywords[index], out var cmd))
                     return SearchResult<T>.FromSuccess(name, cmd);
                 else
                 {
-                    foreach(var cmdPair in _wildCardCommands)
+                    foreach (var cmdPair in _wildCardCommands)
                     {
                         var match = cmdPair.Key.Match(keywords[index]);
                         if (match.Success && match.Value.Length == keywords[index].Length)
