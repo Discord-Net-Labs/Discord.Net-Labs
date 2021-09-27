@@ -3,19 +3,18 @@ using System.Collections.Generic;
 
 namespace Discord.Interactions.Builders
 {
-    internal class SlashCommandParameterBuilder : ParameterBuilder<SlashCommandParameterInfo, SlashCommandParameterBuilder>
+    public sealed class SlashCommandParameterBuilder : ParameterBuilder<SlashCommandParameterInfo, SlashCommandParameterBuilder>
     {
-        private readonly List<ParameterChoice> _choices;
+        private readonly List<ParameterChoice> _choices = new List<ParameterChoice>();
 
         public string Description { get; set; }
         public IReadOnlyCollection<ParameterChoice> Choices => _choices;
         public TypeConverter TypeConverter { get; private set; }
         protected override SlashCommandParameterBuilder Instance => this;
 
-        internal SlashCommandParameterBuilder ( ICommandBuilder command ) : base(command)
-        {
-            _choices = new List<ParameterChoice>();
-        }
+        internal SlashCommandParameterBuilder ( ICommandBuilder command ) : base(command) { }
+
+        public SlashCommandParameterBuilder (ICommandBuilder command, string name, Type type) : base(command, name, type) { }
 
         public SlashCommandParameterBuilder WithDescription (string description)
         {
@@ -36,7 +35,7 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
-        public override SlashCommandParameterInfo Build (ICommandInfo command) =>
+        internal override SlashCommandParameterInfo Build (ICommandInfo command) =>
             new SlashCommandParameterInfo(this, command as SlashCommandInfo);
     }
 }

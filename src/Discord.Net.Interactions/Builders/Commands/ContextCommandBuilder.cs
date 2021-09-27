@@ -2,7 +2,7 @@ using System;
 
 namespace Discord.Interactions.Builders
 {
-    internal class ContextCommandBuilder : CommandBuilder<ContextCommandInfo, ContextCommandBuilder, CommandParameterBuilder>
+    public sealed class ContextCommandBuilder : CommandBuilder<ContextCommandInfo, ContextCommandBuilder, CommandParameterBuilder>
     {
         protected override ContextCommandBuilder Instance => this;
 
@@ -10,6 +10,8 @@ namespace Discord.Interactions.Builders
         public bool DefaultPermission { get; set; } = true;
 
         internal ContextCommandBuilder (ModuleBuilder module) : base(module) { }
+
+        public ContextCommandBuilder (ModuleBuilder module, string name, ExecuteCallback callback) : base(module, name, callback) { }
 
         public ContextCommandBuilder SetType (ApplicationCommandType commandType)
         {

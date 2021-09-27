@@ -2,7 +2,7 @@ using System;
 
 namespace Discord.Interactions.Builders
 {
-    internal sealed class SlashCommandBuilder : CommandBuilder<SlashCommandInfo, SlashCommandBuilder, SlashCommandParameterBuilder>
+    public sealed class SlashCommandBuilder : CommandBuilder<SlashCommandInfo, SlashCommandBuilder, SlashCommandParameterBuilder>
     {
         protected override SlashCommandBuilder Instance => this;
 
@@ -10,6 +10,8 @@ namespace Discord.Interactions.Builders
         public bool DefaultPermission { get; set; } = true;
 
         internal SlashCommandBuilder (ModuleBuilder module) : base(module) { }
+
+        public SlashCommandBuilder (ModuleBuilder module, string name, ExecuteCallback callback) : base(module, name, callback) { }
 
         public SlashCommandBuilder WithDescription (string description)
         {

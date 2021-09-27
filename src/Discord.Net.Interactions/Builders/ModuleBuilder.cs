@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Discord.Interactions.Builders
 {
-    internal class ModuleBuilder
+    public class ModuleBuilder
     {
         private readonly List<Attribute> _attributes;
         private readonly List<PreconditionAttribute> _preconditions;
@@ -17,7 +17,7 @@ namespace Discord.Interactions.Builders
 
         public InteractionService CommandService { get; }
         public ModuleBuilder Parent { get; }
-        public string Name { get; set; }
+        public string Name { get; internal set; }
         public string SlashGroupName { get; set; }
         public bool IsSlashGroup => !string.IsNullOrEmpty(SlashGroupName);
         public string Description { get; set; }
@@ -33,9 +33,9 @@ namespace Discord.Interactions.Builders
 
         internal TypeInfo TypeInfo { get; set; }
 
-        internal ModuleBuilder(InteractionService commandService, ModuleBuilder parent = null)
+        internal ModuleBuilder(InteractionService interactionService, ModuleBuilder parent = null)
         {
-            CommandService = commandService;
+            CommandService = interactionService;
             Parent = parent;
 
             _attributes = new List<Attribute>();
@@ -44,6 +44,11 @@ namespace Discord.Interactions.Builders
             _contextCommands = new List<ContextCommandBuilder>();
             _componentCommands = new List<ComponentCommandBuilder>();
             _preconditions = new List<PreconditionAttribute>();
+        }
+
+        public ModuleBuilder(InteractionService interactionService, string name, ModuleBuilder parent = null) : this(interactionService, parent)
+        {
+            Name = name;
         }
 
         public ModuleBuilder WithGroupName (string name)
@@ -108,9 +113,10 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
-        internal ModuleInfo Build ( InteractionService commandService = null, ModuleInfo parent = null )
-        {
-            return new ModuleInfo(this, commandService, parent);
-        }
+        internal ModuleInfo Build ( InteractionService interactionService, ModuleInfo parent = null ) =>
+            new ModuleInfo (this, interactionService, parent);
+
+        public ModuleInfo Build (InteractionService interactionService) =>
+            new ModuleInfo(this, interactionService);
     }
 }

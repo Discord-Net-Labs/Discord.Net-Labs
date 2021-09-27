@@ -2,13 +2,15 @@ using System;
 
 namespace Discord.Interactions.Builders
 {
-    internal sealed class CommandParameterBuilder : ParameterBuilder<CommandParameterInfo, CommandParameterBuilder>
+    public sealed class CommandParameterBuilder : ParameterBuilder<CommandParameterInfo, CommandParameterBuilder>
     {
-        public CommandParameterBuilder( ICommandBuilder builder) : base( builder) { }
+        protected override CommandParameterBuilder Instance => this;
 
-        protected override Builders.CommandParameterBuilder Instance => this;
+        internal CommandParameterBuilder( ICommandBuilder command) : base( command) { }
 
-        public override CommandParameterInfo Build (ICommandInfo command) =>
+        public CommandParameterBuilder (ICommandBuilder command, string name, Type type) : base(command, name, type) { }
+
+        internal override CommandParameterInfo Build (ICommandInfo command) =>
             new CommandParameterInfo(this, command);
     }
 }

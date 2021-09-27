@@ -20,7 +20,7 @@ namespace Discord.Interactions
     /// <returns>
     ///     A task representing the execution operation
     /// </returns>
-    internal delegate Task ExecuteCallback (IInteractionCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo);
+    public delegate Task ExecuteCallback (IInteractionCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo);
 
     /// <summary>
     ///     The base information class for <see cref="InteractionService"/> commands
@@ -29,8 +29,7 @@ namespace Discord.Interactions
     public abstract class CommandInfo<TParameter> : ICommandInfo where TParameter : class, IParameterInfo
     {
         private readonly ExecuteCallback _action;
-
-        protected ILookup<string, PreconditionAttribute> _groupedPreconditions { get; }
+        private ILookup<string, PreconditionAttribute> _groupedPreconditions { get; }
 
         /// <inheritdoc/>
         public ModuleInfo Module { get; }
@@ -115,7 +114,7 @@ namespace Discord.Interactions
                 return PreconditionGroupResult.FromSuccess();
             }
 
-            var moduleResult = await CheckGroups(Module._groupedPreconditions, "Module").ConfigureAwait(false);
+            var moduleResult = await CheckGroups(Module.GroupedPreconditions, "Module").ConfigureAwait(false);
             if (!moduleResult.IsSuccess)
                 return moduleResult;
 

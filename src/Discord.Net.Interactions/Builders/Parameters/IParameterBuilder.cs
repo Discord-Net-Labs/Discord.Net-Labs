@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Discord.Interactions.Builders
 {
-    internal interface IParameterBuilder
+    public interface IParameterBuilder
     {
         ICommandBuilder Command { get; }
         string Name { get; }
@@ -20,6 +20,5 @@ namespace Discord.Interactions.Builders
         IParameterBuilder SetDefaultValue (object defaultValue);
         IParameterBuilder AddAttributes (params Attribute[] attributes);
         IParameterBuilder AddPreconditions (params ParameterPreconditionAttribute[] preconditions);
-        IParameterInfo Build (ICommandInfo command);
     }
 }

@@ -2,11 +2,13 @@ using System;
 
 namespace Discord.Interactions.Builders
 {
-    internal sealed class ComponentCommandBuilder : CommandBuilder<ComponentCommandInfo, ComponentCommandBuilder, CommandParameterBuilder>
+    public sealed class ComponentCommandBuilder : CommandBuilder<ComponentCommandInfo, ComponentCommandBuilder, CommandParameterBuilder>
     {
         protected override ComponentCommandBuilder Instance => this;
 
-        public ComponentCommandBuilder (ModuleBuilder module) : base(module) { }
+        internal ComponentCommandBuilder (ModuleBuilder module) : base(module) { }
+
+        public ComponentCommandBuilder (ModuleBuilder module, string name, ExecuteCallback callback) : base(module, name, callback) { }
 
         public override ComponentCommandBuilder AddParameter (Action<CommandParameterBuilder> configure)
         {

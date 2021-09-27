@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Discord.Interactions.Builders
 {
-    internal interface ICommandBuilder
+    public interface ICommandBuilder
     {
-        ExecuteCallback Callback { get; set; }
+        ExecuteCallback Callback { get; }
         ModuleBuilder Module { get; }
-        string Name { get; set; }
+        string Name { get; }
         string MethodName { get; set; }
         bool IgnoreGroupNames { get; set; }
         RunMode RunMode { get; set; }
@@ -19,9 +19,7 @@ namespace Discord.Interactions.Builders
         ICommandBuilder WithMethodName (string name);
         ICommandBuilder WithAttributes (params Attribute[] attributes);
         ICommandBuilder SetRunMode (RunMode runMode);
-        ICommandBuilder AddParameter (IParameterBuilder builder);
         ICommandBuilder AddParameters (params IParameterBuilder[] parameters);
         ICommandBuilder WithPreconditions (params PreconditionAttribute[] preconditions);
-        ICommandInfo Build (ModuleInfo module, InteractionService commandService);
     }
 }
