@@ -473,7 +473,7 @@ namespace Discord.Interactions
             else if (_typeConverters.Any(x => x.Value.CanConvertTo(type)))
                 return _typeConverters.First(x => x.Value.CanConvertTo(type)).Value;
 
-            else if (_genericTypeConverters.Any(x => type.IsAssignableFrom(x.Key)))
+            else if (_genericTypeConverters.Any(x => x.Key.IsAssignableFrom(type)))
             {
                 var converterType = GetMostSpecificTypeConverter(type);
                 var converter = converterType.MakeGenericType(type).GetConstructor(Array.Empty<Type>()).Invoke(Array.Empty<object>()) as TypeConverter;
