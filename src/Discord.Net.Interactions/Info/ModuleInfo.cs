@@ -93,9 +93,9 @@ namespace Discord.Interactions
         /// </summary>
         public bool DontAutoRegister { get; }
 
-        internal ModuleInfo (ModuleBuilder builder, InteractionService commandService = null, ModuleInfo parent = null)
+        internal ModuleInfo (ModuleBuilder builder, InteractionService commandService, IServiceProvider services, ModuleInfo parent = null)
         {
-            CommandService = commandService ?? builder.CommandService;
+            CommandService = commandService;
 
             Name = builder.Name;
             SlashGroupName = builder.SlashGroupName;
@@ -105,8 +105,7 @@ namespace Discord.Interactions
             SlashCommands = BuildSlashCommands(builder).ToImmutableArray();
             ContextCommands = BuildContextCommands(builder).ToImmutableArray();
             ComponentCommands = BuildComponentCommands(builder).ToImmutableArray();
-            SubModules = BuildSubModules(builder).ToImmutableArray();
-            ;
+            SubModules = BuildSubModules(builder, commandService, services).ToImmutableArray();
             Attributes = BuildAttributes(builder).ToImmutableArray();
             Preconditions = BuildPreconditions(builder).ToImmutableArray();
             IsTopLevelGroup = CheckTopLevel(parent);
@@ -115,12 +114,12 @@ namespace Discord.Interactions
             GroupedPreconditions = builder.Preconditions.ToLookup(x => x.Group, x => x, StringComparer.Ordinal);
         }
 
-        private IEnumerable<ModuleInfo> BuildSubModules (ModuleBuilder builder, InteractionService commandService = null)
+        private IEnumerable<ModuleInfo> BuildSubModules (ModuleBuilder builder, InteractionService commandService, IServiceProvider services)
         {
             var result = new List<ModuleInfo>();
 
             foreach (Builders.ModuleBuilder moduleBuilder in builder.SubModules)
-                result.Add(moduleBuilder.Build(commandService, this));
+                result.Add(moduleBuilder.Build(commandService, services, this));
 
             return result;
         }

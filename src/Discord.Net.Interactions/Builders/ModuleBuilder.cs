@@ -113,7 +113,7 @@ namespace Discord.Interactions.Builders
 
         internal ModuleInfo Build (InteractionService interactionService, IServiceProvider services, ModuleInfo parent = null)
         {
-            var moduleInfo = new ModuleInfo(this, interactionService, parent);
+            var moduleInfo = new ModuleInfo(this, interactionService, services, parent);
 
             IInteractionModuleBase instance = ReflectionUtils<IInteractionModuleBase>.CreateObject(TypeInfo, interactionService, services);
             try

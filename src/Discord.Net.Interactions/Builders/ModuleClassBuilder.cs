@@ -49,18 +49,7 @@ namespace Discord.Interactions.Builders
                 BuildSubModules(builder, type.DeclaredNestedTypes, built, commandService, services);
                 built.Add(type);
 
-                var moduleInfo = builder.Build(commandService);
-
-                IInteractionModuleBase instance = ReflectionUtils<IInteractionModuleBase>.CreateObject(type, commandService, services);
-                try
-                {
-                    instance.OnModuleBuilding(commandService, moduleInfo);
-                }
-                finally
-                {
-                    ( instance as IDisposable )?.Dispose();
-                }
-
+                var moduleInfo = builder.Build(commandService, services);
 
                 result.Add(type.AsType(), moduleInfo);
             }
