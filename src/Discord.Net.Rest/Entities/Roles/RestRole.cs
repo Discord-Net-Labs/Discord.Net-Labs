@@ -77,6 +77,10 @@ namespace Discord.Rest
             => RoleHelper.DeleteAsync(this, Discord, options);
 
         /// <inheritdoc />
+        public string GetIconUrl()
+            => CDN.GetGuildRoleIconUrl(Id, Icon);
+
+        /// <inheritdoc />
         public int CompareTo(IRole role) => RoleUtils.Compare(this, role);
 
         /// <summary>

@@ -4880,6 +4880,9 @@
         <member name="M:Discord.WebSocket.SocketRole.DeleteAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
+        <member name="M:Discord.WebSocket.SocketRole.GetIconUrl">
+            <inheritdoc />
+        </member>
         <member name="M:Discord.WebSocket.SocketRole.ToString">
             <summary>
                 Gets the name of the role.

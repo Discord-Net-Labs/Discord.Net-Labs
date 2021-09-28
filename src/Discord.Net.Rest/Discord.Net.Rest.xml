@@ -4642,6 +4642,9 @@
         <member name="M:Discord.Rest.RestRole.DeleteAsync(Discord.RequestOptions)">
             <inheritdoc />
         </member>
+        <member name="M:Discord.Rest.RestRole.GetIconUrl">
+            <inheritdoc />
+        </member>
         <member name="M:Discord.Rest.RestRole.CompareTo(Discord.IRole)">
             <inheritdoc />
         </member>

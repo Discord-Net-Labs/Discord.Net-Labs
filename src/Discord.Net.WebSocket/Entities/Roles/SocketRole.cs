@@ -92,6 +92,10 @@ namespace Discord.WebSocket
         public Task DeleteAsync(RequestOptions options = null)
             => RoleHelper.DeleteAsync(this, Discord, options);
 
+        /// <inheritdoc />
+        public string GetIconUrl()
+            => CDN.GetGuildRoleIconUrl(Id, Icon);
+
         /// <summary>
         ///     Gets the name of the role.
         /// </summary>
