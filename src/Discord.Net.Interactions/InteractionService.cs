@@ -82,17 +82,22 @@ namespace Discord.Interactions
         public BaseSocketClient Client { get; }
 
         /// <summary>
-        ///     Initialize a <see cref="InteractionService"/> with the default configurations
+        ///     Initialize a <see cref="InteractionService"/> with provided configurations
         /// </summary>
         /// <param name="discord">The discord client</param>
-        public InteractionService (BaseSocketClient discord) : this(discord, new InteractionServiceConfig()) { }
+        /// <param name="config">The configuration class</param>
+        public InteractionService (DiscordSocketClient discord, InteractionServiceConfig config = null)
+            : this(discord as BaseSocketClient, config ?? new InteractionServiceConfig()) { }
 
         /// <summary>
         ///     Initialize a <see cref="InteractionService"/> with provided configurations
         /// </summary>
         /// <param name="discord">The discord client</param>
         /// <param name="config">The configuration class</param>
-        public InteractionService (BaseSocketClient discord, InteractionServiceConfig config)
+        public InteractionService (DiscordShardedClient discord, InteractionServiceConfig config = null)
+            : this(discord as BaseSocketClient, config ?? new InteractionServiceConfig()) { }
+
+        private InteractionService (BaseSocketClient discord, InteractionServiceConfig config)
         {
             _lock = new SemaphoreSlim(1, 1);
             _typedModuleDefs = new ConcurrentDictionary<Type, ModuleInfo>();
@@ -131,6 +136,27 @@ namespace Discord.Interactions
             {
                 [typeof(TimeSpan)] = new TimeSpanConverter()
             };
+        }
+
+        public async Task<ModuleInfo> CreateModuleAsync(string name, IServiceProvider services, Action<ModuleBuilder> buildFunc)
+        {
+            services = services ?? EmptyServiceProvider.Instance;
+
+            await _lock.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                var builder = new ModuleBuilder(this, name);
+                buildFunc(builder);
+
+                var moduleInfo = builder.Build(this, services);
+                LoadModuleInternal(moduleInfo);
+
+                return moduleInfo;
+            }
+            finally
+            {
+                _lock.Release();
+            }
         }
 
         /// <summary>
@@ -179,9 +205,26 @@ namespace Discord.Interactions
         /// <exception cref="InvalidOperationException">
         ///     Thrown when the <typeparamref name="T"/> is not a valid module definition
         /// </exception>
-        public async Task<ModuleInfo> AddModuleAsync<T> (IServiceProvider services) where T : class
+        public Task<ModuleInfo> AddModuleAsync<T> (IServiceProvider services) where T : class =>
+            AddModuleAsync(typeof(T), services);
+
+        /// <summary>
+        ///     Add a command module from a <see cref="Type"/>
+        /// </summary>
+        /// <param name="type">Type of the module</param>
+        /// <param name="services">The <see cref="IServiceProvider" /> for your dependency injection solution if using one; otherwise, pass <c>null</c> .</param>
+        /// <returns>
+        ///     A task representing the operation for adding the module. The task result contains the built module
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        ///     Thrown if this module has already been added.
+        /// </exception>
+        /// <exception cref="InvalidOperationException">
+        ///     Thrown when the <paramref name="type"/> is not a valid module definition
+        /// </exception>
+        public async Task<ModuleInfo> AddModuleAsync (Type type, IServiceProvider services)
         {
-            if (!typeof(IInteractionModuleBase).IsAssignableFrom(typeof(T)))
+            if (!typeof(IInteractionModuleBase).IsAssignableFrom(type))
                 throw new ArgumentException("Type parameter must be a type of Slash Module", "T");
 
             services = services ?? EmptyServiceProvider.Instance;
@@ -190,19 +233,20 @@ namespace Discord.Interactions
 
             try
             {
-                var typeInfo = typeof(T).GetTypeInfo();
+                var typeInfo = type.GetTypeInfo();
 
                 if (_typedModuleDefs.ContainsKey(typeInfo))
                     throw new ArgumentException("Module definition for this type already exists.");
 
-                var moduleDef = ( await ModuleClassBuilder.BuildAsync(new List<TypeInfo> { typeof(T).GetTypeInfo() }, this, services).ConfigureAwait(false) ).FirstOrDefault();
+                var moduleDef = ( await ModuleClassBuilder.BuildAsync(new List<TypeInfo> { typeInfo }, this, services).ConfigureAwait(false) ).FirstOrDefault();
 
                 if (moduleDef.Value == default)
                     throw new InvalidOperationException($"Could not build the module {typeInfo.FullName}, did you pass an invalid type?");
 
-                if (!_typedModuleDefs.TryAdd(typeof(T), moduleDef.Value))
+                if (!_typedModuleDefs.TryAdd(type, moduleDef.Value))
                     throw new ArgumentException("Module definition for this type already exists.");
 
+                _typedModuleDefs[moduleDef.Key] = moduleDef.Value;
                 LoadModuleInternal(moduleDef.Value);
 
                 return moduleDef.Value;
@@ -225,7 +269,8 @@ namespace Discord.Interactions
         {
             EnsureClientReady();
 
-            var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
+            var topLevelModules = _moduleDefs.Where(x => !x.IsSlashGroup);
+            var props = topLevelModules.SelectMany(x => x.ToApplicationCommandProps()).ToList();
 
             if (!deleteMissing)
             {
@@ -249,7 +294,8 @@ namespace Discord.Interactions
         {
             EnsureClientReady();
 
-            var props = _typedModuleDefs.Values.SelectMany(x => x.ToApplicationCommandProps()).ToList();
+            var topLevelModules = _moduleDefs.Where(x => !x.IsSlashGroup);
+            var props = topLevelModules.SelectMany(x => x.ToApplicationCommandProps()).ToList();
 
             if (!deleteMissing)
             {
@@ -352,6 +398,17 @@ namespace Discord.Interactions
         /// <summary>
         ///     Remove a command module
         /// </summary>
+        /// <typeparam name="T">The <see cref="Type"/> of the module.</typeparam>
+        /// <returns>
+        ///     A task that represents the asynchronous removal operation. The task result contains a value that
+        ///     indicates whether the module is successfully removed.
+        /// </returns>
+        public Task<bool> RemoveModuleAsync<T> ( ) =>
+            RemoveModuleAsync(typeof(T));
+
+        /// <summary>
+        ///     Remove a command module
+        /// </summary>
         /// <param name="type">The <see cref="Type"/> of the module.</param>
         /// <returns>
         ///     A task that represents the asynchronous removal operation. The task result contains a value that
@@ -374,11 +431,29 @@ namespace Discord.Interactions
             }
         }
 
+        public async Task<bool> RemoveModuleAsync(ModuleInfo module)
+        {
+            await _lock.WaitAsync().ConfigureAwait(false);
+
+            try
+            {
+                var typeModulePair = _typedModuleDefs.FirstOrDefault(x => x.Value.Equals(module));
+
+                if (!typeModulePair.Equals(default(KeyValuePair<Type, ModuleInfo>)))
+                    _typedModuleDefs.TryRemove(typeModulePair.Key, out var _);
+
+                return RemoveModuleInternal(module);
+            }
+            finally
+            {
+                _lock.Release();
+            }
+        }
+
         private bool RemoveModuleInternal (ModuleInfo moduleInfo)
         {
             if (!_moduleDefs.Remove(moduleInfo))
                 return false;
-
 
             foreach (var command in moduleInfo.SlashCommands)
             {
@@ -509,19 +584,18 @@ namespace Discord.Interactions
         ///     Add a generic type <see cref="TypeConverter{T}"/>
         /// </summary>
         /// <typeparam name="T">Generic Type constraint of the <see cref="Type"/> of the <see cref="TypeConverter{T}"/></typeparam>
-        /// <typeparam name="TConverter">Type of the <see cref="TypeConverter{T}"/></typeparam>
-        public void AddGenericTypeConverter<T, TConverter> ( ) where TConverter : TypeConverter, new() =>
-            AddGenericTypeConverter<TConverter>(typeof(T));
+        /// <param name="converterType">Type of the <see cref="TypeConverter{T}"/></param>
+
+        public void AddGenericTypeConverter<T> (Type converterType) =>
+            AddGenericTypeConverter(typeof(T), converterType);
 
         /// <summary>
         ///     Add a generic type <see cref="TypeConverter{T}"/>
         /// </summary>
-        /// <param name="type">Generic Type constraint of the <see cref="Type"/> of the <see cref="TypeConverter{T}"/></param>
-        /// <typeparam name="TConverter">Type of the <see cref="TypeConverter{T}"/></typeparam>
-        public void AddGenericTypeConverter<TConverter> (Type type) where TConverter : TypeConverter, new()
+        /// <param name="targetType">Generic Type constraint of the <see cref="Type"/> of the <see cref="TypeConverter{T}"/></param>
+        /// <param name="converterType">Type of the <see cref="TypeConverter{T}"/></param>
+        public void AddGenericTypeConverter (Type targetType, Type converterType)
         {
-            var converterType = typeof(TConverter);
-
             if (!converterType.IsGenericTypeDefinition)
                 throw new ArgumentException($"{converterType.FullName} is not generic.");
 
@@ -532,10 +606,10 @@ namespace Discord.Interactions
 
             var constraints = genericArguments.SelectMany(x => x.GetGenericParameterConstraints());
 
-            if (!constraints.Any(x => x.IsAssignableFrom(type)))
-                throw new InvalidOperationException($"This generic class does not support type {type.FullName}");
+            if (!constraints.Any(x => x.IsAssignableFrom(targetType)))
+                throw new InvalidOperationException($"This generic class does not support type {targetType.FullName}");
 
-            _genericTypeConverters[type] = converterType;
+            _genericTypeConverters[targetType] = converterType;
         }
 
         /// <summary>
