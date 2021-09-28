@@ -16,7 +16,7 @@ namespace Discord.Interactions
         ///     Setting this for a class that doesn't override
         ///     this property is a no-op.
         /// </summary>
-        public virtual string ErrorMessage { get { return null; } set { } }
+        public virtual string ErrorMessage { get; }
 
         /// <summary>
         ///     Checks whether the condition is met before execution of the command.
