@@ -128,30 +128,23 @@ namespace Discord.Interactions
         {
             services = services ?? EmptyServiceProvider.Instance;
 
-            try
+            switch (RunMode)
             {
-                switch (RunMode)
-                {
-                    case RunMode.Sync:
+                case RunMode.Sync:
+                    using (var scope = services.CreateScope())
+                        return await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
+                case RunMode.Async:
+                    _ = Task.Run(async ( ) =>
+                    {
                         using (var scope = services.CreateScope())
-                            return await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
-                    case RunMode.Async:
-                        _ = Task.Run(async ( ) =>
-                        {
-                            using (var scope = services.CreateScope())
-                                await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
-                        });
-                        break;
-                    default:
-                        throw new InvalidOperationException($"RunMode {RunMode} is not supported.");
-                }
+                            await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
+                    });
+                    break;
+                default:
+                    throw new InvalidOperationException($"RunMode {RunMode} is not supported.");
+            }
 
-                return ExecuteResult.FromSuccess();
-            }
-            catch (Exception ex)
-            {
-                return ExecuteResult.FromError(ex);
-            }
+            return ExecuteResult.FromSuccess();
         }
 
         private async Task<IResult> ExecuteInternalAsync (IInteractionCommandContext context, object[] args, IServiceProvider services)
@@ -172,7 +165,10 @@ namespace Discord.Interactions
                 {
                     var result = await parameter.CheckPreconditionsAsync(context, args[index++], services).ConfigureAwait(false);
                     if (!result.IsSuccess)
+                    {
+                        await InvokeModuleEvent(context, result).ConfigureAwait(false);
                         return result;
+                    }
                 }
 
                 var task = _action(context, args, services, this);
@@ -192,8 +188,9 @@ namespace Discord.Interactions
                     return result;
                 }
 
-
-                return ExecuteResult.FromError(InteractionCommandError.Unsuccessful, "Command execution failed for an unknown reason");
+                var failResult = ExecuteResult.FromError(InteractionCommandError.Unsuccessful, "Command execution failed for an unknown reason");
+                await InvokeModuleEvent(context, failResult).ConfigureAwait(false);
+                return failResult;
             }
             catch (Exception ex)
             {
