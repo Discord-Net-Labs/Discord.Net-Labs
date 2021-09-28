@@ -113,8 +113,5 @@ namespace Discord.Interactions.Builders
 
         internal ModuleInfo Build (InteractionService interactionService, ModuleInfo parent = null) =>
             new ModuleInfo(this, interactionService, parent);
-
-        public ModuleInfo Build (InteractionService interactionService) =>
-            new ModuleInfo(this, interactionService);
     }
 }
