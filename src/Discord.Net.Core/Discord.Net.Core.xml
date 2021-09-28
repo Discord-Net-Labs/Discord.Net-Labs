@@ -9638,6 +9638,14 @@
                 A string containing the name of this role.
             </returns>
         </member>
+        <member name="P:Discord.IRole.Icon">
+            <summary>
+                Gets the icon of this role.
+            </summary>
+            <returns>
+                A string containing the hash of this role's icon.
+            </returns>
+        </member>
         <member name="P:Discord.IRole.Permissions">
             <summary>
                 Gets the permissions granted to members of this role.

@@ -4843,6 +4843,9 @@
         <member name="P:Discord.WebSocket.SocketRole.Name">
             <inheritdoc />
         </member>
+        <member name="P:Discord.WebSocket.SocketRole.Icon">
+            <inheritdoc />
+        </member>
         <member name="P:Discord.WebSocket.SocketRole.Permissions">
             <inheritdoc />
         </member>

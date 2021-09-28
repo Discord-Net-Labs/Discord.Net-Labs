@@ -4613,6 +4613,9 @@
         <member name="P:Discord.Rest.RestRole.Name">
             <inheritdoc />
         </member>
+        <member name="P:Discord.Rest.RestRole.Icon">
+            <inheritdoc />
+        </member>
         <member name="P:Discord.Rest.RestRole.Permissions">
             <inheritdoc />
         </member>

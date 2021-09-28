@@ -52,6 +52,13 @@ namespace Discord
         /// </returns>
         string Name { get; }
         /// <summary>
+        ///     Gets the icon of this role.
+        /// </summary>
+        /// <returns>
+        ///     A string containing the hash of this role's icon.
+        /// </returns>
+        string Icon { get; }
+        /// <summary>
         ///     Gets the permissions granted to members of this role.
         /// </summary>
         /// <returns>
