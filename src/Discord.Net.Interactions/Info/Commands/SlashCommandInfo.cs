@@ -56,9 +56,16 @@ namespace Discord.Interactions
         public async Task<IResult> ExecuteAsync (IInteractionCommandContext context, IEnumerable<SlashCommandParameterInfo> paramList,
             IEnumerable<SocketSlashCommandDataOption> argList, IServiceProvider services)
         {
-            object[] args = await GenerateArgs(context, paramList, argList, services).ConfigureAwait(false);
+            try
+            {
+                object[] args = await GenerateArgs(context, paramList, argList, services).ConfigureAwait(false);
 
-            return await RunAsync(context, args, services).ConfigureAwait(false);
+                return await RunAsync(context, args, services).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                return ExecuteResult.FromError(ex);
+            }
         }
 
         private async Task<object[]> GenerateArgs (IInteractionCommandContext context, IEnumerable<SlashCommandParameterInfo> paramList,

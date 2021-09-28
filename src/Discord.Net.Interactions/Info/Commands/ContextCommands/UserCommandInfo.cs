@@ -15,13 +15,20 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public override async Task<IResult> ExecuteAsync (IInteractionCommandContext context, IServiceProvider services)
         {
-            if (!( context.Interaction is SocketUserCommand userCommand ))
-                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionCommandContext)} does not belong to a User Command");
+            try
+            {
+                if (!( context.Interaction is SocketUserCommand userCommand ))
+                    return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionCommandContext)} does not belong to a User Command");
 
-            var user = userCommand.Data.Member;
-            object[] args = new object[1] { user };
+                var user = userCommand.Data.Member;
+                object[] args = new object[1] { user };
 
-            return await RunAsync(context, args, services).ConfigureAwait(false);
+                return await RunAsync(context, args, services).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                return ExecuteResult.FromError(ex);
+            }
         }
 
         /// <inheritdoc/>
