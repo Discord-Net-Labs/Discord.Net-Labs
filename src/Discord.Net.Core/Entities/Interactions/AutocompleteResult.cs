@@ -53,21 +53,14 @@ namespace Discord
                 if (value == null)
                     throw new ArgumentNullException("Value cannot be null");
 
-                switch (value)
+                _value = value switch
                 {
-                    case string str:
-                        _value = str;
-                        break;
-                    case int integer:
-                        _value = integer;
-                        break;
-                    case double number:
-                        _value = number;
-                        break;
-
-                    default:
-                        throw new ArgumentException($"Type {value.GetType().Name} cannot be set as a value! Only string, int, and double allowed!");
-                }
+                    string str => str,
+                    int integer => integer,
+                    long lng => lng,
+                    double number => number,
+                    _ => throw new ArgumentException($"Type {value.GetType().Name} cannot be set as a value! Only string, int, and double allowed!"),
+                };
             }
         }
 
@@ -83,8 +76,8 @@ namespace Discord
         /// <exception cref="ArgumentException"/>
         public AutocompleteResult(string name, object value)
         {
-            this.Name = name;
-            this.Value = value;
+            Name = name;
+            Value = value;
         }
     }
 }

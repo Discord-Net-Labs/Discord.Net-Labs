@@ -41,7 +41,7 @@ namespace Discord.WebSocket
                 : null;
 
             ulong? guildId = null;
-            if (this.Channel is SocketGuildChannel guildChannel)
+            if (Channel is SocketGuildChannel guildChannel)
                 guildId = guildChannel.Guild.Id;
 
             Data = SocketCommandBaseData.Create(client, dataModel, model.Id, guildId);
@@ -60,7 +60,7 @@ namespace Discord.WebSocket
                 (DataModel)model.Data.Value
                 : null;
 
-            this.Data.Update(data);
+            Data.Update(data);
 
             base.Update(model);
         }
@@ -79,16 +79,9 @@ namespace Discord.WebSocket
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
+            embeds ??= Array.Empty<Embed>();
             if (embed != null)
-            {
-                if (embeds == null)
-                    embeds = new[] { embed };
-                else
-                {
-                    List<Embed> listEmbeds = embeds.ToList();
-                    listEmbeds.Insert(0, embed);
-                }
-            }
+                embeds = new[] { embed }.Concat(embeds).ToArray();
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
@@ -124,7 +117,7 @@ namespace Discord.WebSocket
                 }
             };
 
-            await InteractionHelper.SendInteractionResponse(this.Discord, response, this.Id, Token, options);
+            await InteractionHelper.SendInteractionResponse(Discord, response, Id, Token, options);
         }
 
         /// <inheritdoc/>
@@ -141,16 +134,9 @@ namespace Discord.WebSocket
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
+            embeds ??= Array.Empty<Embed>();
             if (embed != null)
-            {
-                if (embeds == null)
-                    embeds = new[] { embed };
-                else
-                {
-                    List<Embed> listEmbeds = embeds.ToList();
-                    listEmbeds.Insert(0, embed);
-                }
-            }
+                embeds = new[] { embed }.Concat(embeds).ToArray();
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
@@ -187,16 +173,9 @@ namespace Discord.WebSocket
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
+            embeds ??= Array.Empty<Embed>();
             if (embed != null)
-            {
-                if (embeds == null)
-                    embeds = new[] { embed };
-                else
-                {
-                    List<Embed> listEmbeds = embeds.ToList();
-                    listEmbeds.Insert(0, embed);
-                }
-            }
+                embeds = new[] { embed }.Concat(embeds).ToArray();
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
@@ -236,16 +215,9 @@ namespace Discord.WebSocket
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
+            embeds ??= Array.Empty<Embed>();
             if (embed != null)
-            {
-                if (embeds == null)
-                    embeds = new[] { embed };
-                else
-                {
-                    List<Embed> listEmbeds = embeds.ToList();
-                    listEmbeds.Insert(0, embed);
-                }
-            }
+                embeds = new[] { embed }.Concat(embeds).ToArray();
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
@@ -285,7 +257,7 @@ namespace Discord.WebSocket
                 }
             };
 
-            return Discord.Rest.ApiClient.CreateInteractionResponseAsync(response, this.Id, this.Token, options);
+            return Discord.Rest.ApiClient.CreateInteractionResponseAsync(response, Id, Token, options);
         }
     }
 }
