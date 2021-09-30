@@ -39,7 +39,7 @@ namespace Discord.WebSocket
         public string Content { get; private set; }
 
         /// <inheritdoc />
-        public string CleanContent { get; private set; }
+        public string CleanContent => SanitizeMessage();
 
         /// <inheritdoc />
         public DateTimeOffset CreatedAt => SnowflakeUtils.FromSnowflake(Id);
@@ -272,11 +272,11 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         IReadOnlyCollection<IStickerItem> IMessage.Stickers => Stickers;
 
-        internal void SanitizeMessage()
+        internal string  SanitizeMessage()
         {
-            //Do emojii's need to be Sanatized?
             var newContent = MentionUtils.Resolve(this, 0, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize);
-            CleanContent = newContent;
+            newContent = Format.StripMarkDown(newContent);
+            return newContent;
         }
 
         internal void AddReaction(SocketReaction reaction)
