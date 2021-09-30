@@ -18,5 +18,16 @@ namespace Discord.Utils
                 throw new InvalidOperationException($"Url {url} must be include its protocol (either HTTP or HTTPS)");
             return true;
         }
+        
+        public static bool ValidateButton(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+                return false;
+            if(!((url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)) || 
+                (url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) || 
+                (url.StartsWith("discord://", StringComparison.OrdinalIgnoreCase))))
+                throw new InvalidOperationException($"Url {url} must be include its protocol (either HTTP, HTTPS, or DISCORD)");
+            return true;
+        }
     }
 }
