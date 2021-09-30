@@ -21,25 +21,25 @@ namespace Discord.Interactions
         ///     Occurs when a Slash Command related information is recieved
         /// </summary>
         public event Func<LogMessage, Task> Log { add { _logEvent.Add(value); } remove { _logEvent.Remove(value); } }
-        internal readonly AsyncEvent<Func<LogMessage, Task>> _logEvent = new AsyncEvent<Func<LogMessage, Task>>();
+        internal readonly AsyncEvent<Func<LogMessage, Task>> _logEvent = new ();
 
         /// <summary>
         ///     Occurs when a Slash Command is executed
         /// </summary>
         public event Func<SlashCommandInfo, IInteractionCommandContext, IResult, Task> SlashCommandExecuted { add { _slashCommandExecutedEvent.Add(value); } remove { _slashCommandExecutedEvent.Remove(value); } }
-        internal readonly AsyncEvent<Func<SlashCommandInfo, IInteractionCommandContext, IResult, Task>> _slashCommandExecutedEvent = new AsyncEvent<Func<SlashCommandInfo, IInteractionCommandContext, IResult, Task>>();
+        internal readonly AsyncEvent<Func<SlashCommandInfo, IInteractionCommandContext, IResult, Task>> _slashCommandExecutedEvent = new ();
 
         /// <summary>
         ///     Occurs when a Context Command is executed
         /// </summary>
         public event Func<ContextCommandInfo, IInteractionCommandContext, IResult, Task> ContextCommandExecuted { add { _contextCommandExecutedEvent.Add(value); } remove { _contextCommandExecutedEvent.Remove(value); } }
-        internal readonly AsyncEvent<Func<ContextCommandInfo, IInteractionCommandContext, IResult, Task>> _contextCommandExecutedEvent = new AsyncEvent<Func<ContextCommandInfo, IInteractionCommandContext, IResult, Task>>();
+        internal readonly AsyncEvent<Func<ContextCommandInfo, IInteractionCommandContext, IResult, Task>> _contextCommandExecutedEvent = new ();
 
         /// <summary>
         ///     Occurs when a Message Component command is executed
         /// </summary>
         public event Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task> ComponentCommandExecuted { add { _componentCommandExecutedEvent.Add(value); } remove { _componentCommandExecutedEvent.Remove(value); } }
-        internal readonly AsyncEvent<Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task>> _componentCommandExecutedEvent = new AsyncEvent<Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task>>();
+        internal readonly AsyncEvent<Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task>> _componentCommandExecutedEvent = new ();
 
         private readonly ConcurrentDictionary<Type, ModuleInfo> _typedModuleDefs;
         private readonly CommandMap<SlashCommandInfo> _slashCommandMap;
@@ -138,9 +138,16 @@ namespace Discord.Interactions
             };
         }
 
+        /// <summary>
+        ///     
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="services"></param>
+        /// <param name="buildFunc"></param>
+        /// <returns></returns>
         public async Task<ModuleInfo> CreateModuleAsync(string name, IServiceProvider services, Action<ModuleBuilder> buildFunc)
         {
-            services = services ?? EmptyServiceProvider.Instance;
+            services ??= EmptyServiceProvider.Instance;
 
             await _lock.WaitAsync().ConfigureAwait(false);
             try
@@ -169,7 +176,7 @@ namespace Discord.Interactions
         /// </returns>
         public async Task<IEnumerable<ModuleInfo>> AddModulesAsync (Assembly assembly, IServiceProvider services)
         {
-            services = services ?? EmptyServiceProvider.Instance;
+            services ??= EmptyServiceProvider.Instance;
 
             await _lock.WaitAsync().ConfigureAwait(false);
 
@@ -227,7 +234,7 @@ namespace Discord.Interactions
             if (!typeof(IInteractionModuleBase).IsAssignableFrom(type))
                 throw new ArgumentException("Type parameter must be a type of Slash Module", "T");
 
-            services = services ?? EmptyServiceProvider.Instance;
+            services ??= EmptyServiceProvider.Instance;
 
             await _lock.WaitAsync().ConfigureAwait(false);
 
@@ -269,7 +276,7 @@ namespace Discord.Interactions
         {
             EnsureClientReady();
 
-            var topLevelModules = _moduleDefs.Where(x => !x.IsSlashGroup);
+            var topLevelModules = _moduleDefs.Where(x => !x.IsSubModule);
             var props = topLevelModules.SelectMany(x => x.ToApplicationCommandProps()).ToList();
 
             if (!deleteMissing)
@@ -294,7 +301,7 @@ namespace Discord.Interactions
         {
             EnsureClientReady();
 
-            var topLevelModules = _moduleDefs.Where(x => !x.IsSlashGroup);
+            var topLevelModules = _moduleDefs.Where(x => !x.IsSubModule);
             var props = topLevelModules.SelectMany(x => x.ToApplicationCommandProps()).ToList();
 
             if (!deleteMissing)
@@ -431,6 +438,14 @@ namespace Discord.Interactions
             }
         }
 
+        /// <summary>
+        ///     Remove a command module
+        /// </summary>
+        /// <param name="module">The <see cref="ModuleInfo" /> to be removed from the service</param>
+        /// <returns>
+        ///     A task that represents the asynchronous removal operation. The task result contains a value that
+        ///     indicates whether the <paramref name="module"/> is successfully removed
+        /// </returns>
         public async Task<bool> RemoveModuleAsync(ModuleInfo module)
         {
             await _lock.WaitAsync().ConfigureAwait(false);
@@ -475,19 +490,14 @@ namespace Discord.Interactions
         {
             var interaction = context.Interaction;
 
-            switch (interaction)
+            return interaction switch
             {
-                case SocketSlashCommand slashCommand:
-                    return await ExecuteSlashCommandAsync(context, slashCommand.Data, services).ConfigureAwait(false);
-                case SocketMessageComponent messageComponent:
-                    return await ExecuteComponentCommandAsync(context, messageComponent.Data.CustomId, services).ConfigureAwait(false);
-                case SocketUserCommand userCommand:
-                    return await ExecuteContextCommandAsync(context, userCommand.CommandName, ApplicationCommandType.User, services).ConfigureAwait(false);
-                case SocketMessageCommand messageCommand:
-                    return await ExecuteContextCommandAsync(context, messageCommand.CommandName, ApplicationCommandType.Message, services).ConfigureAwait(false);
-                default:
-                    throw new InvalidOperationException($"{interaction.Type} interaction type cannot be executed by the Interaction service");
-            }
+                SocketSlashCommand slashCommand => await ExecuteSlashCommandAsync(context, slashCommand.Data, services).ConfigureAwait(false),
+                SocketMessageComponent messageComponent => await ExecuteComponentCommandAsync(context, messageComponent.Data.CustomId, services).ConfigureAwait(false),
+                SocketUserCommand userCommand => await ExecuteContextCommandAsync(context, userCommand.CommandName, ApplicationCommandType.User, services).ConfigureAwait(false),
+                SocketMessageCommand messageCommand => await ExecuteContextCommandAsync(context, messageCommand.CommandName, ApplicationCommandType.Message, services).ConfigureAwait(false),
+                _ => throw new InvalidOperationException($"{interaction.Type} interaction type cannot be executed by the Interaction service"),
+            };
         }
 
         private async Task<IResult> ExecuteSlashCommandAsync (IInteractionCommandContext context, SocketSlashCommandData data, IServiceProvider services)
@@ -748,6 +758,7 @@ namespace Discord.Interactions
             return module;
         }
 
+        /// <inheritdoc/>
         public void Dispose ( )
         {
             _lock.Dispose();

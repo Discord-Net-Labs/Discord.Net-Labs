@@ -89,7 +89,7 @@ namespace Discord.Interactions
         {
             var guid = Guid.NewGuid();
 
-            message = message ?? "Would you like to continue?";
+            message ??= "Would you like to continue?";
             var confirmId = $"{guid}:confirm";
             var declineId = $"{guid}:decline";
 

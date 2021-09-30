@@ -1,7 +1,7 @@
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Represents a configuration class for <see cref="InteractionCommandContext"/>
+    ///     Represents a configuration class for <see cref="InteractionService"/>
     /// </summary>
     public class InteractionServiceConfig
     {

@@ -17,7 +17,7 @@ namespace Discord.Interactions
         {
             try
             {
-                if (!( context.Interaction is SocketMessageCommand messageCommand ))
+                if (context.Interaction is not SocketMessageCommand messageCommand )
                     return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionCommandContext)} does not belong to a Message Command");
 
                 var message = messageCommand.Data.Message;

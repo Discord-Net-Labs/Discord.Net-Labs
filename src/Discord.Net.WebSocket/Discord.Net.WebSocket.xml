@@ -4286,10 +4286,6 @@
         <member name="M:Discord.WebSocket.SocketInteraction.RespondAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <summary>
                 Responds to an Interaction with type <see cref="F:Discord.InteractionResponseType.ChannelMessageWithSource"/>.
-            <para>
-                If you have <see cref="!:DiscordSocketConfig.AlwaysAcknowledgeInteractions"/> set to <see langword="true"/>, You should use
-                <see cref="M:Discord.WebSocket.SocketInteraction.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)"/> instead.
-            </para>
             </summary>
             <param name="text">The text of the message to be sent.</param>
             <param name="embeds">A array of embeds to send with this response. Max 10.</param>
@@ -5893,37 +5889,34 @@
         <member name="P:Discord.Commands.SocketCommandContext.Discord#Commands#ICommandContext#Message">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.Net.WebSockets.DefaultWebSocketProvider.Create(System.Net.IWebProxy)">
-            <exception cref="T:System.PlatformNotSupportedException">The default WebSocketProvider is not supported on this platform.</exception>
-        </member>
-        <member name="T:Discord.SlashCommands.ShardedSlashCommandContext">
+        <member name="T:Discord.Interactions.ShardedInteractionCommandContext">
             <summary>
-            The sharded variant of <see cref="T:Discord.SlashCommands.SocketSlashCommandContext"/>
+            The sharded variant of <see cref="T:Discord.Interactions.SocketInteractionCommandContext"/>
             </summary>
         </member>
-        <member name="P:Discord.SlashCommands.ShardedSlashCommandContext.Client">
+        <member name="P:Discord.Interactions.ShardedInteractionCommandContext.Client">
             <summary>
             Get the <see cref="T:Discord.WebSocket.DiscordSocketClient"/> that the command will be executed with
             </summary>
         </member>
-        <member name="M:Discord.SlashCommands.ShardedSlashCommandContext.#ctor(Discord.WebSocket.DiscordShardedClient,Discord.WebSocket.SocketInteraction)">
+        <member name="M:Discord.Interactions.ShardedInteractionCommandContext.#ctor(Discord.WebSocket.DiscordShardedClient,Discord.WebSocket.SocketInteraction)">
             <summary>
-            Initializes a <see cref="T:Discord.SlashCommands.ShardedSlashCommandContext"/>
+            Initializes a <see cref="T:Discord.Interactions.ShardedInteractionCommandContext"/>
             </summary>
             <param name="client">The underlying client.</param>
             <param name="interaction">The underlying interaction</param>
         </member>
-        <member name="T:Discord.SlashCommands.SocketSlashCommandContext">
+        <member name="T:Discord.Interactions.SocketInteractionCommandContext">
             <summary>
             Represents a Web-Socket based context of an Application Command
             </summary>
         </member>
-        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Client">
+        <member name="P:Discord.Interactions.SocketInteractionCommandContext.Client">
             <summary>
             Get the <see cref="T:Discord.WebSocket.DiscordSocketClient"/> that the command will be executed with
             </summary>
         </member>
-        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Guild">
+        <member name="P:Discord.Interactions.SocketInteractionCommandContext.Guild">
             <summary>
             Get the <see cref="T:Discord.WebSocket.SocketGuild"/> the command originated from
             </summary>
@@ -5931,42 +5924,45 @@
             Will be null if the command is from a DM Channel
             </remarks>
         </member>
-        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Channel">
+        <member name="P:Discord.Interactions.SocketInteractionCommandContext.Channel">
             <summary>
             Get the <see cref="T:Discord.WebSocket.ISocketMessageChannel"/> the command originated from
             </summary>
         </member>
-        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.User">
+        <member name="P:Discord.Interactions.SocketInteractionCommandContext.User">
             <summary>
             Get the <see cref="T:Discord.WebSocket.SocketUser"/> who executed the command
             </summary>
         </member>
-        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Interaction">
+        <member name="P:Discord.Interactions.SocketInteractionCommandContext.Interaction">
             <summary>
             Get the <see cref="T:Discord.WebSocket.SocketInteraction"/> the command was recieved with
             </summary>
         </member>
-        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Discord#ISlashCommandContext#Client">
+        <member name="P:Discord.Interactions.SocketInteractionCommandContext.Discord#IInteractionCommandContext#Client">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Discord#ISlashCommandContext#Guild">
+        <member name="P:Discord.Interactions.SocketInteractionCommandContext.Discord#IInteractionCommandContext#Guild">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Discord#ISlashCommandContext#Channel">
+        <member name="P:Discord.Interactions.SocketInteractionCommandContext.Discord#IInteractionCommandContext#Channel">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Discord#ISlashCommandContext#User">
+        <member name="P:Discord.Interactions.SocketInteractionCommandContext.Discord#IInteractionCommandContext#User">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.SlashCommands.SocketSlashCommandContext.Discord#ISlashCommandContext#Interaction">
+        <member name="P:Discord.Interactions.SocketInteractionCommandContext.Discord#IInteractionCommandContext#Interaction">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.SlashCommands.SocketSlashCommandContext.#ctor(Discord.WebSocket.DiscordSocketClient,Discord.WebSocket.SocketInteraction)">
+        <member name="M:Discord.Interactions.SocketInteractionCommandContext.#ctor(Discord.WebSocket.DiscordSocketClient,Discord.WebSocket.SocketInteraction)">
             <summary>
-            Initializes a new <see cref="T:Discord.SlashCommands.SocketSlashCommandContext"/> 
+            Initializes a new <see cref="T:Discord.Interactions.SocketInteractionCommandContext"/> 
             </summary>
             <param name="client">The underlying client</param>
             <param name="interaction">The underlying interaction</param>
+        </member>
+        <member name="M:Discord.Net.WebSockets.DefaultWebSocketProvider.Create(System.Net.IWebProxy)">
+            <exception cref="T:System.PlatformNotSupportedException">The default WebSocketProvider is not supported on this platform.</exception>
         </member>
     </members>
 </doc>

@@ -33,16 +33,12 @@ namespace Discord.Interactions
 
         internal static ContextCommandInfo Create (Builders.ContextCommandBuilder builder, ModuleInfo module, InteractionService commandService)
         {
-            switch (builder.CommandType)
+            return builder.CommandType switch
             {
-                case ApplicationCommandType.User:
-                    return new UserCommandInfo(builder, module, commandService);
-                case ApplicationCommandType.Message:
-                    return new MessageCommandInfo(builder, module, commandService);
-                case ApplicationCommandType.Slash:
-                default:
-                    throw new InvalidOperationException("This command type is not a supported Context Command");
-            }
+                ApplicationCommandType.User => new UserCommandInfo(builder, module, commandService),
+                ApplicationCommandType.Message => new MessageCommandInfo(builder, module, commandService),
+                _ => throw new InvalidOperationException("This command type is not a supported Context Command"),
+            };
         }
 
         /// <inheritdoc/>

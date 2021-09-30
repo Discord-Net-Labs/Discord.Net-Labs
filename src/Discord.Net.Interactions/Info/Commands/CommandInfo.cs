@@ -28,7 +28,7 @@ namespace Discord.Interactions
     public abstract class CommandInfo<TParameter> : ICommandInfo where TParameter : class, IParameterInfo
     {
         private readonly ExecuteCallback _action;
-        private ILookup<string, PreconditionAttribute> _groupedPreconditions { get; }
+        private readonly ILookup<string, PreconditionAttribute> _groupedPreconditions;
 
         /// <inheritdoc/>
         public ModuleInfo Module { get; }
@@ -126,18 +126,20 @@ namespace Discord.Interactions
 
         protected async Task<IResult> RunAsync (IInteractionCommandContext context, object[] args, IServiceProvider services)
         {
-            services = services ?? EmptyServiceProvider.Instance;
+            services ??= EmptyServiceProvider.Instance;
 
             switch (RunMode)
             {
                 case RunMode.Sync:
-                    using (var scope = services.CreateScope())
+                    {
+                        using var scope = services.CreateScope();
                         return await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
+                    }
                 case RunMode.Async:
                     _ = Task.Run(async ( ) =>
                     {
-                        using (var scope = services.CreateScope())
-                            await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
+                        using var scope = services.CreateScope();
+                        await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
                     });
                     break;
                 default:

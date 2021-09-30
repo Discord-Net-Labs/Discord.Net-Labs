@@ -17,7 +17,7 @@ namespace Discord.Interactions
         {
             try
             {
-                if (!( context.Interaction is SocketUserCommand userCommand ))
+                if (context.Interaction is not SocketUserCommand userCommand )
                     return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionCommandContext)} does not belong to a User Command");
 
                 var user = userCommand.Data.Member;
