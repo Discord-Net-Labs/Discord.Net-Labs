@@ -208,20 +208,6 @@ namespace Discord
             return AddOption(option);
         }
 
-        ///// <summary>
-        /////     Adds an option to the current slash command.
-        ///// </summary>
-        ///// <param name="name">The name of the option to add.</param>
-        ///// <param name="type">The type of this option.</param>
-        ///// <param name="description">The description of this option.</param>
-        ///// <param name="required">If this option is required for this command.</param>
-        ///// <param name="isDefault">If this option is the default option.</param>
-        ///// <param name="choices">The choices of this option.</param>
-        ///// <returns>The current builder.</returns>
-        //public SlashCommandBuilder AddOption(string name, ApplicationCommandOptionType type,
-        //    string description, bool required = true, bool isDefault = false, params ApplicationCommandOptionChoiceProperties[] choices)
-        //    => AddOption(name, type, description, required, isDefault, null, choices);
-
         /// <summary>
         ///     Adds an option to the current slash command.
         /// </summary>
@@ -435,7 +421,8 @@ namespace Discord
                 Autocomplete = isAutocomplete,
                 Options = options,
                 Type = type,
-                Choices = choices != null ? new List<ApplicationCommandOptionChoiceProperties>(choices) : null
+                Choices = choices != null ? new List<ApplicationCommandOptionChoiceProperties>(choices) : null,
+                Autocomplete = isAutocomplete,
             };
 
             return AddOption(option);
@@ -570,7 +557,7 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Sets the current builders autocomplete support.
+        ///     Sets the current builders autocomplete field.
         /// </summary>
         /// <param name="value">The value to set.</param>
         /// <returns>The current builder.</returns>
