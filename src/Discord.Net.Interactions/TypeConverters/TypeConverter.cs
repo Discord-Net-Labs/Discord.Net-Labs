@@ -34,8 +34,7 @@ namespace Discord.Interactions
         /// <summary>
         ///     Will be used to manipulate the outgoing command option, before the command gets registered to Discord
         /// </summary>
-        /// <param name="properties"></param>
-        public virtual void Write (ApplicationCommandOptionProperties properties) { }
+        public virtual void Write (ApplicationCommandOptionProperties properties, IParameterInfo parameter) { }
     }
 
     /// <inheritdoc/>

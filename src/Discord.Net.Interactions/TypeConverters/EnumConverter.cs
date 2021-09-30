@@ -21,7 +21,7 @@ namespace Discord.Interactions
             }
         }
 
-        public override void Write (ApplicationCommandOptionProperties properties)
+        public override void Write (ApplicationCommandOptionProperties properties, IParameterInfo parameterInfo)
         {
             var names = Enum.GetNames(typeof(T));
             if (names.Length <= 25)

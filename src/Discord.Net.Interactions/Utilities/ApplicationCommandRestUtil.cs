@@ -21,7 +21,7 @@ namespace Discord.Interactions
                     Value = x.Value
                 })?.ToList()
             };
-            parameterInfo.TypeConverter.Write(props);
+            parameterInfo.TypeConverter.Write(props, parameterInfo);
 
             return props;
         }
