@@ -43,10 +43,10 @@ namespace Discord.Interactions
             {
                 var args = new List<string>();
 
-                if (additionalArgs != null)
+                if (additionalArgs is not null)
                     args.AddRange(additionalArgs);
 
-                if (messageInteraction.Data?.Values != null)
+                if (messageInteraction.Data?.Values is not null)
                     args.AddRange(messageInteraction.Data.Values);
 
                 return await ExecuteAsync(context, Parameters, args, services);
@@ -74,27 +74,26 @@ namespace Discord.Interactions
         private static object[] GenerateArgs (IEnumerable<CommandParameterInfo> paramList, IEnumerable<string> argList)
         {
             var result = new object[paramList.Count()];
-            var index = 0;
 
-            foreach (var parameter in paramList)
+            for(var i = 0; i < paramList.Count(); i++)
             {
-                if (argList?.ElementAt(index) == null)
+                var parameter = paramList.ElementAt(i);
+
+                if (argList?.ElementAt(i) == null)
                 {
                     if (!parameter.IsRequired)
-                        result[index] = parameter.DefaultValue;
+                        result[i] = parameter.DefaultValue;
                     else
                         throw new InvalidOperationException($"Component Interaction handler is executed with too few args.");
                 }
                 else if (parameter.IsParameterArray)
                 {
-                    string[] paramArray = new string[argList.Count() - index];
-                    argList.ToArray().CopyTo(paramArray, index);
-                    result[index] = paramArray;
+                    string[] paramArray = new string[argList.Count() - i];
+                    argList.ToArray().CopyTo(paramArray, i);
+                    result[i] = paramArray;
                 }
                 else
-                    result[index] = argList?.ElementAt(index);
-
-                index++;
+                    result[i] = argList?.ElementAt(i);
             }
 
             return result;
