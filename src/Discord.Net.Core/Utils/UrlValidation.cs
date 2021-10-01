@@ -25,10 +25,10 @@ namespace Discord.Utils
         /// <see cref="Validate(string)"/> should be used everything other than url buttons
         /// </summary>
         /// <param name="url">the url to validate before sending to discord</param>
-        /// <exception cref="InvalidOperationException">A URL must include a protocol (either http, httpd, or discord).</exception>
+        /// <exception cref="InvalidOperationException">A URL must include a protocol (either http, https, or discord).</exception>
         /// <returns>true if the url is valid by our standard, false if null, throws an error upon invalid</returns>
         public static bool ValidateButton(string url)
-       {
+        {
             if (string.IsNullOrEmpty(url))
                 return false;
             if(!((url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)) || 
