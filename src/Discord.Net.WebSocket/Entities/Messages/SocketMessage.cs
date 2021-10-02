@@ -278,7 +278,6 @@ namespace Discord.WebSocket
             newContent = Format.StripMarkDown(newContent);
             return newContent;
         }
-
         internal void AddReaction(SocketReaction reaction)
         {
             _reactions.Add(reaction);

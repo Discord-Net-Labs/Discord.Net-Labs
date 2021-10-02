@@ -29,6 +29,9 @@ namespace Discord.Rest
         public string Content { get; private set; }
 
         /// <inheritdoc />
+        public string CleanContent => SanatizeMessage();
+
+        /// <inheritdoc />
         public DateTimeOffset CreatedAt => SnowflakeUtils.FromSnowflake(Id);
         /// <inheritdoc />
         public virtual bool IsTTS => false;
@@ -207,6 +210,12 @@ namespace Discord.Rest
             }
             else
                 _reactions = ImmutableArray.Create<RestReaction>();
+        }
+        internal string SanitizeMessage()
+        {
+            var newContent = MentionUtils.Resolve(this, 0, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize);
+            newContent = Format.StripMarkDown(newContent);
+            return newContent;
         }
 
         /// <inheritdoc />
