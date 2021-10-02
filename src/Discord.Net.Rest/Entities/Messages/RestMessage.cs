@@ -29,7 +29,7 @@ namespace Discord.Rest
         public string Content { get; private set; }
 
         /// <inheritdoc />
-        public string CleanContent => SanitizeMessage();
+        public string CleanContent => MessageHelper.SanitizeMessage(this);
 
         /// <inheritdoc />
         public DateTimeOffset CreatedAt => SnowflakeUtils.FromSnowflake(Id);
@@ -211,13 +211,6 @@ namespace Discord.Rest
             else
                 _reactions = ImmutableArray.Create<RestReaction>();
         }
-        internal string SanitizeMessage()
-        {
-            var newContent = MentionUtils.Resolve(this, 0, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize, TagHandling.Sanitize);
-            newContent = Format.StripMarkDown(newContent);
-            return newContent;
-        }
-
         /// <inheritdoc />
         public async Task UpdateAsync(RequestOptions options = null)
         {
