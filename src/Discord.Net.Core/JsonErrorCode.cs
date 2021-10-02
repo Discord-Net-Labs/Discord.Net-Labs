@@ -50,7 +50,7 @@ namespace Discord
         UnknownGuildMemberVerificationForm = 10068,
         UnknownGuildWelcomeScreen = 10069,
         UnknownGuildScheduledEvent = 10070,
-        UnknownGuildScheduledEventUser = 10071
+        UnknownGuildScheduledEventUser = 10071,
         #endregion
 
         #region General Actions (20XXX)
