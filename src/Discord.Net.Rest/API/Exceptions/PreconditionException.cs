@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Discord.Rest.API
+namespace Discord.Rest.Exceptions
 {
     class PrecondionException
     {
