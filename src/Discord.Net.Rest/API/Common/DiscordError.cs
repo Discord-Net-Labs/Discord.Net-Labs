@@ -9,6 +9,7 @@ namespace Discord.API
 {
     internal class DiscordError
     {
+        //
         [JsonProperty("message")]
         public string Message { get; set; }
         [JsonProperty("code")]
