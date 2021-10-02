@@ -53,10 +53,10 @@ namespace Discord
         /// </returns>
         string Content { get; }
         /// <summary>
-        ///     Gets the content for this message.
+        ///     Gets the clean content for this message.
         /// </summary>
         /// <returns>
-        ///     A string that contains the body of the message; note that this field may be empty if there is an embed.
+        ///     A string that contains the body of the message stripped of mentions, markdown, emojiis and pings; note that this field may be empty if there is an embed.
         /// </returns>
         string CleanContent { get; }
         /// <summary>

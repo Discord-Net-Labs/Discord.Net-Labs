@@ -29,7 +29,7 @@ namespace Discord.Rest
         public string Content { get; private set; }
 
         /// <inheritdoc />
-        public string CleanContent => SanatizeMessage();
+        public string CleanContent => SanitizeMessage();
 
         /// <inheritdoc />
         public DateTimeOffset CreatedAt => SnowflakeUtils.FromSnowflake(Id);
