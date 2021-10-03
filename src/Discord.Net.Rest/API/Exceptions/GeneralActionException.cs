@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Discord.Rest.Exceptions
 {
-    class BadRequestException
-    {        
+    public class GeneralActionException : Exception
+    {
+
     }
 }
