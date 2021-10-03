@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Discord.Rest.Exceptions
 {
-    class StickerException
+    class StickerException : Exception
     {
     }
 }

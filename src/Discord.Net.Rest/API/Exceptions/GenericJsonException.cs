@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 namespace Discord.Rest.Exceptions
 {
     //Visual studio wont allow 2FAException??
-    class MFAException
+    class MFAException : Exception
     {
     }
-    class UserSearchException
+    class UserSearchException : Exception
     {
     }
-    class ReactionException
+    class ReactionException : Exception
     {
     }
-    class APIException
+    class APIException : Exception
     {
     }
-    class StageException
+    class StageException : Exception
     {        
     }
 }
