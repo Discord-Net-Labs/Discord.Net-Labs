@@ -338,7 +338,7 @@ namespace Discord.Rest
             string filePath, string text, bool isTTS, Embed embed, AllowedMentions allowedMentions, MessageReference messageReference, MessageComponent component, ISticker[] stickers, RequestOptions options, bool isSpoiler, Embed[] embeds)
         {
             string filename = Path.GetFileName(filePath);
-            if (filename == null || filename != null && !filename.Contains('.'))
+            if (filename == null || !filename.Contains('.'))
                 throw new ArgumentException("Make sure that the file path has a file name and a valid file extension.");
 
             using (var file = File.OpenRead(filePath))
@@ -349,7 +349,7 @@ namespace Discord.Rest
         public static async Task<RestUserMessage> SendFileAsync(IMessageChannel channel, BaseDiscordClient client,
             Stream stream, string filename, string text, bool isTTS, Embed embed, AllowedMentions allowedMentions, MessageReference messageReference, MessageComponent component, ISticker[] stickers, RequestOptions options, bool isSpoiler, Embed[] embeds)
         {
-            if (filename == null || filename != null && !filename.Contains('.'))
+            if (filename == null || !filename.Contains('.'))
                 throw new ArgumentException("Make sure that the file path has a file name and a valid file extension.");
 
             embeds ??= Array.Empty<Embed>();
