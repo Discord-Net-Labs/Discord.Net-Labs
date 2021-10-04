@@ -131,6 +131,16 @@
                 A URL pointing to the guild's icon.
             </returns>
         </member>
+        <member name="M:Discord.CDN.GetGuildRoleIconUrl(System.UInt64,System.String)">
+            <summary>
+                Returns a guild role's icon URL.
+            </summary>
+            <param name="roleId">The role identifier.</param>
+            <param name="roleHash">The icon hash.</param>
+            <returns>
+                A URL pointing to the guild role's icon.
+            </returns>
+        </member>
         <member name="M:Discord.CDN.GetGuildSplashUrl(System.UInt64,System.String)">
             <summary>
                 Returns a guild splash URL.
@@ -496,6 +506,11 @@
         <member name="F:Discord.ActivityType.CustomStatus">
             <summary>
                 The user has set a custom status.
+            </summary>
+        </member>
+        <member name="F:Discord.ActivityType.Competing">
+            <summary>
+                The user is competing in a game.
             </summary>
         </member>
         <member name="T:Discord.CustomStatusGame">
@@ -1534,7 +1549,7 @@
                 contains the sent message.
             </returns>
         </member>
-        <member name="M:Discord.IMessageChannel.SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
+        <member name="M:Discord.IMessageChannel.SendFileAsync(System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[],Discord.Embed[])">
             <summary>
                 Sends a file to this message channel with an optional caption.
             </summary>
@@ -1569,12 +1584,13 @@
             <param name="messageReference">The message references to be included. Used to reply to specific messages.</param>
             <param name="component">The message components to be included with this message. Used for interactions.</param>
             <param name="stickers">A collection of stickers to send with the file.</param>
+            <param name="embeds">A array of <see cref="T:Discord.Embed"/>s to send with this response. Max 10.</param>
             <returns>
                 A task that represents an asynchronous send operation for delivering the message. The task result
                 contains the sent message.
             </returns>
         </member>
-        <member name="M:Discord.IMessageChannel.SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[])">
+        <member name="M:Discord.IMessageChannel.SendFileAsync(System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,System.Boolean,Discord.AllowedMentions,Discord.MessageReference,Discord.MessageComponent,Discord.ISticker[],Discord.Embed[])">
             <summary>
                 Sends a file to this message channel with an optional caption.
             </summary>
@@ -1606,6 +1622,7 @@
             <param name="messageReference">The message references to be included. Used to reply to specific messages.</param>
             <param name="component">The message components to be included with this message. Used for interactions.</param>
             <param name="stickers">A collection of stickers to send with the file.</param>
+            <param name="embeds">A array of <see cref="T:Discord.Embed"/>s to send with this response. Max 10.</param>
             <returns>
                 A task that represents an asynchronous send operation for delivering the message. The task result
                 contains the sent message.
@@ -3583,12 +3600,12 @@
         </member>
         <member name="M:Discord.IGuild.GetPublicUpdatesChannelAsync(Discord.CacheMode,Discord.RequestOptions)">
             <summary>
-                Gets the text channel channel where admins and moderators of Community guilds receive notices from Discord.
+                Gets the text channel where admins and moderators of Community guilds receive notices from Discord.
             </summary>
             <param name="mode">The <see cref="T:Discord.CacheMode"/> that determines whether the object should be fetched from cache.</param>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
-                A task that represents the asynchronous get operation. The task result contains the text channel channel where
+                A task that represents the asynchronous get operation. The task result contains the text channel where
                 admins and moderators of Community guilds receive notices from Discord; <see langword="null" /> if none is set.
             </returns>
         </member>
@@ -3818,7 +3835,7 @@
                 Downloads all users for this guild if the current list is incomplete.
             </summary>
             <remarks>
-                This method downloads all users found within this guild throught the Gateway and caches them.
+                This method downloads all users found within this guild through the Gateway and caches them.
             </remarks>
             <returns>
                 A task that represents the asynchronous download operation.
@@ -4547,6 +4564,11 @@
                 Gets or sets if this option is a subcommand or subcommand group type, these nested options will be the parameters.
             </summary>
         </member>
+        <member name="P:Discord.ApplicationCommandOptionProperties.ChannelTypes">
+            <summary>
+                Gets or sets the allowed channel types for this option.
+            </summary>
+        </member>
         <member name="T:Discord.ApplicationCommandOptionChoiceProperties">
             <summary>
                 Represents a choice for a <see cref="T:Discord.IApplicationCommandInteractionDataOption"/>. This class is used when making new commands.
@@ -4724,7 +4746,7 @@
         </member>
         <member name="F:Discord.MessageCommandBuilder.MaxNameLength">
             <summary> 
-                Returns the maximun length a commands name allowed by Discord
+                Returns the maximum length a commands name allowed by Discord
             </summary>
         </member>
         <member name="P:Discord.MessageCommandBuilder.Name">
@@ -4773,7 +4795,7 @@
         </member>
         <member name="F:Discord.UserCommandBuilder.MaxNameLength">
             <summary> 
-                Returns the maximun length a commands name allowed by Discord
+                Returns the maximum length a commands name allowed by Discord
             </summary>
         </member>
         <member name="P:Discord.UserCommandBuilder.Name">
@@ -4934,7 +4956,7 @@
         </member>
         <member name="P:Discord.IApplicationCommandOption.Description">
             <summary>
-                The discription of this command option, 1-100 character description.
+                The description of this command option, 1-100 character description.
             </summary>
         </member>
         <member name="P:Discord.IApplicationCommandOption.Default">
@@ -4955,6 +4977,11 @@
         <member name="P:Discord.IApplicationCommandOption.Options">
             <summary>
                 If the option is a subcommand or subcommand group type, this nested options will be the parameters.
+            </summary>
+        </member>
+        <member name="P:Discord.IApplicationCommandOption.ChannelTypes">
+            <summary>
+            The allowed channel types for this option.
             </summary>
         </member>
         <member name="T:Discord.IApplicationCommandOptionChoice">
@@ -5039,7 +5066,7 @@
             <summary>
                 Gets the original response for this interaction.
             </summary>
-            <param name="options">The request options for this async request.</param>
+            <param name="options">The request options for this <see langword="async"/> request.</param>
             <returns>A <see cref="T:Discord.IUserMessage"/> that represents the initial response.</returns>
         </member>
         <member name="M:Discord.IDiscordInteraction.ModifyOriginalResponseAsync(System.Action{Discord.MessageProperties},Discord.RequestOptions)">
@@ -5047,7 +5074,7 @@
                 Edits original response for this interaction.
             </summary>
             <param name="func">A delegate containing the properties to modify the message with.</param>
-            <param name="options">The request options for this async request.</param>
+            <param name="options">The request options for this <see langword="async"/> request.</param>
             <returns>A <see cref="T:Discord.IUserMessage"/> that represents the initial response.</returns>
         </member>
         <member name="M:Discord.IDiscordInteraction.DeferAsync(System.Boolean,Discord.RequestOptions)">
@@ -5060,7 +5087,7 @@
         </member>
         <member name="T:Discord.IDiscordInteractionData">
             <summary>
-                Represents an interface used to specify classes that they are a vaild dataype of a <see cref="T:Discord.IDiscordInteraction"/> class.
+                Represents an interface used to specify classes that they are a vaild data type of a <see cref="T:Discord.IDiscordInteraction"/> class.
             </summary>
         </member>
         <member name="T:Discord.InteractionResponseType">
@@ -5953,17 +5980,17 @@
             </summary>
         </member>
         <member name="F:Discord.SlashCommandBuilder.MaxNameLength">
-            <summary> 
-                Returns the maximun length a commands name allowed by Discord
+            <summary>
+                Returns the maximum length a commands name allowed by Discord
             </summary>
         </member>
         <member name="F:Discord.SlashCommandBuilder.MaxDescriptionLength">
-            <summary> 
-                Returns the maximum length of a commands description allowed by Discord. 
+            <summary>
+                Returns the maximum length of a commands description allowed by Discord.
             </summary>
         </member>
         <member name="F:Discord.SlashCommandBuilder.MaxOptionsCount">
-            <summary> 
+            <summary>
                 Returns the maximum count of command options allowed by Discord
             </summary>
         </member>
@@ -5974,7 +6001,8 @@
         </member>
         <member name="P:Discord.SlashCommandBuilder.Description">
             <summary>
-               A 1-100 length description of this slash command
+               A 1-100 length description of this slash command.
+               The description is not allowed to be null.
             </summary>
         </member>
         <member name="P:Discord.SlashCommandBuilder.Options">
@@ -6016,7 +6044,7 @@
             <param name="value">The default permission value to set.</param>
             <returns>The current builder.</returns>
         </member>
-        <member name="M:Discord.SlashCommandBuilder.AddOption(System.String,Discord.ApplicationCommandOptionType,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Boolean,System.Collections.Generic.List{Discord.SlashCommandOptionBuilder},Discord.ApplicationCommandOptionChoiceProperties[])">
+        <member name="M:Discord.SlashCommandBuilder.AddOption(System.String,Discord.ApplicationCommandOptionType,System.String,System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Boolean,System.Collections.Generic.List{Discord.SlashCommandOptionBuilder},System.Collections.Generic.List{Discord.ChannelType},Discord.ApplicationCommandOptionChoiceProperties[])">
             <summary>
                 Adds an option to the current slash command.
             </summary>
@@ -6027,6 +6055,7 @@
             <param name="isDefault">If this option is the default option.</param>
             <param name="isAutocomplete">If this option is set to autocompleate.</param>
             <param name="options">The options of the option to add.</param>
+            <param name="channelTypes">The allowed channel types for this option.</param>
             <param name="choices">The choices of this option.</param>
             <returns>The current builder.</returns>
         </member>
@@ -6036,7 +6065,7 @@
             </summary>
             <param name="name">The name of the option to add.</param>
             <param name="type">The type of this option.</param>
-            <param name="description">The sescription of this option.</param>
+            <param name="description">The description of this option.</param>
             <returns>The current builder.</returns>
         </member>
         <member name="M:Discord.SlashCommandBuilder.AddOption(Discord.SlashCommandOptionBuilder)">
@@ -6108,13 +6137,18 @@
                 Gets or sets if this option is a subcommand or subcommand group type, these nested options will be the parameters.
             </summary>
         </member>
+        <member name="P:Discord.SlashCommandOptionBuilder.ChannelTypes">
+            <summary>
+                Gets or sets the allowed channel types for this option.
+            </summary>
+        </member>
         <member name="M:Discord.SlashCommandOptionBuilder.Build">
             <summary>
                 Builds the current option.
             </summary>
             <returns>The built version of this option.</returns>
         </member>
-        <member name="M:Discord.SlashCommandOptionBuilder.AddOption(System.String,Discord.ApplicationCommandOptionType,System.String,System.Nullable{System.Boolean},System.Boolean,System.Collections.Generic.List{Discord.SlashCommandOptionBuilder},Discord.ApplicationCommandOptionChoiceProperties[])">
+        <member name="M:Discord.SlashCommandOptionBuilder.AddOption(System.String,Discord.ApplicationCommandOptionType,System.String,System.Nullable{System.Boolean},System.Boolean,System.Boolean,System.Collections.Generic.List{Discord.SlashCommandOptionBuilder},System.Collections.Generic.List{Discord.ChannelType},Discord.ApplicationCommandOptionChoiceProperties[])">
             <summary>
                 Adds an option to the current slash command.
             </summary>
@@ -6123,7 +6157,9 @@
             <param name="description">The description of this option.</param>
             <param name="required">If this option is required for this command.</param>
             <param name="isDefault">If this option is the default option.</param>
+            <param name="isAutocomplete">If this option supports autocomplete.</param>
             <param name="options">The options of the option to add.</param>
+            <param name="channelTypes">The allowed channel types for this option.</param>
             <param name="choices">The choices of this option.</param>
             <returns>The current builder.</returns>
         </member>
@@ -6148,6 +6184,13 @@
             </summary>
             <param name="name">The name of the choice.</param>
             <param name="value">The value of the choice.</param>
+            <returns>The current builder.</returns>
+        </member>
+        <member name="M:Discord.SlashCommandOptionBuilder.AddChannelType(Discord.ChannelType)">
+            <summary>
+                Adds a channnel type to the current option.
+            </summary>
+            <param name="channelType">The <see cref="T:Discord.ChannelType"/> to add.</param>
             <returns>The current builder.</returns>
         </member>
         <member name="M:Discord.SlashCommandOptionBuilder.WithName(System.String)">
@@ -6178,6 +6221,13 @@
             <param name="value">The value to set.</param>
             <returns>The current builder.</returns>
         </member>
+        <member name="M:Discord.SlashCommandOptionBuilder.WithAutocomplete(System.Boolean)">
+            <summary>
+                Sets the current builders autocomplete field.
+            </summary>
+            <param name="value">The value to set.</param>
+            <returns>The current builder.</returns>
+        </member>
         <member name="M:Discord.SlashCommandOptionBuilder.WithType(Discord.ApplicationCommandOptionType)">
             <summary>
                 Sets the current type of this builder.
@@ -6192,7 +6242,7 @@
         </member>
         <member name="P:Discord.SlashCommandProperties.Description">
             <summary>
-               The discription of this command.
+               The description of this command.
             </summary>
         </member>
         <member name="P:Discord.SlashCommandProperties.Options">
@@ -7573,6 +7623,14 @@
                 A string that contains the body of the message; note that this field may be empty if there is an embed.
             </returns>
         </member>
+        <member name="P:Discord.IMessage.CleanContent">
+            <summary>
+                Gets the clean content for this message.
+            </summary>
+            <returns>
+                A string that contains the body of the message stripped of mentions, markdown, emojis and pings; note that this field may be empty if there is an embed.
+            </returns>
+        </member>
         <member name="P:Discord.IMessage.Timestamp">
             <summary>
                 Gets the time this message was sent.
@@ -8373,7 +8431,7 @@
                     If the <see cref="P:Discord.TimestampTag.Time"/> is null then the default 0 will be used.
                 </para>
             </summary>
-            <returns>A string thats compatable in a discord message, ex: <code>&lt;t:1625944201:f&gt;</code></returns>
+            <returns>A string thats compatible in a discord message, ex: <code>&lt;t:1625944201:f&gt;</code></returns>
         </member>
         <member name="M:Discord.TimestampTag.FromDateTime(System.DateTime,Discord.TimestampTagStyles)">
             <summary>
@@ -8604,7 +8662,12 @@
                 Allows members to use slash commands in text channels.
             </summary>
         </member>
-        <member name="F:Discord.ChannelPermission.RequesToSpeak">
+        <member name="F:Discord.ChannelPermission.UseApplicationCommands">
+            <summary>
+                Allows members to use slash commands in text channels.
+            </summary>
+        </member>
+        <member name="F:Discord.ChannelPermission.RequestToSpeak">
             <summary>
                 Allows for requesting to speak in stage channels. (This permission is under active development and may be changed or removed.)
             </summary>
@@ -8624,106 +8687,158 @@
                 Allows for creating and participating in private threads
             </summary>
         </member>
+        <member name="F:Discord.ChannelPermission.CreatePublicThreads">
+            <summary>
+                Allows for creating public threads.
+            </summary>
+        </member>
+        <member name="F:Discord.ChannelPermission.CreatePrivateThreads">
+            <summary>
+                Allows for creating private threads.
+            </summary>
+        </member>
+        <member name="F:Discord.ChannelPermission.UseExternalStickers">
+            <summary>
+                Allows the usage of custom stickers from other servers.
+            </summary>
+        </member>
+        <member name="F:Discord.ChannelPermission.SendMessagesInThreads">
+            <summary>
+                Allows for sending messages in threads.
+            </summary>
+        </member>
+        <member name="F:Discord.ChannelPermission.StartEmbeddedActivities">
+            <summary>
+                Allows for launching activities (applications with the EMBEDDED flag) in a voice channel.
+            </summary>
+        </member>
         <member name="F:Discord.ChannelPermissions.None">
-            <summary> Gets a blank <see cref="T:Discord.ChannelPermissions"/> that grants no permissions. </summary>
-            <returns> A <see cref="T:Discord.ChannelPermissions"/> structure that does not contain any set permissions. </returns>
+            <summary> Gets a blank <see cref="T:Discord.ChannelPermissions"/> that grants no permissions.</summary>
+            <returns> A <see cref="T:Discord.ChannelPermissions"/> structure that does not contain any set permissions.</returns>
         </member>
         <member name="F:Discord.ChannelPermissions.Text">
-            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for text channels. </summary>
+            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for text channels.</summary>
         </member>
         <member name="F:Discord.ChannelPermissions.Voice">
-            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for voice channels. </summary>
+            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for voice channels.</summary>
+        </member>
+        <member name="F:Discord.ChannelPermissions.Stage">
+            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for stage channels.</summary>
         </member>
         <member name="F:Discord.ChannelPermissions.Category">
-            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for category channels. </summary>
+            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for category channels.</summary>
         </member>
         <member name="F:Discord.ChannelPermissions.DM">
-            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for direct message channels. </summary>
+            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for direct message channels.</summary>
         </member>
         <member name="F:Discord.ChannelPermissions.Group">
-            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for group channels. </summary>
+            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for group channels.</summary>
         </member>
         <member name="M:Discord.ChannelPermissions.All(Discord.IChannel)">
-            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for a given channel type. </summary>
+            <summary> Gets a <see cref="T:Discord.ChannelPermissions"/> that grants all permissions for a given channel type.</summary>
             <exception cref="T:System.ArgumentException">Unknown channel type.</exception>
         </member>
         <member name="P:Discord.ChannelPermissions.RawValue">
-            <summary> Gets a packed value representing all the permissions in this <see cref="T:Discord.ChannelPermissions"/>. </summary>
+            <summary> Gets a packed value representing all the permissions in this <see cref="T:Discord.ChannelPermissions"/>.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.CreateInstantInvite">
-            <summary> If <c>true</c>, a user may create invites. </summary>
+            <summary> If <c>true</c>, a user may create invites.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.ManageChannel">
-            <summary> If <c>true</c>, a user may create, delete and modify this channel. </summary>
+            <summary> If <c>true</c>, a user may create, delete and modify this channel.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.AddReactions">
-            <summary> If <c>true</c>, a user may add reactions. </summary>
+            <summary> If <c>true</c>, a user may add reactions.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.ViewChannel">
-            <summary> If <c>true</c>, a user may view channels. </summary>
+            <summary> If <c>true</c>, a user may view channels.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.SendMessages">
-            <summary> If <c>true</c>, a user may send messages. </summary>
+            <summary> If <c>true</c>, a user may send messages.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.SendTTSMessages">
-            <summary> If <c>true</c>, a user may send text-to-speech messages. </summary>
+            <summary> If <c>true</c>, a user may send text-to-speech messages.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.ManageMessages">
-            <summary> If <c>true</c>, a user may delete messages. </summary>
+            <summary> If <c>true</c>, a user may delete messages.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.EmbedLinks">
-            <summary> If <c>true</c>, Discord will auto-embed links sent by this user. </summary>
+            <summary> If <c>true</c>, Discord will auto-embed links sent by this user.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.AttachFiles">
-            <summary> If <c>true</c>, a user may send files. </summary>
+            <summary> If <c>true</c>, a user may send files.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.ReadMessageHistory">
-            <summary> If <c>true</c>, a user may read previous messages. </summary>
+            <summary> If <c>true</c>, a user may read previous messages.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.MentionEveryone">
-            <summary> If <c>true</c>, a user may mention @everyone. </summary>
+            <summary> If <c>true</c>, a user may mention @everyone.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.UseExternalEmojis">
-            <summary> If <c>true</c>, a user may use custom emoji from other guilds. </summary>
+            <summary> If <c>true</c>, a user may use custom emoji from other guilds.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.Connect">
-            <summary> If <c>true</c>, a user may connect to a voice channel. </summary>
+            <summary> If <c>true</c>, a user may connect to a voice channel.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.Speak">
-            <summary> If <c>true</c>, a user may speak in a voice channel. </summary>
+            <summary> If <c>true</c>, a user may speak in a voice channel.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.MuteMembers">
-            <summary> If <c>true</c>, a user may mute users. </summary>
+            <summary> If <c>true</c>, a user may mute users.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.DeafenMembers">
-            <summary> If <c>true</c>, a user may deafen users. </summary>
+            <summary> If <c>true</c>, a user may deafen users.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.MoveMembers">
-            <summary> If <c>true</c>, a user may move other users between voice channels. </summary>
+            <summary> If <c>true</c>, a user may move other users between voice channels.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.UseVAD">
-            <summary> If <c>true</c>, a user may use voice-activity-detection rather than push-to-talk. </summary>
+            <summary> If <c>true</c>, a user may use voice-activity-detection rather than push-to-talk.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.PrioritySpeaker">
-            <summary> If <c>true</c>, a user may use priority speaker in a voice channel. </summary>
+            <summary> If <c>true</c>, a user may use priority speaker in a voice channel.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.Stream">
-            <summary> If <c>true</c>, a user may stream video in a voice channel. </summary>
+            <summary> If <c>true</c>, a user may stream video in a voice channel.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.ManageRoles">
-            <summary> If <c>true</c>, a user may adjust role permissions. This also implictly grants all other permissions. </summary>
+            <summary> If <c>true</c>, a user may adjust role permissions. This also implicitly grants all other permissions.</summary>
         </member>
         <member name="P:Discord.ChannelPermissions.ManageWebhooks">
-            <summary> If <c>true</c>, a user may edit the webhooks for this channel. </summary>
+            <summary> If <c>true</c>, a user may edit the webhooks for this channel.</summary>
+        </member>
+        <member name="P:Discord.ChannelPermissions.UseApplicationCommands">
+            <summary> If <c>true</c>, a user may use application commands in this guild.</summary>
+        </member>
+        <member name="P:Discord.ChannelPermissions.RequestToSpeak">
+            <summary> If <c>true</c>, a user may request to speak in stage channels.</summary>
+        </member>
+        <member name="P:Discord.ChannelPermissions.ManageThreads">
+            <summary> If <c>true</c>, a user may manage threads in this guild.</summary>
+        </member>
+        <member name="P:Discord.ChannelPermissions.CreatePublicThreads">
+            <summary> If <c>true</c>, a user may create public threads in this guild.</summary>
+        </member>
+        <member name="P:Discord.ChannelPermissions.CreatePrivateThreads">
+            <summary> If <c>true</c>, a user may create private threads in this guild.</summary>
+        </member>
+        <member name="P:Discord.ChannelPermissions.UseExternalStickers">
+            <summary> If <c>true</c>, a user may use external stickers in this guild.</summary>
+        </member>
+        <member name="P:Discord.ChannelPermissions.SendMessagesInThreads">
+            <summary> If <c>true</c>, a user may send messages in threads in this guild.</summary>
+        </member>
+        <member name="P:Discord.ChannelPermissions.StartEmbeddedActivities">
+            <summary> If <c>true</c>, a user launch application activities in voice channels in this guild.</summary>
         </member>
         <member name="M:Discord.ChannelPermissions.#ctor(System.UInt64)">
-            <summary> Creates a new <see cref="T:Discord.ChannelPermissions"/> with the provided packed value. </summary>
+            <summary> Creates a new <see cref="T:Discord.ChannelPermissions"/> with the provided packed value.</summary>
         </member>
-        <member name="M:Discord.ChannelPermissions.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
-            <summary> Creates a new <see cref="T:Discord.ChannelPermissions"/> with the provided permissions. </summary>
+        <member name="M:Discord.ChannelPermissions.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+            <summary> Creates a new <see cref="T:Discord.ChannelPermissions"/> with the provided permissions.</summary>
         </member>
-        <member name="M:Discord.ChannelPermissions.Modify(System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
-            <summary> Creates a new <see cref="T:Discord.ChannelPermissions"/> from this one, changing the provided non-null permissions. </summary>
+        <member name="M:Discord.ChannelPermissions.Modify(System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
+            <summary> Creates a new <see cref="T:Discord.ChannelPermissions"/> from this one, changing the provided non-null permissions.</summary>
         </member>
         <member name="T:Discord.GuildApplicationCommandPermission">
             <summary>
@@ -8950,6 +9065,11 @@
                 Allows members to use slash commands in text channels.	
             </summary>
         </member>
+        <member name="F:Discord.GuildPermission.UseApplicationCommands">
+            <summary>
+                Allows members to use application commands like slash commands and context menus in text channels.	
+            </summary>
+        </member>
         <member name="F:Discord.GuildPermission.RequestToSpeak">
             <summary>
                 Allows for requesting to speak in stage channels. <i>(This permission is under active development and may be changed or removed.)</i>.
@@ -9104,7 +9224,7 @@
         <member name="P:Discord.GuildPermissions.ManageEmojisAndStickers">
             <summary> If <c>true</c>, a user may edit the emojis and stickers for this guild. </summary>
         </member>
-        <member name="P:Discord.GuildPermissions.UseSlashCommands">
+        <member name="P:Discord.GuildPermissions.UseApplicationCommands">
             <summary> If <c>true</c>, a user may use slash commands in this guild. </summary>
         </member>
         <member name="P:Discord.GuildPermissions.RequestToSpeak">
@@ -9119,12 +9239,6 @@
         <member name="P:Discord.GuildPermissions.CreatePrivateThreads">
             <summary> If <c>true</c>, a user may create private threads in this guild. </summary>
         </member>
-        <member name="P:Discord.GuildPermissions.UsePublicThreads">
-            <summary> If <c>true</c>, a user may use public threads in this guild. </summary>
-        </member>
-        <member name="P:Discord.GuildPermissions.UsePrivateThreads">
-            <summary> If <c>true</c>, a user may use private threads in this guild. </summary>
-        </member>
         <member name="P:Discord.GuildPermissions.UseExternalStickers">
             <summary> If <c>true</c>, a user may use external stickers in this guild. </summary>
         </member>
@@ -9132,7 +9246,7 @@
             <summary> If <c>true</c>, a user may send messages in threads in this guild. </summary>
         </member>
         <member name="P:Discord.GuildPermissions.StartEmbeddedActivities">
-            <summary> If <c>true</c>, a user launch application activites in voice channels in this guild. </summary>
+            <summary> If <c>true</c>, a user launch application activities in voice channels in this guild. </summary>
         </member>
         <member name="M:Discord.GuildPermissions.#ctor(System.UInt64)">
             <summary> Creates a new <see cref="T:Discord.GuildPermissions"/> with the provided packed value. </summary>
@@ -9140,10 +9254,10 @@
         <member name="M:Discord.GuildPermissions.#ctor(System.String)">
             <summary> Creates a new <see cref="T:Discord.GuildPermissions"/> with the provided packed value after converting to ulong. </summary>
         </member>
-        <member name="M:Discord.GuildPermissions.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:Discord.GuildPermissions.#ctor(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
             <summary> Creates a new <see cref="T:Discord.GuildPermissions"/> structure with the provided permissions. </summary>
         </member>
-        <member name="M:Discord.GuildPermissions.Modify(System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
+        <member name="M:Discord.GuildPermissions.Modify(System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean},System.Nullable{System.Boolean})">
             <summary> Creates a new <see cref="T:Discord.GuildPermissions"/> from this one, changing the provided non-null permissions. </summary>
         </member>
         <member name="M:Discord.GuildPermissions.Has(Discord.GuildPermission)">
@@ -9284,18 +9398,42 @@
         <member name="P:Discord.OverwritePermissions.ManageWebhooks">
             <summary> If True, a user may edit the webhooks for this channel. </summary>
         </member>
+        <member name="P:Discord.OverwritePermissions.UseApplicationCommands">
+            <summary> If <c>true</c>, a user may use slash commands in this guild. </summary>
+        </member>
+        <member name="P:Discord.OverwritePermissions.RequestToSpeak">
+            <summary> If <c>true</c>, a user may request to speak in stage channels. </summary>
+        </member>
+        <member name="P:Discord.OverwritePermissions.ManageThreads">
+            <summary> If <c>true</c>, a user may manage threads in this guild. </summary>
+        </member>
+        <member name="P:Discord.OverwritePermissions.CreatePublicThreads">
+            <summary> If <c>true</c>, a user may create public threads in this guild. </summary>
+        </member>
+        <member name="P:Discord.OverwritePermissions.CreatePrivateThreads">
+            <summary> If <c>true</c>, a user may create private threads in this guild. </summary>
+        </member>
+        <member name="P:Discord.OverwritePermissions.UseExternalStickers">
+            <summary> If <c>true</c>, a user may use external stickers in this guild. </summary>
+        </member>
+        <member name="P:Discord.OverwritePermissions.SendMessagesInThreads">
+            <summary> If <c>true</c>, a user may send messages in threads in this guild. </summary>
+        </member>
+        <member name="P:Discord.OverwritePermissions.StartEmbeddedActivities">
+            <summary> If <c>true</c>, a user launch application activities in voice channels in this guild. </summary>
+        </member>
         <member name="M:Discord.OverwritePermissions.#ctor(System.UInt64,System.UInt64)">
             <summary> Creates a new OverwritePermissions with the provided allow and deny packed values. </summary>
         </member>
         <member name="M:Discord.OverwritePermissions.#ctor(System.String,System.String)">
             <summary> Creates a new OverwritePermissions with the provided allow and deny packed values after converting to ulong. </summary>
         </member>
-        <member name="M:Discord.OverwritePermissions.#ctor(Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue)">
+        <member name="M:Discord.OverwritePermissions.#ctor(Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue,Discord.PermValue)">
             <summary>
                 Initializes a new <see cref="T:Discord.ChannelPermissions"/> struct with the provided permissions.
             </summary>
         </member>
-        <member name="M:Discord.OverwritePermissions.Modify(System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue})">
+        <member name="M:Discord.OverwritePermissions.Modify(System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue},System.Nullable{Discord.PermValue})">
             <summary>
                 Initializes a new <see cref="T:Discord.OverwritePermissions" /> from the current one, changing the provided
                 non-null permissions.
@@ -9555,6 +9693,14 @@
                 A string containing the name of this role.
             </returns>
         </member>
+        <member name="P:Discord.IRole.Icon">
+            <summary>
+                Gets the icon of this role.
+            </summary>
+            <returns>
+                A string containing the hash of this role's icon.
+            </returns>
+        </member>
         <member name="P:Discord.IRole.Permissions">
             <summary>
                 Gets the permissions granted to members of this role.
@@ -9591,6 +9737,14 @@
             <param name="options">The options to be used when sending the request.</param>
             <returns>
                 A task that represents the asynchronous modification operation.
+            </returns>
+        </member>
+        <member name="M:Discord.IRole.GetIconUrl">
+            <summary>
+                Gets the image url of the icon role.
+            </summary>
+            <returns>
+                An image url of the icon role.
             </returns>
         </member>
         <member name="T:Discord.ReorderRoleProperties">
@@ -9762,7 +9916,7 @@
                 Deletes the current sticker.
             </summary>
             <remakrs>
-                The bot neeeds the MANAGE_EMOJIS_AND_STICKERS permission inside the guild in order to delete stickers.
+                The bot needs the MANAGE_EMOJIS_AND_STICKERS permission inside the guild in order to delete stickers.
             </remakrs>
             <param name="options">The options to be used when sending the request.</param>
             <returns>
@@ -11059,7 +11213,7 @@
                 Add multiple reactions to a message.
             </summary>
             <remarks>
-                This method does not bulk add reactions! It will send a request for each reaction inculded.
+                This method does not bulk add reactions! It will send a request for each reaction included.
             </remarks>
             <example>
             <code language="cs">
@@ -11104,7 +11258,7 @@
             <summary>
                 Sends an inline reply that references a message.
             </summary>
-            <param name="msg">The message that is being replyed on.</param>
+            <param name="msg">The message that is being replied on.</param>
             <param name="text">The message to be sent.</param>
             <param name="isTTS">Determines whether the message should be read aloud by Discord or not.</param>
             <param name="embed">The <see cref="F:Discord.EmbedType.Rich"/> <see cref="T:Discord.Embed"/> to be sent.</param>
@@ -11124,7 +11278,7 @@
         <member name="T:Discord.UserExtensions">
             <summary> An extension class for various Discord user objects. </summary>
         </member>
-        <member name="M:Discord.UserExtensions.SendMessageAsync(Discord.IUser,System.String,System.Boolean,Discord.Embed,Discord.Embed[],Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageComponent)">
+        <member name="M:Discord.UserExtensions.SendMessageAsync(Discord.IUser,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.AllowedMentions,Discord.MessageComponent,Discord.Embed[])">
             <summary>
                 Sends a message via DM.
             </summary>
@@ -11145,18 +11299,18 @@
             <param name="text">The message to be sent.</param>
             <param name="isTTS">Whether the message should be read aloud by Discord or not.</param>
             <param name="embed">The <see cref="F:Discord.EmbedType.Rich"/> <see cref="T:Discord.Embed"/> to be sent.</param>
-            <param name="embeds">A array of <see cref="T:Discord.Embed"/>s to send with this response. Max 10.</param>
             <param name="options">The options to be used when sending the request.</param>
             <param name="allowedMentions">
                 Specifies if notifications are sent for mentioned users and roles in the message <paramref name="text"/>.
                 If <c>null</c>, all mentioned roles and users will be notified.
             </param>
             <param name="component">The message components to be included with this message. Used for interactions.</param>
+            <param name="embeds">A array of <see cref="T:Discord.Embed"/>s to send with this response. Max 10.</param>
             <returns>
                 A task that represents the asynchronous send operation. The task result contains the sent message.
             </returns>
         </member>
-        <member name="M:Discord.UserExtensions.SendFileAsync(Discord.IUser,System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.MessageComponent)">
+        <member name="M:Discord.UserExtensions.SendFileAsync(Discord.IUser,System.IO.Stream,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed[])">
             <summary>
                 Sends a file to this message channel with an optional caption.
             </summary>
@@ -11194,12 +11348,13 @@
             <param name="embed">The <see cref="F:Discord.EmbedType.Rich"/> <see cref="T:Discord.Embed"/> to be sent.</param>
             <param name="options">The options to be used when sending the request.</param>
             <param name="component">The message component to be included with this message. Used for interactions.</param>
+            <param name="embeds">A array of <see cref="T:Discord.Embed"/>s to send with this response. Max 10.</param>
             <returns>
                 A task that represents an asynchronous send operation for delivering the message. The task result
                 contains the sent message.
             </returns>
         </member>
-        <member name="M:Discord.UserExtensions.SendFileAsync(Discord.IUser,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.MessageComponent)">
+        <member name="M:Discord.UserExtensions.SendFileAsync(Discord.IUser,System.String,System.String,System.Boolean,Discord.Embed,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed[])">
             <summary>
                 Sends a file via DM with an optional caption.
             </summary>
@@ -11242,6 +11397,7 @@
             <param name="embed">The <see cref="F:Discord.EmbedType.Rich"/> <see cref="T:Discord.Embed"/> to be sent.</param>
             <param name="options">The options to be used when sending the request.</param>
             <param name="component">The message component to be included with this message. Used for interactions.</param>
+            <param name="embeds">A array of <see cref="T:Discord.Embed"/>s to send with this response. Max 10.</param>
             <returns>
                 A task that represents an asynchronous send operation for delivering the message. The task result
                 contains the sent message.
@@ -11273,7 +11429,7 @@
             <summary> Returns a markdown-formatted string with underline formatting. </summary>
         </member>
         <member name="M:Discord.Format.Strikethrough(System.String)">
-            <summary> Returns a markdown-formatted string with strikethrough formatting. </summary>
+            <summary> Returns a markdown-formatted string with strike-through formatting. </summary>
         </member>
         <member name="M:Discord.Format.Spoiler(System.String)">
             <summary> Returns a string with spoiler formatting. </summary>
@@ -11303,6 +11459,13 @@
             </summary>
             <param name="text">The text to format.</param>
             <returns>Gets the formatted block quote text.</returns>
+        </member>
+        <member name="M:Discord.Format.StripMarkDown(System.String)">
+            <summary>
+            Remove discord supported markdown from text.
+            </summary>
+            <param name="text">The to remove markdown from.</param>
+            <returns>Gets the unformatted text.</returns>
         </member>
         <member name="F:Discord.GatewayIntents.None">
             <summary> This intent includes no events </summary>
@@ -12136,10 +12299,10 @@
         </member>
         <member name="P:Discord.RequestOptions.Timeout">
             <summary>
-                Gets or sets the maximum time to wait for for this request to complete.
+                Gets or sets the maximum time to wait for this request to complete.
             </summary>
             <remarks>
-                Gets or set the max time, in milliseconds, to wait for for this request to complete. If 
+                Gets or set the max time, in milliseconds, to wait for this request to complete. If 
                 <c>null</c>, a request will not time out. If a rate limit has been triggered for this request's bucket
                 and will not be unpaused in time, this request will fail immediately.
             </remarks>
@@ -12827,10 +12990,20 @@
         <member name="M:Discord.Utils.UrlValidation.Validate(System.String)">
             <summary>
             Not full URL validation right now. Just ensures protocol is present and that it's either http or https
+            <see cref="M:Discord.Utils.UrlValidation.ValidateButton(System.String)"/> should be used for url buttons
             </summary>
             <param name="url">url to validate before sending to Discord.</param>
             <exception cref="T:System.InvalidOperationException">A URL must include a protocol (http or https).</exception>
             <returns>true if url is valid by our standard, false if null, throws an error upon invalid </returns>
+        </member>
+        <member name="M:Discord.Utils.UrlValidation.ValidateButton(System.String)">
+            <summary>
+            Not full URL validation right now. Just Ensures the protocol is either http, https, or discord
+            <see cref="M:Discord.Utils.UrlValidation.Validate(System.String)"/> should be used everything other than url buttons
+            </summary>
+            <param name="url">the url to validate before sending to discord</param>
+            <exception cref="T:System.InvalidOperationException">A URL must include a protocol (either http, https, or discord).</exception>
+            <returns>true if the url is valid by our standard, false if null, throws an error upon invalid</returns>
         </member>
     </members>
 </doc>

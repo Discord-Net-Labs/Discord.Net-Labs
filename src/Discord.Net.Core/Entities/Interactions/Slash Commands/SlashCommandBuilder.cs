@@ -12,15 +12,15 @@ namespace Discord
     /// </summary>
     public class SlashCommandBuilder
     {
-        /// <summary> 
-        ///     Returns the maximun length a commands name allowed by Discord
+        /// <summary>
+        ///     Returns the maximum length a commands name allowed by Discord
         /// </summary>
         public const int MaxNameLength = 32;
-        /// <summary> 
-        ///     Returns the maximum length of a commands description allowed by Discord. 
+        /// <summary>
+        ///     Returns the maximum length of a commands description allowed by Discord.
         /// </summary>
         public const int MaxDescriptionLength = 100;
-        /// <summary> 
+        /// <summary>
         ///     Returns the maximum count of command options allowed by Discord
         /// </summary>
         public const int MaxOptionsCount = 25;
@@ -50,7 +50,8 @@ namespace Discord
         }
 
         /// <summary>
-        ///    A 1-100 length description of this slash command
+        ///    A 1-100 length description of this slash command.
+        ///    The description is not allowed to be null.
         /// </summary>
         public string Description
         {
@@ -60,6 +61,7 @@ namespace Discord
             }
             set
             {
+                Preconditions.NotNullOrEmpty(value, nameof(Description));
                 Preconditions.AtLeast(value.Length, 1, nameof(Description));
                 Preconditions.AtMost(value.Length, MaxDescriptionLength, nameof(Description));
 
@@ -163,10 +165,12 @@ namespace Discord
         /// <param name="isDefault">If this option is the default option.</param>
         /// <param name="isAutocomplete">If this option is set to autocompleate.</param>
         /// <param name="options">The options of the option to add.</param>
+        /// <param name="channelTypes">The allowed channel types for this option.</param>
         /// <param name="choices">The choices of this option.</param>
         /// <returns>The current builder.</returns>
         public SlashCommandBuilder AddOption(string name, ApplicationCommandOptionType type,
-           string description, bool? required = null, bool? isDefault = null, bool isAutocomplete = false, List<SlashCommandOptionBuilder> options = null, params ApplicationCommandOptionChoiceProperties[] choices)
+           string description, bool? required = null, bool? isDefault = null, bool isAutocomplete = false, List<SlashCommandOptionBuilder> options = null,
+           List<ChannelType> channelTypes = null, params ApplicationCommandOptionChoiceProperties[] choices)
         {
             // Make sure the name matches the requirements from discord
             Preconditions.NotNullOrEmpty(name, nameof(name));
@@ -176,7 +180,7 @@ namespace Discord
             // Discord updated the docs, this regex prevents special characters like @!$%( and s p a c e s.. etc,
             // https://discord.com/developers/docs/interactions/slash-commands#applicationcommand
             if (!Regex.IsMatch(name, @"^[\w-]{1,32}$"))
-                throw new ArgumentException("Command name cannot contian any special characters or whitespaces!", nameof(name));
+                throw new ArgumentException("Command name cannot contain any special characters or whitespaces!", nameof(name));
 
             // same with description
             Preconditions.NotNullOrEmpty(description, nameof(description));
@@ -200,32 +204,19 @@ namespace Discord
                 Options = options,
                 Type = type,
                 Autocomplete = isAutocomplete,
-                Choices = choices != null ? new List<ApplicationCommandOptionChoiceProperties>(choices) : null
+                Choices = choices != null ? new List<ApplicationCommandOptionChoiceProperties>(choices) : null,
+                ChannelTypes = channelTypes,
             };
 
             return AddOption(option);
         }
-
-        ///// <summary>
-        /////     Adds an option to the current slash command.
-        ///// </summary>
-        ///// <param name="name">The name of the option to add.</param>
-        ///// <param name="type">The type of this option.</param>
-        ///// <param name="description">The description of this option.</param>
-        ///// <param name="required">If this option is required for this command.</param>
-        ///// <param name="isDefault">If this option is the default option.</param>
-        ///// <param name="choices">The choices of this option.</param>
-        ///// <returns>The current builder.</returns>
-        //public SlashCommandBuilder AddOption(string name, ApplicationCommandOptionType type,
-        //    string description, bool required = true, bool isDefault = false, params ApplicationCommandOptionChoiceProperties[] choices)
-        //    => AddOption(name, type, description, required, isDefault, null, choices);
 
         /// <summary>
         ///     Adds an option to the current slash command.
         /// </summary>
         /// <param name="name">The name of the option to add.</param>
         /// <param name="type">The type of this option.</param>
-        /// <param name="description">The sescription of this option.</param>
+        /// <param name="description">The description of this option.</param>
         /// <returns>The current builder.</returns>
         public SlashCommandBuilder AddOption(string name, ApplicationCommandOptionType type, string description)
             => AddOption(name, type, description, options: null, choices: null);
@@ -306,7 +297,7 @@ namespace Discord
 
                 if (value != null)
                     if (!Regex.IsMatch(value, @"^[\w-]{1,32}$"))
-                        throw new ArgumentException("Option name cannot contian any special characters or whitespaces!");
+                        throw new ArgumentException("Option name cannot contain any special characters or whitespaces!");
 
                 _name = value;
             }
@@ -360,6 +351,11 @@ namespace Discord
         public List<SlashCommandOptionBuilder> Options { get; set; }
 
         /// <summary>
+        ///     Gets or sets the allowed channel types for this option.
+        /// </summary>
+        public List<ChannelType> ChannelTypes { get; set; }
+
+        /// <summary>
         ///     Builds the current option.
         /// </summary>
         /// <returns>The built version of this option.</returns>
@@ -382,7 +378,8 @@ namespace Discord
                 Type = Type,
                 Options = Options?.Count > 0 ? new List<ApplicationCommandOptionProperties>(Options.Select(x => x.Build())) : null,
                 Choices = Choices,
-                Autocomplete = Autocomplete
+                Autocomplete = Autocomplete,
+                ChannelTypes = ChannelTypes
             };
         }
 
@@ -394,11 +391,14 @@ namespace Discord
         /// <param name="description">The description of this option.</param>
         /// <param name="required">If this option is required for this command.</param>
         /// <param name="isDefault">If this option is the default option.</param>
+        /// <param name="isAutocomplete">If this option supports autocomplete.</param>
         /// <param name="options">The options of the option to add.</param>
+        /// <param name="channelTypes">The allowed channel types for this option.</param>
         /// <param name="choices">The choices of this option.</param>
         /// <returns>The current builder.</returns>
         public SlashCommandOptionBuilder AddOption(string name, ApplicationCommandOptionType type,
-           string description, bool? required = null, bool isDefault = false, List<SlashCommandOptionBuilder> options = null, params ApplicationCommandOptionChoiceProperties[] choices)
+           string description, bool? required = null, bool isDefault = false, bool isAutocomplete = false, List<SlashCommandOptionBuilder> options = null,
+           List<ChannelType> channelTypes = null, params ApplicationCommandOptionChoiceProperties[] choices)
         {
             // Make sure the name matches the requirements from discord
             Preconditions.NotNullOrEmpty(name, nameof(name));
@@ -408,7 +408,7 @@ namespace Discord
             // Discord updated the docs, this regex prevents special characters like @!$%( and s p a c e s.. etc,
             // https://discord.com/developers/docs/interactions/slash-commands#applicationcommand
             if (!Regex.IsMatch(name, @"^[\w-]{1,32}$"))
-                throw new ArgumentException("Command name cannot contian any special characters or whitespaces!", nameof(name));
+                throw new ArgumentException("Command name cannot contain any special characters or whitespaces!", nameof(name));
 
             // same with description
             Preconditions.NotNullOrEmpty(description, nameof(description));
@@ -429,9 +429,11 @@ namespace Discord
                 Description = description,
                 Required = required,
                 Default = isDefault,
+                Autocomplete = isAutocomplete,
                 Options = options,
                 Type = type,
-                Choices = choices != null ? new List<ApplicationCommandOptionChoiceProperties>(choices) : null
+                Choices = choices != null ? new List<ApplicationCommandOptionChoiceProperties>(choices) : null,
+                ChannelTypes = channelTypes,
             };
 
             return AddOption(option);
@@ -521,6 +523,21 @@ namespace Discord
         }
 
         /// <summary>
+        ///     Adds a channnel type to the current option.
+        /// </summary>
+        /// <param name="channelType">The <see cref="ChannelType"/> to add.</param>
+        /// <returns>The current builder.</returns>
+        public SlashCommandOptionBuilder AddChannelType(ChannelType channelType)
+        {
+            if (ChannelTypes == null)
+                ChannelTypes = new List<ChannelType>();
+
+            ChannelTypes.Add(channelType);
+
+            return this;
+        }
+
+        /// <summary>
         ///     Sets the current builders name.
         /// </summary>
         /// <param name="name">The name to set the current option builder.</param>
@@ -562,6 +579,17 @@ namespace Discord
         public SlashCommandOptionBuilder WithDefault(bool value)
         {
             Default = value;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets the current builders autocomplete field.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        /// <returns>The current builder.</returns>
+        public SlashCommandOptionBuilder WithAutocomplete(bool value)
+        {
+            Autocomplete = value;
             return this;
         }
 

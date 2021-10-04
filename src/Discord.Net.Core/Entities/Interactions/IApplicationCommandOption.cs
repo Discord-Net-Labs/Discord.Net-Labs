@@ -22,7 +22,7 @@ namespace Discord
         string Name { get; }
 
         /// <summary>
-        ///     The discription of this command option, 1-100 character description.
+        ///     The description of this command option, 1-100 character description.
         /// </summary>
         string Description { get; }
 
@@ -45,5 +45,10 @@ namespace Discord
         ///     If the option is a subcommand or subcommand group type, this nested options will be the parameters.
         /// </summary>
         IReadOnlyCollection<IApplicationCommandOption>? Options { get; }
+
+        /// <summary>
+        ///     The allowed channel types for this option.
+        /// </summary>
+        IReadOnlyCollection<ChannelType>? ChannelTypes { get; }
     }
 }

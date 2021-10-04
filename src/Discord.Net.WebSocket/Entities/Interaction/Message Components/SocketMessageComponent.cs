@@ -10,9 +10,9 @@ using System.IO;
 
 namespace Discord.WebSocket
 {
-/// <summary>
-///     Represents a Websocket-based interaction type for Message Components.
-/// </summary>
+    /// <summary>
+    ///     Represents a Websocket-based interaction type for Message Components.
+    /// </summary>
     public class SocketMessageComponent : SocketInteraction
     {
         /// <summary>
@@ -84,16 +84,9 @@ namespace Discord.WebSocket
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
+            embeds ??= Array.Empty<Embed>();
             if (embed != null)
-            {
-                if (embeds == null)
-                    embeds = new[] { embed };
-                else
-                {
-                    List<Embed> listEmbeds = embeds.ToList();
-                    listEmbeds.Insert(0, embed);
-                }
-            }
+                embeds = new[] { embed }.Concat(embeds).ToArray();
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
@@ -138,7 +131,7 @@ namespace Discord.WebSocket
         ///     Updates the message which this component resides in with the type <see cref="InteractionResponseType.UpdateMessage"/>
         /// </summary>
         /// <param name="func">A delegate containing the properties to modify the message with.</param>
-        /// <param name="options">The request options for this async request.</param>
+        /// <param name="options">The request options for this <see langword="async"/> request.</param>
         /// <returns>A task that represents the asynchronous operation of updating the message.</returns>
         public async Task UpdateAsync(Action<MessageProperties> func, RequestOptions options = null)
         {
@@ -150,9 +143,9 @@ namespace Discord.WebSocket
 
             if (args.AllowedMentions.IsSpecified)
             {
-               var allowedMentions = args.AllowedMentions.Value;
-               Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions), "A max of 100 role Ids are allowed.");
-               Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions), "A max of 100 user Ids are allowed.");
+                var allowedMentions = args.AllowedMentions.Value;
+                Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions), "A max of 100 role Ids are allowed.");
+                Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions), "A max of 100 user Ids are allowed.");
             }
 
             var embed = args.Embed;
@@ -227,16 +220,9 @@ namespace Discord.WebSocket
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
+            embeds ??= Array.Empty<Embed>();
             if (embed != null)
-            {
-                if (embeds == null)
-                    embeds = new[] { embed };
-                else
-                {
-                    List<Embed> listEmbeds = embeds.ToList();
-                    listEmbeds.Insert(0, embed);
-                }
-            }
+                embeds = new[] { embed }.Concat(embeds).ToArray();
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
@@ -259,9 +245,9 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         public override async Task<RestFollowupMessage> FollowupWithFileAsync(
+            Stream fileStream,
+            string fileName,
             string text = null,
-            Stream fileStream = null,
-            string fileName = null,
             Embed[] embeds = null,
             bool isTTS = false,
             bool ephemeral = false,
@@ -273,16 +259,9 @@ namespace Discord.WebSocket
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
+            embeds ??= Array.Empty<Embed>();
             if (embed != null)
-            {
-                if (embeds == null)
-                    embeds = new[] { embed };
-                else
-                {
-                    List<Embed> listEmbeds = embeds.ToList();
-                    listEmbeds.Insert(0, embed);
-                }
-            }
+                embeds = new[] { embed }.Concat(embeds).ToArray();
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
@@ -308,8 +287,8 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         public override async Task<RestFollowupMessage> FollowupWithFileAsync(
+            string filePath,
             string text = null,
-            string filePath = null,
             string fileName = null,
             Embed[] embeds = null,
             bool isTTS = false,
@@ -322,16 +301,9 @@ namespace Discord.WebSocket
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
+            embeds ??= Array.Empty<Embed>();
             if (embed != null)
-            {
-                if (embeds == null)
-                    embeds = new[] { embed };
-                else
-                {
-                    List<Embed> listEmbeds = embeds.ToList();
-                    listEmbeds.Insert(0, embed);
-                }
-            }
+                embeds = new[] { embed }.Concat(embeds).ToArray();
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
@@ -358,7 +330,7 @@ namespace Discord.WebSocket
         ///     Defers an interaction and responds with type 5 (<see cref="InteractionResponseType.DeferredChannelMessageWithSource"/>)
         /// </summary>
         /// <param name="ephemeral"><see langword="true"/> to send this message ephemerally, otherwise <see langword="false"/>.</param>
-        /// <param name="options">The request options for this async request.</param>
+        /// <param name="options">The request options for this <see langword="async"/> request.</param>
         /// <returns>
         ///     A task that represents the asynchronous operation of acknowledging the interaction.
         /// </returns>
