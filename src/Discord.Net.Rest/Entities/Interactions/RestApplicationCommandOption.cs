@@ -67,15 +67,15 @@ namespace Discord.Rest
 
             Options = model.Options.IsSpecified
                 ? model.Options.Value.Select(x => Create(x)).ToImmutableArray()
-                : null;
+                : ImmutableArray.Create<RestApplicationCommandOption>();
 
             Choices = model.Choices.IsSpecified
                 ? model.Choices.Value.Select(x => new RestApplicationCommandChoice(x)).ToImmutableArray()
-                : null;
+                : ImmutableArray.Create<RestApplicationCommandChoice>();
 
             ChannelTypes = model.ChannelTypes.IsSpecified
                 ? model.ChannelTypes.Value.ToImmutableArray()
-                : null;
+                : ImmutableArray.Create<ChannelType>();
         }
         #endregion
 
