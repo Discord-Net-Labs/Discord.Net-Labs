@@ -226,7 +226,7 @@ namespace Discord.WebSocket
 
             fileName ??= Path.GetFileName(filePath);
 
-            if (fileName == null || fileName != null && !fileName.Contains('.')) throw new ArgumentException("Make sure that the file path has the file name in it with a period.");
+            if (fileName == null || fileName != null && !fileName.Contains('.')) throw new ArgumentException("Make sure that the file path has a file name and a valid file extension.");
 
             var args = new API.Rest.CreateWebhookMessageParams
             {
