@@ -39,7 +39,7 @@ namespace Discord.WebSocket
         public IReadOnlyCollection<SocketApplicationCommandOption> Options { get; private set; }
 
         /// <summary>
-        /// The allowed channel types for this option.
+        ///     The allowed channel types for this option.
         /// </summary>
         public IReadOnlyCollection<ChannelType> ChannelTypes { get; private set; }
 

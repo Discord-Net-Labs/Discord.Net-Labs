@@ -47,7 +47,7 @@ namespace Discord
         IReadOnlyCollection<IApplicationCommandOption>? Options { get; }
 
         /// <summary>
-        /// The allowed channel types for this option.
+        ///     The allowed channel types for this option.
         /// </summary>
         IReadOnlyCollection<ChannelType>? ChannelTypes { get; }
     }

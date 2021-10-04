@@ -40,9 +40,9 @@ namespace Discord.Rest
         public IReadOnlyCollection<RestApplicationCommandOption> Options { get; private set; }
 
         /// <summary>
-        /// The allowed channel types for this option.
+        ///     The allowed channel types for this option.
         /// </summary>
-        public IReadOnlyCollection<ChannelType>? ChannelTypes { get; private set; }
+        public IReadOnlyCollection<ChannelType> ChannelTypes { get; private set; }
 
         internal RestApplicationCommandOption() { }
 
