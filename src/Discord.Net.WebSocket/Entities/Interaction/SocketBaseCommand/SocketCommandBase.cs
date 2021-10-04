@@ -223,16 +223,10 @@ namespace Discord.WebSocket
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
             Preconditions.AtMost(embeds?.Length ?? 0, 10, nameof(embeds), "A max of 10 embeds are allowed.");
             Preconditions.NotNullOrEmpty(filePath, nameof(filePath), "Path must exist");
-            if (fileName != null && !string.IsNullOrEmpty(filePath))
-            {
-                string[] splits = filePath.Split('/');
-                string filename = splits.LastOrDefault();
-                if (filename.Contains("."))
-                    fileName = splits.LastOrDefault();
-                else
-                    throw new ArgumentException("Make sure that the file path has the file name in it with a period.");
-            }
 
+            fileName ??= Path.GetFileName(filePath);
+
+            if (fileName == null || fileName != null && !fileName.Contains('.')) throw new ArgumentException("Make sure that the file path has the file name in it with a period.");
             var args = new API.Rest.CreateWebhookMessageParams
             {
                 Content = text,
