@@ -32,11 +32,17 @@ namespace Discord.Interactions
         /// </summary>
         public IReadOnlyCollection<ParameterChoice> Choices { get; }
 
+        /// <summary>
+        ///     Gets the allowed channel types for this option.
+        /// </summary>
+        public IReadOnlyCollection<ChannelType> ChannelTypes { get; }
+
         internal SlashCommandParameterInfo (Builders.SlashCommandParameterBuilder builder, SlashCommandInfo command) : base(builder, command)
         {
             TypeConverter = builder.TypeConverter;
             Description = builder.Description;
             Choices = builder.Choices.ToImmutableArray();
+            ChannelTypes = builder.ChannelTypes.ToImmutableArray();
         }
     }
 }

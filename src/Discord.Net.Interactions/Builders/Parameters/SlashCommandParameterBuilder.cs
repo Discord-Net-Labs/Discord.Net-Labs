@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Discord.Interactions.Builders
 {
     public sealed class SlashCommandParameterBuilder : ParameterBuilder<SlashCommandParameterInfo, SlashCommandParameterBuilder>
     {
-        private readonly List<ParameterChoice> _choices = new List<ParameterChoice>();
+        private readonly List<ParameterChoice> _choices = new();
+        private readonly List<ChannelType> _channelTypes = new();
 
         public string Description { get; set; }
         public IReadOnlyCollection<ParameterChoice> Choices => _choices;
+        public IReadOnlyCollection<ChannelType> ChannelTypes => _channelTypes;
         public TypeConverter TypeConverter { get; private set; }
         protected override SlashCommandParameterBuilder Instance => this;
 
@@ -25,6 +28,18 @@ namespace Discord.Interactions.Builders
         public SlashCommandParameterBuilder WithChoices (params ParameterChoice[] options)
         {
             _choices.AddRange(options);
+            return this;
+        }
+
+        public SlashCommandParameterBuilder WithChannelTypes (params ChannelType[] channelTypes)
+        {
+            _channelTypes.AddRange(channelTypes);
+            return this;
+        }
+
+        public SlashCommandParameterBuilder WithChannelTypes (IEnumerable<ChannelType> channelTypes)
+        {
+            _channelTypes.AddRange(channelTypes);
             return this;
         }
 

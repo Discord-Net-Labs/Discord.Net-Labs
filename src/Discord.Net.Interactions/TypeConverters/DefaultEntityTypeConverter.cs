@@ -1,5 +1,8 @@
 using Discord.WebSocket;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Discord.Interactions
@@ -27,7 +30,48 @@ namespace Discord.Interactions
 
     internal class DefaultChannelConverter<T> : DefaultEntityTypeConverter<T> where T : class, IChannel
     {
+        private readonly ChannelType[] _channelTypes;
+
+        public DefaultChannelConverter ( )
+        {
+            var type = typeof(T);
+
+            _channelTypes = true switch
+            {
+                _ when typeof(IStageChannel).IsAssignableFrom(type)
+                    => new ChannelType[] { ChannelType.Stage },
+
+                _ when typeof(IVoiceChannel).IsAssignableFrom(type)
+                    => new ChannelType[] { ChannelType.Voice },
+
+                _ when typeof(IDMChannel).IsAssignableFrom(type)
+                    => new ChannelType[] { ChannelType.DM },
+
+                _ when typeof(IGroupChannel).IsAssignableFrom(type)
+                    => new ChannelType[] { ChannelType.Group },
+
+                _ when typeof(ICategoryChannel).IsAssignableFrom(type)
+                    => new ChannelType[] { ChannelType.Category },
+
+                _ when typeof(INewsChannel).IsAssignableFrom(type)
+                    => new ChannelType[] { ChannelType.News },
+
+                _ when typeof(IThreadChannel).IsAssignableFrom(type)
+                    => new ChannelType[] { ChannelType.PublicThread, ChannelType.PrivateThread, ChannelType.NewsThread },
+
+                _ when typeof(ITextChannel).IsAssignableFrom(type)
+                    => new ChannelType[] { ChannelType.Text },
+
+                _ => null
+            };
+        }
+
         public override ApplicationCommandOptionType GetDiscordType ( ) => ApplicationCommandOptionType.Channel;
+
+        public override void Write (ApplicationCommandOptionProperties properties, IParameterInfo parameter)
+        {
+            properties.ChannelTypes = _channelTypes?.ToList();
+        }
     }
 
     internal class DefaultMentionableConverter<T> : DefaultEntityTypeConverter<T> where T : class, IMentionable
