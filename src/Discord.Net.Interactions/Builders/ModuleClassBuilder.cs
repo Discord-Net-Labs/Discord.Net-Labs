@@ -12,7 +12,7 @@ namespace Discord.Interactions.Builders
 
         public static async Task<IEnumerable<TypeInfo>> SearchAsync (Assembly assembly, InteractionService commandService)
         {
-            bool IsLoadableModule (TypeInfo info)
+            static bool IsLoadableModule (TypeInfo info)
             {
                 return info.DeclaredMethods.Any(x => x.GetCustomAttribute<SlashCommandAttribute>() != null);
             }
@@ -332,6 +332,9 @@ namespace Discord.Interactions.Builders
                         break;
                     case ParameterPreconditionAttribute precondition:
                         builder.AddPreconditions(precondition);
+                        break;
+                    case ChannelTypesAttribute channelTypes:
+                        builder.WithChannelTypes(channelTypes.ChannelTypes);
                         break;
                     default:
                         builder.AddAttributes(attribute);

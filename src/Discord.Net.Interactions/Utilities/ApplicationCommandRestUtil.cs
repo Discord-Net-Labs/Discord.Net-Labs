@@ -19,8 +19,10 @@ namespace Discord.Interactions
                 {
                     Name = x.Name,
                     Value = x.Value
-                })?.ToList()
+                })?.ToList(),
+                ChannelTypes = parameterInfo.ChannelTypes?.ToList()
             };
+
             parameterInfo.TypeConverter.Write(props, parameterInfo);
 
             return props;
@@ -139,26 +141,22 @@ namespace Discord.Interactions
 
         public static ApplicationCommandProperties ToApplicationCommandProps (this IApplicationCommand command)
         {
-            switch (command.Type)
+            return command.Type switch
             {
-                case ApplicationCommandType.Slash:
-                    return new SlashCommandProperties
-                    {
-                        Name = command.Name,
-                        Description = command.Description,
-                        DefaultPermission = command.DefaultPermission,
-                        Options = command.Options?.Select(x => x.ToApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified
-                    };
-                case ApplicationCommandType.User:
-                case ApplicationCommandType.Message:
-                    return new ContextCommandProperties(command.Type)
-                    {
-                        Name = command.Name,
-                        DefaultPermission = command.DefaultPermission
-                    };
-                default:
-                    throw new InvalidOperationException($"Cannot create command properties for command type {command.Type}");
-            }
+                ApplicationCommandType.Slash => new SlashCommandProperties
+                {
+                    Name = command.Name,
+                    Description = command.Description,
+                    DefaultPermission = command.DefaultPermission,
+                    Options = command.Options?.Select(x => x.ToApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified
+                },
+                ApplicationCommandType.User or ApplicationCommandType.Message => new ContextCommandProperties(command.Type)
+                {
+                    Name = command.Name,
+                    DefaultPermission = command.DefaultPermission
+                },
+                _ => throw new InvalidOperationException($"Cannot create command properties for command type {command.Type}"),
+            };
         }
 
         public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps (this IApplicationCommandOption commandOption) =>
