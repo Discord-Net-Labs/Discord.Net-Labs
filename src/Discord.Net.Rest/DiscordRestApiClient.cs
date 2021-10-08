@@ -534,7 +534,7 @@ namespace Discord.API
 
             var bucket = new BucketIds(channelId: channelId);
 
-            return await SendAsync<ChannelThreads>("GET", () => $"channels/{channelId}/threads/active", bucket);
+            return await SendAsync<ChannelThreads>("GET", () => $"channels/{channelId}/threads/active", bucket, options: options);
         }
 
         public async Task<ChannelThreads> GetPublicArchivedThreadsAsync(ulong channelId, DateTimeOffset? before = null, int? limit = null, RequestOptions options = null)
