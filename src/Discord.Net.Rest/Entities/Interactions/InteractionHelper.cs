@@ -414,7 +414,7 @@ namespace Discord.Rest
         public static async Task DeleteInteractionResponseAsync(BaseDiscordClient client, RestInteractionMessage message, RequestOptions options = null)
             => await client.ApiClient.DeleteInteractionFollowupMessageAsync(message.Id, message.Token, options);
 
-        public static Task SendAutocompleteResult(BaseDiscordClient client, IEnumerable<AutocompleteResult> result, ulong interactionId,
+        public static Task SendAutocompleteResultAsync(BaseDiscordClient client, IEnumerable<AutocompleteResult> result, ulong interactionId,
             string interactionToken, RequestOptions options)
         {
             result ??= Array.Empty<AutocompleteResult>();
