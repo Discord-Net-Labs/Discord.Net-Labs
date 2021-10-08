@@ -39,12 +39,8 @@ namespace Discord.WebSocket
 
         internal new SocketStageChannel Clone() => MemberwiseClone() as SocketStageChannel;
 
-
         internal SocketStageChannel(DiscordSocketClient discord, ulong id, SocketGuild guild)
-            : base(discord, id, guild)
-        {
-
-        }
+            : base(discord, id, guild) { }
 
         internal new static SocketStageChannel Create(SocketGuild guild, ClientState state, Model model)
         {

@@ -609,7 +609,6 @@ namespace Discord.API
         #region Stage
         public async Task<StageInstance> CreateStageInstanceAsync(CreateStageInstanceParams args, RequestOptions options = null)
         {
-
             options = RequestOptions.CreateOrClone(options);
 
             var bucket = new BucketIds();

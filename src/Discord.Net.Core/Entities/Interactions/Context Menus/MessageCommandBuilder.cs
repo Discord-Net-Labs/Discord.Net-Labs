@@ -48,7 +48,6 @@ namespace Discord
             };
 
             return props;
-
         }
 
         /// <summary>

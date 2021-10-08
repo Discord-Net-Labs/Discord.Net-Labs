@@ -10,10 +10,7 @@ namespace Discord.Rest
     public class RestGlobalCommand : RestApplicationCommand
     {
         internal RestGlobalCommand(BaseDiscordClient client, ulong id)
-            : base(client, id)
-        {
-
-        }
+            : base(client, id) { }
 
         internal static RestGlobalCommand Create(BaseDiscordClient client, Model model)
         {

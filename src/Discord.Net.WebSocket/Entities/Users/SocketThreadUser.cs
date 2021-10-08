@@ -160,7 +160,6 @@ namespace Discord.WebSocket
             }
         }
 
-
         /// <inheritdoc/>
         public ChannelPermissions GetPermissions(IGuildChannel channel) => GuildUser.GetPermissions(channel);
 

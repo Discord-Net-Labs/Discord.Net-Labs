@@ -70,7 +70,6 @@ namespace Discord.WebSocket
         public new IReadOnlyCollection<SocketThreadUser> Users =>
             _members.Values.ToImmutableArray();
 
-
         private readonly ConcurrentDictionary<ulong, SocketThreadUser> _members;
 
         private string DebuggerDisplay => $"{Name} ({Id}, Thread)";
@@ -171,7 +170,6 @@ namespace Discord.WebSocket
             return Users;
         }
 
-
         /// <summary>
         ///     Downloads all users that have access to this thread.
         /// </summary>
@@ -223,7 +221,6 @@ namespace Discord.WebSocket
         /// </returns>
         public Task RemoveUserAsync(IGuildUser user, RequestOptions options = null)
             => Discord.ApiClient.RemoveThreadMemberAsync(Id, user.Id, options);
-
 
         /// <inheritdoc/>
         /// <remarks>

@@ -15,9 +15,8 @@ namespace Discord
         /// </summary>
         public IReadOnlyCollection<IMessageComponent> Components { get; internal set; }
 
-
-
         internal ActionRowComponent() { }
+
         internal ActionRowComponent(List<IMessageComponent> components)
         {
             Components = components;

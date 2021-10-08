@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Model = Discord.API.Sticker;
 
-
 namespace Discord.WebSocket
 {
     /// <summary>

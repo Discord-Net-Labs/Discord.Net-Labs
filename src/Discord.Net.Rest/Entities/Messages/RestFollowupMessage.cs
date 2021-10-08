@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Model = Discord.API.Message;
 
-
 namespace Discord.Rest
 {
     /// <summary>

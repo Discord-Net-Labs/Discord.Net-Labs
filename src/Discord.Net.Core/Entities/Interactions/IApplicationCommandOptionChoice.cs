@@ -14,6 +14,5 @@ namespace Discord
         ///     value of the choice.
         /// </summary>
         object Value { get; }
-
     }
 }

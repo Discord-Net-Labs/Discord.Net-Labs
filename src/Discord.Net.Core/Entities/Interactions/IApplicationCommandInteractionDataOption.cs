@@ -29,6 +29,5 @@ namespace Discord
         ///     Present if this option is a group or subcommand.
         /// </summary>
         IReadOnlyCollection<IApplicationCommandInteractionDataOption> Options { get; }
-
     }
 }

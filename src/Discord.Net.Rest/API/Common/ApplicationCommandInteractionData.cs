@@ -18,6 +18,5 @@ namespace Discord.API
 
         [JsonProperty("type")]
         public ApplicationCommandType Type { get; set; }
-
     }
 }

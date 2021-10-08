@@ -51,7 +51,6 @@ namespace Discord.Rest
         {
             var model = await client.ApiClient.GetGlobalApplicationCommandAsync(id, options).ConfigureAwait(false);
 
-
             return RestGlobalCommand.Create(client, model);
         }
         public static Task<ApplicationCommand> CreateGlobalCommandAsync<TArg>(BaseDiscordClient client,
@@ -230,7 +229,6 @@ namespace Discord.Rest
             return await client.ApiClient.ModifyGlobalApplicationCommandAsync(model, command.Id, options).ConfigureAwait(false);
         }
 
-
         public static async Task DeleteGlobalCommandAsync(BaseDiscordClient client, IApplicationCommand command, RequestOptions options = null)
         {
             Preconditions.NotNull(command, nameof(command));
@@ -365,10 +363,8 @@ namespace Discord.Rest
 
             return await client.ApiClient.ModifyInteractionFollowupMessageAsync(apiArgs, message.Id, message.Token, options).ConfigureAwait(false);
         }
-
         public static async Task DeleteFollowupMessageAsync(BaseDiscordClient client, RestFollowupMessage message, RequestOptions options = null)
             => await client.ApiClient.DeleteInteractionFollowupMessageAsync(message.Id, message.Token, options);
-
         public static async Task<Message> ModifyInteractionResponseAsync(BaseDiscordClient client, string token, Action<MessageProperties> func,
            RequestOptions options = null)
         {

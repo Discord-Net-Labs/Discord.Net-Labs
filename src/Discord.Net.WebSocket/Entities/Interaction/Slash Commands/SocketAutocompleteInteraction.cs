@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Model = Discord.API.Interaction;
 using DataModel = Discord.API.AutocompleteInteractionData;
 
-
 namespace Discord.WebSocket
 {
     /// <summary>
@@ -70,7 +69,6 @@ namespace Discord.WebSocket
         /// </returns>
         public Task RespondAsync(RequestOptions options = null, params AutocompleteResult[] result)
             => InteractionHelper.SendAutocompleteResultAsync(Discord, result, Id, Token, options);
-
 
         /// <inheritdoc/>
         [Obsolete("Autocomplete interactions cannot be deferred!", true)]

@@ -23,10 +23,7 @@ namespace Discord.Rest
         /// <inheritdoc/>
         public bool Live { get; private set; }
         internal RestStageChannel(BaseDiscordClient discord, IGuild guild, ulong id)
-            : base(discord, guild, id)
-        {
-
-        }
+            : base(discord, guild, id) { }
 
         internal new static RestStageChannel Create(BaseDiscordClient discord, IGuild guild, Model model)
         {

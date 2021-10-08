@@ -402,7 +402,6 @@ namespace Discord
         /// </summary>
         public bool Disabled { get; set; }
 
-
         private string _label;
         private string _customId;
 

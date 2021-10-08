@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using DataModel = Discord.API.AutocompleteInteractionData;
 
-
 namespace Discord.WebSocket
 {
     /// <summary>

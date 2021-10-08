@@ -16,8 +16,8 @@ namespace Discord.WebSocket
         internal SocketMessageCommand(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
             : base(client, model, channel)
         {
-            var dataModel = model.Data.IsSpecified ?
-                (DataModel)model.Data.Value
+            var dataModel = model.Data.IsSpecified
+                ? (DataModel)model.Data.Value
                 : null;
 
             ulong? guildId = null;

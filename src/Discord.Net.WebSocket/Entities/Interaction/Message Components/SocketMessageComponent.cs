@@ -28,8 +28,8 @@ namespace Discord.WebSocket
         internal SocketMessageComponent(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
             : base(client, model.Id, channel)
         {
-            var dataModel = model.Data.IsSpecified ?
-                (DataModel)model.Data.Value
+            var dataModel = model.Data.IsSpecified
+                ? (DataModel)model.Data.Value
                 : null;
 
             Data = new SocketMessageComponentData(dataModel);
@@ -41,7 +41,6 @@ namespace Discord.WebSocket
             entity.Update(model);
             return entity;
         }
-
         internal override void Update(Model model)
         {
             base.Update(model);
@@ -69,7 +68,6 @@ namespace Discord.WebSocket
                 }
             }
         }
-
         /// <inheritdoc/>
         public override async Task RespondAsync(
             string text = null,
@@ -340,7 +338,6 @@ namespace Discord.WebSocket
             {
                 Type = InteractionResponseType.DeferredChannelMessageWithSource,
                 Data = ephemeral ? new API.InteractionCallbackData { Flags = MessageFlags.Ephemeral } : Optional<API.InteractionCallbackData>.Unspecified
-
             };
 
             return Discord.Rest.ApiClient.CreateInteractionResponseAsync(response, Id, Token, options);
@@ -353,7 +350,6 @@ namespace Discord.WebSocket
             {
                 Type = InteractionResponseType.DeferredUpdateMessage,
                 Data = ephemeral ? new API.InteractionCallbackData { Flags = MessageFlags.Ephemeral } : Optional<API.InteractionCallbackData>.Unspecified
-
             };
 
             return Discord.Rest.ApiClient.CreateInteractionResponseAsync(response, Id, Token, options);

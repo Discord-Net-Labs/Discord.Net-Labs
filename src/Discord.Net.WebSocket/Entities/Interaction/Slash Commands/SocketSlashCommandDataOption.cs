@@ -110,7 +110,6 @@ namespace Discord.WebSocket
                         }
                         break;
                 }
-
             }
 
             Options = model.Options.IsSpecified

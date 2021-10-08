@@ -40,10 +40,7 @@ namespace Discord.Rest
         public ulong ParentChannelId { get; private set; }
 
         internal RestThreadChannel(BaseDiscordClient discord, IGuild guild, ulong id)
-            : base(discord, guild, id)
-        {
-
-        }
+            : base(discord, guild, id) { }
 
         internal new static RestThreadChannel Create(BaseDiscordClient discord, IGuild guild, Model model)
         {
@@ -64,7 +61,6 @@ namespace Discord.Rest
                 AutoArchiveDuration = model.ThreadMetadata.Value.AutoArchiveDuration;
                 ArchiveTimestamp = model.ThreadMetadata.Value.ArchiveTimestamp;
                 Locked = model.ThreadMetadata.Value.Locked.GetValueOrDefault(false);
-
             }
 
             MemberCount = model.MemberCount.GetValueOrDefault(0);
@@ -207,7 +203,6 @@ namespace Discord.Rest
         /// </remarks>
         public override IReadOnlyCollection<Overwrite> PermissionOverwrites
             => throw new NotSupportedException("This method is not supported in threads.");
-
 
         /// <inheritdoc/>
         public Task JoinAsync(RequestOptions options = null)

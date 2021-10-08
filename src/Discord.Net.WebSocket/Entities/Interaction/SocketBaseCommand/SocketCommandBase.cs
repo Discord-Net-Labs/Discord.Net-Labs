@@ -34,8 +34,8 @@ namespace Discord.WebSocket
         internal SocketCommandBase(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
             : base(client, model.Id, channel)
         {
-            var dataModel = model.Data.IsSpecified ?
-                (DataModel)model.Data.Value
+            var dataModel = model.Data.IsSpecified
+                ? (DataModel)model.Data.Value
                 : null;
 
             ulong? guildId = null;
@@ -54,8 +54,8 @@ namespace Discord.WebSocket
 
         internal override void Update(Model model)
         {
-            var data = model.Data.IsSpecified ?
-                (DataModel)model.Data.Value
+            var data = model.Data.IsSpecified
+                ? (DataModel)model.Data.Value
                 : null;
 
             Data.Update(data);

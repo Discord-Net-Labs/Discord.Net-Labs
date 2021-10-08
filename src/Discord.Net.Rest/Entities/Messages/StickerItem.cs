@@ -27,7 +27,6 @@ namespace Discord.Rest
         /// <returns>
         ///     A task representing the download operation, the result of the task is a sticker object.
         /// </returns>
-
         public async Task<Sticker> ResolveStickerAsync()
         {
             var model = await Discord.ApiClient.GetStickerAsync(Id);

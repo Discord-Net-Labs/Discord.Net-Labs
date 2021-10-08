@@ -63,9 +63,9 @@ namespace Discord.WebSocket
         {
             if (model.Type == InteractionType.ApplicationCommand)
             {
-                var dataModel = model.Data.IsSpecified ?
-                        (DataModel)model.Data.Value
-                        : null;
+                var dataModel = model.Data.IsSpecified
+                    ? (DataModel)model.Data.Value
+                    : null;
 
                 if (dataModel == null)
                     return null;

@@ -1,5 +1,4 @@
 using System.Linq;
-
 using Model = Discord.API.AuditLog;
 using EntryModel = Discord.API.AuditLogEntry;
 

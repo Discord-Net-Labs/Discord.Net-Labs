@@ -37,10 +37,7 @@ namespace Discord.Rest
             => SnowflakeUtils.FromSnowflake(Id);
 
         internal RestApplicationCommand(BaseDiscordClient client, ulong id)
-            : base(client, id)
-        {
-
-        }
+            : base(client, id) { }
 
         internal static RestApplicationCommand Create(BaseDiscordClient client, Model model, ulong? guildId)
         {
