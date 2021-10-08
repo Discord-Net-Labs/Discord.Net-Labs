@@ -18,7 +18,7 @@ namespace Discord.WebSocket
         /// <summary>
         ///     The data received with this interaction, contains the button that was clicked.
         /// </summary>
-        new public SocketMessageComponentData Data { get; }
+        public new SocketMessageComponentData Data { get; }
 
         /// <summary>
         ///     The message that contained the trigger for this interaction.
@@ -35,7 +35,7 @@ namespace Discord.WebSocket
             Data = new SocketMessageComponentData(dataModel);
         }
 
-        new internal static SocketMessageComponent Create(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
+        internal new static SocketMessageComponent Create(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
         {
             var entity = new SocketMessageComponent(client, model, channel);
             entity.Update(model);
@@ -90,7 +90,7 @@ namespace Discord.WebSocket
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
-            Preconditions.AtMost(embeds?.Length ?? 0, 10, nameof(embeds), "A max of 10 embeds are allowed.");
+            Preconditions.AtMost(embeds.Length, 10, nameof(embeds), "A max of 10 embeds are allowed.");
 
             // check that user flag and user Id list are exclusive, same with role flag and role Id list
             if (allowedMentions != null && allowedMentions.AllowedTypes.HasValue)
@@ -115,7 +115,7 @@ namespace Discord.WebSocket
                 {
                     Content = text ?? Optional<string>.Unspecified,
                     AllowedMentions = allowedMentions?.ToModel(),
-                    Embeds = embeds?.Select(x => x.ToModel()).ToArray() ?? Optional<API.Embed[]>.Unspecified,
+                    Embeds = embeds.Select(x => x.ToModel()).ToArray(),
                     TTS = isTTS,
                     Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified
                 }
@@ -124,7 +124,7 @@ namespace Discord.WebSocket
             if (ephemeral)
                 response.Data.Value.Flags = MessageFlags.Ephemeral;
 
-            await InteractionHelper.SendInteractionResponse(Discord, response, Id, Token, options);
+            await InteractionHelper.SendInteractionResponseAsync(Discord, response, Id, Token, options);
         }
 
         /// <summary>
@@ -197,13 +197,13 @@ namespace Discord.WebSocket
                     AllowedMentions = args.AllowedMentions.IsSpecified ? args.AllowedMentions.Value?.ToModel() : Optional<API.AllowedMentions>.Unspecified,
                     Embeds = apiEmbeds?.ToArray() ?? Optional<API.Embed[]>.Unspecified,
                     Components = args.Components.IsSpecified
-                        ? args.Components.Value?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? new API.ActionRowComponent[0]
+                        ? args.Components.Value?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Array.Empty<API.ActionRowComponent>()
                         : Optional<API.ActionRowComponent[]>.Unspecified,
                     Flags = args.Flags.IsSpecified ? args.Flags.Value ?? Optional<MessageFlags>.Unspecified : Optional<MessageFlags>.Unspecified
                 }
             };
 
-            await InteractionHelper.SendInteractionResponse(Discord, response, Id, Token, options);
+            await InteractionHelper.SendInteractionResponseAsync(Discord, response, Id, Token, options);
         }
 
         /// <inheritdoc/>
@@ -226,15 +226,15 @@ namespace Discord.WebSocket
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
-            Preconditions.AtMost(embeds?.Length ?? 0, 10, nameof(embeds), "A max of 10 embeds are allowed.");
+            Preconditions.AtMost(embeds.Length, 10, nameof(embeds), "A max of 10 embeds are allowed.");
 
             var args = new API.Rest.CreateWebhookMessageParams
             {
                 Content = text,
                 AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
                 IsTTS = isTTS,
-                Embeds = embeds?.Select(x => x.ToModel()).ToArray() ?? Optional<API.Embed[]>.Unspecified,
-                Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified,
+                Embeds = embeds.Select(x => x.ToModel()).ToArray(),
+                Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified
             };
 
             if (ephemeral)
@@ -265,7 +265,7 @@ namespace Discord.WebSocket
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
-            Preconditions.AtMost(embeds?.Length ?? 0, 10, nameof(embeds), "A max of 10 embeds are allowed.");
+            Preconditions.AtMost(embeds.Length, 10, nameof(embeds), "A max of 10 embeds are allowed.");
             Preconditions.NotNull(fileStream, nameof(fileStream), "File Stream must have data");
             Preconditions.NotNullOrWhitespace(fileName, nameof(fileName), "File Name must not be empty or null");
 
@@ -274,7 +274,7 @@ namespace Discord.WebSocket
                 Content = text,
                 AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
                 IsTTS = isTTS,
-                Embeds = embeds?.Select(x => x.ToModel()).ToArray() ?? Optional<API.Embed[]>.Unspecified,
+                Embeds = embeds.Select(x => x.ToModel()).ToArray(),
                 Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified,
                 File = fileStream is not null ? new MultipartFile(fileStream, fileName) : Optional<MultipartFile>.Unspecified
             };
@@ -307,7 +307,7 @@ namespace Discord.WebSocket
 
             Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
             Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
-            Preconditions.AtMost(embeds?.Length ?? 0, 10, nameof(embeds), "A max of 10 embeds are allowed.");
+            Preconditions.AtMost(embeds.Length, 10, nameof(embeds), "A max of 10 embeds are allowed.");
             Preconditions.NotNullOrWhitespace(filePath, nameof(filePath), "Path must exist");
 
             var args = new API.Rest.CreateWebhookMessageParams
@@ -315,7 +315,7 @@ namespace Discord.WebSocket
                 Content = text,
                 AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
                 IsTTS = isTTS,
-                Embeds = embeds?.Select(x => x.ToModel()).ToArray() ?? Optional<API.Embed[]>.Unspecified,
+                Embeds = embeds.Select(x => x.ToModel()).ToArray(),
                 Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified,
                 File = !string.IsNullOrEmpty(filePath) ? new MultipartFile(new MemoryStream(File.ReadAllBytes(filePath), false), fileName) : Optional<MultipartFile>.Unspecified
             };
@@ -336,10 +336,10 @@ namespace Discord.WebSocket
         /// </returns>
         public Task DeferLoadingAsync(bool ephemeral = false, RequestOptions options = null)
         {
-            var response = new API.InteractionResponse()
+            var response = new API.InteractionResponse
             {
                 Type = InteractionResponseType.DeferredChannelMessageWithSource,
-                Data = ephemeral ? new API.InteractionCallbackData() { Flags = MessageFlags.Ephemeral } : Optional<API.InteractionCallbackData>.Unspecified
+                Data = ephemeral ? new API.InteractionCallbackData { Flags = MessageFlags.Ephemeral } : Optional<API.InteractionCallbackData>.Unspecified
 
             };
 
@@ -349,10 +349,10 @@ namespace Discord.WebSocket
         /// <inheritdoc/>
         public override Task DeferAsync(bool ephemeral = false, RequestOptions options = null)
         {
-            var response = new API.InteractionResponse()
+            var response = new API.InteractionResponse
             {
                 Type = InteractionResponseType.DeferredUpdateMessage,
-                Data = ephemeral ? new API.InteractionCallbackData() { Flags = MessageFlags.Ephemeral } : Optional<API.InteractionCallbackData>.Unspecified
+                Data = ephemeral ? new API.InteractionCallbackData { Flags = MessageFlags.Ephemeral } : Optional<API.InteractionCallbackData>.Unspecified
 
             };
 

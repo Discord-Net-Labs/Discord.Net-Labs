@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
 namespace Discord
 {
     /// <summary>
@@ -12,7 +5,7 @@ namespace Discord
     /// </summary>
     public class UserCommandBuilder
     {
-        /// <summary> 
+        /// <summary>
         ///     Returns the maximum length a commands name allowed by Discord
         /// </summary>
         public const int MaxNameLength = 32;
@@ -22,10 +15,7 @@ namespace Discord
         /// </summary>
         public string Name
         {
-            get
-            {
-                return _name;
-            }
+            get => _name;
             set
             {
                 Preconditions.NotNullOrEmpty(value, nameof(Name));
@@ -41,7 +31,7 @@ namespace Discord
         /// </summary>
         public bool DefaultPermission { get; set; } = true;
 
-        private string _name { get; set; }
+        private string _name;
 
         /// <summary>
         ///     Build the current builder into a <see cref="UserCommandProperties"/> class.
@@ -49,7 +39,7 @@ namespace Discord
         /// <returns>A <see cref="UserCommandProperties"/> that can be used to create user commands.</returns>
         public UserCommandProperties Build()
         {
-            UserCommandProperties props = new UserCommandProperties()
+            var props = new UserCommandProperties
             {
                 Name = Name,
                 DefaultPermission = DefaultPermission
@@ -77,7 +67,7 @@ namespace Discord
         /// </summary>
         /// <param name="value">The default permission value to set.</param>
         /// <returns>The current builder.</returns>
-        public UserCommandBuilder WithDefaultPermission (bool value)
+        public UserCommandBuilder WithDefaultPermission(bool value)
         {
             DefaultPermission = value;
             return this;

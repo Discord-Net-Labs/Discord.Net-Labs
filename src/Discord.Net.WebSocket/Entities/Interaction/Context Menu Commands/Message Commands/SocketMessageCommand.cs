@@ -1,7 +1,3 @@
-using Discord.Rest;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using DataModel = Discord.API.ApplicationCommandInteractionData;
 using Model = Discord.API.Interaction;
 
@@ -31,7 +27,7 @@ namespace Discord.WebSocket
             Data = SocketMessageCommandData.Create(client, dataModel, model.Id, guildId);
         }
 
-        new internal static SocketInteraction Create(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
+        internal new static SocketInteraction Create(DiscordSocketClient client, Model model, ISocketMessageChannel channel)
         {
             var entity = new SocketMessageCommand(client, model, channel);
             entity.Update(model);

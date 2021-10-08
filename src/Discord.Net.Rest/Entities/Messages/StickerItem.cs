@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Model = Discord.API.StickerItem;
 
@@ -36,10 +32,9 @@ namespace Discord.Rest
         {
             var model = await Discord.ApiClient.GetStickerAsync(Id);
 
-            if (model.GuildId.IsSpecified)
-                return CustomSticker.Create(Discord, model, model.GuildId.Value, model.User.IsSpecified ? model.User.Value.Id : null);
-            else
-                return Sticker.Create(Discord, model);
+            return model.GuildId.IsSpecified
+                ? CustomSticker.Create(Discord, model, model.GuildId.Value, model.User.IsSpecified ? model.User.Value.Id : null)
+                : Sticker.Create(Discord, model);
         }
     }
 }

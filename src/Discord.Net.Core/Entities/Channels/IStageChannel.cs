@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord
@@ -28,7 +25,7 @@ namespace Discord
         StagePrivacyLevel? PrivacyLevel { get; }
 
         /// <summary>
-        ///     <see langword="true"/> if stage discovery is disabled, otherwise <see langword="false"/>. 
+        ///     <see langword="true"/> if stage discovery is disabled, otherwise <see langword="false"/>.
         /// </summary>
         bool? DiscoverableDisabled { get; }
 

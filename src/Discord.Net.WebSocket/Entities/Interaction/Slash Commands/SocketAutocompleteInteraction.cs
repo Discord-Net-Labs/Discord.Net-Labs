@@ -2,8 +2,6 @@ using Discord.Rest;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Model = Discord.API.Interaction;
 using DataModel = Discord.API.AutocompleteInteractionData;
@@ -76,22 +74,27 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         [Obsolete("Autocomplete interactions cannot be deferred!", true)]
-        public override Task DeferAsync(bool ephemeral = false, RequestOptions options = null) => throw new NotSupportedException();
+        public override Task DeferAsync(bool ephemeral = false, RequestOptions options = null)
+            => throw new NotSupportedException("Autocomplete interactions cannot be deferred!");
 
         /// <inheritdoc/>
         [Obsolete("Autocomplete interactions cannot have followups!", true)]
-        public override Task<RestFollowupMessage> FollowupAsync(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null) => throw new NotSupportedException();
+        public override Task<RestFollowupMessage> FollowupAsync(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null)
+            => throw new NotSupportedException("Autocomplete interactions cannot be deferred!");
 
         /// <inheritdoc/>
         [Obsolete("Autocomplete interactions cannot have followups!", true)]
-        public override Task<RestFollowupMessage> FollowupWithFileAsync(Stream fileStream, string fileName, string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null) => throw new NotSupportedException();
+        public override Task<RestFollowupMessage> FollowupWithFileAsync(Stream fileStream, string fileName, string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null)
+            => throw new NotSupportedException("Autocomplete interactions cannot be deferred!");
 
         /// <inheritdoc/>
         [Obsolete("Autocomplete interactions cannot have followups!", true)]
-        public override Task<RestFollowupMessage> FollowupWithFileAsync(string filePath, string text = null, string fileName = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null) => throw new NotSupportedException();
+        public override Task<RestFollowupMessage> FollowupWithFileAsync(string filePath, string text = null, string fileName = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null)
+            => throw new NotSupportedException("Autocomplete interactions cannot be deferred!");
 
         /// <inheritdoc/>
         [Obsolete("Autocomplete interactions cannot have normal responses!", true)]
-        public override Task RespondAsync(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null) => throw new NotSupportedException();
+        public override Task RespondAsync(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null)
+            => throw new NotSupportedException("Autocomplete interactions cannot be deferred!");
     }
 }

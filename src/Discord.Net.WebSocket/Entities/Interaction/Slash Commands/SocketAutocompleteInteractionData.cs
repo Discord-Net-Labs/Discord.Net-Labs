@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DataModel = Discord.API.AutocompleteInteractionData;
 
 
@@ -46,12 +43,12 @@ namespace Discord.WebSocket
 
         internal SocketAutocompleteInteractionData(DataModel model)
         {
-            var options = model.Options.SelectMany(x => GetOptions(x));
+            var options = model.Options.SelectMany(GetOptions);
 
             Current = options.FirstOrDefault(x => x.Focused);
             Options = options.ToImmutableArray();
 
-            if (options != null && options.Count() == 1 && Current == null)
+            if (Options.Count == 1 && Current == null)
                 Current = Options.FirstOrDefault();
 
             CommandName = model.Name;
@@ -62,11 +59,11 @@ namespace Discord.WebSocket
 
         private List<AutocompleteOption> GetOptions(API.AutocompleteInteractionDataOption model)
         {
-            List<AutocompleteOption> options = new List<AutocompleteOption>();
+            var options = new List<AutocompleteOption>();
 
             if (model.Options.IsSpecified)
             {
-                options.AddRange(model.Options.Value.SelectMany(x => GetOptions(x)));
+                options.AddRange(model.Options.Value.SelectMany(GetOptions));
             }
             else if(model.Focused.IsSpecified)
             {
