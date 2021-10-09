@@ -31,7 +31,7 @@ namespace Discord
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException(nameof(value));
+                    throw new ArgumentNullException(nameof(value), $"{nameof(ActionRows)} cannot be null.");
                 if (value.Count > MaxActionRowCount)
                     throw new ArgumentOutOfRangeException(nameof(value), $"Action row count must be less than or equal to {MaxActionRowCount}.");
                 _actionRows = value;
@@ -272,7 +272,7 @@ namespace Discord
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException(nameof(value));
+                    throw new ArgumentNullException(nameof(value), $"{nameof(Components)} cannot be null.");
 
                 _components = value.Count switch
                 {
@@ -683,7 +683,7 @@ namespace Discord
                 if (value != null)
                     Preconditions.LessThan(value.Count, MaxOptionCount, nameof(Options));
                 else
-                    throw new ArgumentNullException(nameof(value));
+                    throw new ArgumentNullException(nameof(value), $"{nameof(Options)} cannot be null.");
 
                 _options = value;
             }

@@ -21,7 +21,7 @@ namespace Discord
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException(nameof(value));
+                    throw new ArgumentNullException(nameof(value), $"{nameof(Name)} cannot be null.");
 
                 if (value.Length > 32)
                     throw new ArgumentOutOfRangeException(nameof(value), "Name length must be less than or equal to 32.");
