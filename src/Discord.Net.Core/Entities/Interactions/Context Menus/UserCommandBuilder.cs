@@ -5,13 +5,13 @@ namespace Discord
     /// </summary>
     public class UserCommandBuilder
     {
-        /// <summary>
-        ///     Returns the maximum length a commands name allowed by Discord
+        /// <summary> 
+        ///     Returns the maximum length a commands name allowed by Discord.
         /// </summary>
         public const int MaxNameLength = 32;
 
         /// <summary>
-        ///     The name of this User command.
+        ///     Gets or sets the name of this User command.
         /// </summary>
         public string Name
         {
@@ -27,9 +27,9 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Whether the command is enabled by default when the app is added to a guild
+        ///     Gets or sets whether the command is enabled by default when the app is added to a guild.
         /// </summary>
-        public bool DefaultPermission { get; set; } = true;
+        public bool IsDefaultPermission { get; set; } = true;
 
         private string _name;
 
@@ -42,7 +42,7 @@ namespace Discord
             var props = new UserCommandProperties
             {
                 Name = Name,
-                DefaultPermission = DefaultPermission
+                DefaultPermission = IsDefaultPermission
             };
 
             return props;
@@ -64,11 +64,11 @@ namespace Discord
         /// <summary>
         ///     Sets the default permission of the current command.
         /// </summary>
-        /// <param name="value">The default permission value to set.</param>
+        /// <param name="isDefaultPermission">The default permission value to set.</param>
         /// <returns>The current builder.</returns>
-        public UserCommandBuilder WithDefaultPermission(bool value)
+        public UserCommandBuilder WithDefaultPermission(bool isDefaultPermission)
         {
-            DefaultPermission = value;
+            IsDefaultPermission = isDefaultPermission;
             return this;
         }
     }

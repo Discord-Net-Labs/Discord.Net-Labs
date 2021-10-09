@@ -11,7 +11,7 @@ namespace Discord
         public const int MaxNameLength = 32;
 
         /// <summary>
-        ///     The name of this Message command.
+        ///     Gets or sets the name of this Message command.
         /// </summary>
         public string Name
         {
@@ -27,9 +27,9 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Whether the command is enabled by default when the app is added to a guild
+        ///     Gets or sets whether the command is enabled by default when the app is added to a guild
         /// </summary>
-        public bool DefaultPermission { get; set; } = true;
+        public bool IsDefaultPermission { get; set; } = true;
 
         private string _name;
 
@@ -44,7 +44,7 @@ namespace Discord
             var props = new MessageCommandProperties
             {
                 Name = Name,
-                DefaultPermission = DefaultPermission
+                DefaultPermission = IsDefaultPermission
             };
 
             return props;
@@ -66,11 +66,11 @@ namespace Discord
         /// <summary>
         ///     Sets the default permission of the current command.
         /// </summary>
-        /// <param name="value">The default permission value to set.</param>
+        /// <param name="isDefaultPermission">The default permission value to set.</param>
         /// <returns>The current builder.</returns>
-        public MessageCommandBuilder WithDefaultPermission(bool value)
+        public MessageCommandBuilder WithDefaultPermission(bool isDefaultPermission)
         {
-            DefaultPermission = value;
+            IsDefaultPermission = isDefaultPermission;
             return this;
         }
     }

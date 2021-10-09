@@ -36,7 +36,7 @@ namespace Discord.API
             Placeholder = component.Placeholder;
             MinValues = component.MinValues;
             MaxValues = component.MaxValues;
-            Disabled = component.Disabled;
+            Disabled = component.IsDisabled;
         }
     }
 }
