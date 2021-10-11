@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord
@@ -9,7 +6,7 @@ namespace Discord
     /// <summary>
     ///     Represents a thread channel inside of a guild.
     /// </summary>
-    public interface IThreadChannel : ITextChannel, IGuildChannel
+    public interface IThreadChannel : ITextChannel
     {
         /// <summary>
         ///     Gets the type of the current thread channel.
@@ -17,37 +14,37 @@ namespace Discord
         ThreadType Type { get; }
 
         /// <summary>
-        ///     <see langword="true"/> if the current user has joined this thread, otherwise <see langword="false"/>.
+        ///     Gets whether or not the current user has joined this thread.
         /// </summary>
-        bool Joined { get; }
+        bool HasJoined { get; }
 
         /// <summary>
         ///     <see langword="true"/> if the current thread is archived, otherwise <see langword="false"/>.
         /// </summary>
-        bool Archived { get; }
+        bool IsArchived { get; }
 
         /// <summary>
-        ///     Duration to automatically archive the thread after recent activity.
+        ///     Gets whether or not the current thread is archived.
         /// </summary>
         ThreadArchiveDuration AutoArchiveDuration { get; }
 
         /// <summary>
-        ///     Timestamp when the thread's archive status was last changed, used for calculating recent activity.
+        ///     Gets the timestamp when the thread's archive status was last changed, used for calculating recent activity.
         /// </summary>
         DateTimeOffset ArchiveTimestamp { get; }
 
         /// <summary>
-        ///     <see langword="true"/> if the current thread is locked, otherwise <see langword="false"/>
+        ///     Gets whether or not the current thread is locked.
         /// </summary>
-        bool Locked { get; }
+        bool IsLocked { get; }
 
         /// <summary>
-        ///     An approximate count of users in a thread, stops counting at 50.
+        ///     Gets an approximate count of users in a thread, stops counting after 50.
         /// </summary>
         int MemberCount { get; }
 
         /// <summary>
-        ///     An approximate count of messages in a thread, stops counting at 50.
+        ///     Gets an approximate count of messages in a thread, stops counting after 50.
         /// </summary>
         int MessageCount { get; }
 
@@ -56,7 +53,7 @@ namespace Discord
         /// </summary>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
-        ///     A task that represents the asynchronous join operation. 
+        ///     A task that represents the asynchronous join operation.
         /// </returns>
         Task JoinAsync(RequestOptions options = null);
 
@@ -65,7 +62,7 @@ namespace Discord
         /// </summary>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
-        ///     A task that represents the asynchronous leave operation. 
+        ///     A task that represents the asynchronous leave operation.
         /// </returns>
         Task LeaveAsync(RequestOptions options = null);
 
@@ -75,7 +72,7 @@ namespace Discord
         /// <param name="user">The <see cref="IGuildUser"/> to add.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
-        ///     A task that represents the asynchronous operation of adding a member to a thread. 
+        ///     A task that represents the asynchronous operation of adding a member to a thread.
         /// </returns>
         Task AddUserAsync(IGuildUser user, RequestOptions options = null);
 
@@ -85,7 +82,7 @@ namespace Discord
         /// <param name="user">The <see cref="IGuildUser"/> to remove from this thread.</param>
         /// <param name="options">The options to be used when sending the request.</param>
         /// <returns>
-        ///     A task that represents the asynchronous operation of removing a user from this thread. 
+        ///     A task that represents the asynchronous operation of removing a user from this thread.
         /// </returns>
         Task RemoveUserAsync(IGuildUser user, RequestOptions options = null);
     }

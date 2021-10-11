@@ -1,9 +1,5 @@
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.API
 {
@@ -40,7 +36,7 @@ namespace Discord.API
             Placeholder = component.Placeholder;
             MinValues = component.MinValues;
             MaxValues = component.MaxValues;
-            Disabled = component.Disabled;
+            Disabled = component.IsDisabled;
         }
     }
 }

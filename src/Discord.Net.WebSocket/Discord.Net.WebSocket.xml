@@ -2274,10 +2274,10 @@
         <member name="P:Discord.WebSocket.SocketStageChannel.PrivacyLevel">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketStageChannel.DiscoverableDisabled">
+        <member name="P:Discord.WebSocket.SocketStageChannel.IsDiscoverableDisabled">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketStageChannel.Live">
+        <member name="P:Discord.WebSocket.SocketStageChannel.IsLive">
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketStageChannel.IsSpeaker">
@@ -2610,7 +2610,7 @@
                 Gets the current users within this thread.
             </summary>
         </member>
-        <member name="P:Discord.WebSocket.SocketThreadChannel.Joined">
+        <member name="P:Discord.WebSocket.SocketThreadChannel.HasJoined">
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketThreadChannel.IsPrivateThread">
@@ -2629,7 +2629,7 @@
         <member name="P:Discord.WebSocket.SocketThreadChannel.MemberCount">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketThreadChannel.Archived">
+        <member name="P:Discord.WebSocket.SocketThreadChannel.IsArchived">
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketThreadChannel.ArchiveTimestamp">
@@ -2638,7 +2638,7 @@
         <member name="P:Discord.WebSocket.SocketThreadChannel.AutoArchiveDuration">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketThreadChannel.Locked">
+        <member name="P:Discord.WebSocket.SocketThreadChannel.IsLocked">
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketThreadChannel.Users">
@@ -3933,7 +3933,7 @@
         <member name="M:Discord.WebSocket.SocketMessageComponent.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketMessageComponent.FollowupWithFileAsync(System.String,System.IO.Stream,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
+        <member name="M:Discord.WebSocket.SocketMessageComponent.FollowupWithFileAsync(System.IO.Stream,System.String,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.SocketMessageComponent.FollowupWithFileAsync(System.String,System.String,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
@@ -4020,7 +4020,7 @@
         <member name="M:Discord.WebSocket.SocketAutocompleteInteraction.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketAutocompleteInteraction.FollowupWithFileAsync(System.String,System.IO.Stream,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
+        <member name="M:Discord.WebSocket.SocketAutocompleteInteraction.FollowupWithFileAsync(System.IO.Stream,System.String,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.SocketAutocompleteInteraction.FollowupWithFileAsync(System.String,System.String,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
@@ -4120,7 +4120,7 @@
         <member name="P:Discord.WebSocket.SocketApplicationCommand.Description">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommand.DefaultPermission">
+        <member name="P:Discord.WebSocket.SocketApplicationCommand.IsDefaultPermission">
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommand.Options">
@@ -4173,10 +4173,10 @@
         <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Description">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Default">
+        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.IsDefault">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Required">
+        <member name="P:Discord.WebSocket.SocketApplicationCommandOption.IsRequired">
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommandOption.Choices">
@@ -4191,7 +4191,7 @@
         </member>
         <member name="P:Discord.WebSocket.SocketApplicationCommandOption.ChannelTypes">
             <summary>
-            The allowed channel types for this option.
+                The allowed channel types for this option.
             </summary>
         </member>
         <member name="T:Discord.WebSocket.SocketCommandBase">
@@ -4220,7 +4220,7 @@
         <member name="M:Discord.WebSocket.SocketCommandBase.FollowupAsync(System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <inheritdoc/>
         </member>
-        <member name="M:Discord.WebSocket.SocketCommandBase.FollowupWithFileAsync(System.String,System.IO.Stream,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
+        <member name="M:Discord.WebSocket.SocketCommandBase.FollowupWithFileAsync(System.IO.Stream,System.String,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <inheritdoc/>
         </member>
         <member name="M:Discord.WebSocket.SocketCommandBase.FollowupWithFileAsync(System.String,System.String,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
@@ -4326,7 +4326,7 @@
                 The sent message.
             </returns>
         </member>
-        <member name="M:Discord.WebSocket.SocketInteraction.FollowupWithFileAsync(System.String,System.IO.Stream,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
+        <member name="M:Discord.WebSocket.SocketInteraction.FollowupWithFileAsync(System.IO.Stream,System.String,System.String,Discord.Embed[],System.Boolean,System.Boolean,Discord.AllowedMentions,Discord.RequestOptions,Discord.MessageComponent,Discord.Embed)">
             <summary>
                 Sends a followup message for this interaction.
             </summary>
@@ -4366,7 +4366,7 @@
             <summary>
                 Gets the original response for this interaction.
             </summary>
-            <param name="options">The request options for this async request.</param>
+            <param name="options">The request options for this <see langword="async"/> request.</param>
             <returns>A <see cref="T:Discord.Rest.RestInteractionMessage"/> that represents the initial response.</returns>
         </member>
         <member name="M:Discord.WebSocket.SocketInteraction.ModifyOriginalResponseAsync(System.Action{Discord.MessageProperties},Discord.RequestOptions)">
@@ -4374,7 +4374,7 @@
                 Edits original response for this interaction.
             </summary>
             <param name="func">A delegate containing the properties to modify the message with.</param>
-            <param name="options">The request options for this async request.</param>
+            <param name="options">The request options for this <see langword="async"/> request.</param>
             <returns>A <see cref="T:Discord.Rest.RestInteractionMessage"/> that represents the initial response.</returns>
         </member>
         <member name="M:Discord.WebSocket.SocketInteraction.DeferAsync(System.Boolean,Discord.RequestOptions)">
@@ -4382,7 +4382,7 @@
                 Acknowledges this interaction.
             </summary>
             <param name="ephemeral"><see langword="true"/> to send this message ephemerally, otherwise <see langword="false"/>.</param>
-            <param name="options">The request options for this async request.</param>
+            <param name="options">The request options for this <see langword="async"/> request.</param>
             <returns>
                 A task that represents the asynchronous operation of acknowledging the interaction.
             </returns>
@@ -4612,14 +4612,6 @@
                 Collection of WebSocket-based roles.
             </returns>
         </member>
-        <member name="P:Discord.WebSocket.SocketMessage.MentionedUsers">
-            <summary>
-                Returns the users mentioned in this message.
-            </summary>
-            <returns>
-                Collection of WebSocket-based users.
-            </returns>
-        </member>
         <member name="P:Discord.WebSocket.SocketMessage.Tags">
             <inheritdoc />
         </member>
@@ -4628,6 +4620,14 @@
         </member>
         <member name="P:Discord.WebSocket.SocketMessage.Reactions">
             <inheritdoc />
+        </member>
+        <member name="P:Discord.WebSocket.SocketMessage.MentionedUsers">
+            <summary>
+                Returns the users mentioned in this message.
+            </summary>
+            <returns>
+                Collection of WebSocket-based users.
+            </returns>
         </member>
         <member name="P:Discord.WebSocket.SocketMessage.Timestamp">
             <inheritdoc />
@@ -4801,9 +4801,6 @@
         <member name="P:Discord.WebSocket.SocketUserMessage.MentionedRoles">
             <inheritdoc />
         </member>
-        <member name="P:Discord.WebSocket.SocketUserMessage.MentionedUsers">
-            <inheritdoc />
-        </member>
         <member name="P:Discord.WebSocket.SocketUserMessage.Stickers">
             <inheritdoc />
         </member>
@@ -4966,7 +4963,7 @@
         <member name="P:Discord.WebSocket.SocketSticker.Format">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketSticker.Available">
+        <member name="P:Discord.WebSocket.SocketSticker.IsAvailable">
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketSticker.SortOrder">
@@ -4992,7 +4989,7 @@
         <member name="P:Discord.WebSocket.SocketUnknownSticker.PackId">
             <inheritdoc/>
         </member>
-        <member name="P:Discord.WebSocket.SocketUnknownSticker.Available">
+        <member name="P:Discord.WebSocket.SocketUnknownSticker.IsAvailable">
             <inheritdoc/>
         </member>
         <member name="P:Discord.WebSocket.SocketUnknownSticker.SortOrder">

@@ -1,10 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
 namespace Discord
 {
     /// <summary>
@@ -12,20 +5,17 @@ namespace Discord
     /// </summary>
     public class MessageCommandBuilder
     {
-        /// <summary> 
+        /// <summary>
         ///     Returns the maximum length a commands name allowed by Discord
         /// </summary>
         public const int MaxNameLength = 32;
 
         /// <summary>
-        ///     The name of this Message command.
+        ///     Gets or sets the name of this Message command.
         /// </summary>
         public string Name
         {
-            get
-            {
-                return _name;
-            }
+            get => _name;
             set
             {
                 Preconditions.NotNullOrEmpty(value, nameof(Name));
@@ -37,11 +27,11 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Whether the command is enabled by default when the app is added to a guild
+        ///     Gets or sets whether the command is enabled by default when the app is added to a guild
         /// </summary>
-        public bool DefaultPermission { get; set; } = true;
+        public bool IsDefaultPermission { get; set; } = true;
 
-        private string _name { get; set; }
+        private string _name;
 
         /// <summary>
         ///     Build the current builder into a <see cref="MessageCommandProperties"/> class.
@@ -51,14 +41,13 @@ namespace Discord
         /// </returns>
         public MessageCommandProperties Build()
         {
-            MessageCommandProperties props = new MessageCommandProperties()
+            var props = new MessageCommandProperties
             {
                 Name = Name,
-                DefaultPermission = DefaultPermission
+                DefaultPermission = IsDefaultPermission
             };
 
             return props;
-
         }
 
         /// <summary>
@@ -77,11 +66,11 @@ namespace Discord
         /// <summary>
         ///     Sets the default permission of the current command.
         /// </summary>
-        /// <param name="value">The default permission value to set.</param>
+        /// <param name="isDefaultPermission">The default permission value to set.</param>
         /// <returns>The current builder.</returns>
-        public MessageCommandBuilder WithDefaultPermission (bool value)
+        public MessageCommandBuilder WithDefaultPermission(bool isDefaultPermission)
         {
-            DefaultPermission = value;
+            IsDefaultPermission = isDefaultPermission;
             return this;
         }
     }

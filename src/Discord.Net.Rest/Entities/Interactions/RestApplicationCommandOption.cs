@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Model = Discord.API.ApplicationCommandOption;
 
 namespace Discord.Rest
@@ -24,10 +21,10 @@ namespace Discord.Rest
         public string Description { get; private set; }
 
         /// <inheritdoc/>
-        public bool? Default { get; private set; }
+        public bool? IsDefault { get; private set; }
 
         /// <inheritdoc/>
-        public bool? Required { get; private set; }
+        public bool? IsRequired { get; private set; }
 
         /// <summary>
         ///     A collection of <see cref="RestApplicationCommandChoice"/>'s for this command.
@@ -60,13 +57,13 @@ namespace Discord.Rest
             Description = model.Description;
 
             if (model.Default.IsSpecified)
-                Default = model.Default.Value;
+                IsDefault = model.Default.Value;
 
             if (model.Required.IsSpecified)
-                Required = model.Required.Value;
+                IsRequired = model.Required.Value;
 
             Options = model.Options.IsSpecified
-                ? model.Options.Value.Select(x => Create(x)).ToImmutableArray()
+                ? model.Options.Value.Select(Create).ToImmutableArray()
                 : ImmutableArray.Create<RestApplicationCommandOption>();
 
             Choices = model.Choices.IsSpecified

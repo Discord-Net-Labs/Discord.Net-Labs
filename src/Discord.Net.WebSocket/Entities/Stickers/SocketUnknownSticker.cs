@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Model = Discord.API.StickerItem;
 
@@ -26,7 +23,7 @@ namespace Discord.WebSocket
         public override ulong PackId
             => 0;
         /// <inheritdoc/>
-        public override bool? Available
+        public override bool? IsAvailable
             => null;
 
         /// <inheritdoc/>

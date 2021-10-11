@@ -1,9 +1,4 @@
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.API
 {
@@ -39,22 +34,22 @@ namespace Discord.API
             Label = c.Label;
             CustomId = c.CustomId;
             Url = c.Url;
-            Disabled = c.Disabled;
+            Disabled = c.IsDisabled;
 
             if (c.Emote != null)
             {
                 if (c.Emote is Emote e)
                 {
-                    Emote = new Emoji()
+                    Emote = new Emoji
                     {
                         Name = e.Name,
                         Animated = e.Animated,
-                        Id = e.Id,
+                        Id = e.Id
                     };
                 }
                 else
                 {
-                    Emote = new Emoji()
+                    Emote = new Emoji
                     {
                         Name = c.Emote.Name
                     };

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord
@@ -17,7 +15,7 @@ namespace Discord
         ulong ApplicationId { get; }
 
         /// <summary>
-        ///     The type of the command
+        ///     The type of the command.
         /// </summary>
         ApplicationCommandType Type { get; }
 
@@ -34,7 +32,7 @@ namespace Discord
         /// <summary>
         ///     Whether the command is enabled by default when the app is added to a guild.
         /// </summary>
-        bool DefaultPermission { get; }
+        bool IsDefaultPermission { get; }
 
         /// <summary>
         ///     If the option is a subcommand or subcommand group type, this nested options will be the parameters.

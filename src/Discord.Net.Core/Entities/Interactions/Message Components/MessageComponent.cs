@@ -1,8 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord
 {
@@ -12,7 +8,7 @@ namespace Discord
     public class MessageComponent
     {
         /// <summary>
-        ///     The components to be used in a message.
+        ///     Gets the components to be used in a message.
         /// </summary>
         public IReadOnlyCollection<ActionRowComponent> Components { get; }
 

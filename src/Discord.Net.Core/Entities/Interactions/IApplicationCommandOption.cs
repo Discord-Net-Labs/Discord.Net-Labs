@@ -1,8 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord
 {
@@ -29,26 +25,26 @@ namespace Discord
         /// <summary>
         ///     The first required option for the user to complete--only one option can be default.
         /// </summary>
-        bool? Default { get; }
+        bool? IsDefault { get; }
 
         /// <summary>
         ///     If the parameter is required or optional, default is <see langword="false"/>.
         /// </summary>
-        bool? Required { get; }
+        bool? IsRequired { get; }
 
         /// <summary>
         ///     Choices for string and int types for the user to pick from.
         /// </summary>
-        IReadOnlyCollection<IApplicationCommandOptionChoice>? Choices { get; }
+        IReadOnlyCollection<IApplicationCommandOptionChoice> Choices { get; }
 
         /// <summary>
         ///     If the option is a subcommand or subcommand group type, this nested options will be the parameters.
         /// </summary>
-        IReadOnlyCollection<IApplicationCommandOption>? Options { get; }
+        IReadOnlyCollection<IApplicationCommandOption> Options { get; }
 
         /// <summary>
         ///     The allowed channel types for this option.
         /// </summary>
-        IReadOnlyCollection<ChannelType>? ChannelTypes { get; }
+        IReadOnlyCollection<ChannelType> ChannelTypes { get; }
     }
 }
