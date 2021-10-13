@@ -102,9 +102,9 @@ namespace Discord.Interactions
         protected override string GetLogString (IInteractionCommandContext context)
         {
             if (context.Guild != null)
-                return $"Slash Command: \"{Name}\" for {context.User} in {context.Guild}/{context.Channel}";
+                return $"Slash Command: \"{base.ToString()}\" for {context.User} in {context.Guild}/{context.Channel}";
             else
-                return $"Slash Command: \"{Name}\" for {context.User} in {context.Channel}";
+                return $"Slash Command: \"{base.ToString()}\" for {context.User} in {context.Channel}";
         }
     }
 }

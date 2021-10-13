@@ -105,9 +105,9 @@ namespace Discord.Interactions
         protected override string GetLogString (IInteractionCommandContext context)
         {
             if (context.Guild != null)
-                return $"Component Interaction: \"{Name}\" for {context.User} in {context.Guild}/{context.Channel}";
+                return $"Component Interaction: \"{base.ToString()}\" for {context.User} in {context.Guild}/{context.Channel}";
             else
-                return $"Component Interaction: \"{Name}\" for {context.User} in {context.Channel}";
+                return $"Component Interaction: \"{base.ToString()}\" for {context.User} in {context.Channel}";
         }
     }
 }
