@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord.Interactions
@@ -225,5 +226,24 @@ namespace Discord.Interactions
 
         /// <inheritdoc/>
         IReadOnlyCollection<IParameterInfo> ICommandInfo.Parameters => Parameters;
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            StringBuilder builder = new();
+
+            var currentParent = Module;
+
+            while (currentParent != null)
+            {
+                if (currentParent.IsSlashGroup)
+                    builder.AppendFormat(" {0}", currentParent.SlashGroupName);
+
+                currentParent = currentParent.Parent;
+            }
+            builder.AppendFormat(" {0}", Name);
+
+            return builder.ToString();
+        }
     }
 }
