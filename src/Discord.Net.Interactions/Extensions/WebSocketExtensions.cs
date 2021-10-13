@@ -16,12 +16,12 @@ namespace Discord.WebSocket
         {
             var keywords = new List<string> { data.Name };
 
-            var child = data.Options?.ElementAt(0);
+            var child = data.Options?.ElementAtOrDefault(0);
 
             while (child?.Type == ApplicationCommandOptionType.SubCommandGroup || child?.Type == ApplicationCommandOptionType.SubCommand)
             {
                 keywords.Add(child.Name);
-                child = child.Options?.ElementAt(0);
+                child = child.Options?.ElementAtOrDefault(0);
             }
 
             return keywords.ToArray();
