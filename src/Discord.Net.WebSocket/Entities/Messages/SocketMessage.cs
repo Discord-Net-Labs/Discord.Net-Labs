@@ -67,6 +67,11 @@ namespace Discord.WebSocket
         /// <inheritdoc/>
         public IReadOnlyCollection<ActionRowComponent> Components { get; private set; }
 
+        /// <summary>
+        ///     Gets the interaction this message is a response to.
+        /// </summary>
+        public MessageInteraction<SocketUser> Interaction { get; private set; }
+
         /// <inheritdoc />
         public MessageFlags? Flags { get; private set; }
 
@@ -113,8 +118,7 @@ namespace Discord.WebSocket
         /// <returns>
         ///     Collection of WebSocket-based users.
         /// </returns>
-        public IReadOnlyCollection<SocketUser> MentionedUsers => ImmutableArray.Create<SocketUser>();
-
+        public IReadOnlyCollection<SocketUser> MentionedUsers => _userMentions; 
         /// <inheritdoc />
         public DateTimeOffset Timestamp => DateTimeUtils.FromTicks(_timestampTicks);
 
@@ -253,6 +257,14 @@ namespace Discord.WebSocket
                 }
             }
 
+            if (model.Interaction.IsSpecified)
+            {
+                Interaction = new MessageInteraction<SocketUser>(model.Interaction.Value.Id,
+                    model.Interaction.Value.Type,
+                    model.Interaction.Value.Name,
+                    SocketGlobalUser.Create(Discord, state, model.Interaction.Value.User));
+            }
+
             if (model.Flags.IsSpecified)
                 Flags = model.Flags.Value;
         }
@@ -289,6 +301,9 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         IReadOnlyCollection<IMessageComponent> IMessage.Components => Components;
+
+        /// <inheritdoc/>
+        IMessageInteraction IMessage.Interaction => Interaction;
 
         /// <inheritdoc />
         IReadOnlyCollection<IStickerItem> IMessage.Stickers => Stickers;
