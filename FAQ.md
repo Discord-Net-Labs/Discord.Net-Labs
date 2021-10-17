@@ -16,8 +16,7 @@ When someone adds it. If a new Discord feature is currently untouched, submit an
 The difference between these 3 functions is in how you handle the command response. [RespondAsync](https://discord-net-labs.com/api/Discord.WebSocket.SocketCommandBase.html#Discord_WebSocket_SocketCommandBase_DeferAsync_System_Boolean_Discord_RequestOptions_) and [DeferAsync](https://discord-net-labs.com/api/Discord.WebSocket.SocketCommandBase.html#Discord_WebSocket_SocketCommandBase_DeferAsync_System_Boolean_Discord_RequestOptions_) let the API know you have succesfully received the command. This is also called 'acknowledging' a command. DeferAsync will not send out a response, RespondAsync will not. [FollowupAsync](https://discord-net-labs.com/api/Discord.WebSocket.SocketCommandBase.html#Discord_WebSocket_SocketCommandBase_DeferAsync_System_Boolean_Discord_RequestOptions_) follows up on succesful acknowledgement. 
 
 > [!WARNING]
-> If you have not acknowledged the command before responding, 
-> FollowupAsync will not work.
+> If you have not acknowledged the command FollowupAsync will not work.
 
 #### What's the difference between global commands and guild commands? (Why isn't my command show up in discord?)
 Global commands can be used in every guild your bot is in. However, it can take up to an hour for every guild to have access to the commands.
@@ -30,7 +29,7 @@ Guild commands require you give grant the bot the applications.commands OAuth2 s
 This could be caused by several things but the most common one is an invalid "Name" for the command or any of the options/arguments for the command. Make sure your "Name" is all lowercase and only contains letters or dashes. It should also be less than 32 characters. If you are still having issues after checking this, read up on the other slash commands limits [here](https://discord.com/developers/docs/interactions/slash-commands#a-quick-note-on-limits).
 
 > [!NOTE]
-> In most cases, you can catch an [ApplicationCommandException](https://discord-net-labs.com/api/Discord.Net.ApplicationCommandException.html?q=applicationcommandexception) error from it. 
+> In most cases, you can catch an [ApplicationCommandException](https://discord-net-labs.com/api/Discord.Net.ApplicationCommandException.html?q=applicationcommandexception) error from creation. 
 > This exception will tell you what part of your command is invalid as well as why. 
 
 #### How can I use Victoria with Labs?
