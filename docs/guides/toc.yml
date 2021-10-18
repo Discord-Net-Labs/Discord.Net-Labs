@@ -51,7 +51,7 @@
       topicUid: Guides.SlashCommands.SubCommand
     - name: Slash command choices
       topicUid: Guides.SlashCommands.Choices
-    - name: Slash ommands Bulk Overwrites
+    - name: Slash commands Bulk Overwrites
       topicUid: Guides.SlashCommands.BulkOverwrite
 - name: Working with Context commands
   items:
