@@ -25,30 +25,41 @@ If you are new to Discord.NET in general, you should refer their
 Is this your first time using Labs, but you are already familiar with Discord.NET? 
 Refer to our [Guides](xref:Guides.Introduction)
 
-## Frequently asked questions
+## Questions?
 
-Frequently asked questions are covered in the [FAQ](https://discord-net-labs.com/FAQ.html). Read it thoroughly because most common questions are already answered there. If you still have unanswered questions after reading the FAQ, further support is available on [Discord](https://discord.gg/dnet-labs)
+Frequently asked questions are covered in the 
+[FAQ](https://discord-net-labs.com/FAQ.html). Read it thoroughly because most common questions are already answered there. 
 
-### Slash commands
+If you still have unanswered questions after reading the FAQ, further support is available on 
+[Discord](https://discord.gg/dnet-labs).
 
-Slash commands are purposed to take over the normal message command in Discord and exposes a lot more from the user that it applies to.
+## Commonly used features
 
-- [Guides](xref:Guides.SlashCommands.Intro)
+#### Slash commands
 
-### Message & User commands
+Slash commands are purposed to take over the normal prefixed commands in Discord and comes with good functionality to serve as a replacement. 
+Being interactions, they are handled as SocketInteractions. Creating and receiving slashcommands is covered below.
 
-These commands can be pointed at messages and users, in custom application tabs. These commands are interactions as well, and are able to be handled just like slashcommands. 
-They do not have options however.
+- Find out more about slash commands in the 
+[Slash Command Guides](xref:Guides.SlashCommands.Intro)
 
-- [Guides](xref:Guides.ContextCommands.Creating)
+#### Message & User commands
 
-### Message components
+These commands can be pointed at messages and users, in custom application tabs. 
+Being interactions as well, they are able to be handled just like slash commands. They do not have options however.
 
-Components of a message such as buttons and dropdowns, which can be interacted with and responded to.
+- Learn how to create and handle these commands in the 
+[Context Command Guides](xref:Guides.ContextCommands.Creating)
 
-- [Guides](xref:Guides.MessageComponents.GettingStarted)
+#### Message components
 
-## Note
+Components of a message such as buttons and dropdowns, which can be interacted with and responded to. 
+Message components can be set in rows and multiple can exist on a single message!
+
+- Explanation on how to add & respond to message components can be found in the 
+[Message Component Guides](xref:Guides.MessageComponents.GettingStarted)
+
+#### Note
 
 More experienced users might want to refer to the
 [API Documentation](xref:API.Docs) for a breakdown of the individual
