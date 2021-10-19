@@ -56,4 +56,9 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         void IInteractionModuleBase.SetContext (IInteractionCommandContext context) => SetContext(context);
     }
+
+    /// <summary>
+    ///     Provides a base class for a command module to inherit from.
+    /// </summary>
+    public abstract class InteractionModuleBase : InteractionModuleBase<IInteractionCommandContext> { }
 }
