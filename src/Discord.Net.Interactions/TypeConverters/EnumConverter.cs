@@ -5,20 +5,15 @@ using System.Threading.Tasks;
 
 namespace Discord.Interactions
 {
-    internal sealed class EnumConverter<T> : TypeConverter<T> where T : Enum
+    internal sealed class EnumConverter<T> : TypeConverter<T> where T : struct, Enum
     {
         public override ApplicationCommandOptionType GetDiscordType ( ) => ApplicationCommandOptionType.String;
         public override Task<TypeConverterResult> ReadAsync (IInteractionCommandContext context, SocketSlashCommandDataOption option, IServiceProvider services)
         {
-            try
-            {
-                var result = Enum.Parse(typeof(T), (string)option.Value, true);
+            if (Enum.TryParse<T>((string)option.Value, out var result))
                 return Task.FromResult(TypeConverterResult.FromSuccess(result));
-            }
-            catch (Exception ex)
-            {
-                return Task.FromResult(TypeConverterResult.FromError(ex));
-            }
+            else
+                return Task.FromResult(TypeConverterResult.FromError(InteractionCommandError.ConvertFailed, $"Value {option.Value} cannot be converted to {nameof(T)}"));
         }
 
         public override void Write (ApplicationCommandOptionProperties properties, IParameterInfo parameterInfo)
