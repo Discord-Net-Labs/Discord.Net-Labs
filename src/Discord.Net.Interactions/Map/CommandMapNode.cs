@@ -37,7 +37,7 @@ namespace Discord.Interactions
             {
                 if (commandInfo.SupportsWildCards && commandInfo.Name.Contains(_wildCardStr))
                 {
-                    var patternStr = commandInfo.Name.Replace(_wildCardStr, RegexWildCardExp);
+                    var patternStr = "\\A" + commandInfo.Name.Replace(_wildCardStr, RegexWildCardExp) + "\\Z";
                     var regex = new Regex(patternStr, RegexOptions.Singleline | RegexOptions.Compiled);
 
                     if (!_wildCardCommands.TryAdd(regex, commandInfo))
@@ -82,7 +82,7 @@ namespace Discord.Interactions
                     foreach (var cmdPair in _wildCardCommands)
                     {
                         var match = cmdPair.Key.Match(keywords[index]);
-                        if (match.Success && match.Value.Length == keywords[index].Length)
+                        if (match.Success)
                         {
                             var args = new string[match.Groups.Count - 1];
 
