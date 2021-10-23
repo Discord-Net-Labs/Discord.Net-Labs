@@ -34,5 +34,17 @@ namespace Discord
         ///     Indicates that a user can play this song.
         /// </summary>
         Play = 0b100000
+        /// <summary>
+        ///     Indicates that a user is playing an activity in a voice channel with friends.
+        /// </summary>
+        PARTY_PRIVACY_FRIENDS = 0b1000000
+        /// <summary>
+        ///     Indicates that a user is playing an activity in a voice channel.
+        /// </summary>
+        PARTY_PRIVACY_VOICE_CHANNEL = 0b10000000
+        /// <summary>
+        ///     Indicates that a user is playing an activity in a voice channel.
+        /// </summary>
+        EMBEDDED = 0b10000000
     }
 }
