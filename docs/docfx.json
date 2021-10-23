@@ -61,7 +61,7 @@
     "overwrite": "_overwrites/**/**.md",
     "globalMetadata": {
       "_appTitle": "Discord.Net-Labs Documentation",
-      "_appFooter": "Discord.Net-Labs (c) 2020-2021 3.1.6",
+      "_appFooter": "Discord.Net-Labs (c) 2020-2021 3.1.7",
       "_enableSearch": true,
       "_appLogoPath": "marketing/logo/PackageLogo.png",
       "_appFaviconPath": "favicon.ico"
