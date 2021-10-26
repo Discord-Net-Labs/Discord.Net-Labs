@@ -63,7 +63,7 @@
       "_appTitle": "Discord.Net-Labs Documentation",
       "_appFooter": "Discord.Net-Labs (c) 2020-2021 3.1.7",
       "_enableSearch": true,
-      "_appLogoPath": "marketing/logo/PackageLogo.png",
+      "_appLogoPath": "marketing/logo/SVG/Logomark Standard.svg",
       "_appFaviconPath": "favicon.ico"
     },
     "xrefService": ["https://xref.docs.microsoft.com/query?uid={uid}"]
