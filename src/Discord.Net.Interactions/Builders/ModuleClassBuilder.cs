@@ -98,7 +98,7 @@ namespace Discord.Interactions.Builders
 
             var validSlashCommands = methods.Where(IsValidSlashCommandDefinition);
             var validContextCommands = methods.Where(IsValidContextCommandDefinition);
-            var validInteractions = methods.Where(IsValidInteractionDefinition);
+            var validInteractions = methods.Where(IsValidComponentCommandDefinition);
 
             Func<IServiceProvider, IInteractionModuleBase> createInstance = commandService._useCompiledLambda ?
                 ReflectionUtils<IInteractionModuleBase>.CreateLambdaBuilder(typeInfo, commandService) : ReflectionUtils<IInteractionModuleBase>.CreateBuilder(typeInfo, commandService);
@@ -238,6 +238,7 @@ namespace Discord.Interactions.Builders
                         {
                             builder.Name = interaction.CustomId;
                             builder.RunMode = interaction.RunMode;
+                            builder.IgnoreGroupNames = interaction.IgnoreGroupNames;
                         }
                         break;
                     case PreconditionAttribute precondition:
@@ -394,10 +395,10 @@ namespace Discord.Interactions.Builders
                    !methodInfo.IsGenericMethod;
         }
 
-        private static bool IsValidInteractionDefinition (MethodInfo methodInfo)
+        private static bool IsValidComponentCommandDefinition (MethodInfo methodInfo)
         {
             return methodInfo.IsDefined(typeof(ComponentInteractionAttribute)) &&
-                   ( methodInfo.ReturnType == typeof(Task) || methodInfo.ReturnType == typeof(Task<RuntimeResult>) ) &&
+                   (methodInfo.ReturnType == typeof(Task) || methodInfo.ReturnType == typeof(Task<RuntimeResult>)) &&
                    !methodInfo.IsStatic &&
                    !methodInfo.IsGenericMethod;
         }
