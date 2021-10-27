@@ -125,12 +125,11 @@ namespace Discord.WebSocket
         public int? MaxVideoChannelUsers { get; private set; }
         /// <inheritdoc />
         public NsfwLevel NsfwLevel { get; private set; }
-
         /// <inheritdoc />
         public CultureInfo PreferredCulture { get; private set; }
-
         /// <inheritdoc />
         public bool IsBoostProgressBarEnabled { get; private set; }
+
         /// <inheritdoc />
         public DateTimeOffset CreatedAt => SnowflakeUtils.FromSnowflake(Id);
         /// <inheritdoc />

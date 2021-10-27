@@ -109,7 +109,7 @@ namespace Discord
         /// </remarks>
         public Optional<CultureInfo> PreferredCulture { get; set; }
         /// <summary>
-        ///     Gets or Sets if the boost progress bar is enabled.
+        ///     Gets or sets if the boost progress bar is enabled.
         /// </summary>
         public Optional<bool> IsBoostProgressBarEnabled { get; set; }
     }

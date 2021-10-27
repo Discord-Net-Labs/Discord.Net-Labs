@@ -340,7 +340,7 @@ namespace Discord
         /// </returns>
         CultureInfo PreferredCulture { get; }
         /// <summary>
-        ///     Determines if the boost progress bar is enabled.
+        ///     Gets whether the guild has the boost progress bar enabled.
         /// </summary>
         /// <returns>
         ///     <see langword="true"/> if the boost progress bar is enabled; otherwise <see langword="false"/>.

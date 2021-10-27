@@ -88,6 +88,8 @@ namespace Discord.Rest
         public int? ApproximatePresenceCount { get; private set; }
         /// <inheritdoc />
         public NsfwLevel NsfwLevel { get; private set; }
+        /// <inheritdoc />
+        public bool IsBoostProgressBarEnabled { get; private set; }
 
         /// <inheritdoc />
         public CultureInfo PreferredCulture { get; private set; }
@@ -1123,8 +1125,6 @@ namespace Discord.Rest
         IReadOnlyCollection<IRole> IGuild.Roles => Roles;
 
         IReadOnlyCollection<ICustomSticker> IGuild.Stickers => Stickers;
-        /// <inheritdoc />
-        public bool IsBoostProgressBarEnabled { get; private set; }
 
         /// <inheritdoc />
         async Task<IReadOnlyCollection<IBan>> IGuild.GetBansAsync(RequestOptions options)
