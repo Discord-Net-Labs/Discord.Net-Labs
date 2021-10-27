@@ -37,7 +37,7 @@ namespace Discord.Rest
                 VerificationLevel = args.VerificationLevel,
                 ExplicitContentFilter = args.ExplicitContentFilter,
                 SystemChannelFlags = args.SystemChannelFlags,
-                IsBoostProgressBarEnabled = (bool)args.IsBoostProgressBarEnabled
+                IsBoostProgressBarEnabled = args.IsBoostProgressBarEnabled
             };
 
             if (args.AfkChannel.IsSpecified)

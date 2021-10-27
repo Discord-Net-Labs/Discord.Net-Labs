@@ -36,6 +36,6 @@ namespace Discord.API.Rest
         [JsonProperty("preferred_locale")]
         public string PreferredLocale { get; set; }
         [JsonProperty("premium_progress_bar_enabled")]
-        public bool IsBoostProgressBarEnabled { get; set; }
+        public Optional<bool> IsBoostProgressBarEnabled { get; set; }
     }
 }

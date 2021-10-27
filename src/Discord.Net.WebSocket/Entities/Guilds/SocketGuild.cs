@@ -1631,8 +1631,6 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         IReadOnlyCollection<ICustomSticker> IGuild.Stickers => Stickers;
         /// <inheritdoc />
-        bool IGuild.IsBoostProgressBarEnabled => IsBoostProgressBarEnabled;
-        /// <inheritdoc />
         async Task<IReadOnlyCollection<IBan>> IGuild.GetBansAsync(RequestOptions options)
             => await GetBansAsync(options).ConfigureAwait(false);
         /// <inheritdoc/>
