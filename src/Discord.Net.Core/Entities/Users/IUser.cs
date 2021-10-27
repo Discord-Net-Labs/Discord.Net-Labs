@@ -10,10 +10,29 @@ namespace Discord
         /// <summary>
         ///     Gets the identifier of this user's avatar.
         /// </summary>
-        string AvatarId { get; }
+        string AvatarId { get; }     
         /// <summary>
-        ///     A string representing the user's avatar URL; <c>null</c> if the user does not have an avatar in place.
+        ///     Gets the avatar URL for this user.
         /// </summary>
+        /// <remarks>
+        ///     This property retrieves a URL for this user's avatar. In event that the user does not have a valid avatar
+        ///     (i.e. their avatar identifier is not set), this method will return <c>null</c>. If you wish to
+        ///     retrieve the default avatar for this user, consider using <see cref="IUser.GetDefaultAvatarUrl"/> (see
+        ///     example).
+        /// </remarks>
+        /// <example>
+        ///     <para
+        ///         >The following example attempts to retrieve the user's current avatar and send it to a channel; if one is
+        ///         not set, a default avatar for this user will be returned instead.</para>
+        ///     <code language="cs" region="GetAvatarUrl"
+        ///           source="..\..\..\Discord.Net.Examples\Core\Entities\Users\IUser.Examples.cs"/>
+        /// </example>
+        /// <param name="format">The format to return.</param>
+        /// <param name="size">The size of the image to return in. This can be any power of two between 16 and 2048.
+        /// </param>
+        /// <returns>
+        ///     A string representing the user's avatar URL; <c>null</c> if the user does not have an avatar in place.
+        /// </returns>
         string GetAvatarUrl(ImageFormat format = ImageFormat.Auto, ushort size = 128);
         /// <summary>
         ///     Gets the default avatar URL for this user.
