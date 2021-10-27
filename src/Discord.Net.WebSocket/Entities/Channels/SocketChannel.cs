@@ -31,6 +31,7 @@ namespace Discord.WebSocket
         /// <exception cref="InvalidOperationException">Unexpected channel type is created.</exception>
         internal static ISocketPrivateChannel CreatePrivate(DiscordSocketClient discord, ClientState state, Model model)
         {
+            Console.WriteLine(model.Type);
             return model.Type switch
             {
                 ChannelType.DM => SocketDMChannel.Create(discord, state, model),

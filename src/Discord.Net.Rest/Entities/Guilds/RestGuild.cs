@@ -170,6 +170,8 @@ namespace Discord.Rest
                 ApproximateMemberCount = model.ApproximateMemberCount.Value;
             if (model.ApproximatePresenceCount.IsSpecified)
                 ApproximatePresenceCount = model.ApproximatePresenceCount.Value;
+            if (model.IsBoostProgressBarEnabled.IsSpecified)
+                IsBoostProgressBarEnabled = model.IsBoostProgressBarEnabled.Value;
 
             if (model.Emojis != null)
             {
@@ -1121,6 +1123,8 @@ namespace Discord.Rest
         IReadOnlyCollection<IRole> IGuild.Roles => Roles;
 
         IReadOnlyCollection<ICustomSticker> IGuild.Stickers => Stickers;
+        /// <inheritdoc />
+        public bool IsBoostProgressBarEnabled { get; private set; }
 
         /// <inheritdoc />
         async Task<IReadOnlyCollection<IBan>> IGuild.GetBansAsync(RequestOptions options)
