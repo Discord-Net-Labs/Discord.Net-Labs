@@ -2,6 +2,7 @@ using Discord.Audio;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Model = Discord.API.Channel;
@@ -12,17 +13,14 @@ namespace Discord.Rest
     ///     Represents a REST-based voice channel in a guild.
     /// </summary>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    public class RestVoiceChannel : RestGuildChannel, IVoiceChannel, IRestAudioChannel
+    public class RestVoiceChannel : RestTextChannel, IVoiceChannel, IRestAudioChannel
     {
         #region RestVoiceChannel
         /// <inheritdoc />
         public int Bitrate { get; private set; }
         /// <inheritdoc />
         public int? UserLimit { get; private set; }
-        /// <inheritdoc />
-        public ulong? CategoryId { get; private set; }
-        /// <inheritdoc />
-        public string Mention => MentionUtils.MentionChannel(Id);
+
         internal RestVoiceChannel(BaseDiscordClient discord, IGuild guild, ulong id)
             : base(discord, guild, id)
         {
@@ -37,7 +35,6 @@ namespace Discord.Rest
         internal override void Update(Model model)
         {
             base.Update(model);
-            CategoryId = model.CategoryId;
             Bitrate = model.Bitrate.Value;
             UserLimit = model.UserLimit.Value != 0 ? model.UserLimit.Value : (int?)null;
         }
@@ -49,19 +46,31 @@ namespace Discord.Rest
             Update(model);
         }
 
-        /// <summary>
-        ///     Gets the parent (category) channel of this channel.
-        /// </summary>
-        /// <param name="options">The options to be used when sending the request.</param>
-        /// <returns>
-        ///     A task that represents the asynchronous get operation. The task result contains the category channel
-        ///     representing the parent of this channel; <c>null</c> if none is set.
-        /// </returns>
-        public Task<ICategoryChannel> GetCategoryAsync(RequestOptions options = null)
-            => ChannelHelper.GetCategoryAsync(this, Discord, options);
-        /// <inheritdoc />
-        public Task SyncPermissionsAsync(RequestOptions options = null)
-            => ChannelHelper.SyncPermissionsAsync(this, Discord, options);
+        /// <inheritdoc/>
+        /// <exception cref="InvalidOperationException">Cannot modify text channel properties of a voice channel.</exception>
+        public override Task ModifyAsync(Action<TextChannelProperties> func, RequestOptions options = null)
+            => throw new InvalidOperationException("Cannot modify text channel properties of a voice channel");
+
+        /// <inheritdoc/>
+        /// <exception cref="InvalidOperationException">Cannot create a thread within a voice channel.</exception>
+        public override Task<RestThreadChannel> CreateThreadAsync(string name, ThreadType type = ThreadType.PublicThread, ThreadArchiveDuration autoArchiveDuration = ThreadArchiveDuration.OneDay, IMessage message = null, RequestOptions options = null)
+            => throw new InvalidOperationException("Cannot create a thread within a voice channel");
+
+        /// <inheritdoc/>
+        /// <exception cref="InvalidOperationException">Cannot create a webhook within a voice channel.</exception>
+        public override Task<RestWebhook> CreateWebhookAsync(string name, Stream avatar = null, RequestOptions options = null)
+            => throw new InvalidOperationException();
+
+        /// <inheritdoc/>
+        /// <exception cref="InvalidOperationException">Cannot get webhooks for a voice channel.</exception>
+        public override Task<RestWebhook> GetWebhookAsync(ulong id, RequestOptions options = null)
+            => throw new InvalidOperationException();
+
+        /// <inheritdoc/>
+        /// <exception cref="InvalidOperationException">Cannot get webhooks for a voice channel.</exception>
+        public override Task<IReadOnlyCollection<RestWebhook>> GetWebhooksAsync(RequestOptions options = null)
+            => throw new InvalidOperationException();
+
         #endregion
 
         #region Invites
