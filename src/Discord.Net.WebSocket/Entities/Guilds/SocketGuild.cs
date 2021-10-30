@@ -125,9 +125,10 @@ namespace Discord.WebSocket
         public int? MaxVideoChannelUsers { get; private set; }
         /// <inheritdoc />
         public NsfwLevel NsfwLevel { get; private set; }
-
         /// <inheritdoc />
         public CultureInfo PreferredCulture { get; private set; }
+        /// <inheritdoc />
+        public bool IsBoostProgressBarEnabled { get; private set; }
 
         /// <inheritdoc />
         public DateTimeOffset CreatedAt => SnowflakeUtils.FromSnowflake(Id);
@@ -138,7 +139,7 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public string DiscoverySplashUrl => CDN.GetGuildDiscoverySplashUrl(Id, DiscoverySplashId);
         /// <inheritdoc />
-        public string BannerUrl => CDN.GetGuildBannerUrl(Id, BannerId);
+        public string BannerUrl => CDN.GetGuildBannerUrl(Id, BannerId, ImageFormat.Auto);
         /// <summary> Indicates whether the client has all the members downloaded to the local guild cache. </summary>
         public bool HasAllMembers => MemberCount <= DownloadedMemberCount;// _downloaderPromise.Task.IsCompleted;
         /// <summary> Indicates whether the guild cache is synced to this guild. </summary>
@@ -495,7 +496,8 @@ namespace Discord.WebSocket
                 MaxVideoChannelUsers = model.MaxVideoChannelUsers.Value;
             PreferredLocale = model.PreferredLocale;
             PreferredCulture = PreferredLocale == null ? null : new CultureInfo(PreferredLocale);
-
+            if (model.IsBoostProgressBarEnabled.IsSpecified)
+                IsBoostProgressBarEnabled = model.IsBoostProgressBarEnabled.Value;
             if (model.Emojis != null)
             {
                 var emojis = ImmutableArray.CreateBuilder<GuildEmote>(model.Emojis.Length);
@@ -1627,7 +1629,6 @@ namespace Discord.WebSocket
         int? IGuild.ApproximatePresenceCount => null;
         /// <inheritdoc />
         IReadOnlyCollection<ICustomSticker> IGuild.Stickers => Stickers;
-
         /// <inheritdoc />
         async Task<IReadOnlyCollection<IBan>> IGuild.GetBansAsync(RequestOptions options)
             => await GetBansAsync(options).ConfigureAwait(false);

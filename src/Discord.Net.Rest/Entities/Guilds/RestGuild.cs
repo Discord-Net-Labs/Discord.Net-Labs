@@ -88,6 +88,8 @@ namespace Discord.Rest
         public int? ApproximatePresenceCount { get; private set; }
         /// <inheritdoc />
         public NsfwLevel NsfwLevel { get; private set; }
+        /// <inheritdoc />
+        public bool IsBoostProgressBarEnabled { get; private set; }
 
         /// <inheritdoc />
         public CultureInfo PreferredCulture { get; private set; }
@@ -102,7 +104,7 @@ namespace Discord.Rest
         /// <inheritdoc />
         public string DiscoverySplashUrl => CDN.GetGuildDiscoverySplashUrl(Id, DiscoverySplashId);
         /// <inheritdoc />
-        public string BannerUrl => CDN.GetGuildBannerUrl(Id, BannerId);
+        public string BannerUrl => CDN.GetGuildBannerUrl(Id, BannerId, ImageFormat.Auto);
 
         /// <summary>
         ///     Gets the built-in role containing all users in this guild.
@@ -170,6 +172,8 @@ namespace Discord.Rest
                 ApproximateMemberCount = model.ApproximateMemberCount.Value;
             if (model.ApproximatePresenceCount.IsSpecified)
                 ApproximatePresenceCount = model.ApproximatePresenceCount.Value;
+            if (model.IsBoostProgressBarEnabled.IsSpecified)
+                IsBoostProgressBarEnabled = model.IsBoostProgressBarEnabled.Value;
 
             if (model.Emojis != null)
             {

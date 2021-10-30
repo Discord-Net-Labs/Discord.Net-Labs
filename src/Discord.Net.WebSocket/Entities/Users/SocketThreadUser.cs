@@ -52,20 +52,9 @@ namespace Discord.WebSocket
             get => GuildUser.AvatarId;
             internal set => GuildUser.AvatarId = value;
         }
-
         /// <inheritdoc/>
-        public override string BannerId
-        {
-            get => GuildUser.BannerId;
-            internal set => GuildUser.BannerId = value;
-        }
-
-        /// <inheritdoc/>
-        public override Color? AccentColor
-        {
-            get => GuildUser.AccentColor;
-            internal set => GuildUser.AccentColor = value;
-        }
+        public string GuildAvatarId
+            => GuildUser.GuildAvatarId;
 
         /// <inheritdoc/>
         public override ushort DiscriminatorValue
@@ -204,6 +193,8 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         IReadOnlyCollection<ulong> IGuildUser.RoleIds => GuildUser.Roles.Select(x => x.Id).ToImmutableArray();
+
+        string IGuildUser.GetGuildAvatarUrl(ImageFormat format, ushort size) => GuildUser.GetGuildAvatarUrl(format, size);
 
         internal override SocketGlobalUser GlobalUser => GuildUser.GlobalUser;
 
