@@ -1,6 +1,5 @@
 using Discord.WebSocket;
 using System;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Discord.Interactions
@@ -10,8 +9,6 @@ namespace Discord.Interactions
     /// </summary>
     public abstract class TypeConverter
     {
-        private readonly Regex _pascalCasingRegex = new(@"(?<=[[:lower:]])(?=[[:upper:]])", RegexOptions.Compiled | RegexOptions.Singleline);
-
         /// <summary>
         ///     Will be used to search for alternative TypeConverters whenever the Command Service encounters an unknown parameter type
         /// </summary>
@@ -37,8 +34,7 @@ namespace Discord.Interactions
         /// <summary>
         ///     Will be used to manipulate the outgoing command option, before the command gets registered to Discord
         /// </summary>
-        public virtual void Write (ApplicationCommandOptionProperties properties, IParameterInfo parameter) =>
-            properties.Name = _pascalCasingRegex.Replace(properties.Name, "-").ToLower();
+        public virtual void Write (ApplicationCommandOptionProperties properties, IParameterInfo parameter) { }
     }
 
     /// <inheritdoc/>
