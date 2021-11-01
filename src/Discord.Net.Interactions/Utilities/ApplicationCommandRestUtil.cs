@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Discord.Interactions
 {
@@ -9,9 +10,11 @@ namespace Discord.Interactions
         #region Parameters
         public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps (this SlashCommandParameterInfo parameterInfo)
         {
+            var discordName = Regex.Replace(parameterInfo.Name, @"(?<=[[:lower:]])(?=[[:upper:]])", "-").ToLower();
+
             var props = new ApplicationCommandOptionProperties
             {
-                Name = parameterInfo.Name,
+                Name = discordName,
                 Description = parameterInfo.Description,
                 Type = parameterInfo.DiscordOptionType,
                 Required = parameterInfo.IsRequired,
