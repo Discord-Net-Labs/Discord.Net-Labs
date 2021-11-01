@@ -127,20 +127,18 @@ namespace Discord.Interactions
 
         protected async Task<IResult> RunAsync (IInteractionCommandContext context, object[] args, IServiceProvider services)
         {
-            services ??= EmptyServiceProvider.Instance;
-
             switch (RunMode)
             {
                 case RunMode.Sync:
                     {
-                        using var scope = services.CreateScope();
-                        return await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
+                        using var scope = services?.CreateScope();
+                        return await ExecuteInternalAsync(context, args, scope.ServiceProvider ?? EmptyServiceProvider.Instance).ConfigureAwait(false);
                     }
                 case RunMode.Async:
                     _ = Task.Run(async ( ) =>
                     {
-                        using var scope = services.CreateScope();
-                        await ExecuteInternalAsync(context, args, scope.ServiceProvider).ConfigureAwait(false);
+                        using var scope = services?.CreateScope();
+                        await ExecuteInternalAsync(context, args, scope.ServiceProvider ?? EmptyServiceProvider.Instance).ConfigureAwait(false);
                     });
                     break;
                 default:
