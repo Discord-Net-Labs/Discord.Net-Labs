@@ -24,12 +24,12 @@ namespace Discord.Interactions
         public string Name { get; }
 
         /// <summary>
-        ///     Group name of this module, if the module is marked with a <see cref="GroupAttribute"/>
+        ///     Group name of this module, if the module is marked with a <see cref="InteractionGroupAttribute"/>
         /// </summary>
         public string SlashGroupName { get; }
 
         /// <summary>
-        ///     <see langword="true"/> if this module is marked with a <see cref="GroupAttribute"/>
+        ///     <see langword="true"/> if this module is marked with a <see cref="InteractionGroupAttribute"/>
         /// </summary>
         public bool IsSlashGroup => !string.IsNullOrEmpty(SlashGroupName);
 
@@ -89,7 +89,7 @@ namespace Discord.Interactions
         public IReadOnlyCollection<PreconditionAttribute> Preconditions { get; }
 
         /// <summary>
-        ///     <see langword="true"/> if this module has a valid <see cref="GroupAttribute"/> and has no parent with a <see cref="GroupAttribute"/>
+        ///     <see langword="true"/> if this module has a valid <see cref="InteractionGroupAttribute"/> and has no parent with a <see cref="InteractionGroupAttribute"/>
         /// </summary>
         public bool IsTopLevelGroup { get; }
 
@@ -171,7 +171,7 @@ namespace Discord.Interactions
             return result;
         }
 
-        private static IEnumerable<Attribute> BuildAttributes (ModuleBuilder builder)
+        private IEnumerable<Attribute> BuildAttributes (ModuleBuilder builder)
         {
             var result = new List<Attribute>();
             var currentParent = builder;

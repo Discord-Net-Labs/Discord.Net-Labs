@@ -31,7 +31,7 @@ namespace Discord.Interactions
         Unsuccessful,
 
         /// <summary>
-        ///     Thrown when the command fails to meet a <see cref="PreconditionAttribute"/>'s conditions.
+        ///     Thrown when the command fails to meet a <see cref="InteractionPreconditionAttribute"/>'s conditions.
         /// </summary>
         UnmetPrecondition,
 
