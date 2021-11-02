@@ -23,6 +23,9 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public override bool SupportsWildCards => false;
 
+        /// <inheritdoc/>
+        public override bool IgnoreGroupNames => true;
+
         internal ContextCommandInfo (Builders.ContextCommandBuilder builder, ModuleInfo module, InteractionService commandService)
             : base(builder, module, commandService)
         {

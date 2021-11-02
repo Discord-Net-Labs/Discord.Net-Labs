@@ -26,6 +26,8 @@ namespace Discord.Interactions
         /// </summary>
         public char[] InteractionCustomIdDelimiters { get; set; }
 
+        public char[] AutocompleteNameDelimiters { get; set; }
+
         /// <summary>
         ///     The string expression that will be treated as a wild card
         /// </summary>
@@ -40,5 +42,7 @@ namespace Discord.Interactions
         ///     Use compiled lambda expressions to create module instances and execute commands. This method improves performance at the cost of memory
         /// </summary>
         public bool UseCompiledLambda { get; set; } = false;
+
+        public bool EnableAutocompleters { get; set; } = true;
     }
 }

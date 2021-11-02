@@ -41,18 +41,32 @@ namespace Discord.Interactions
         public event Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task> ComponentCommandExecuted { add { _componentCommandExecutedEvent.Add(value); } remove { _componentCommandExecutedEvent.Remove(value); } }
         internal readonly AsyncEvent<Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task>> _componentCommandExecutedEvent = new ();
 
+        /// <summary>
+        ///     Occurs when a Autocomplete command is executed
+        /// </summary>
+        public event Func<AutocompleteCommandInfo, IInteractionCommandContext, IResult, Task> AutocompleteCommandExecuted { add { _autocompleteCommandExecutedEvent.Add(value); } remove { _autocompleteCommandExecutedEvent.Remove(value); } }
+        internal readonly AsyncEvent<Func<AutocompleteCommandInfo, IInteractionCommandContext, IResult, Task>> _autocompleteCommandExecutedEvent = new();
+
+        /// <summary>
+        ///     Occurs when a Autocompleter is executed
+        /// </summary>
+        public event Func<IAutocompleter, IInteractionCommandContext, IResult, Task> AutocompleterExecuted { add { _autocompleterExecutedEvent.Add(value); } remove { _autocompleterExecutedEvent.Remove(value); } }
+        internal readonly AsyncEvent<Func<IAutocompleter, IInteractionCommandContext, IResult, Task>> _autocompleterExecutedEvent = new();
+
         private readonly ConcurrentDictionary<Type, ModuleInfo> _typedModuleDefs;
         private readonly CommandMap<SlashCommandInfo> _slashCommandMap;
         private readonly ConcurrentDictionary<ApplicationCommandType, CommandMap<ContextCommandInfo>> _contextCommandMaps;
         private readonly CommandMap<ComponentCommandInfo> _componentCommandMap;
+        private readonly CommandMap<AutocompleteCommandInfo> _autocompleteCommandMap;
         private readonly HashSet<ModuleInfo> _moduleDefs;
         private readonly ConcurrentDictionary<Type, TypeConverter> _typeConverters;
         private readonly ConcurrentDictionary<Type, Type> _genericTypeConverters;
+        private readonly ConcurrentDictionary<Type, IAutocompleter> _autocompleters = new();
         private readonly SemaphoreSlim _lock;
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
 
-        internal readonly bool _throwOnError, _deleteUnkownSlashCommandAck, _useCompiledLambda;
+        internal readonly bool _throwOnError, _deleteUnkownSlashCommandAck, _useCompiledLambda, _enableAutocompleters;
         internal readonly string _wildCardExp;
         internal readonly RunMode _runMode;
 
@@ -110,6 +124,7 @@ namespace Discord.Interactions
             _slashCommandMap = new CommandMap<SlashCommandInfo>(this);
             _contextCommandMaps = new ConcurrentDictionary<ApplicationCommandType, CommandMap<ContextCommandInfo>>();
             _componentCommandMap = new CommandMap<ComponentCommandInfo>(this, config.InteractionCustomIdDelimiters);
+            _autocompleteCommandMap = new CommandMap<AutocompleteCommandInfo>(this, config.AutocompleteNameDelimiters);
 
             Client = discord;
 
@@ -121,6 +136,7 @@ namespace Discord.Interactions
             _deleteUnkownSlashCommandAck = config.DeleteUnknownSlashCommandAck;
             _wildCardExp = config.WildCardExpression;
             _useCompiledLambda = config.UseCompiledLambda;
+            _enableAutocompleters = config.EnableAutocompleters;
 
             _genericTypeConverters = new ConcurrentDictionary<Type, Type>
             {
@@ -398,6 +414,9 @@ namespace Discord.Interactions
             foreach (var interaction in module.ComponentCommands)
                 _componentCommandMap.AddCommand(interaction, interaction.IgnoreGroupNames);
 
+            foreach (var command in module.AutocompleteCommands)
+                _autocompleteCommandMap.AddCommand(command, command.IgnoreGroupNames);
+
             foreach (var subModule in module.SubModules)
                 LoadModuleInternal(subModule);
         }
@@ -496,6 +515,7 @@ namespace Discord.Interactions
                 SocketMessageComponent messageComponent => await ExecuteComponentCommandAsync(context, messageComponent.Data.CustomId, services).ConfigureAwait(false),
                 SocketUserCommand userCommand => await ExecuteContextCommandAsync(context, userCommand.CommandName, ApplicationCommandType.User, services).ConfigureAwait(false),
                 SocketMessageCommand messageCommand => await ExecuteContextCommandAsync(context, messageCommand.CommandName, ApplicationCommandType.Message, services).ConfigureAwait(false),
+                SocketAutocompleteInteraction autocomplete => await ExecuteAutocompleteAsync(context, autocomplete, services).ConfigureAwait(false),
                 _ => throw new InvalidOperationException($"{interaction.Type} interaction type cannot be executed by the Interaction service"),
             };
         }
@@ -548,6 +568,33 @@ namespace Discord.Interactions
                 return result;
             }
             return await result.Command.ExecuteAsync(context, services, result.RegexCaptureGroups).ConfigureAwait(false);
+        }
+
+        private async Task<IResult> ExecuteAutocompleteAsync (IInteractionCommandContext context, SocketAutocompleteInteraction autocompleteInteraction, IServiceProvider services )
+        {
+            if(_enableAutocompleters)
+            {
+                var autocompleterResult = _slashCommandMap.GetCommand(autocompleteInteraction.Data.CommandName);
+
+                if(autocompleterResult.IsSuccess)
+                {
+                    var parameter = autocompleterResult.Command.Parameters.FirstOrDefault(x => string.Equals(x.Name, autocompleteInteraction.Data.Current.Name, StringComparison.Ordinal));
+
+                    if(parameter is not null)
+                        return await parameter.Autocompleter.ExecuteAsync(context, autocompleteInteraction, parameter, services).ConfigureAwait(false);
+                }
+            }
+
+            var commandResult = _autocompleteCommandMap.GetCommand(autocompleteInteraction.Data.CommandName);
+
+            if(!commandResult.IsSuccess)
+            {
+                await _cmdLogger.DebugAsync($"Unknown command name, skipping autocomplete process ({autocompleteInteraction.Data.CommandName.ToUpper()})");
+
+                return commandResult;
+            }
+
+            return await commandResult.Command.ExecuteAsync(context, services).ConfigureAwait(false);
         }
 
         internal TypeConverter GetTypeConverter (Type type)
@@ -620,6 +667,21 @@ namespace Discord.Interactions
                 throw new InvalidOperationException($"This generic class does not support type {targetType.FullName}");
 
             _genericTypeConverters[targetType] = converterType;
+        }
+
+        internal IAutocompleter GetAutocompleter(Type autocompleterType, IServiceProvider services = null)
+        {
+            if (!_enableAutocompleters)
+                throw new InvalidOperationException($"Autocompleters are not enabled. To use this feature set {nameof(InteractionServiceConfig.EnableAutocompleters)} to TRUE");
+
+            if (_autocompleters.TryGetValue(autocompleterType, out var autocompleter))
+                return autocompleter;
+            else
+            {
+                autocompleter = ReflectionUtils<IAutocompleter>.CreateObject(autocompleterType.GetTypeInfo(), this, services);
+                _autocompleters[autocompleterType] = autocompleter;
+                return autocompleter;
+            }
         }
 
         /// <summary>

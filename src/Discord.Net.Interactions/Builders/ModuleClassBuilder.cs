@@ -99,6 +99,7 @@ namespace Discord.Interactions.Builders
             var validSlashCommands = methods.Where(IsValidSlashCommandDefinition);
             var validContextCommands = methods.Where(IsValidContextCommandDefinition);
             var validInteractions = methods.Where(IsValidComponentCommandDefinition);
+            var validAutocompleteCommands = methods.Where(IsValidAutocompleteCommandDefinition);
 
             Func<IServiceProvider, IInteractionModuleBase> createInstance = commandService._useCompiledLambda ?
                 ReflectionUtils<IInteractionModuleBase>.CreateLambdaBuilder(typeInfo, commandService) : ReflectionUtils<IInteractionModuleBase>.CreateBuilder(typeInfo, commandService);
@@ -111,6 +112,9 @@ namespace Discord.Interactions.Builders
 
             foreach (var method in validInteractions)
                 builder.AddComponentCommand(x => BuildComponentCommand(x, createInstance, method, commandService, services));
+
+            foreach(var method in validAutocompleteCommands)
+                builder.AddAutocompleteCommand(x => BuildAutocompleteCommand(x, createInstance, method, commandService, services));
         }
 
         private static void BuildSubModules (ModuleBuilder parent, IEnumerable<TypeInfo> subModules, IList<TypeInfo> builtTypes, InteractionService commandService,
@@ -173,7 +177,7 @@ namespace Discord.Interactions.Builders
             var parameters = methodInfo.GetParameters();
 
             foreach (var parameter in parameters)
-                builder.AddParameter(x => BuildSlashParameter(x, parameter));
+                builder.AddParameter(x => BuildSlashParameter(x, parameter, services));
 
             builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
@@ -258,6 +262,40 @@ namespace Discord.Interactions.Builders
             builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
 
+        private static void BuildAutocompleteCommand(AutocompleteCommandBuilder builder, Func<IServiceProvider, IInteractionModuleBase> createInstance, MethodInfo methodInfo,
+            InteractionService commandService, IServiceProvider services)
+        {
+            var attributes = methodInfo.GetCustomAttributes();
+
+            builder.MethodName = methodInfo.Name;
+
+            foreach(var attribute in attributes)
+            {
+                switch (attribute)
+                {
+                    case AutocompleteCommandAttribute autocomplete:
+                        {
+                            builder.Name = autocomplete.Name;
+                            builder.RunMode = autocomplete.RunMode;
+                        }
+                        break;
+                    case PreconditionAttribute precondition:
+                        builder.WithPreconditions(precondition);
+                        break;
+                    default:
+                        builder.WithAttributes(attribute);
+                        break;
+                }
+            }
+
+            var parameters = methodInfo.GetParameters();
+
+            foreach (var parameter in parameters)
+                builder.AddParameter(x => BuildParameter(x, parameter));
+
+            builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
+        }
+
         private static ExecuteCallback CreateCallback (Func<IServiceProvider, IInteractionModuleBase> createInstance,
             MethodInfo methodInfo, InteractionService commandService)
         {
@@ -301,7 +339,7 @@ namespace Discord.Interactions.Builders
         }
 
         #region Parameters
-        private static void BuildSlashParameter (SlashCommandParameterBuilder builder, ParameterInfo paramInfo)
+        private static void BuildSlashParameter (SlashCommandParameterBuilder builder, ParameterInfo paramInfo, IServiceProvider services)
         {
             var attributes = paramInfo.GetCustomAttributes();
             var paramType = paramInfo.ParameterType;
@@ -336,6 +374,11 @@ namespace Discord.Interactions.Builders
                         break;
                     case ChannelTypesAttribute channelTypes:
                         builder.WithChannelTypes(channelTypes.ChannelTypes);
+                        break;
+                    case AutocompleteAttribute autocomplete:
+                        builder.Autocomplete = true;
+                        if(autocomplete.AutocompleterType is not null)
+                            builder.WithAutocompleter(autocomplete.AutocompleterType);
                         break;
                     default:
                         builder.AddAttributes(attribute);
@@ -401,6 +444,15 @@ namespace Discord.Interactions.Builders
                    (methodInfo.ReturnType == typeof(Task) || methodInfo.ReturnType == typeof(Task<RuntimeResult>)) &&
                    !methodInfo.IsStatic &&
                    !methodInfo.IsGenericMethod;
+        }
+
+        private static bool IsValidAutocompleteCommandDefinition (MethodInfo methodInfo)
+        {
+            return methodInfo.IsDefined(typeof(AutocompleteCommandAttribute)) &&
+                (methodInfo.ReturnType == typeof(Task) || methodInfo.ReturnType == typeof(Task<RuntimeResult>)) &&
+                !methodInfo.IsStatic &&
+                !methodInfo.IsGenericMethod &&
+                methodInfo.GetParameters().Length == 0;
         }
     }
 }

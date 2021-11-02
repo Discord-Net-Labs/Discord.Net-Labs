@@ -12,6 +12,7 @@ namespace Discord.Interactions.Builders
         private readonly List<SlashCommandBuilder> _slashCommands;
         private readonly List<ContextCommandBuilder> _contextCommands;
         private readonly List<ComponentCommandBuilder> _componentCommands;
+        private readonly List<AutocompleteCommandBuilder> _autocompleteCommands;
 
         public InteractionService CommandService { get; }
         public ModuleBuilder Parent { get; }
@@ -28,6 +29,7 @@ namespace Discord.Interactions.Builders
         public IReadOnlyList<SlashCommandBuilder> SlashCommands => _slashCommands;
         public IReadOnlyList<ContextCommandBuilder> ContextCommands => _contextCommands;
         public IReadOnlyList<ComponentCommandBuilder> ComponentCommands => _componentCommands;
+        public IReadOnlyList<AutocompleteCommandBuilder> AutocompleteCommands => _autocompleteCommands;
 
         internal TypeInfo TypeInfo { get; set; }
 
@@ -41,6 +43,7 @@ namespace Discord.Interactions.Builders
             _slashCommands = new List<SlashCommandBuilder>();
             _contextCommands = new List<ContextCommandBuilder>();
             _componentCommands = new List<ComponentCommandBuilder>();
+            _autocompleteCommands = new List<AutocompleteCommandBuilder>();
             _preconditions = new List<PreconditionAttribute>();
         }
 
@@ -100,6 +103,14 @@ namespace Discord.Interactions.Builders
             var command = new ComponentCommandBuilder(this);
             configure(command);
             _componentCommands.Add(command);
+            return this;
+        }
+
+        public ModuleBuilder AddAutocompleteCommand(Action<AutocompleteCommandBuilder> configure)
+        {
+            var command = new AutocompleteCommandBuilder(this);
+            configure(command);
+            _autocompleteCommands.Add(command);
             return this;
         }
 

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Reflection;
 
 namespace Discord.Interactions
 {
@@ -22,6 +24,10 @@ namespace Discord.Interactions
         /// </summary>
         public TypeConverter TypeConverter { get; }
 
+        public IAutocompleter Autocompleter { get; }
+
+        public bool Autocomplete => Autocompleter is not null;
+
         /// <summary>
         ///     Discord option type this parameter represents
         /// </summary>
@@ -40,6 +46,7 @@ namespace Discord.Interactions
         internal SlashCommandParameterInfo (Builders.SlashCommandParameterBuilder builder, SlashCommandInfo command) : base(builder, command)
         {
             TypeConverter = builder.TypeConverter;
+            Autocompleter = builder.Autocompleter;
             Description = builder.Description;
             Choices = builder.Choices.ToImmutableArray();
             ChannelTypes = builder.ChannelTypes.ToImmutableArray();

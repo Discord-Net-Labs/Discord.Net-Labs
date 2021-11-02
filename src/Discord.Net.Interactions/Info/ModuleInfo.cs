@@ -24,12 +24,12 @@ namespace Discord.Interactions
         public string Name { get; }
 
         /// <summary>
-        ///     Group name of this module, if the module is marked with a <see cref="GroupAttribute"/>
+        ///     Group name of this module, if the module is marked with a <see cref="InteractionGroupAttribute"/>
         /// </summary>
         public string SlashGroupName { get; }
 
         /// <summary>
-        ///     <see langword="true"/> if this module is marked with a <see cref="GroupAttribute"/>
+        ///     <see langword="true"/> if this module is marked with a <see cref="InteractionGroupAttribute"/>
         /// </summary>
         public bool IsSlashGroup => !string.IsNullOrEmpty(SlashGroupName);
 
@@ -57,10 +57,16 @@ namespace Discord.Interactions
         ///     Get the Context Commands that are declared in this module
         /// </summary>
         public IReadOnlyList<ContextCommandInfo> ContextCommands { get; }
+
         /// <summary>
         ///     Get the Component Commands that are declared in this module
         /// </summary>
         public IReadOnlyCollection<ComponentCommandInfo> ComponentCommands { get; }
+
+        /// <summary>
+        ///     Get the Autocomplete Commands that are declared in this module
+        /// </summary>
+        public IReadOnlyCollection<AutocompleteCommandInfo> AutocompleteCommands { get; }
 
         /// <summary>
         ///     Get the declaring type of this module, if <see cref="IsSubModule"/> is <see langword="true"/>
@@ -83,7 +89,7 @@ namespace Discord.Interactions
         public IReadOnlyCollection<PreconditionAttribute> Preconditions { get; }
 
         /// <summary>
-        ///     <see langword="true"/> if this module has a valid <see cref="GroupAttribute"/> and has no parent with a <see cref="GroupAttribute"/>
+        ///     <see langword="true"/> if this module has a valid <see cref="InteractionGroupAttribute"/> and has no parent with a <see cref="InteractionGroupAttribute"/>
         /// </summary>
         public bool IsTopLevelGroup { get; }
 
@@ -105,6 +111,7 @@ namespace Discord.Interactions
             SlashCommands = BuildSlashCommands(builder).ToImmutableArray();
             ContextCommands = BuildContextCommands(builder).ToImmutableArray();
             ComponentCommands = BuildComponentCommands(builder).ToImmutableArray();
+            AutocompleteCommands = BuildAutocompleteCommands(builder).ToImmutableArray();
             SubModules = BuildSubModules(builder, commandService, services).ToImmutableArray();
             Attributes = BuildAttributes(builder).ToImmutableArray();
             Preconditions = BuildPreconditions(builder).ToImmutableArray();
@@ -150,6 +157,16 @@ namespace Discord.Interactions
 
             foreach (var interactionBuilder in builder.ComponentCommands)
                 result.Add(interactionBuilder.Build(this, CommandService));
+
+            return result;
+        }
+
+        private IEnumerable<AutocompleteCommandInfo> BuildAutocompleteCommands( ModuleBuilder builder)
+        {
+            var result = new List<AutocompleteCommandInfo>();
+
+            foreach (var commandBuilder in builder.AutocompleteCommands)
+                result.Add(commandBuilder.Build(this, CommandService));
 
             return result;
         }

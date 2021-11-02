@@ -23,7 +23,8 @@ namespace Discord.Interactions
                     Name = x.Name,
                     Value = x.Value
                 })?.ToList(),
-                ChannelTypes = parameterInfo.ChannelTypes?.ToList()
+                ChannelTypes = parameterInfo.ChannelTypes?.ToList(),
+                Autocomplete = parameterInfo.Autocomplete
             };
 
             parameterInfo.TypeConverter.Write(props, parameterInfo);
