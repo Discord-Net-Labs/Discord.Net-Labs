@@ -5,7 +5,7 @@ namespace Discord.Interactions
 {
     internal class CommandMap<T> where T : class, ICommandInfo
     {
-        private readonly char[] _seperators = { ' ', '\n', '\r', ',' };
+        private readonly char[] _seperators = { ' ', '\n', '\r' };
 
         private readonly CommandMapNode<T> _root;
         private readonly InteractionService _commandService;
