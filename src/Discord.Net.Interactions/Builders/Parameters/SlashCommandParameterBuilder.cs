@@ -12,7 +12,9 @@ namespace Discord.Interactions.Builders
         public string Description { get; set; }
         public IReadOnlyCollection<ParameterChoice> Choices => _choices;
         public IReadOnlyCollection<ChannelType> ChannelTypes => _channelTypes;
+        public bool Autocomplete { get; set; }
         public TypeConverter TypeConverter { get; private set; }
+        public IAutocompleter Autocompleter { get; set; }
         protected override SlashCommandParameterBuilder Instance => this;
 
         internal SlashCommandParameterBuilder (ICommandBuilder command) : base(command) { }
@@ -40,6 +42,12 @@ namespace Discord.Interactions.Builders
         public SlashCommandParameterBuilder WithChannelTypes (IEnumerable<ChannelType> channelTypes)
         {
             _channelTypes.AddRange(channelTypes);
+            return this;
+        }
+
+        public SlashCommandParameterBuilder WithAutocompleter(Type autocompleterType)
+        {
+            Autocompleter = Command.Module.CommandService.GetAutocompleter(autocompleterType);
             return this;
         }
 

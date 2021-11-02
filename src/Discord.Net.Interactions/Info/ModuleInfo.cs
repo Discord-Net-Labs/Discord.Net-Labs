@@ -57,10 +57,16 @@ namespace Discord.Interactions
         ///     Get the Context Commands that are declared in this module
         /// </summary>
         public IReadOnlyList<ContextCommandInfo> ContextCommands { get; }
+
         /// <summary>
         ///     Get the Component Commands that are declared in this module
         /// </summary>
         public IReadOnlyCollection<ComponentCommandInfo> ComponentCommands { get; }
+
+        /// <summary>
+        ///     Get the Autocomplete Commands that are declared in this module
+        /// </summary>
+        public IReadOnlyCollection<AutocompleteCommandInfo> AutocompleteCommands { get; }
 
         /// <summary>
         ///     Get the declaring type of this module, if <see cref="IsSubModule"/> is <see langword="true"/>
@@ -105,6 +111,7 @@ namespace Discord.Interactions
             SlashCommands = BuildSlashCommands(builder).ToImmutableArray();
             ContextCommands = BuildContextCommands(builder).ToImmutableArray();
             ComponentCommands = BuildComponentCommands(builder).ToImmutableArray();
+            AutocompleteCommands = BuildAutocompleteCommands(builder).ToImmutableArray();
             SubModules = BuildSubModules(builder, commandService, services).ToImmutableArray();
             Attributes = BuildAttributes(builder).ToImmutableArray();
             Preconditions = BuildPreconditions(builder).ToImmutableArray();
@@ -154,7 +161,17 @@ namespace Discord.Interactions
             return result;
         }
 
-        private IEnumerable<Attribute> BuildAttributes (ModuleBuilder builder)
+        private IEnumerable<AutocompleteCommandInfo> BuildAutocompleteCommands( ModuleBuilder builder)
+        {
+            var result = new List<AutocompleteCommandInfo>();
+
+            foreach (var commandBuilder in builder.AutocompleteCommands)
+                result.Add(commandBuilder.Build(this, CommandService));
+
+            return result;
+        }
+
+        private static IEnumerable<Attribute> BuildAttributes (ModuleBuilder builder)
         {
             var result = new List<Attribute>();
             var currentParent = builder;
@@ -168,7 +185,7 @@ namespace Discord.Interactions
             return result;
         }
 
-        private IEnumerable<PreconditionAttribute> BuildPreconditions (ModuleBuilder builder)
+        private static IEnumerable<PreconditionAttribute> BuildPreconditions (ModuleBuilder builder)
         {
             var preconditions = new List<PreconditionAttribute>();
 
@@ -183,7 +200,7 @@ namespace Discord.Interactions
             return preconditions;
         }
 
-        private bool CheckTopLevel (ModuleInfo parent)
+        private static bool CheckTopLevel (ModuleInfo parent)
         {
             var currentParent = parent;
 

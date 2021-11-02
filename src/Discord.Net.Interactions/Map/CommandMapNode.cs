@@ -8,7 +8,7 @@ namespace Discord.Interactions
 {
     internal class CommandMapNode<T> where T : class, ICommandInfo
     {
-        private const string RegexWildCardExp = "(\\w+)?";
+        private const string RegexWildCardExp = "(\\S+)?";
 
         private readonly string _wildCardStr = "*";
         private readonly ConcurrentDictionary<string, CommandMapNode<T>> _nodes;
