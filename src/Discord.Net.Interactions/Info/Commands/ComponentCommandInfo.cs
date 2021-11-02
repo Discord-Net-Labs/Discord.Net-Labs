@@ -59,9 +59,30 @@ namespace Discord.Interactions
         public async Task<IResult> ExecuteAsync (IInteractionCommandContext context, IEnumerable<CommandParameterInfo> paramList, IEnumerable<string> values,
             IServiceProvider services)
         {
+            if(context.Interaction is not SocketMessageComponent messageComponent)
+                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionCommandContext)} doesn't belong to a Component Command Interaction");
+
             try
             {
-                object[] args = GenerateArgs(paramList, values);
+                var strCount = Parameters.Count(x => x.ParameterType == typeof(string));
+
+                if (strCount > values?.Count())
+                    return ExecuteResult.FromError(InteractionCommandError.BadArgs, "Command was invoked with too few parameters");
+
+                var componentValues = messageComponent.Data?.Values;
+
+                var args = new object[Parameters.Count];
+
+                if (componentValues is not null)
+                {
+                    if (Parameters.Last().ParameterType == typeof(string[]))
+                        args[args.Length - 1] = componentValues.ToArray();
+                    else
+                        return ExecuteResult.FromError(InteractionCommandError.BadArgs, $"Select Menu Interaction handlers must accept a {typeof(string[]).FullName} as its last parameter");
+                }
+
+                for (var i = 0; i < strCount; i++)
+                    args[i] = values.ElementAt(i);
 
                 return await RunAsync(context, args, services).ConfigureAwait(false);
             }
