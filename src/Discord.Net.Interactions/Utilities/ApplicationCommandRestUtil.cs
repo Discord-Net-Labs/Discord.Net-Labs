@@ -10,7 +10,7 @@ namespace Discord.Interactions
         #region Parameters
         public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps (this SlashCommandParameterInfo parameterInfo)
         {
-            var discordName = Regex.Replace(parameterInfo.Name, @"(?<=[[:lower:]])(?=[[:upper:]])", "-").ToLower();
+            var discordName = Regex.Replace(parameterInfo.Name, "(?<=[a-z])(?=[A-Z])", "-").ToLower();
 
             var props = new ApplicationCommandOptionProperties
             {
