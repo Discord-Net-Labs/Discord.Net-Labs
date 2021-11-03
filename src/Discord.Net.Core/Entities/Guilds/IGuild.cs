@@ -207,12 +207,12 @@ namespace Discord
         /// </returns>
         IReadOnlyCollection<ICustomSticker> Stickers { get; }
         /// <summary>
-        ///     Gets a collection of all extra features added to this guild.
+        ///     Gets the features for this guild.
         /// </summary>
         /// <returns>
-        ///     A read-only collection of enabled features in this guild.
+        ///     A flags enum containing all the features for the guild.
         /// </returns>
-        IReadOnlyCollection<string> Features { get; }
+        GuildFeatures Features { get; }
         /// <summary>
         ///     Gets a collection of all roles in this guild.
         /// </summary>
@@ -339,6 +339,13 @@ namespace Discord
         ///     The preferred culture information of this guild.
         /// </returns>
         CultureInfo PreferredCulture { get; }
+        /// <summary>
+        ///     Gets whether the guild has the boost progress bar enabled.
+        /// </summary>
+        /// <returns>
+        ///     <see langword="true"/> if the boost progress bar is enabled; otherwise <see langword="false"/>.
+        /// </returns>
+        bool IsBoostProgressBarEnabled { get; }
 
         /// <summary>
         ///     Modifies this guild.
