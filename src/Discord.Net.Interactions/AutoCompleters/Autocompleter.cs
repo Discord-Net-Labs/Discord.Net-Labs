@@ -6,17 +6,21 @@ using System.Threading.Tasks;
 
 namespace Discord.Interactions
 {
-    public delegate Task<AutocompletionResult> AutocompleteCallback(IInteractionCommandContext context, IServiceProvider services, IParameterInfo parameterInfo);
-
+    /// <summary>
+    ///     Base class for creating Autocompleters. <see cref="InteractionService"/> uses Autocompleters to generate parameter suggestions
+    /// </summary>
     public abstract class Autocompleter : IAutocompleter
     {
+        /// <inheritdoc/>
         public InteractionService InteractionService { get; set; }
 
+        /// <inheritdoc/>
         public abstract Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionCommandContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
             IServiceProvider services);
 
         protected abstract string GetLogString(IInteractionCommandContext context);
 
+        /// <inheritdoc/>
         public async Task<IResult> ExecuteAsync(IInteractionCommandContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
             IServiceProvider services)
         {

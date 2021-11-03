@@ -43,6 +43,9 @@ namespace Discord.Interactions
         /// </summary>
         public bool UseCompiledLambda { get; set; } = false;
 
+        /// <summary>
+        ///     Allows you to use <see cref="Autocompleter"/>s
+        /// </summary>
         public bool EnableAutocompleters { get; set; } = true;
     }
 }

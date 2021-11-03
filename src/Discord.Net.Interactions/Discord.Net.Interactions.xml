@@ -1705,5 +1705,14 @@
                 The name of the executed command and its parents in hierarchical order
             </returns>
         </member>
+        <member name="M:Discord.WebSocket.WebSocketExtensions.GetCommandKeywords(Discord.WebSocket.SocketAutocompleteInteractionData)">
+            <summary>
+                Get the name of the executed command, the target parameter and its parents in hierarchical order
+            </summary>
+            <param name="data"></param>
+            <returns>
+                The name of the executed command and its parents in hierarchical order
+            </returns>
+        </member>
     </members>
 </doc>

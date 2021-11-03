@@ -12,7 +12,7 @@ namespace Discord.WebSocket
         /// <returns>
         ///     The name of the executed command and its parents in hierarchical order
         /// </returns>
-        public static string[] GetCommandKeywords (this SocketSlashCommandData data)
+        public static string[] GetCommandKeywords(this SocketSlashCommandData data)
         {
             var keywords = new List<string> { data.Name };
 
@@ -23,6 +23,28 @@ namespace Discord.WebSocket
                 keywords.Add(child.Name);
                 child = child.Options?.ElementAtOrDefault(0);
             }
+
+            return keywords.ToArray();
+        }
+
+        /// <summary>
+        ///     Get the name of the executed command and its parents in hierarchical order
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns>
+        ///     The name of the executed command and its parents in hierarchical order
+        /// </returns>
+        public static string[] GetCommandKeywords(this SocketAutocompleteInteractionData data)
+        {
+            var keywords = new List<string> { data.CommandName };
+
+            var group = data.Options?.FirstOrDefault(x => x.Type == ApplicationCommandOptionType.SubCommandGroup);
+            if (group is not null)
+                keywords.Add(group.Name);
+
+            var subcommand = data.Options?.FirstOrDefault(x => x.Type == ApplicationCommandOptionType.SubCommand);
+            if (subcommand is not null)
+                keywords.Add(subcommand.Name);
 
             return keywords.ToArray();
         }

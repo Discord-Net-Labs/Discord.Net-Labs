@@ -572,9 +572,11 @@ namespace Discord.Interactions
 
         private async Task<IResult> ExecuteAutocompleteAsync (IInteractionCommandContext context, SocketAutocompleteInteraction autocompleteInteraction, IServiceProvider services )
         {
+            var keywords = autocompleteInteraction.Data.GetCommandKeywords();
+
             if(_enableAutocompleters)
             {
-                var autocompleterResult = _slashCommandMap.GetCommand(autocompleteInteraction.Data.CommandName);
+                var autocompleterResult = _slashCommandMap.GetCommand(keywords);
 
                 if(autocompleterResult.IsSuccess)
                 {
@@ -585,7 +587,7 @@ namespace Discord.Interactions
                 }
             }
 
-            var commandResult = _autocompleteCommandMap.GetCommand(autocompleteInteraction.Data.CommandName);
+            var commandResult = _autocompleteCommandMap.GetCommand(keywords);
 
             if(!commandResult.IsSuccess)
             {
