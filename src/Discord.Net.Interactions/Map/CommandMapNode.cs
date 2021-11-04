@@ -37,7 +37,8 @@ namespace Discord.Interactions
             {
                 if (commandInfo.SupportsWildCards && commandInfo.Name.Contains(_wildCardStr))
                 {
-                    var patternStr = "\\A" + commandInfo.Name.Replace(_wildCardStr, RegexWildCardExp) + "\\Z";
+                    var escapedStr = RegexUtils.EscapeExcluding(commandInfo.Name, _wildCardStr.ToArray());
+                    var patternStr = "\\A" + escapedStr.Replace(_wildCardStr, RegexWildCardExp) + "\\Z";
                     var regex = new Regex(patternStr, RegexOptions.Singleline | RegexOptions.Compiled);
 
                     if (!_wildCardCommands.TryAdd(regex, commandInfo))
