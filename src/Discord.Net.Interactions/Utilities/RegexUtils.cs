@@ -23,9 +23,12 @@ namespace System.Text.RegularExpressions
 
         internal static string EscapeExcluding(string input, params char[] exclude)
         {
+            if (exclude is null)
+                throw new ArgumentNullException("exclude");
+
             for (int i = 0; i < input.Length; i++)
             {
-                if (IsMetachar(input[i]) && !(exclude?.Contains(input[i])).GetValueOrDefault())
+                if (IsMetachar(input[i]) && !exclude.Contains(input[i]))
                 {
                     StringBuilder sb = new StringBuilder();
                     char ch = input[i];
@@ -57,7 +60,7 @@ namespace System.Text.RegularExpressions
                         while (i < input.Length)
                         {
                             ch = input[i];
-                            if (IsMetachar(ch))
+                            if (IsMetachar(ch) && !exclude.Contains(input[i]))
                                 break;
 
                             i++;
