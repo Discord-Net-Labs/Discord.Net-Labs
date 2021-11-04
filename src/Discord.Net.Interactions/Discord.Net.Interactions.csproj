@@ -2,20 +2,17 @@
   <Import Project="../../Discord.Net.targets" />
   <Import Project="../../StyleAnalyzer.targets" />
   <PropertyGroup>
-    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net461;netstandard2.0;netstandard2.1</TargetFrameworks>
-    <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0;netstandard2.1</TargetFrameworks>
-    <Version>3.0.0-dev-Interactions</Version>
-    <Company>Discord.Net Contributors</Company>
+    <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net5.0;net461;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">net5.0;netstandard2.0;netstandard2.1</TargetFrameworks>
+    <Version>$(VersionPrefix)-$(VersionSuffix)</Version>
+    <Company>$(Authors)</Company>
     <Authors>Discord.Net Contributors</Authors>
     <RootNamespace>Discord.Interactions</RootNamespace>
     <AssemblyName>Discord.Net.Interactions</AssemblyName>
     <DocumentationFile>..\Discord.Net.Interactions\Discord.Net.Interactions.xml</DocumentationFile>
+    <PackageId>Discord.Net.Labs.Interactions</PackageId>
+    <Description>A Discord.Net Labs extension adding support for Application Commands.</Description>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Attributes\Preconditions\**" />
-    <EmbeddedResource Remove="Attributes\Preconditions\**" />
-    <None Remove="Attributes\Preconditions\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Discord.Net.Core\Discord.Net.Core.csproj" />
