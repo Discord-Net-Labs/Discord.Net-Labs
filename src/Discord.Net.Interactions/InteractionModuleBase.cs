@@ -29,6 +29,10 @@ namespace Discord.Interactions
             Context = newValue ?? throw new InvalidOperationException($"Invalid context type. Expected {typeof(T).Name}, got {context.GetType().Name}.");
         }
 
+        /// <inheritdoc cref="IDiscordInteraction.DeferAsync(bool, RequestOptions)"/>
+        protected virtual async Task DeferAsync(bool ephemeral = false, RequestOptions options = null) =>
+            await Context.Interaction.DeferAsync(ephemeral, options).ConfigureAwait(false);
+
         /// <inheritdoc cref="IDiscordInteraction.RespondAsync(string, Embed[], bool, bool, AllowedMentions, RequestOptions, MessageComponent, Embed)"/>
         protected virtual async Task RespondAsync (string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false,
             AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null) =>
