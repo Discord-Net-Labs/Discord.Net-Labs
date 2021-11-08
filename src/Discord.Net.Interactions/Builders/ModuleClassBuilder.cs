@@ -10,6 +10,8 @@ namespace Discord.Interactions.Builders
     {
         private static readonly TypeInfo ModuleTypeInfo = typeof(IInteractionModuleBase).GetTypeInfo();
 
+        public const int MaxCommandDepth = 3;
+
         public static async Task<IEnumerable<TypeInfo>> SearchAsync (Assembly assembly, InteractionService commandService)
         {
             static bool IsLoadableModule (TypeInfo info)
@@ -132,7 +134,7 @@ namespace Discord.Interactions.Builders
                     if (parent.IsSlashGroup)
                         slashGroupDepth++;
 
-                    if (slashGroupDepth >= 2)
+                    if (slashGroupDepth >= MaxCommandDepth - 1)
                         throw new InvalidOperationException("Slash Commands only support 2 command prefixes for sub-commands");
 
                     BuildSubModules(builder, submodule.DeclaredNestedTypes, builtTypes, commandService, services, builder.Name != null ? ++slashGroupDepth : slashGroupDepth);
@@ -378,7 +380,7 @@ namespace Discord.Interactions.Builders
                     case AutocompleteAttribute autocomplete:
                         builder.Autocomplete = true;
                         if(autocomplete.AutocompleterType is not null)
-                            builder.WithAutocompleter(autocomplete.AutocompleterType);
+                            builder.WithAutocompleter(autocomplete.AutocompleterType, services);
                         break;
                     default:
                         builder.AddAttributes(attribute);

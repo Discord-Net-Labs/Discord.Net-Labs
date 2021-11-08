@@ -673,6 +673,8 @@ namespace Discord.Interactions
 
         internal IAutocompleter GetAutocompleter(Type autocompleterType, IServiceProvider services = null)
         {
+            services ??= EmptyServiceProvider.Instance;
+
             if (!_enableAutocompleters)
                 throw new InvalidOperationException($"Autocompleters are not enabled. To use this feature set {nameof(InteractionServiceConfig.EnableAutocompleters)} to TRUE");
 

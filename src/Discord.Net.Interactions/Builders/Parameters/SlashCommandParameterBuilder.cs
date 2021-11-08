@@ -45,9 +45,9 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
-        public SlashCommandParameterBuilder WithAutocompleter(Type autocompleterType)
+        public SlashCommandParameterBuilder WithAutocompleter(Type autocompleterType, IServiceProvider services = null)
         {
-            Autocompleter = Command.Module.CommandService.GetAutocompleter(autocompleterType);
+            Autocompleter = Command.Module.CommandService.GetAutocompleter(autocompleterType, services);
             return this;
         }
 
