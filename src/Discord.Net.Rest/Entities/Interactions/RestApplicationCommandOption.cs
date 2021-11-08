@@ -27,10 +27,10 @@ namespace Discord.Rest
         public bool? IsRequired { get; private set; }
 
         /// <inheritdoc/>
-        public int? MinValue { get; private set; }
+        public double? MinValue { get; private set; }
 
         /// <inheritdoc/>
-        public int? MaxValue { get; private set; }
+        public double? MaxValue { get; private set; }
 
         /// <summary>
         ///     A collection of <see cref="RestApplicationCommandChoice"/>'s for this command.

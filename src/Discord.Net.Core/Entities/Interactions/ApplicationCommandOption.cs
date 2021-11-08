@@ -70,12 +70,12 @@ namespace Discord
         /// <summary>
         ///     The smallest number value the user can input.
         /// </summary>
-        public int? MinValue { get; set; }
+        public double? MinValue { get; set; }
 
         /// <summary>
         ///     The largest number value the user can input.
         /// </summary>
-        public int? MaxValue { get; set; }
+        public double? MaxValue { get; set; }
 
         /// <summary>
         ///     Gets or sets the choices for string and int types for the user to pick from.

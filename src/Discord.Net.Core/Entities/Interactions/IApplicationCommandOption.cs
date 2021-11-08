@@ -35,12 +35,12 @@ namespace Discord
         /// <summary>
         ///     The smallest number value the user can input.
         /// </summary>
-        int? MinValue { get; }
+        double? MinValue { get; }
 
         /// <summary>
         ///     The largest number value the user can input.
         /// </summary>
-        int? MaxValue { get; }
+        double? MaxValue { get; }
 
         /// <summary>
         ///     Choices for string and int types for the user to pick from.

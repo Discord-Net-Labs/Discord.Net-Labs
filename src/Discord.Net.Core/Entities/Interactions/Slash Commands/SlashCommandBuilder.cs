@@ -159,7 +159,7 @@ namespace Discord
         /// <param name="maxValue">The largest number value the user can input.</param>
         /// <returns>The current builder.</returns>
         public SlashCommandBuilder AddOption(string name, ApplicationCommandOptionType type,
-           string description, bool? required = null, bool? isDefault = null, bool isAutocomplete = false, int? minValue = null, int? maxValue = null,
+           string description, bool? required = null, bool? isDefault = null, bool isAutocomplete = false, double? minValue = null, double? maxValue = null,
            List<SlashCommandOptionBuilder> options = null, List<ChannelType> channelTypes = null, params ApplicationCommandOptionChoiceProperties[] choices)
         {
             // Make sure the name matches the requirements from discord
@@ -328,12 +328,12 @@ namespace Discord
         /// <summary>
         ///     The smallest number value the user can input.
         /// </summary>
-        public int? MinValue { get; set; }
+        public double? MinValue { get; set; }
 
         /// <summary>
         ///     The largest number value the user can input.
         /// </summary>
-        public int? MaxValue { get; set; }
+        public double? MaxValue { get; set; }
 
         /// <summary>
         ///     Gets or sets the choices for string and int types for the user to pick from.
@@ -357,12 +357,19 @@ namespace Discord
         public ApplicationCommandOptionProperties Build()
         {
             bool isSubType = Type == ApplicationCommandOptionType.SubCommandGroup;
+            bool isIntType = Type == ApplicationCommandOptionType.Integer;
 
             if (isSubType && (Options == null || !Options.Any()))
                 throw new InvalidOperationException("SubCommands/SubCommandGroups must have at least one option");
 
             if (!isSubType && Options != null && Options.Any() && Type != ApplicationCommandOptionType.SubCommand)
                 throw new InvalidOperationException($"Cannot have options on {Type} type");
+
+            if (isIntType && MinValue != null && MinValue % 1 != 0)
+                throw new InvalidOperationException("MinValue cannot have decimals on Integer command options.");
+
+            if (isIntType && MaxValue != null && MaxValue % 1 != 0)
+                throw new InvalidOperationException("MaxValue cannot have decimals on Integer command options.");
 
             return new ApplicationCommandOptionProperties
             {
@@ -396,7 +403,7 @@ namespace Discord
         /// <param name="maxValue">The largest number value the user can input.</param>
         /// <returns>The current builder.</returns>
         public SlashCommandOptionBuilder AddOption(string name, ApplicationCommandOptionType type,
-           string description, bool? required = null, bool isDefault = false, bool isAutocomplete = false, int? minValue = null, int? maxValue = null,
+           string description, bool? required = null, bool isDefault = false, bool isAutocomplete = false, double? minValue = null, double? maxValue = null,
            List<SlashCommandOptionBuilder> options = null, List<ChannelType> channelTypes = null, params ApplicationCommandOptionChoiceProperties[] choices)
         {
             // Make sure the name matches the requirements from discord
@@ -586,7 +593,7 @@ namespace Discord
         /// </summary>
         /// <param name="value">The value to set.</param>
         /// <returns>The current builder.</returns>
-        public SlashCommandOptionBuilder WithMinValue(int value)
+        public SlashCommandOptionBuilder WithMinValue(double value)
         {
             MinValue = value;
             return this;
@@ -597,7 +604,7 @@ namespace Discord
         /// </summary>
         /// <param name="value">The value to set.</param>
         /// <returns>The current builder.</returns>
-        public SlashCommandOptionBuilder WithMaxValue(int value)
+        public SlashCommandOptionBuilder WithMaxValue(double value)
         {
             MaxValue = value;
             return this;
