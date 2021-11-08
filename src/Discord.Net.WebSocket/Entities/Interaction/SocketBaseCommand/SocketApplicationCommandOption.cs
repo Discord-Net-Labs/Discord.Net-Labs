@@ -25,6 +25,12 @@ namespace Discord.WebSocket
         /// <inheritdoc/>
         public bool? IsRequired { get; private set; }
 
+        /// <inheritdoc/>
+        public int? MinValue { get; private set; }
+
+        /// <inheritdoc/>
+        public int? MaxValue { get; private set; }
+
         /// <summary>
         ///     Choices for string and int types for the user to pick from.
         /// </summary>
@@ -73,6 +79,14 @@ namespace Discord.WebSocket
             ChannelTypes = model.ChannelTypes.IsSpecified
                 ? model.ChannelTypes.Value.ToImmutableArray()
                 : ImmutableArray.Create<ChannelType>();
+
+            MinValue = model.MinValue.IsSpecified
+                ? model.MinValue.Value
+                : null;
+
+            MaxValue = model.MaxValue.IsSpecified
+                ? model.MaxValue.Value
+                : null;
         }
 
         IReadOnlyCollection<IApplicationCommandOptionChoice> IApplicationCommandOption.Choices => Choices;

@@ -155,10 +155,12 @@ namespace Discord
         /// <param name="options">The options of the option to add.</param>
         /// <param name="channelTypes">The allowed channel types for this option.</param>
         /// <param name="choices">The choices of this option.</param>
+        /// <param name="minValue">The smallest number value the user can input.</param>
+        /// <param name="maxValue">The largest number value the user can input.</param>
         /// <returns>The current builder.</returns>
         public SlashCommandBuilder AddOption(string name, ApplicationCommandOptionType type,
-           string description, bool? required = null, bool? isDefault = null, bool isAutocomplete = false, List<SlashCommandOptionBuilder> options = null,
-           List<ChannelType> channelTypes = null, params ApplicationCommandOptionChoiceProperties[] choices)
+           string description, bool? required = null, bool? isDefault = null, bool isAutocomplete = false, int? minValue = null, int? maxValue = null,
+           List<SlashCommandOptionBuilder> options = null, List<ChannelType> channelTypes = null, params ApplicationCommandOptionChoiceProperties[] choices)
         {
             // Make sure the name matches the requirements from discord
             Preconditions.NotNullOrEmpty(name, nameof(name));
@@ -189,7 +191,9 @@ namespace Discord
                 Type = type,
                 Autocomplete = isAutocomplete,
                 Choices = (choices ?? Array.Empty<ApplicationCommandOptionChoiceProperties>()).ToList(),
-                ChannelTypes = channelTypes
+                ChannelTypes = channelTypes,
+                MinValue = minValue,
+                MaxValue = maxValue,
             };
 
             return AddOption(option);
@@ -322,6 +326,16 @@ namespace Discord
         public bool Autocomplete { get; set; }
 
         /// <summary>
+        ///     The smallest number value the user can input.
+        /// </summary>
+        public int? MinValue { get; set; }
+
+        /// <summary>
+        ///     The largest number value the user can input.
+        /// </summary>
+        public int? MaxValue { get; set; }
+
+        /// <summary>
         ///     Gets or sets the choices for string and int types for the user to pick from.
         /// </summary>
         public List<ApplicationCommandOptionChoiceProperties> Choices { get; set; }
@@ -360,7 +374,9 @@ namespace Discord
                 Options = Options?.Count > 0 ? Options.Select(x => x.Build()).ToList() : new List<ApplicationCommandOptionProperties>(),
                 Choices = Choices,
                 Autocomplete = Autocomplete,
-                ChannelTypes = ChannelTypes
+                ChannelTypes = ChannelTypes,
+                MinValue = MinValue,
+                MaxValue = MaxValue
             };
         }
 
@@ -376,10 +392,12 @@ namespace Discord
         /// <param name="options">The options of the option to add.</param>
         /// <param name="channelTypes">The allowed channel types for this option.</param>
         /// <param name="choices">The choices of this option.</param>
+        /// <param name="minValue">The smallest number value the user can input.</param>
+        /// <param name="maxValue">The largest number value the user can input.</param>
         /// <returns>The current builder.</returns>
         public SlashCommandOptionBuilder AddOption(string name, ApplicationCommandOptionType type,
-           string description, bool? required = null, bool isDefault = false, bool isAutocomplete = false, List<SlashCommandOptionBuilder> options = null,
-           List<ChannelType> channelTypes = null, params ApplicationCommandOptionChoiceProperties[] choices)
+           string description, bool? required = null, bool isDefault = false, bool isAutocomplete = false, int? minValue = null, int? maxValue = null,
+           List<SlashCommandOptionBuilder> options = null, List<ChannelType> channelTypes = null, params ApplicationCommandOptionChoiceProperties[] choices)
         {
             // Make sure the name matches the requirements from discord
             Preconditions.NotNullOrEmpty(name, nameof(name));
@@ -407,6 +425,8 @@ namespace Discord
                 Required = required,
                 Default = isDefault,
                 Autocomplete = isAutocomplete,
+                MinValue = minValue,
+                MaxValue = maxValue,
                 Options = options,
                 Type = type,
                 Choices = (choices ?? Array.Empty<ApplicationCommandOptionChoiceProperties>()).ToList(),
@@ -558,6 +578,28 @@ namespace Discord
         public SlashCommandOptionBuilder WithAutocomplete(bool value)
         {
             Autocomplete = value;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets the current builders minValue field.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        /// <returns>The current builder.</returns>
+        public SlashCommandOptionBuilder WithMinValue(int value)
+        {
+            MinValue = value;
+            return this;
+        }
+        
+        /// <summary>
+        ///     Sets the current builders maxValue field.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        /// <returns>The current builder.</returns>
+        public SlashCommandOptionBuilder WithMaxValue(int value)
+        {
+            MaxValue = value;
             return this;
         }
 

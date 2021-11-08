@@ -66,6 +66,17 @@ namespace Discord
         ///     Gets or sets whether or not this option supports autocomplete.
         /// </summary>
         public bool Autocomplete { get; set; }
+
+        /// <summary>
+        ///     The smallest number value the user can input.
+        /// </summary>
+        public int? MinValue { get; set; }
+
+        /// <summary>
+        ///     The largest number value the user can input.
+        /// </summary>
+        public int? MaxValue { get; set; }
+
         /// <summary>
         ///     Gets or sets the choices for string and int types for the user to pick from.
         /// </summary>
