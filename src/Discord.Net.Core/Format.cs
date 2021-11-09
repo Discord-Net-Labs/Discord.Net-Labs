@@ -24,6 +24,12 @@ namespace Discord
         /// <summary> Escapes a URL so that a preview is not generated. </summary>
         public static string EscapeUrl(string url) => $"<{url}>";
 
+        public static string UserTag(this ulong id) => $"<@{id}>";
+        public static string ChannelTag(this ulong id) => $"<#{id}>";
+        public static string RoleTag(this ulong id) => $"<@&{id}>";
+        public static string Emote(this ulong id, string text = "e") => $"<:{text}:{id}>";
+
+
         /// <summary> Returns a markdown-formatted string with codeblock formatting. </summary>
         public static string Code(string text, string language = null)
         {
@@ -78,7 +84,7 @@ namespace Discord
 
             return result.ToString();
         }
-        
+
         /// <summary>
         ///     Formats a string as a block quote.
         /// </summary>
