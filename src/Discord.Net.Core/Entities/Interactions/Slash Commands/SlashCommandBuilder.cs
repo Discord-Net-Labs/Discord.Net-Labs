@@ -326,12 +326,12 @@ namespace Discord
         public bool Autocomplete { get; set; }
 
         /// <summary>
-        ///     The smallest number value the user can input.
+        ///     Gets or sets the smallest number value the user can input.
         /// </summary>
         public double? MinValue { get; set; }
 
         /// <summary>
-        ///     The largest number value the user can input.
+        ///     Gets or sets the largest number value the user can input.
         /// </summary>
         public double? MaxValue { get; set; }
 
@@ -589,7 +589,7 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Sets the current builders minValue field.
+        ///     Sets the current builders min value field.
         /// </summary>
         /// <param name="value">The value to set.</param>
         /// <returns>The current builder.</returns>
@@ -600,7 +600,7 @@ namespace Discord
         }
         
         /// <summary>
-        ///     Sets the current builders maxValue field.
+        ///     Sets the current builders max value field.
         /// </summary>
         /// <param name="value">The value to set.</param>
         /// <returns>The current builder.</returns>

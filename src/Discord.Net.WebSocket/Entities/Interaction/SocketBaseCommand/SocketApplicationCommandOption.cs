@@ -60,13 +60,13 @@ namespace Discord.WebSocket
             Type = model.Type;
             Description = model.Description;
 
-            IsDefault = model.Default.IsSpecified
-                ? model.Default.Value
-                : null;
+            IsDefault = model.Default.ToNullable();
 
-            IsRequired = model.Required.IsSpecified
-                ? model.Required.Value
-                : null;
+            IsRequired = model.Required.ToNullable();
+
+            MinValue = model.MinValue.ToNullable();
+
+            MaxValue = model.MaxValue.ToNullable();
 
             Choices = model.Choices.IsSpecified
                 ? model.Choices.Value.Select(SocketApplicationCommandChoice.Create).ToImmutableArray()
@@ -79,14 +79,6 @@ namespace Discord.WebSocket
             ChannelTypes = model.ChannelTypes.IsSpecified
                 ? model.ChannelTypes.Value.ToImmutableArray()
                 : ImmutableArray.Create<ChannelType>();
-
-            MinValue = model.MinValue.IsSpecified
-                ? model.MinValue.Value
-                : null;
-
-            MaxValue = model.MaxValue.IsSpecified
-                ? model.MaxValue.Value
-                : null;
         }
 
         IReadOnlyCollection<IApplicationCommandOptionChoice> IApplicationCommandOption.Choices => Choices;
