@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Discord.Interactions.Builders
@@ -387,6 +388,9 @@ namespace Discord.Interactions.Builders
                         break;
                 }
             }
+
+            // Replace pascal casings with '-'
+            builder.Name = Regex.Replace(builder.Name, "(?<=[a-z])(?=[A-Z])", "-").ToLower();
         }
 
         private static void BuildParameter (CommandParameterBuilder builder, ParameterInfo paramInfo)

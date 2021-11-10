@@ -1,20 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Discord.Interactions
 {
     internal static class ApplicationCommandRestUtil
     {
         #region Parameters
-        public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps (this SlashCommandParameterInfo parameterInfo)
+        public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps(this SlashCommandParameterInfo parameterInfo)
         {
-            var discordName = Regex.Replace(parameterInfo.Name, "(?<=[a-z])(?=[A-Z])", "-").ToLower();
-
             var props = new ApplicationCommandOptionProperties
             {
-                Name = discordName,
+                Name = parameterInfo.Name,
                 Description = parameterInfo.Description,
                 Type = parameterInfo.DiscordOptionType,
                 Required = parameterInfo.IsRequired,
@@ -35,7 +32,7 @@ namespace Discord.Interactions
 
         #region Commands
 
-        public static ApplicationCommandProperties ToApplicationCommandProps (this SlashCommandInfo commandInfo) =>
+        public static ApplicationCommandProperties ToApplicationCommandProps(this SlashCommandInfo commandInfo) =>
             new SlashCommandProperties
             {
                 Name = commandInfo.Name,
@@ -44,7 +41,7 @@ namespace Discord.Interactions
                 Options = commandInfo.Parameters.Select(x => x.ToApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified
             };
 
-        public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps (this SlashCommandInfo commandInfo) =>
+        public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps(this SlashCommandInfo commandInfo) =>
             new ApplicationCommandOptionProperties
             {
                 Name = commandInfo.Name,
@@ -54,7 +51,7 @@ namespace Discord.Interactions
                 Options = commandInfo.Parameters?.Select(x => x.ToApplicationCommandOptionProps())?.ToList()
             };
 
-        public static ApplicationCommandProperties ToApplicationCommandProps (this ContextCommandInfo commandInfo) =>
+        public static ApplicationCommandProperties ToApplicationCommandProps(this ContextCommandInfo commandInfo) =>
             new ContextCommandProperties(commandInfo.CommandType)
             {
                 Name = commandInfo.Name,
@@ -64,7 +61,7 @@ namespace Discord.Interactions
 
         #region Modules
 
-        public static IReadOnlyCollection<ApplicationCommandProperties> ToApplicationCommandProps (this ModuleInfo moduleInfo, bool ignoreDontRegister = false)
+        public static IReadOnlyCollection<ApplicationCommandProperties> ToApplicationCommandProps(this ModuleInfo moduleInfo, bool ignoreDontRegister = false)
         {
             var args = new List<ApplicationCommandProperties>();
 
@@ -72,7 +69,7 @@ namespace Discord.Interactions
             return args;
         }
 
-        private static void ParseModuleModel (this ModuleInfo moduleInfo, List<ApplicationCommandProperties> args, bool ignoreDontRegister)
+        private static void ParseModuleModel(this ModuleInfo moduleInfo, List<ApplicationCommandProperties> args, bool ignoreDontRegister)
         {
             if (moduleInfo.DontAutoRegister && !ignoreDontRegister)
                 return;
@@ -110,7 +107,7 @@ namespace Discord.Interactions
             }
         }
 
-        private static IReadOnlyCollection<ApplicationCommandOptionProperties> ParseSubModule (this ModuleInfo moduleInfo, List<ApplicationCommandProperties> args,
+        private static IReadOnlyCollection<ApplicationCommandOptionProperties> ParseSubModule(this ModuleInfo moduleInfo, List<ApplicationCommandProperties> args,
             bool ignoreDontRegister)
         {
             if (moduleInfo.DontAutoRegister && !ignoreDontRegister)
@@ -143,7 +140,7 @@ namespace Discord.Interactions
 
         #endregion
 
-        public static ApplicationCommandProperties ToApplicationCommandProps (this IApplicationCommand command)
+        public static ApplicationCommandProperties ToApplicationCommandProps(this IApplicationCommand command)
         {
             return command.Type switch
             {
@@ -163,7 +160,7 @@ namespace Discord.Interactions
             };
         }
 
-        public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps (this IApplicationCommandOption commandOption) =>
+        public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps(this IApplicationCommandOption commandOption) =>
             new ApplicationCommandOptionProperties
             {
                 Name = commandOption.Name,
@@ -183,7 +180,7 @@ namespace Discord.Interactions
     {
         internal override ApplicationCommandType Type { get; }
 
-        public ContextCommandProperties (ApplicationCommandType type)
+        public ContextCommandProperties(ApplicationCommandType type)
         {
             Type = type;
         }
