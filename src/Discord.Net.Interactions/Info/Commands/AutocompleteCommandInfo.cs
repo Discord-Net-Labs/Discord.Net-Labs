@@ -13,6 +13,16 @@ namespace Discord.Interactions
     /// </summary>
     public sealed class AutocompleteCommandInfo : CommandInfo<CommandParameterInfo>
     {
+        /// <summary>
+        ///     Name of the target parameter
+        /// </summary>
+        public string ParameterName { get; }
+
+        /// <summary>
+        ///     Name of the target command
+        /// </summary>
+        public string CommandName { get; }
+
         /// <inheritdoc/>
         public override IReadOnlyCollection<CommandParameterInfo> Parameters { get; }
 
@@ -22,6 +32,8 @@ namespace Discord.Interactions
         internal AutocompleteCommandInfo(AutocompleteCommandBuilder builder, ModuleInfo module, InteractionService commandService) : base(builder, module, commandService)
         {
             Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
+            ParameterName = builder.ParameterName;
+            CommandName = builder.CommandName;
         }
 
         /// <inheritdoc/>
@@ -51,6 +63,25 @@ namespace Discord.Interactions
                 return $"Slash Command: \"{base.ToString()}\" for {context.User} in {context.Guild}/{context.Channel}";
             else
                 return $"Slash Command: \"{base.ToString()}\" for {context.User} in {context.Channel}";
+        }
+
+        internal string[] GetCommandKeywords()
+        {
+            var keywords = new List<string>() { ParameterName, CommandName };
+
+            var currentParent = Module;
+
+            while (currentParent != null)
+            {
+                if (!string.IsNullOrEmpty(currentParent.SlashGroupName))
+                    keywords.Add(currentParent.SlashGroupName);
+
+                currentParent = currentParent.Parent;
+            }
+
+            keywords.Reverse();
+
+            return keywords.ToArray();
         }
     }
 }

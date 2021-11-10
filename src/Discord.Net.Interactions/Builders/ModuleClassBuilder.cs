@@ -278,7 +278,9 @@ namespace Discord.Interactions.Builders
                 {
                     case AutocompleteCommandAttribute autocomplete:
                         {
-                            builder.Name = autocomplete.Name;
+                            builder.ParameterName = autocomplete.ParameterName;
+                            builder.CommandName = autocomplete.CommandName;
+                            builder.Name = autocomplete.CommandName + " " + autocomplete.ParameterName;
                             builder.RunMode = autocomplete.RunMode;
                         }
                         break;

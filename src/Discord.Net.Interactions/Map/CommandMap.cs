@@ -40,6 +40,11 @@ namespace Discord.Interactions
             _root.AddCommand(key, 0, command);
         }
 
+        public void AddCommand(string[] input, T command)
+        {
+            _root.AddCommand(input, 0, command);
+        }
+
         public void RemoveCommand (T command)
         {
             string[] key = ParseCommandName(command);

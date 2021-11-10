@@ -9,20 +9,27 @@ namespace Discord.Interactions
     public class AutocompleteCommandAttribute : Attribute
     {
         /// <summary>
-        ///     A space seperated collection of names that point to the target parameter
+        ///     Name of the target parameter
         /// </summary>
-        public string Name { get; }
+        public string ParameterName { get; }
+
+        /// <summary>
+        ///     Name of the target command
+        /// </summary>
+        public string CommandName { get; }
 
         public RunMode RunMode { get; }
 
         /// <summary>
         ///     Create a command for Autocomplete interaction handling
         /// </summary>
-        /// <param name="name"></param>
-        /// /// <param name="runMode">Set the run mode of the command</param>
-        public AutocompleteCommandAttribute(string name, RunMode runMode = RunMode.Default)
+        /// <param name="parameterName">Name of the target parameter</param>
+        /// <param name="commandName">Name of the target command</param>
+        /// <param name="runMode">Set the run mode of the command</param>
+        public AutocompleteCommandAttribute(string parameterName, string commandName, RunMode runMode = RunMode.Default)
         {
-            Name = name;
+            ParameterName = parameterName;
+            CommandName = commandName;
             RunMode = runMode;
         }
     }
