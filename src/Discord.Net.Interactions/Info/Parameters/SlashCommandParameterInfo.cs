@@ -16,7 +16,14 @@ namespace Discord.Interactions
         /// </summary>
         public string Description { get; }
 
+        /// <summary>
+        ///     Get the minimum value permitted for a number type parameter
+        /// </summary>
         public double? MinValue { get; }
+
+        /// <summary>
+        ///     Get the maxmimum value permitted for a number type parameter
+        /// </summary>
         public double? MaxValue { get; }
 
         /// <summary>
