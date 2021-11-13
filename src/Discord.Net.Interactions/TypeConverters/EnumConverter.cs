@@ -1,6 +1,7 @@
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Discord.Interactions
@@ -8,7 +9,7 @@ namespace Discord.Interactions
     internal sealed class EnumConverter<T> : TypeConverter<T> where T : struct, Enum
     {
         public override ApplicationCommandOptionType GetDiscordType ( ) => ApplicationCommandOptionType.String;
-        public override Task<TypeConverterResult> ReadAsync (IInteractionCommandContext context, SocketSlashCommandDataOption option, IServiceProvider services)
+        public override Task<TypeConverterResult> ReadAsync (IInteractionContext context, SocketSlashCommandDataOption option, IServiceProvider services)
         {
             if (Enum.TryParse<T>((string)option.Value, out var result))
                 return Task.FromResult(TypeConverterResult.FromSuccess(result));
@@ -19,19 +20,24 @@ namespace Discord.Interactions
         public override void Write (ApplicationCommandOptionProperties properties, IParameterInfo parameterInfo)
         {
             var names = Enum.GetNames(typeof(T));
-            if (names.Length <= 25)
+            var members = names.SelectMany(x => typeof(T).GetMember(x));
+
+            if (members.Count() <= 25)
             {
                 var choices = new List<ApplicationCommandOptionChoiceProperties>();
 
-                foreach (var name in names)
+                foreach (var member in members.Where(x => !x.IsDefined(typeof(HideAttribute), true)))
                     choices.Add(new ApplicationCommandOptionChoiceProperties
                     {
-                        Name = name,
-                        Value = name
+                        Name = member.Name,
+                        Value = member.Name
                     });
 
                 properties.Choices = choices;
             }
         }
     }
+
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
+    public sealed class HideAttribute : Attribute { }
 }
