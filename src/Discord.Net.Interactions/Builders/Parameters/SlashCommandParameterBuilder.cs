@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Discord.Interactions.Builders
 {
@@ -10,6 +9,8 @@ namespace Discord.Interactions.Builders
         private readonly List<ChannelType> _channelTypes = new();
 
         public string Description { get; set; }
+        public double? MaxValue { get; set; }
+        public double? MinValue { get; set; }
         public IReadOnlyCollection<ParameterChoice> Choices => _choices;
         public IReadOnlyCollection<ChannelType> ChannelTypes => _channelTypes;
         public bool Autocomplete { get; set; }
@@ -17,29 +18,41 @@ namespace Discord.Interactions.Builders
         public IAutocompleter Autocompleter { get; set; }
         protected override SlashCommandParameterBuilder Instance => this;
 
-        internal SlashCommandParameterBuilder (ICommandBuilder command) : base(command) { }
+        internal SlashCommandParameterBuilder(ICommandBuilder command) : base(command) { }
 
-        public SlashCommandParameterBuilder (ICommandBuilder command, string name, Type type) : base(command, name, type) { }
+        public SlashCommandParameterBuilder(ICommandBuilder command, string name, Type type) : base(command, name, type) { }
 
-        public SlashCommandParameterBuilder WithDescription (string description)
+        public SlashCommandParameterBuilder WithDescription(string description)
         {
             Description = description;
             return this;
         }
 
-        public SlashCommandParameterBuilder WithChoices (params ParameterChoice[] options)
+        public SlashCommandParameterBuilder WithMinValue(double value)
+        {
+            MinValue = value;
+            return this;
+        }
+
+        public SlashCommandParameterBuilder WithMaxValue(double value)
+        {
+            MaxValue = value;
+            return this;
+        }
+
+        public SlashCommandParameterBuilder WithChoices(params ParameterChoice[] options)
         {
             _choices.AddRange(options);
             return this;
         }
 
-        public SlashCommandParameterBuilder WithChannelTypes (params ChannelType[] channelTypes)
+        public SlashCommandParameterBuilder WithChannelTypes(params ChannelType[] channelTypes)
         {
             _channelTypes.AddRange(channelTypes);
             return this;
         }
 
-        public SlashCommandParameterBuilder WithChannelTypes (IEnumerable<ChannelType> channelTypes)
+        public SlashCommandParameterBuilder WithChannelTypes(IEnumerable<ChannelType> channelTypes)
         {
             _channelTypes.AddRange(channelTypes);
             return this;
@@ -51,14 +64,16 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
-        public override SlashCommandParameterBuilder SetParameterType (Type type)
+        public override SlashCommandParameterBuilder SetParameterType(Type type) => SetParameterType(type, null);
+
+        public SlashCommandParameterBuilder SetParameterType(Type type, IServiceProvider services = null)
         {
             base.SetParameterType(type);
-            TypeConverter = Command.Module.CommandService.GetTypeConverter(ParameterType);
+            TypeConverter = Command.Module.CommandService.GetTypeConverter(ParameterType, services);
             return this;
         }
 
-        internal override SlashCommandParameterInfo Build (ICommandInfo command) =>
+        internal override SlashCommandParameterInfo Build(ICommandInfo command) =>
             new SlashCommandParameterInfo(this, command as SlashCommandInfo);
     }
 }
