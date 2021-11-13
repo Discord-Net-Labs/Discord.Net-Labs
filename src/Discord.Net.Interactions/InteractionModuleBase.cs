@@ -7,7 +7,7 @@ namespace Discord.Interactions
     ///     Provides a base class for a command module to inherit from.
     /// </summary>
     /// <typeparam name="T">Type of slash command context to be injected into the module</typeparam>
-    public abstract class InteractionModuleBase<T> : IInteractionModuleBase where T : class, IInteractionCommandContext
+    public abstract class InteractionModuleBase<T> : IInteractionModuleBase where T : class, IInteractionContext
     {
         /// <summary>
         ///     The underlying context of the command.
@@ -23,7 +23,7 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public virtual void OnModuleBuilding (InteractionService commandService, ModuleInfo module) { }
 
-        internal void SetContext (IInteractionCommandContext context)
+        internal void SetContext (IInteractionContext context)
         {
             var newValue = context as T;
             Context = newValue ?? throw new InvalidOperationException($"Invalid context type. Expected {typeof(T).Name}, got {context.GetType().Name}.");
@@ -58,11 +58,11 @@ namespace Discord.Interactions
         //IInteractionModuleBase
 
         /// <inheritdoc/>
-        void IInteractionModuleBase.SetContext (IInteractionCommandContext context) => SetContext(context);
+        void IInteractionModuleBase.SetContext (IInteractionContext context) => SetContext(context);
     }
 
     /// <summary>
     ///     Provides a base class for a command module to inherit from.
     /// </summary>
-    public abstract class InteractionModuleBase : InteractionModuleBase<IInteractionCommandContext> { }
+    public abstract class InteractionModuleBase : InteractionModuleBase<IInteractionContext> { }
 }

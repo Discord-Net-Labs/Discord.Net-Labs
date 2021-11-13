@@ -37,10 +37,10 @@ namespace Discord.Interactions
         }
 
         /// <inheritdoc/>
-        public override async Task<IResult> ExecuteAsync(IInteractionCommandContext context, IServiceProvider services)
+        public override async Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services)
         {
             if (context.Interaction is not SocketAutocompleteInteraction messageComponent)
-                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionCommandContext)} doesn't belong to a Autocomplete Interaction");
+                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Autocomplete Interaction");
 
             try
             {
@@ -53,11 +53,11 @@ namespace Discord.Interactions
         }
 
         /// <inheritdoc/>
-        protected override Task InvokeModuleEvent(IInteractionCommandContext context, IResult result) =>
+        protected override Task InvokeModuleEvent(IInteractionContext context, IResult result) =>
             CommandService._autocompleteCommandExecutedEvent.InvokeAsync(this, context, result);
 
         /// <inheritdoc/>
-        protected override string GetLogString(IInteractionCommandContext context)
+        protected override string GetLogString(IInteractionContext context)
         {
             if (context.Guild != null)
                 return $"Slash Command: \"{base.ToString()}\" for {context.User} in {context.Guild}/{context.Channel}";

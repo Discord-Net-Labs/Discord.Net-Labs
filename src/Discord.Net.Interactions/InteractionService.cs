@@ -26,32 +26,32 @@ namespace Discord.Interactions
         /// <summary>
         ///     Occurs when a Slash Command is executed
         /// </summary>
-        public event Func<SlashCommandInfo, IInteractionCommandContext, IResult, Task> SlashCommandExecuted { add { _slashCommandExecutedEvent.Add(value); } remove { _slashCommandExecutedEvent.Remove(value); } }
-        internal readonly AsyncEvent<Func<SlashCommandInfo, IInteractionCommandContext, IResult, Task>> _slashCommandExecutedEvent = new ();
+        public event Func<SlashCommandInfo, IInteractionContext, IResult, Task> SlashCommandExecuted { add { _slashCommandExecutedEvent.Add(value); } remove { _slashCommandExecutedEvent.Remove(value); } }
+        internal readonly AsyncEvent<Func<SlashCommandInfo, IInteractionContext, IResult, Task>> _slashCommandExecutedEvent = new ();
 
         /// <summary>
         ///     Occurs when a Context Command is executed
         /// </summary>
-        public event Func<ContextCommandInfo, IInteractionCommandContext, IResult, Task> ContextCommandExecuted { add { _contextCommandExecutedEvent.Add(value); } remove { _contextCommandExecutedEvent.Remove(value); } }
-        internal readonly AsyncEvent<Func<ContextCommandInfo, IInteractionCommandContext, IResult, Task>> _contextCommandExecutedEvent = new ();
+        public event Func<ContextCommandInfo, IInteractionContext, IResult, Task> ContextCommandExecuted { add { _contextCommandExecutedEvent.Add(value); } remove { _contextCommandExecutedEvent.Remove(value); } }
+        internal readonly AsyncEvent<Func<ContextCommandInfo, IInteractionContext, IResult, Task>> _contextCommandExecutedEvent = new ();
 
         /// <summary>
         ///     Occurs when a Message Component command is executed
         /// </summary>
-        public event Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task> ComponentCommandExecuted { add { _componentCommandExecutedEvent.Add(value); } remove { _componentCommandExecutedEvent.Remove(value); } }
-        internal readonly AsyncEvent<Func<ComponentCommandInfo, IInteractionCommandContext, IResult, Task>> _componentCommandExecutedEvent = new ();
+        public event Func<ComponentCommandInfo, IInteractionContext, IResult, Task> ComponentCommandExecuted { add { _componentCommandExecutedEvent.Add(value); } remove { _componentCommandExecutedEvent.Remove(value); } }
+        internal readonly AsyncEvent<Func<ComponentCommandInfo, IInteractionContext, IResult, Task>> _componentCommandExecutedEvent = new ();
 
         /// <summary>
         ///     Occurs when a Autocomplete command is executed
         /// </summary>
-        public event Func<AutocompleteCommandInfo, IInteractionCommandContext, IResult, Task> AutocompleteCommandExecuted { add { _autocompleteCommandExecutedEvent.Add(value); } remove { _autocompleteCommandExecutedEvent.Remove(value); } }
-        internal readonly AsyncEvent<Func<AutocompleteCommandInfo, IInteractionCommandContext, IResult, Task>> _autocompleteCommandExecutedEvent = new();
+        public event Func<AutocompleteCommandInfo, IInteractionContext, IResult, Task> AutocompleteCommandExecuted { add { _autocompleteCommandExecutedEvent.Add(value); } remove { _autocompleteCommandExecutedEvent.Remove(value); } }
+        internal readonly AsyncEvent<Func<AutocompleteCommandInfo, IInteractionContext, IResult, Task>> _autocompleteCommandExecutedEvent = new();
 
         /// <summary>
         ///     Occurs when a Autocompleter is executed
         /// </summary>
-        public event Func<IAutocompleter, IInteractionCommandContext, IResult, Task> AutocompleterExecuted { add { _autocompleterExecutedEvent.Add(value); } remove { _autocompleterExecutedEvent.Remove(value); } }
-        internal readonly AsyncEvent<Func<IAutocompleter, IInteractionCommandContext, IResult, Task>> _autocompleterExecutedEvent = new();
+        public event Func<IAutocompleter, IInteractionContext, IResult, Task> AutocompleterExecuted { add { _autocompleterExecutedEvent.Add(value); } remove { _autocompleterExecutedEvent.Remove(value); } }
+        internal readonly AsyncEvent<Func<IAutocompleter, IInteractionContext, IResult, Task>> _autocompleterExecutedEvent = new();
 
         private readonly ConcurrentDictionary<Type, ModuleInfo> _typedModuleDefs;
         private readonly CommandMap<SlashCommandInfo> _slashCommandMap;
@@ -498,14 +498,14 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Execute a Command from a given <see cref="IInteractionCommandContext"/>
+        ///     Execute a Command from a given <see cref="IInteractionContext"/>
         /// </summary>
         /// <param name="context">Name context of the command</param>
         /// <param name="services">The service to be used in the command's dependency injection.</param>
         /// <returns>
         ///     A task representing the command execution process. The task result contains the result of the execution
         /// </returns>
-        public async Task<IResult> ExecuteCommandAsync (IInteractionCommandContext context, IServiceProvider services)
+        public async Task<IResult> ExecuteCommandAsync (IInteractionContext context, IServiceProvider services)
         {
             var interaction = context.Interaction;
 
@@ -520,7 +520,7 @@ namespace Discord.Interactions
             };
         }
 
-        private async Task<IResult> ExecuteSlashCommandAsync (IInteractionCommandContext context, SocketSlashCommandData data, IServiceProvider services)
+        private async Task<IResult> ExecuteSlashCommandAsync (IInteractionContext context, SocketSlashCommandData data, IServiceProvider services)
         {
             var keywords = data.GetCommandKeywords();
 
@@ -541,7 +541,7 @@ namespace Discord.Interactions
             return await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
         }
 
-        private async Task<IResult> ExecuteContextCommandAsync (IInteractionCommandContext context, string input, ApplicationCommandType commandType, IServiceProvider services)
+        private async Task<IResult> ExecuteContextCommandAsync (IInteractionContext context, string input, ApplicationCommandType commandType, IServiceProvider services)
         {
             if (!_contextCommandMaps.TryGetValue(commandType, out var map))
                 return SearchResult<ContextCommandInfo>.FromError(input, InteractionCommandError.UnknownCommand, $"No {commandType} command found.");
@@ -557,7 +557,7 @@ namespace Discord.Interactions
             return await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
         }
 
-        private async Task<IResult> ExecuteComponentCommandAsync (IInteractionCommandContext context, string input, IServiceProvider services)
+        private async Task<IResult> ExecuteComponentCommandAsync (IInteractionContext context, string input, IServiceProvider services)
         {
             var result = _componentCommandMap.GetCommand(input);
 
@@ -570,7 +570,7 @@ namespace Discord.Interactions
             return await result.Command.ExecuteAsync(context, services, result.RegexCaptureGroups).ConfigureAwait(false);
         }
 
-        private async Task<IResult> ExecuteAutocompleteAsync (IInteractionCommandContext context, SocketAutocompleteInteraction autocompleteInteraction, IServiceProvider services )
+        private async Task<IResult> ExecuteAutocompleteAsync (IInteractionContext context, SocketAutocompleteInteraction autocompleteInteraction, IServiceProvider services )
         {
             var keywords = autocompleteInteraction.Data.GetCommandKeywords();
 
@@ -599,7 +599,7 @@ namespace Discord.Interactions
             return await commandResult.Command.ExecuteAsync(context, services).ConfigureAwait(false);
         }
 
-        internal TypeConverter GetTypeConverter (Type type)
+        internal TypeConverter GetTypeConverter (Type type, IServiceProvider services = null)
         {
             if (_typeConverters.TryGetValue(type, out var specific))
                 return specific;
@@ -609,8 +609,10 @@ namespace Discord.Interactions
 
             else if (_genericTypeConverters.Any(x => x.Key.IsAssignableFrom(type)))
             {
+                services ??= EmptyServiceProvider.Instance;
+
                 var converterType = GetMostSpecificTypeConverter(type);
-                var converter = converterType.MakeGenericType(type).GetConstructor(Array.Empty<Type>()).Invoke(Array.Empty<object>()) as TypeConverter;
+                var converter = ReflectionUtils<TypeConverter>.CreateObject(converterType.MakeGenericType(type).GetTypeInfo(), this, services);
                 _typeConverters[type] = converter;
                 return converter;
             }

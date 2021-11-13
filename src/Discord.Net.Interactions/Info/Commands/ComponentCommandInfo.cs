@@ -25,7 +25,7 @@ namespace Discord.Interactions
         }
 
         /// <inheritdoc/>
-        public override async Task<IResult> ExecuteAsync (IInteractionCommandContext context, IServiceProvider services)
+        public override async Task<IResult> ExecuteAsync (IInteractionContext context, IServiceProvider services)
             => await ExecuteAsync(context, services, null).ConfigureAwait(false);
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Discord.Interactions
         /// <returns>
         ///     A task representing the asyncronous command execution process
         /// </returns>
-        public async Task<IResult> ExecuteAsync (IInteractionCommandContext context, IServiceProvider services, params string[] additionalArgs)
+        public async Task<IResult> ExecuteAsync (IInteractionContext context, IServiceProvider services, params string[] additionalArgs)
         {
             if (context.Interaction is SocketMessageComponent messageInteraction)
             {
@@ -56,11 +56,11 @@ namespace Discord.Interactions
         }
 
         /// <inheritdoc/>
-        public async Task<IResult> ExecuteAsync (IInteractionCommandContext context, IEnumerable<CommandParameterInfo> paramList, IEnumerable<string> values,
+        public async Task<IResult> ExecuteAsync (IInteractionContext context, IEnumerable<CommandParameterInfo> paramList, IEnumerable<string> values,
             IServiceProvider services)
         {
             if(context.Interaction is not SocketMessageComponent messageComponent)
-                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionCommandContext)} doesn't belong to a Component Command Interaction");
+                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Component Command Interaction");
 
             try
             {
@@ -120,10 +120,10 @@ namespace Discord.Interactions
             return result;
         }
 
-        protected override Task InvokeModuleEvent (IInteractionCommandContext context, IResult result)
+        protected override Task InvokeModuleEvent (IInteractionContext context, IResult result)
             => CommandService._componentCommandExecutedEvent.InvokeAsync(this, context, result);
 
-        protected override string GetLogString (IInteractionCommandContext context)
+        protected override string GetLogString (IInteractionContext context)
         {
             if (context.Guild != null)
                 return $"Component Interaction: \"{base.ToString()}\" for {context.User} in {context.Guild}/{context.Channel}";

@@ -37,7 +37,7 @@ namespace _04_interactions_framework
             _commands.ComponentCommandExecuted += ComponentCommandExecuted;
         }
 
-        private Task ComponentCommandExecuted (ComponentCommandInfo arg1, Discord.IInteractionCommandContext arg2, IResult arg3)
+        private Task ComponentCommandExecuted (ComponentCommandInfo arg1, Discord.IInteractionContext arg2, IResult arg3)
         {
             if (!arg3.IsSuccess)
             {
@@ -66,7 +66,7 @@ namespace _04_interactions_framework
             return Task.CompletedTask;
         }
 
-        private Task ContextCommandExecuted (ContextCommandInfo arg1, Discord.IInteractionCommandContext arg2, IResult arg3)
+        private Task ContextCommandExecuted (ContextCommandInfo arg1, Discord.IInteractionContext arg2, IResult arg3)
         {
             if (!arg3.IsSuccess)
             {
@@ -95,7 +95,7 @@ namespace _04_interactions_framework
             return Task.CompletedTask;
         }
 
-        private Task SlashCommandExecuted (SlashCommandInfo arg1, Discord.IInteractionCommandContext arg2, IResult arg3)
+        private Task SlashCommandExecuted (SlashCommandInfo arg1, Discord.IInteractionContext arg2, IResult arg3)
         {
             if (!arg3.IsSuccess)
             {
@@ -129,7 +129,7 @@ namespace _04_interactions_framework
             try
             {
                 // Create an execution context that matches the generic type parameter of your InteractionModuleBase<T> modules
-                var ctx = new SocketInteractionCommandContext(_client, arg);
+                var ctx = new SocketInteractionContext(_client, arg);
                 await _commands.ExecuteCommandAsync(ctx, _services);
             }
             catch (Exception ex)

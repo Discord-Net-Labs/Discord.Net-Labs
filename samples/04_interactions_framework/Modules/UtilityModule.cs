@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace _04_interactions_framework.Modules
 {
     // Interation modules must be public and inherit from an IInterationModuleBase
-    public class UtilityModule : InteractionModuleBase<SocketInteractionCommandContext>
+    public class UtilityModule : InteractionModuleBase<SocketInteractionContext>
     {
         // Dependencies can be accessed through Property injection, public properties with public setters will be set by the service provider
         public InteractionService Commands { get; set; }
@@ -45,7 +45,7 @@ namespace _04_interactions_framework.Modules
 
         // [Group] will create a command group. [SlashCommand]s and [ComponentInteraction]s will be registered with the group prefix
         [Group("test_group", "This is a command group")]
-        public class GroupExample : InteractionModuleBase<SocketInteractionCommandContext>
+        public class GroupExample : InteractionModuleBase<SocketInteractionContext>
         {
             // You can create command choices either by using the [Choice] attribute or by creating an enum. Every enum with 25 or less values will be registered as a multiple
             // choice option

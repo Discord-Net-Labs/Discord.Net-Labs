@@ -20,7 +20,7 @@ namespace Discord.Interactions
     /// <returns>
     ///     A task representing the execution operation
     /// </returns>
-    public delegate Task ExecuteCallback (IInteractionCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo);
+    public delegate Task ExecuteCallback (IInteractionContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo);
 
     /// <summary>
     ///     The base information class for <see cref="InteractionService"/> commands
@@ -64,7 +64,7 @@ namespace Discord.Interactions
         /// <inheritdoc cref="ICommandInfo.Parameters"/>
         public abstract IReadOnlyCollection<TParameter> Parameters { get; }
 
-        internal CommandInfo (Builders.ICommandBuilder builder, ModuleInfo module, InteractionService commandService)
+        internal CommandInfo(Builders.ICommandBuilder builder, ModuleInfo module, InteractionService commandService)
         {
             CommandService = commandService;
             Module = module;
@@ -81,14 +81,14 @@ namespace Discord.Interactions
         }
 
         /// <inheritdoc/>
-        public abstract Task<IResult> ExecuteAsync (IInteractionCommandContext context, IServiceProvider services);
-        protected abstract Task InvokeModuleEvent (IInteractionCommandContext context, IResult result);
-        protected abstract string GetLogString (IInteractionCommandContext context);
+        public abstract Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services);
+        protected abstract Task InvokeModuleEvent(IInteractionContext context, IResult result);
+        protected abstract string GetLogString(IInteractionContext context);
 
         /// <inheritdoc/>
-        public async Task<PreconditionResult> CheckPreconditionsAsync (IInteractionCommandContext context, IServiceProvider services)
+        public async Task<PreconditionResult> CheckPreconditionsAsync(IInteractionContext context, IServiceProvider services)
         {
-            async Task<PreconditionResult> CheckGroups (ILookup<string, PreconditionAttribute> preconditions, string type)
+            async Task<PreconditionResult> CheckGroups(ILookup<string, PreconditionAttribute> preconditions, string type)
             {
                 foreach (IGrouping<string, PreconditionAttribute> preconditionGroup in preconditions)
                 {
@@ -125,7 +125,7 @@ namespace Discord.Interactions
             return PreconditionResult.FromSuccess();
         }
 
-        protected async Task<IResult> RunAsync (IInteractionCommandContext context, object[] args, IServiceProvider services)
+        protected async Task<IResult> RunAsync(IInteractionContext context, object[] args, IServiceProvider services)
         {
             switch (RunMode)
             {
@@ -135,7 +135,7 @@ namespace Discord.Interactions
                         return await ExecuteInternalAsync(context, args, scope.ServiceProvider ?? EmptyServiceProvider.Instance).ConfigureAwait(false);
                     }
                 case RunMode.Async:
-                    _ = Task.Run(async ( ) =>
+                    _ = Task.Run(async () =>
                     {
                         using var scope = services?.CreateScope();
                         await ExecuteInternalAsync(context, args, scope.ServiceProvider ?? EmptyServiceProvider.Instance).ConfigureAwait(false);
@@ -148,7 +148,7 @@ namespace Discord.Interactions
             return ExecuteResult.FromSuccess();
         }
 
-        private async Task<IResult> ExecuteInternalAsync (IInteractionCommandContext context, object[] args, IServiceProvider services)
+        private async Task<IResult> ExecuteInternalAsync(IInteractionContext context, object[] args, IServiceProvider services)
         {
             await CommandService._cmdLogger.DebugAsync($"Executing {GetLogString(context)}").ConfigureAwait(false);
 

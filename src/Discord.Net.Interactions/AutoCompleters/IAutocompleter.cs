@@ -24,7 +24,7 @@ namespace Discord.Interactions
         /// <returns>
         ///     A task representing the execution process. The task result contains the Autocompletion result
         /// </returns>
-        Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionCommandContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
+        Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
             IServiceProvider services);
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Discord.Interactions
         /// <returns>
         ///     A task representing the execution process. The task result contains the execution result
         /// </returns>
-        Task<IResult> ExecuteAsync(IInteractionCommandContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
+        Task<IResult> ExecuteAsync(IInteractionContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
             IServiceProvider services);
     }
 }

@@ -15,13 +15,13 @@ namespace Discord.Interactions
         public InteractionService InteractionService { get; set; }
 
         /// <inheritdoc/>
-        public abstract Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionCommandContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
+        public abstract Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
             IServiceProvider services);
 
-        protected abstract string GetLogString(IInteractionCommandContext context);
+        protected abstract string GetLogString(IInteractionContext context);
 
         /// <inheritdoc/>
-        public async Task<IResult> ExecuteAsync(IInteractionCommandContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
+        public async Task<IResult> ExecuteAsync(IInteractionContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
             IServiceProvider services)
         {
             switch (InteractionService._runMode)
@@ -43,7 +43,7 @@ namespace Discord.Interactions
             return ExecuteResult.FromSuccess();
         }
 
-        private async Task<IResult> ExecuteInternalAsync(IInteractionCommandContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
+        private async Task<IResult> ExecuteInternalAsync(IInteractionContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
             IServiceProvider services)
         {
             try

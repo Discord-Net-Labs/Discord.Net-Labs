@@ -2,7 +2,7 @@ namespace Discord.Interactions
 {
     internal interface IInteractionModuleBase
     {
-        void SetContext (IInteractionCommandContext context);
+        void SetContext (IInteractionContext context);
 
         /// <summary>
         ///     Method body to be executed before executing an application command

@@ -1,14 +1,7 @@
-using Discord.WebSocket;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Discord.Interactions
 {
-    /// <inheritdoc cref="IInteractionCommandContext"/>
-    public class InteractionCommandContext : IInteractionCommandContext
+    /// <inheritdoc cref="IInteractionContext"/>
+    public class InteractionContext : IInteractionContext
     {
         /// <inheritdoc/>
         public IDiscordClient Client { get; }
@@ -21,7 +14,7 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public IDiscordInteraction Interaction { get; }
 
-        public InteractionCommandContext(IDiscordClient client, IDiscordInteraction interaction, IUser user, IMessageChannel channel = null)
+        public InteractionContext(IDiscordClient client, IDiscordInteraction interaction, IUser user, IMessageChannel channel = null)
         {
             Client = client;
             Interaction = interaction;

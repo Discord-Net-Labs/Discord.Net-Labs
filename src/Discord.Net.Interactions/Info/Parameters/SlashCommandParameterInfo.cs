@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Reflection;
 
 namespace Discord.Interactions
 {
@@ -17,6 +15,9 @@ namespace Discord.Interactions
         ///     Description of the Slash Command Parameter
         /// </summary>
         public string Description { get; }
+
+        public double? MinValue { get; }
+        public double? MaxValue { get; }
 
         /// <summary>
         ///     <see cref="TypeConverter{T}"/> that will be used to convert the incoming <see cref="Discord.WebSocket.SocketSlashCommandDataOption"/> into
@@ -43,11 +44,13 @@ namespace Discord.Interactions
         /// </summary>
         public IReadOnlyCollection<ChannelType> ChannelTypes { get; }
 
-        internal SlashCommandParameterInfo (Builders.SlashCommandParameterBuilder builder, SlashCommandInfo command) : base(builder, command)
+        internal SlashCommandParameterInfo(Builders.SlashCommandParameterBuilder builder, SlashCommandInfo command) : base(builder, command)
         {
             TypeConverter = builder.TypeConverter;
             Autocompleter = builder.Autocompleter;
             Description = builder.Description;
+            MaxValue = builder.MaxValue;
+            MinValue = builder.MinValue;
             Choices = builder.Choices.ToImmutableArray();
             ChannelTypes = builder.ChannelTypes.ToImmutableArray();
         }

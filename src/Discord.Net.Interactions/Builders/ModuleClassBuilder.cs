@@ -307,7 +307,7 @@ namespace Discord.Interactions.Builders
             Func<IInteractionModuleBase, object[], Task> commandInvoker = commandService._useCompiledLambda ?
                 ReflectionUtils<IInteractionModuleBase>.CreateMethodInvoker(methodInfo) : (module, args) => methodInfo.Invoke(module, args) as Task;
 
-            async Task<IResult> ExecuteCallback (IInteractionCommandContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo)
+            async Task<IResult> ExecuteCallback (IInteractionContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo)
             {
                 var instance = createInstance(serviceProvider);
                 instance.SetContext(context);
@@ -353,7 +353,7 @@ namespace Discord.Interactions.Builders
             builder.Description = paramInfo.Name;
             builder.IsRequired = !paramInfo.IsOptional;
             builder.DefaultValue = paramInfo.DefaultValue;
-            builder.SetParameterType(paramType);
+            builder.SetParameterType(paramType, services);
 
             foreach (var attribute in attributes)
             {
@@ -384,6 +384,12 @@ namespace Discord.Interactions.Builders
                         builder.Autocomplete = true;
                         if(autocomplete.AutocompleterType is not null)
                             builder.WithAutocompleter(autocomplete.AutocompleterType, services);
+                        break;
+                    case MaxValueAttribute maxValue:
+                        builder.MaxValue = maxValue.Value;
+                        break;
+                    case MinValueAttribute minValue:
+                        builder.MinValue = minValue.Value;
                         break;
                     default:
                         builder.AddAttributes(attribute);

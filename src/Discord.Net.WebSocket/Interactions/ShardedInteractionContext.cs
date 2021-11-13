@@ -5,7 +5,8 @@ namespace Discord.Interactions
     /// <summary>
     /// The sharded variant of <see cref="SocketInteractionCommandContext"/>
     /// </summary>
-    public class ShardedInteractionCommandContext : SocketInteractionCommandContext, IInteractionCommandContext
+    public class ShardedInteractionContext<TInteraction> : SocketInteractionContext<TInteraction>, IInteractionContext
+        where TInteraction : SocketInteraction
     {
         /// <summary>
         /// Get the <see cref="DiscordSocketClient"/> that the command will be executed with
@@ -17,7 +18,7 @@ namespace Discord.Interactions
         /// </summary>
         /// <param name="client">The underlying client.</param>
         /// <param name="interaction">The underlying interaction</param>
-        public ShardedInteractionCommandContext (DiscordShardedClient client, SocketInteraction interaction)
+        public ShardedInteractionContext (DiscordShardedClient client, TInteraction interaction)
             : base(client.GetShard(GetShardId(client, ( interaction.User as SocketGuildUser )?.Guild)), interaction)
         {
             Client = client;
@@ -25,5 +26,10 @@ namespace Discord.Interactions
 
         private static int GetShardId (DiscordShardedClient client, IGuild guild)
             => guild == null ? 0 : client.GetShardIdFor(guild);
+    }
+
+    public class ShardedInteractionContext : ShardedInteractionContext<SocketInteraction>
+    {
+        public ShardedInteractionContext(DiscordShardedClient client, SocketInteraction interaction) : base(client, interaction) { }
     }
 }

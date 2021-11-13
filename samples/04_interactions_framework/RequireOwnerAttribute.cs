@@ -10,7 +10,7 @@ namespace _04_interactions_framework
 {
     public class RequireOwnerAttribute : PreconditionAttribute
     {
-        public override async Task<PreconditionResult> CheckRequirementsAsync (IInteractionCommandContext context, ICommandInfo commandInfo, IServiceProvider services)
+        public override async Task<PreconditionResult> CheckRequirementsAsync (IInteractionContext context, ICommandInfo commandInfo, IServiceProvider services)
         {
             switch (context.Client.TokenType)
             {

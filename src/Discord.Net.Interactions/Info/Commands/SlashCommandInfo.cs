@@ -37,7 +37,7 @@ namespace Discord.Interactions
         }
 
         /// <inheritdoc/>
-        public override async Task<IResult> ExecuteAsync (IInteractionCommandContext context, IServiceProvider services)
+        public override async Task<IResult> ExecuteAsync (IInteractionContext context, IServiceProvider services)
         {
             if (context.Interaction is SocketSlashCommand commandInteraction)
             {
@@ -49,10 +49,10 @@ namespace Discord.Interactions
                 return await ExecuteAsync(context, Parameters, options?.ToList(), services);
             }
             else
-                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionCommandContext)} doesn't belong to a Slash Command Interaction");
+                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Slash Command Interaction");
         }
 
-        public async Task<IResult> ExecuteAsync (IInteractionCommandContext context, IEnumerable<SlashCommandParameterInfo> paramList,
+        public async Task<IResult> ExecuteAsync (IInteractionContext context, IEnumerable<SlashCommandParameterInfo> paramList,
             List<SocketSlashCommandDataOption> argList, IServiceProvider services)
         {
             try
@@ -96,10 +96,10 @@ namespace Discord.Interactions
             }
         }
 
-        protected override Task InvokeModuleEvent (IInteractionCommandContext context, IResult result)
+        protected override Task InvokeModuleEvent (IInteractionContext context, IResult result)
             => CommandService._slashCommandExecutedEvent.InvokeAsync(this, context, result);
 
-        protected override string GetLogString (IInteractionCommandContext context)
+        protected override string GetLogString (IInteractionContext context)
         {
             if (context.Guild != null)
                 return $"Slash Command: \"{base.ToString()}\" for {context.User} in {context.Guild}/{context.Channel}";

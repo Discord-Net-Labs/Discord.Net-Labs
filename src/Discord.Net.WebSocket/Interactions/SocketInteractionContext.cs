@@ -1,11 +1,13 @@
 using Discord.WebSocket;
+using System;
 
 namespace Discord.Interactions
 {
     /// <summary>
     /// Represents a Web-Socket based context of an Application Command
     /// </summary>
-    public class SocketInteractionCommandContext : IInteractionCommandContext
+    public class SocketInteractionContext<TInteraction> : IInteractionContext
+        where TInteraction : SocketInteraction
     {
         /// <summary>
         /// Get the <see cref="DiscordSocketClient"/> that the command will be executed with
@@ -33,29 +35,29 @@ namespace Discord.Interactions
         /// <summary>
         /// Get the <see cref="SocketInteraction"/> the command was recieved with
         /// </summary>
-        public SocketInteraction Interaction { get; }
+        public TInteraction Interaction { get; }
 
         /// <inheritdoc/>
-        IDiscordClient IInteractionCommandContext.Client => Client;
+        IDiscordClient IInteractionContext.Client => Client;
 
         /// <inheritdoc/>
-        IGuild IInteractionCommandContext.Guild => Guild;
+        IGuild IInteractionContext.Guild => Guild;
 
         /// <inheritdoc/>
-        IMessageChannel IInteractionCommandContext.Channel => Channel;
+        IMessageChannel IInteractionContext.Channel => Channel;
 
         /// <inheritdoc/>
-        IUser IInteractionCommandContext.User => User;
+        IUser IInteractionContext.User => User;
 
         /// <inheritdoc/>
-        IDiscordInteraction IInteractionCommandContext.Interaction => Interaction;
+        IDiscordInteraction IInteractionContext.Interaction => Interaction;
 
         /// <summary>
-        /// Initializes a new <see cref="SocketInteractionCommandContext"/> 
+        ///     Initializes a new <see cref="InteractionContext"/> 
         /// </summary>
         /// <param name="client">The underlying client</param>
         /// <param name="interaction">The underlying interaction</param>
-        public SocketInteractionCommandContext (DiscordSocketClient client, SocketInteraction interaction)
+        public SocketInteractionContext (DiscordSocketClient client, TInteraction interaction)
         {
             Client = client;
             Channel = interaction.Channel;
@@ -63,5 +65,10 @@ namespace Discord.Interactions
             User = interaction.User;
             Interaction = interaction;
         }
+    }
+
+    public class SocketInteractionContext : SocketInteractionContext<SocketInteraction>
+    {
+        public SocketInteractionContext (DiscordSocketClient client, SocketInteraction interaction) : base(client, interaction) { }
     }
 }

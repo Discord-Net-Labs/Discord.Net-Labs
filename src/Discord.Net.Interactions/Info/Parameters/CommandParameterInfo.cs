@@ -48,7 +48,7 @@ namespace Discord.Interactions
         }
 
         /// <inheritdoc/>
-        public async Task<PreconditionResult> CheckPreconditionsAsync (IInteractionCommandContext context, object value, IServiceProvider services)
+        public async Task<PreconditionResult> CheckPreconditionsAsync (IInteractionContext context, object value, IServiceProvider services)
         {
             foreach (var precondition in Preconditions)
             {

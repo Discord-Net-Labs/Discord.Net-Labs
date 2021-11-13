@@ -13,12 +13,12 @@ namespace Discord.Interactions
             : base(builder, module, commandService) { }
 
         /// <inheritdoc/>
-        public override async Task<IResult> ExecuteAsync (IInteractionCommandContext context, IServiceProvider services)
+        public override async Task<IResult> ExecuteAsync (IInteractionContext context, IServiceProvider services)
         {
             try
             {
                 if (context.Interaction is not SocketUserCommand userCommand )
-                    return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionCommandContext)} does not belong to a User Command");
+                    return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} does not belong to a User Command");
 
                 var user = userCommand.Data.Member;
                 object[] args = new object[1] { user };
@@ -32,7 +32,7 @@ namespace Discord.Interactions
         }
 
         /// <inheritdoc/>
-        protected override string GetLogString (IInteractionCommandContext context)
+        protected override string GetLogString (IInteractionContext context)
         {
             if (context.Guild != null)
                 return $"User Command: \"{base.ToString()}\" for {context.User} in {context.Guild}/{context.Channel}";
