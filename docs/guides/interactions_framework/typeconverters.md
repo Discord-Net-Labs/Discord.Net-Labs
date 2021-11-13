@@ -119,3 +119,7 @@ For instance, to register the previously mentioned [Example Enum Converter](#exa
 ```csharp
 interactionService.AddGenericTypeConverter<Enum>(typeof(EnumConverter<>));
 ```
+
+Interaction service checks if the target base type satisfies the type constraints of the Generic TypeConverter class.
+
+> Dependencies of Generic TypeConverters are also resolved using the Dependency Injection pattern.

@@ -48,6 +48,7 @@ Valid **Interaction Commands** must comply with the following requirements:
 |[User Command](#user-commands)  | `Task`/`Task<RuntimeResult>` | 1                   | Implementations of `IUser`    | `[UserCommand]`          |
 |[Message Command](#message-commands)| `Task`/`Task<RuntimeResult>` | 1                   | Implementations of `IMessage` | `[MessageCommand]`       |
 |[Component Interaction Command](#component-interaction-commands)| `Task`/`Task<RuntimeResult>` | -                 | `string` or `string[]`        | `[ComponentInteraction]` |
+|[Autocomplete Command](#autocomplete-commands)| `Task`/`Task<RuntimeResult>` | -             | -                   | `[AutocompleteCommand]`|
 
 **a `TypeConverter` that is capable of parsing type in question must be registered to the `InteractionService` instance.*
 
@@ -157,6 +158,14 @@ public async Task Command([ChannelTypes(ChannelType.Stage, ChannelType.Text)]ICh
 
 In this case, user can only input Stage Channels and Text Channels to this parameter.
 
+##### Autocomplete
+
+You can enable Autocomple Interactions for a Slash Command parameter using the `[AutocompleteAttribute]`. To handle the Autocomplete Interactions raised by this parameter you can either create [Autocomplete Commands](#autocomplete-commands) or you can opt to use the [Autocompleters Pattern](./autocompleters)
+
+##### Min/Max Value
+
+You can specify the permitted max/min value for a number type parameter using the `[MaxValueAttribute]` and `[MinValueAttribute]`.
+
 ### User Commands
 
 A valid User Command must have the following structure:
@@ -235,6 +244,24 @@ public async Task RoleSelection(string id, string[] selectedRoles)
 }
 ```
 
+### Autocomplete Commands
+
+Autocomplete commands must be parameterless methods. A valid Autocomplete command must  have the following structure:
+
+```csharp
+[AutocompleteCommand("command_name", "parameter_name")]
+public async Task Autocomplete()
+{
+    IEnumerable<AutocompleteResult> results;
+
+    ...
+
+    await (Context.Interaction as SocketAutocompleteInteraction).RespondAsync(results);
+}
+```
+
+Alternatively, you can use the *Autocompleters* to simplify this workflow.
+
 ## Command Context
 
 Every command module provides its commands with an execution context. This context property includes general information about the underlying interaction that triggered the command execution. The base command context.
@@ -245,3 +272,38 @@ You can design your modules to work with different implementation types of `IInt
 
 ## Loading Modules
 
+Interaction Service can automatically discover and load modules that inherit `InteractionModuleBase` from an `Assembly`. Call `InteractionService.AddModulesAsync()` to use this functionality.
+
+You can also manually add Interaction modules using the `InteractionService.AddModuleAsync()` method by providing the module type you want to load.
+
+## Resolving Module Dependencies
+
+Module dependencies are resolved using the Constructor Injection and Property Injection patterns. Meaning, the constructor parameters and public settable properties of a module will be assigned using the `IServiceProvider`. For more information on dependency injection, check out [Dependency Injection](.\dependency-injection)
+
+## Module Groups
+
+Module groups allow you to create sub-commands and sub-commands groups. By nesting commands inside a module that is tagged with `[GroupAttribute]` you can create prefixed commands.
+
+Although creating nested module stuctures are allowed, you are not permitted to use more than 2 `[GroupAttribute]`s in module hierarchy.
+
+## Executing Commands
+
+Any of the following socket events can be used to execute commands:
+
+- InteractionCreated
+- ButtonExecuted
+- SelectMenuExecuted
+- AutocompleteExecuted
+- UserCommandExecuted
+- MessageCommandExecuted
+
+Commands can be either executed on the gateway thread or on a seperate thread from the thread pool. This behaviour can be configured by changing the *RunMode* property of `InteractionServiceConfig` or by setting the *runMode* parameter of a command attribute.
+
+You can also configure the way `InteractionService` executes the commands. By default, commands are executed using `ConstructorInfo.Invoke()` to create module instances and `MethodInfo.Invoke()` method for executing the method bodies. By setting, `InteractionServiceConfig.UseCompiledLambda` to `true`, you can make `InteractionService` create module instances and execute commands using *Compiled Lambda* expressions. This cuts down on command execution time but it might add some memory overhead.
+
+Time it takes to create a module instance and execute a `Task.Delay(0)` method using the Reflection methods compared to Compiled Lambda expressions:
+
+|           Method |      Mean |    Error |   StdDev |
+|----------------- |----------:|---------:|---------:|
+| ReflectionInvoke | 225.93 ns | 4.522 ns | 7.040 ns |
+|   CompiledLambda |  48.79 ns | 0.981 ns | 1.276 ns |
