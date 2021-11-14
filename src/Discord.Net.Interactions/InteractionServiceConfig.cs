@@ -46,6 +46,10 @@ namespace Discord.Interactions
         /// <summary>
         ///     Allows you to use <see cref="Autocompleter"/>s
         /// </summary>
+        /// <remarks>
+        ///     Since <see cref="Autocompleter"/>s are prioritized over <see cref="AutocompleteCommandInfo"/>s, if <see cref="Autocompleter"/>s are not used, this should be
+        ///     disabled to decrease the lookup time
+        /// </remarks>
         public bool EnableAutocompleters { get; set; } = true;
     }
 }
