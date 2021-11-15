@@ -5,6 +5,7 @@ namespace Discord.Interactions
     /// <summary>
     ///     Set the minimum value permitted for a number type parameter
     /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public sealed class MinValueAttribute : Attribute
     {
         /// <summary>

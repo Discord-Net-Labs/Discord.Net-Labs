@@ -5,6 +5,7 @@ namespace Discord.Interactions
     /// <summary>
     ///     Set the maximum value permitted for a number type parameter
     /// </summary>
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public sealed class MaxValueAttribute : Attribute
     {
         /// <summary>
