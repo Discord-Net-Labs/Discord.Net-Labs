@@ -512,15 +512,20 @@ namespace Discord.Interactions
             return interaction switch
             {
                 SocketSlashCommand slashCommand => await ExecuteSlashCommandAsync(context, slashCommand.Data, services).ConfigureAwait(false),
+                RestSlashCommand restSlashCommand => await ExecuteSlashCommandAsync(context, restSlashCommand.Data, services).ConfigureAwait(false),
                 SocketMessageComponent messageComponent => await ExecuteComponentCommandAsync(context, messageComponent.Data.CustomId, services).ConfigureAwait(false),
+                RestMessageComponent restMessageComponent => await ExecuteComponentCommandAsync(context, restMessageComponent.Data.CustomId, services).ConfigureAwait(false),
                 SocketUserCommand userCommand => await ExecuteContextCommandAsync(context, userCommand.CommandName, ApplicationCommandType.User, services).ConfigureAwait(false),
+                RestUserCommand restUserCommand => await ExecuteContextCommandAsync(context, restUserCommand.CommandName, ApplicationCommandType.User, services).ConfigureAwait(false),
                 SocketMessageCommand messageCommand => await ExecuteContextCommandAsync(context, messageCommand.CommandName, ApplicationCommandType.Message, services).ConfigureAwait(false),
+                RestMessageCommand restMessageCommand => await ExecuteContextCommandAsync(context, restMessageCommand.CommandName, ApplicationCommandType.Message, services).ConfigureAwait(false),
                 SocketAutocompleteInteraction autocomplete => await ExecuteAutocompleteAsync(context, autocomplete, services).ConfigureAwait(false),
+                RestAutocompleteInteraction restAutocomplete => throw new NotImplementedException($"RestAutocompleteInteraction"),
                 _ => throw new InvalidOperationException($"{interaction.Type} interaction type cannot be executed by the Interaction service"),
             };
         }
 
-        private async Task<IResult> ExecuteSlashCommandAsync (IInteractionContext context, SocketSlashCommandData data, IServiceProvider services)
+        private async Task<IResult> ExecuteSlashCommandAsync (IInteractionContext context, IApplicationCommandInteractionData data, IServiceProvider services)
         {
             var keywords = data.GetCommandKeywords();
 
