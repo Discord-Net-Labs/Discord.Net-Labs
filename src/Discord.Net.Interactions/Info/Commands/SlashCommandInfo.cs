@@ -1,3 +1,4 @@
+using Discord.Rest;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
@@ -39,21 +40,28 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public override async Task<IResult> ExecuteAsync (IInteractionContext context, IServiceProvider services)
         {
-            if (context.Interaction is SocketSlashCommand commandInteraction)
+            IEnumerable<IApplicationCommandInteractionDataOption> options;
+
+            switch (context.Interaction)
             {
-                var options = commandInteraction.Data.Options;
+                case RestSlashCommand restSlashCommand:
+                    options = restSlashCommand.Data.Options;
+                    break;
+                case SocketSlashCommand socketSlashCommand:
+                    options = socketSlashCommand.Data.Options;
+                    break;
+                default:
+                    return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Slash Command Interaction");
+            } 
 
-                while (options != null && options.Any(x => x.Type == ApplicationCommandOptionType.SubCommand || x.Type == ApplicationCommandOptionType.SubCommandGroup))
-                    options = options.ElementAt(0)?.Options;
+            while (options != null && options.Any(x => x.Type == ApplicationCommandOptionType.SubCommand || x.Type == ApplicationCommandOptionType.SubCommandGroup))
+                options = options.ElementAt(0)?.Options;
 
-                return await ExecuteAsync(context, Parameters, options?.ToList(), services);
-            }
-            else
-                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Slash Command Interaction");
+            return await ExecuteAsync(context, Parameters, options?.ToList(), services);
         }
 
         public async Task<IResult> ExecuteAsync (IInteractionContext context, IEnumerable<SlashCommandParameterInfo> paramList,
-            List<SocketSlashCommandDataOption> argList, IServiceProvider services)
+            List<IApplicationCommandInteractionDataOption> argList, IServiceProvider services)
         {
             try
             {

@@ -1,4 +1,5 @@
 using Discord.Interactions.Builders;
+using Discord.Rest;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,7 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public override async Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services)
         {
-            if (context.Interaction is not SocketAutocompleteInteraction messageComponent)
+            if (context.Interaction is not SocketAutocompleteInteraction || context.Interaction is not RestAutocompleteInteraction)
                 return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Autocomplete Interaction");
 
             try
@@ -60,9 +61,9 @@ namespace Discord.Interactions
         protected override string GetLogString(IInteractionContext context)
         {
             if (context.Guild != null)
-                return $"Slash Command: \"{base.ToString()}\" for {context.User} in {context.Guild}/{context.Channel}";
+                return $"Autocomplete Command: \"{base.ToString()}\" for {context.User} in {context.Guild}/{context.Channel}";
             else
-                return $"Slash Command: \"{base.ToString()}\" for {context.User} in {context.Channel}";
+                return $"Autocomplete Command: \"{base.ToString()}\" for {context.User} in {context.Channel}";
         }
 
         internal string[] GetCommandKeywords()

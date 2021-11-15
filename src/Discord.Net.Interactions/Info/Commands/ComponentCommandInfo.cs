@@ -1,4 +1,5 @@
 using Discord.Interactions.Builders;
+using Discord.Rest;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
@@ -39,20 +40,26 @@ namespace Discord.Interactions
         /// </returns>
         public async Task<IResult> ExecuteAsync (IInteractionContext context, IServiceProvider services, params string[] additionalArgs)
         {
-            if (context.Interaction is SocketMessageComponent messageInteraction)
+            var args = new List<string>();
+
+            if (additionalArgs is not null)
+                args.AddRange(additionalArgs);
+
+            switch (context.Interaction)
             {
-                var args = new List<string>();
-
-                if (additionalArgs is not null)
-                    args.AddRange(additionalArgs);
-
-                if (messageInteraction.Data?.Values is not null)
-                    args.AddRange(messageInteraction.Data.Values);
-
-                return await ExecuteAsync(context, Parameters, args, services);
+                case RestMessageComponent restMessageComponent:
+                    if (restMessageComponent.Data?.Values is not null)
+                        args.AddRange(restMessageComponent.Data.Values);
+                    break;
+                case SocketMessageComponent socketMessageComponent:
+                    if (socketMessageComponent.Data?.Values is not null)
+                        args.AddRange(socketMessageComponent.Data.Values);
+                    break;
+                default:
+                    return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Message Component Interaction");
             }
-            else
-                throw new ArgumentException("Cannot execute Component Interaction handler from the provided command context");
+
+            return await ExecuteAsync(context, Parameters, args, services);
         }
 
         /// <inheritdoc/>

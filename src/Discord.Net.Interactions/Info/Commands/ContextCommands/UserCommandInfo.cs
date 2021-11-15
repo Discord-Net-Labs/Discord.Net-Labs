@@ -1,3 +1,4 @@
+using Discord.Rest;
 using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
@@ -17,11 +18,19 @@ namespace Discord.Interactions
         {
             try
             {
-                if (context.Interaction is not SocketUserCommand userCommand )
-                    return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} does not belong to a User Command");
+                object[] args;
 
-                var user = userCommand.Data.Member;
-                object[] args = new object[1] { user };
+                switch (context.Interaction)
+                {
+                    case RestUserCommand restUserCommand:
+                        args = new object[1] { restUserCommand.Data.Member };
+                        break;
+                    case SocketUserCommand socketUserCommand:
+                        args = new object[1] { socketUserCommand.Data.Member };
+                        break;
+                    default:
+                        return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Message Command Interation");
+                }
 
                 return await RunAsync(context, args, services).ConfigureAwait(false);
             }
