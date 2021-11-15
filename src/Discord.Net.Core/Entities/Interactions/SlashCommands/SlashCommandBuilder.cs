@@ -378,8 +378,9 @@ namespace Discord
                 Default = Default,
                 Required = Required,
                 Type = Type,
-                Options = Options?.Count > 0 ? Options.OrderByDescending(x => x.Required ?? false)
-                    .Select(x => x.Build()).ToList() : new List<ApplicationCommandOptionProperties>(),
+                Options = Options?.Count > 0
+                    ? Options.OrderByDescending(x => x.Required ?? false).Select(x => x.Build()).ToList()
+                    : new List<ApplicationCommandOptionProperties>(),
                 Choices = Choices,
                 Autocomplete = Autocomplete,
                 ChannelTypes = ChannelTypes,
