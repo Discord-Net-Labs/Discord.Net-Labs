@@ -8,7 +8,7 @@ namespace Discord.Interactions
     internal sealed class TimeSpanConverter : TypeConverter<TimeSpan>
     {
         public override ApplicationCommandOptionType GetDiscordType ( ) => ApplicationCommandOptionType.String;
-        public override Task<TypeConverterResult> ReadAsync (IInteractionContext context, SocketSlashCommandDataOption option, IServiceProvider services)
+        public override Task<TypeConverterResult> ReadAsync (IInteractionContext context, IApplicationCommandInteractionDataOption option, IServiceProvider services)
         {
             return ( TimeSpan.TryParseExact(( option.Value as string ).ToLowerInvariant(), Formats, CultureInfo.InvariantCulture, out var timeSpan) )
                 ? Task.FromResult(TypeConverterResult.FromSuccess(timeSpan))

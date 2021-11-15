@@ -9,7 +9,7 @@ namespace Discord.Interactions
 {
     internal abstract class DefaultEntityTypeConverter<T> : TypeConverter<T> where T : class
     {
-        public override Task<TypeConverterResult> ReadAsync (IInteractionContext context, SocketSlashCommandDataOption option, IServiceProvider services)
+        public override Task<TypeConverterResult> ReadAsync (IInteractionContext context, IApplicationCommandInteractionDataOption option, IServiceProvider services)
         {
             var value = option.Value as T;
 

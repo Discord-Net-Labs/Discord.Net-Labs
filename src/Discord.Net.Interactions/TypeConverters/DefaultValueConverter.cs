@@ -38,7 +38,7 @@ namespace Discord.Interactions
                     throw new InvalidOperationException($"Parameter Type {typeof(T).FullName} is not supported by Discord.");
             }
         }
-        public override Task<TypeConverterResult> ReadAsync (IInteractionContext context, SocketSlashCommandDataOption option, IServiceProvider services)
+        public override Task<TypeConverterResult> ReadAsync (IInteractionContext context, IApplicationCommandInteractionDataOption option, IServiceProvider services)
         {
             object value;
 
