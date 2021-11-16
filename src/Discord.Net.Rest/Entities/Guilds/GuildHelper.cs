@@ -649,6 +649,117 @@ namespace Discord.Rest
 
         public static async Task DeleteStickerAsync(BaseDiscordClient client, ulong guildId, ISticker sticker, RequestOptions options = null)
             => await client.ApiClient.DeleteStickerAsync(guildId, sticker.Id, options).ConfigureAwait(false);
-		#endregion
+        #endregion
+
+        #region Events
+
+        public static async Task<IReadOnlyCollection<RestGuildUser>> GetEventUsersAsync(BaseDiscordClient client, IGuildScheduledEvent guildEvent, int limit = 100, RequestOptions options = null)
+        {
+            var models = await client.ApiClient.GetGuildScheduledEventUsersAsync(guildEvent.Id, guildEvent.Guild.Id, limit, options).ConfigureAwait(false);
+
+            return models.Select(x =>
+            {
+                // since the models different we need to change it a tad.
+                var guildMember = x.GuildMember.Value;
+                guildMember.User = x;
+
+                return RestGuildUser.Create(client, guildEvent.Guild, guildMember);
+            }).ToImmutableArray();
+        }
+
+        public static async Task<API.GuildScheduledEvent> ModifyGuildEventAsync(BaseDiscordClient client, Action<GuildScheduledEventsProperties> func,
+            IGuildScheduledEvent guildEvent, RequestOptions options = null)
+        {
+            var args = new GuildScheduledEventsProperties();
+
+            func(args);
+
+            var apiArgs = new ModifyGuildScheduledEventParams()
+            {
+                ChannelId = args.ChannelId,
+                Description = args.Description,
+                EndTime = args.EndTime,
+                Name = args.Name,
+                PrivacyLevel = args.PrivacyLevel,
+                StartTime = args.StartTime,
+                Status = args.Status,
+                Type = args.Type
+            };
+
+            if(args.SpeakerIds.IsSpecified || args.Location.IsSpecified)
+            {
+                apiArgs.EntityMetadata = new API.GuildScheduledEventEntityMetadata()
+                {
+                    Location = args.Location,
+                    SpeakerIds = args.SpeakerIds.IsSpecified ? args.SpeakerIds.Value.ToArray() : Optional<ulong[]>.Unspecified
+                };
+            }
+
+            return await client.ApiClient.ModifyGuildScheduledEventAsync(apiArgs, guildEvent.Id, guildEvent.Guild.Id, options).ConfigureAwait(false);
+        }
+
+        public static async Task<RestGuildEvent> GetGuildEventAsync(BaseDiscordClient client, ulong id, IGuild guild, RequestOptions options = null)
+        {
+            var model = await client.ApiClient.GetGuildScheduledEventAsync(id, guild.Id, options).ConfigureAwait(false);
+
+            if (model == null)
+                return null;
+
+            return RestGuildEvent.Create(client, guild, model);
+        }
+
+        public static async Task<IReadOnlyCollection<RestGuildEvent>> GetGuildEventsAsync(BaseDiscordClient client, IGuild guild, RequestOptions options = null)
+        {
+            var models = await client.ApiClient.ListGuildScheduledEventsAsync(guild.Id, options).ConfigureAwait(false);
+
+            return models.Select(x => RestGuildEvent.Create(client, guild, x)).ToImmutableArray();
+        }
+
+        public static async Task<RestGuildEvent> CreateGuildEventAsync(BaseDiscordClient client, IGuild guild,
+            string name,
+            GuildScheduledEventPrivacyLevel privacyLevel,
+            DateTimeOffset startTime,
+            GuildScheduledEventType type,
+            string description = null,
+            DateTimeOffset? endTime = null,
+            ulong? channelId = null,
+            IEnumerable<ulong> speakers = null,
+            string location = null,
+            RequestOptions options = null)
+        {
+            var apiArgs = new CreateGuildScheduledEventParams()
+            {
+                ChannelId = channelId ?? default,
+                Description = description ?? default,
+                EndTime = endTime ?? default,
+                Name = name,
+                PrivacyLevel = privacyLevel,
+                StartTime = startTime,
+                Type = type
+            };
+
+            if(speakers != null || location != null)
+            {
+                apiArgs.EntityMetadata = new API.GuildScheduledEventEntityMetadata()
+                {
+                    Location = location ?? default,
+                    SpeakerIds = speakers?.ToArray() ?? default
+                };
+            }
+
+            if ((type == GuildScheduledEventType.Stage || type == GuildScheduledEventType.Voice) && channelId == null)
+                throw new ArgumentException("Stage or voice event types must have a channel id set!");
+
+            var model = await client.ApiClient.CreateGuildScheduledEventAsync(apiArgs, guild.Id, options).ConfigureAwait(false);
+
+            return RestGuildEvent.Create(client, guild, client.CurrentUser, model);
+        }
+
+        public static async Task DeleteEventAsync(BaseDiscordClient client, IGuildScheduledEvent guildEvent, RequestOptions options = null)
+        {
+            await client.ApiClient.DeleteGuildScheduledEventAsync(guildEvent.Id, guildEvent.Guild.Id, options).ConfigureAwait(false);
+        }
+
+        #endregion
     }
 }

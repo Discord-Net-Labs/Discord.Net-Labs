@@ -20,6 +20,7 @@ using RoleModel = Discord.API.Role;
 using UserModel = Discord.API.User;
 using VoiceStateModel = Discord.API.VoiceState;
 using StickerModel = Discord.API.Sticker;
+using EventModel = Discord.API.GuildScheduledEvent;
 using System.IO;
 
 namespace Discord.WebSocket
@@ -40,6 +41,7 @@ namespace Discord.WebSocket
         private ConcurrentDictionary<ulong, SocketRole> _roles;
         private ConcurrentDictionary<ulong, SocketVoiceState> _voiceStates;
         private ConcurrentDictionary<ulong, SocketCustomSticker> _stickers;
+        private ConcurrentDictionary<ulong, SocketGuildEvent> _events;
         private ImmutableArray<GuildEmote> _emotes;
 
         private AudioClient _audioClient;
@@ -363,6 +365,17 @@ namespace Discord.WebSocket
         ///     A read-only collection of roles found within this guild.
         /// </returns>
         public IReadOnlyCollection<SocketRole> Roles => _roles.ToReadOnlyCollection();
+
+        /// <summary>
+        ///     Gets a collection of all events within this guild.
+        /// </summary>
+        /// <remarks>
+        ///     This field is based off of caching alone, since there is no events returned on the guild model.
+        /// </remarks>
+        /// <returns>
+        ///     A read-only collection of guild events found within this guild. 
+        /// </returns>
+        public IReadOnlyCollection<SocketGuildEvent> Events => _events.ToReadOnlyCollection();
 
         internal SocketGuild(DiscordSocketClient client, ulong id)
             : base(client, id)
@@ -1191,6 +1204,100 @@ namespace Discord.WebSocket
             => GuildHelper.SearchUsersAsync(this, Discord, query, limit, options);
         #endregion
 
+        #region Guild Events
+
+        /// <summary>
+        ///     Gets an event in this guild.
+        /// </summary>
+        /// <param name="id">The snowflake identifier for the event.</param>
+        /// <returns>
+        ///     An event that is associated with the specified <paramref name="id"/>; <see langword="null"/> if none is found.
+        /// </returns>
+        public SocketGuildEvent GetEvent(ulong id)
+        {
+            if (_events.TryGetValue(id, out SocketGuildEvent value))
+                return value;
+            return null;
+        }
+
+        internal SocketGuildEvent RemoveEvent(ulong id)
+        {
+            if (_events.TryRemove(id, out SocketGuildEvent value))
+                return value;
+            return null;
+        }
+
+        internal SocketGuildEvent AddOrUpdateEvent(EventModel model)
+        {
+            if (_events.TryGetValue(model.Id, out SocketGuildEvent value))
+                value.Update(model);
+            else
+            {
+                value = SocketGuildEvent.Create(Discord, this, model);
+                _events[model.Id] = value;
+            }
+            return value;
+        }
+
+        /// <summary>
+        ///     Gets an event within this guild.
+        /// </summary>
+        /// <param name="id">The snowflake identifier for the event.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous get operation.
+        /// </returns>
+        public Task<RestGuildEvent> GetEventAsync(ulong id, RequestOptions options = null)
+            => GuildHelper.GetGuildEventAsync(Discord, id, this, options);
+
+        /// <summary>
+        ///     Gets all active events within this guild.
+        /// </summary>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous get operation.
+        /// </returns>
+        public Task<IReadOnlyCollection<RestGuildEvent>> GetEventsAsync(RequestOptions options = null)
+            => GuildHelper.GetGuildEventsAsync(Discord, this, options);
+
+        /// <summary>
+        ///     Creates an event within this guild.
+        /// </summary>
+        /// <param name="name">The name of the event.</param>
+        /// <param name="privacyLevel">The privacy level of the event.</param>
+        /// <param name="startTime">The start time of the event.</param>
+        /// <param name="type">The type of the event.</param>
+        /// <param name="description">The description of the event.</param>
+        /// <param name="endTime">The end time of the event.</param>
+        /// <param name="channelId">
+        ///     The channel id of the event.
+        ///     <remarks>
+        ///     The event must have a type of <see cref="GuildScheduledEventType.Stage"/> or <see cref="GuildScheduledEventType.Voice"/>
+        ///     in order to use this property.
+        ///     </remarks>
+        /// </param>
+        /// <param name="speakers">A collection of speakers for the event.</param>
+        /// <param name="location">The location of the event; links are supported</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous create operation.
+        /// </returns>
+        public Task<RestGuildEvent> CreateEventAsync(
+            string name,
+            GuildScheduledEventPrivacyLevel privacyLevel,
+            DateTimeOffset startTime,
+            GuildScheduledEventType type,
+            string description = null,
+            DateTimeOffset? endTime = null,
+            ulong? channelId = null,
+            IEnumerable<ulong> speakers = null,
+            string location = null,
+            RequestOptions options = null)
+            => GuildHelper.CreateGuildEventAsync(Discord, this, name, privacyLevel, startTime, type, description, endTime, channelId, speakers, location, options);
+
+
+        #endregion
+
         #region Audit logs
         /// <summary>
         ///     Gets the specified number of audit log entries for this guild.
@@ -1624,6 +1731,15 @@ namespace Discord.WebSocket
         int? IGuild.ApproximatePresenceCount => null;
         /// <inheritdoc />
         IReadOnlyCollection<ICustomSticker> IGuild.Stickers => Stickers;
+        /// <inheritdoc />
+        async Task<IGuildScheduledEvent> IGuild.CreateEventAsync(string name, GuildScheduledEventPrivacyLevel privacyLevel, DateTimeOffset startTime, GuildScheduledEventType type, string description, DateTimeOffset? endTime, ulong? channelId, IEnumerable<ulong> speakers, string location, RequestOptions options)
+            => await CreateEventAsync(name, privacyLevel, startTime, type, description, endTime, channelId, speakers, location, options).ConfigureAwait(false);
+        /// <inheritdoc />
+        async Task<IGuildScheduledEvent> IGuild.GetEventAsync(ulong id, RequestOptions options)
+            => await GetEventAsync(id, options).ConfigureAwait(false);
+        /// <inheritdoc />
+        async Task<IReadOnlyCollection<IGuildScheduledEvent>> IGuild.GetEventsAsync(RequestOptions options)
+            => await GetEventsAsync(options).ConfigureAwait(false);
         /// <inheritdoc />
         async Task<IReadOnlyCollection<IBan>> IGuild.GetBansAsync(RequestOptions options)
             => await GetBansAsync(options).ConfigureAwait(false);
