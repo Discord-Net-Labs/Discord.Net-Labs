@@ -90,7 +90,7 @@ namespace Discord.Rest
             }
 
             CreatorId = model.CreatorId.ToNullable() ?? 0; // should be changed?
-            ChannelId = model.ChannelId.ToNullable();
+            ChannelId = model.ChannelId.IsSpecified ? model.ChannelId.Value : null;
             Name = model.Name;
             Description = model.Description.GetValueOrDefault();
             StartTime = model.ScheduledStartTime;

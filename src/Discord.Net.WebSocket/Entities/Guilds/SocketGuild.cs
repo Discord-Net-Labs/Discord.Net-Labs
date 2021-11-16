@@ -394,6 +394,8 @@ namespace Discord.WebSocket
             IsAvailable = !(model.Unavailable ?? false);
             if (!IsAvailable)
             {
+                if(_events == null)
+                    _events = new ConcurrentDictionary<ulong, SocketGuildEvent>();
                 if (_channels == null)
                     _channels = new ConcurrentDictionary<ulong, SocketGuildChannel>();
                 if (_members == null)

@@ -729,9 +729,9 @@ namespace Discord.Rest
         {
             var apiArgs = new CreateGuildScheduledEventParams()
             {
-                ChannelId = channelId ?? default,
-                Description = description ?? default,
-                EndTime = endTime ?? default,
+                ChannelId = channelId ?? Optional<ulong>.Unspecified,
+                Description = description ?? Optional<string>.Unspecified,
+                EndTime = endTime ?? Optional<DateTimeOffset>.Unspecified,
                 Name = name,
                 PrivacyLevel = privacyLevel,
                 StartTime = startTime,
@@ -742,13 +742,18 @@ namespace Discord.Rest
             {
                 apiArgs.EntityMetadata = new API.GuildScheduledEventEntityMetadata()
                 {
-                    Location = location ?? default,
-                    SpeakerIds = speakers?.ToArray() ?? default
+                    Location = location ?? Optional<string>.Unspecified,
+                    SpeakerIds = speakers?.ToArray() ?? Optional<ulong[]>.Unspecified
                 };
             }
 
             if ((type == GuildScheduledEventType.Stage || type == GuildScheduledEventType.Voice) && channelId == null)
                 throw new ArgumentException("Stage or voice event types must have a channel id set!");
+
+            if(type == GuildScheduledEventType.External && endTime == null)
+            {
+                throw new ArgumentException("An end time is required for external events");
+            }
 
             var model = await client.ApiClient.CreateGuildScheduledEventAsync(apiArgs, guild.Id, options).ConfigureAwait(false);
 

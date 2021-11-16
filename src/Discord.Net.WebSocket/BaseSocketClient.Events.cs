@@ -367,6 +367,16 @@ namespace Discord.WebSocket
         internal readonly AsyncEvent<Func<Cacheable<SocketGuildEvent, ulong>, SocketGuildEvent, Task>> _guildScheduledEventUpdated = new AsyncEvent<Func<Cacheable<SocketGuildEvent, ulong>, SocketGuildEvent, Task>>();
 
         /// <summary>
+        ///     Fired when a guild event is deleted.
+        /// </summary>
+        public event Func<SocketGuildEvent, Task> GuildScheduledEventDeleted
+        {
+            add { _guildScheduledEventDeleted.Add(value); }
+            remove { _guildScheduledEventDeleted.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketGuildEvent, Task>> _guildScheduledEventDeleted = new AsyncEvent<Func<SocketGuildEvent, Task>>();
+
+        /// <summary>
         ///     Fired when a guild event is cancelled.
         /// </summary>
         public event Func<SocketGuildEvent, Task> GuildScheduledEventCancelled

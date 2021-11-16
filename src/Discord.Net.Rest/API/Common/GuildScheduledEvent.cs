@@ -14,7 +14,7 @@ namespace Discord.API
         [JsonProperty("guild_id")]
         public ulong GuildId { get; set; }
         [JsonProperty("channel_id")]
-        public Optional<ulong> ChannelId { get; set; }
+        public Optional<ulong?> ChannelId { get; set; }
         [JsonProperty("creator_id")]
         public Optional<ulong> CreatorId { get; set; }
         [JsonProperty("name")]

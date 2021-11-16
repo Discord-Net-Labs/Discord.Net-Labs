@@ -79,9 +79,9 @@ namespace Discord.WebSocket
 
         internal void Update(Model model)
         {
-            if (model.ChannelId.IsSpecified)
+            if (model.ChannelId.IsSpecified && model.ChannelId.Value != null)
             {
-                Channel = Guild.GetChannel(model.ChannelId.Value);
+                Channel = Guild.GetChannel(model.ChannelId.Value.Value);
             }
 
             if (model.CreatorId.IsSpecified)

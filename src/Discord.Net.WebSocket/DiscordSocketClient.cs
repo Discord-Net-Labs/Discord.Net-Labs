@@ -2628,6 +2628,9 @@ namespace Discord.WebSocket
                                         case GuildScheduledEventStatus.Completed:
                                             await TimedInvokeAsync(_guildScheduledEventCompleted, nameof(GuildScheduledEventCompleted), guildEvent).ConfigureAwait(false);
                                             break;
+                                        default:
+                                            await TimedInvokeAsync(_guildScheduledEventDeleted, nameof(GuildScheduledEventDeleted), guildEvent).ConfigureAwait(false);
+                                            break;
                                     }
                                 }
                                 break;
