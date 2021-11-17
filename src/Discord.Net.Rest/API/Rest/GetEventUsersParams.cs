@@ -10,6 +10,6 @@ namespace Discord.API.Rest
     {
         public Optional<int> Limit { get; set; }
         public Optional<Direction> RelativeDirection { get; set; }
-        public Optional<ulong> RelativeMessageId { get; set; }
+        public Optional<ulong> RelativeUserId { get; set; }
     }
 }

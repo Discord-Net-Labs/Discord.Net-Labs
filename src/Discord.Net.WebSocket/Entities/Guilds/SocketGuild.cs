@@ -1292,10 +1292,9 @@ namespace Discord.WebSocket
             string description = null,
             DateTimeOffset? endTime = null,
             ulong? channelId = null,
-            IEnumerable<ulong> speakers = null,
             string location = null,
             RequestOptions options = null)
-            => GuildHelper.CreateGuildEventAsync(Discord, this, name, privacyLevel, startTime, type, description, endTime, channelId, speakers, location, options);
+            => GuildHelper.CreateGuildEventAsync(Discord, this, name, privacyLevel, startTime, type, description, endTime, channelId, location, options);
 
 
         #endregion
@@ -1734,8 +1733,8 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         IReadOnlyCollection<ICustomSticker> IGuild.Stickers => Stickers;
         /// <inheritdoc />
-        async Task<IGuildScheduledEvent> IGuild.CreateEventAsync(string name, GuildScheduledEventPrivacyLevel privacyLevel, DateTimeOffset startTime, GuildScheduledEventType type, string description, DateTimeOffset? endTime, ulong? channelId, IEnumerable<ulong> speakers, string location, RequestOptions options)
-            => await CreateEventAsync(name, privacyLevel, startTime, type, description, endTime, channelId, speakers, location, options).ConfigureAwait(false);
+        async Task<IGuildScheduledEvent> IGuild.CreateEventAsync(string name, GuildScheduledEventPrivacyLevel privacyLevel, DateTimeOffset startTime, GuildScheduledEventType type, string description, DateTimeOffset? endTime, ulong? channelId, string location, RequestOptions options)
+            => await CreateEventAsync(name, privacyLevel, startTime, type, description, endTime, channelId, location, options).ConfigureAwait(false);
         /// <inheritdoc />
         async Task<IGuildScheduledEvent> IGuild.GetEventAsync(ulong id, RequestOptions options)
             => await GetEventAsync(id, options).ConfigureAwait(false);

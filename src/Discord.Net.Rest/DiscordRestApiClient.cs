@@ -1980,6 +1980,32 @@ namespace Discord.API
             return await SendAsync<User[]>("GET", () => $"guilds/{guildId}/scheduled-events/{eventId}/users?limit={limit}&with_member=true", ids, options: options).ConfigureAwait(false);
         }
 
+        public async Task<User[]> GetGuildScheduledEventUsersAsync(ulong eventId, ulong guildId, GetEventUsersParams args, RequestOptions options = null)
+        {
+            Preconditions.NotEqual(eventId, 0, nameof(eventId));
+            Preconditions.NotNull(args, nameof(args));
+            Preconditions.AtLeast(args.Limit, 0, nameof(args.Limit));
+            Preconditions.AtMost(args.Limit, DiscordConfig.MaxMessagesPerBatch, nameof(args.Limit));
+            options = RequestOptions.CreateOrClone(options);
+
+            int limit = args.Limit.GetValueOrDefault(DiscordConfig.MaxGuildEventUsersPerBatch);
+            ulong? relativeId = args.RelativeUserId.IsSpecified ? args.RelativeUserId.Value : (ulong?)null;
+            var relativeDir = args.RelativeDirection.GetValueOrDefault(Direction.Before) switch
+            {
+                Direction.After => "after",
+                Direction.Around => "around",
+                _ => "before",
+            };
+            var ids = new BucketIds(guildId: guildId);
+            Expression<Func<string>> endpoint;
+            if (relativeId != null)
+                endpoint = () => $"guilds/{guildId}/scheduled-events/{eventId}/users?with_member=true&limit={limit}&{relativeDir}={relativeId}";
+            else
+                endpoint = () => $"guilds/{guildId}/scheduled-events/{eventId}/users?with_member=true&limit={limit}";
+
+            return await SendAsync<User[]>("GET", endpoint, ids, options: options).ConfigureAwait(false);
+        }
+
         #endregion
 
         #region Users

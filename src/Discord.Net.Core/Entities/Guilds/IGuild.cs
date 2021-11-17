@@ -1105,7 +1105,6 @@ namespace Discord
             string description = null,
             DateTimeOffset? endTime = null,
             ulong? channelId = null,
-            IEnumerable<ulong> speakers = null,
             string location = null,
             RequestOptions options = null);
 

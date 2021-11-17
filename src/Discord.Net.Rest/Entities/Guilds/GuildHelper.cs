@@ -653,18 +653,126 @@ namespace Discord.Rest
 
         #region Events
 
-        public static async Task<IReadOnlyCollection<RestGuildUser>> GetEventUsersAsync(BaseDiscordClient client, IGuildScheduledEvent guildEvent, int limit = 100, RequestOptions options = null)
+        public static async Task<IReadOnlyCollection<RestUser>> GetEventUsersAsync(BaseDiscordClient client, IGuildScheduledEvent guildEvent, int limit = 100, RequestOptions options = null)
         {
             var models = await client.ApiClient.GetGuildScheduledEventUsersAsync(guildEvent.Id, guildEvent.Guild.Id, limit, options).ConfigureAwait(false);
 
             return models.Select(x =>
             {
-                // since the models different we need to change it a tad.
-                var guildMember = x.GuildMember.Value;
-                guildMember.User = x;
+                if(x.GuildMember.IsSpecified && x.GuildMember.Value != null)
+                {
+                    var guildMember = x.GuildMember.Value;
+                    guildMember.User = x;
 
-                return RestGuildUser.Create(client, guildEvent.Guild, guildMember);
+                    return RestGuildUser.Create(client, guildEvent.Guild, guildMember);
+                }
+                else
+                {
+                    return RestUser.Create(client, x);
+                }
             }).ToImmutableArray();
+        }
+
+        public static IAsyncEnumerable<IReadOnlyCollection<RestUser>> GetEventUsersAsync(BaseDiscordClient client, IGuildScheduledEvent guildEvent,
+           ulong? fromUserId, int? limit, RequestOptions options)
+        {
+            return new PagedAsyncEnumerable<RestUser>(
+                DiscordConfig.MaxGuildEventUsersPerBatch,
+                async (info, ct) =>
+                {
+                    var args = new GetEventUsersParams
+                    {
+                        Limit = info.PageSize,
+                        RelativeDirection = Direction.After,
+                    };
+                    if (info.Position != null)
+                        args.RelativeUserId = info.Position.Value;
+                    var models = await client.ApiClient.GetGuildScheduledEventUsersAsync(guildEvent.Id, guildEvent.Guild.Id, args, options).ConfigureAwait(false);
+                    return models
+                        .Select(x =>
+                        {
+                            if (x.GuildMember.IsSpecified && x.GuildMember.Value != null)
+                            {
+                                var guildMember = x.GuildMember.Value;
+                                guildMember.User = x;
+
+                                return RestGuildUser.Create(client, guildEvent.Guild, guildMember);
+                            }
+                            else
+                            {
+                                return RestUser.Create(client, x);
+                            }
+                        })
+                        .ToImmutableArray();
+                },
+                nextPage: (info, lastPage) =>
+                {
+                    if (lastPage.Count != DiscordConfig.MaxGuildEventUsersPerBatch)
+                        return false;
+                    info.Position = lastPage.Max(x => x.Id);
+                    return true;
+                },
+                start: fromUserId,
+                count: limit
+            );
+        }
+
+        public static IAsyncEnumerable<IReadOnlyCollection<RestUser>> GetEventUsersAsync(BaseDiscordClient client, IGuildScheduledEvent guildEvent,
+            ulong? fromUserId, Direction dir, int limit, RequestOptions options = null)
+        {
+            if (dir == Direction.Around && limit > DiscordConfig.MaxMessagesPerBatch)
+            {
+                int around = limit / 2;
+                if (fromUserId.HasValue)
+                    return GetEventUsersAsync(client, guildEvent, fromUserId.Value + 1, Direction.Before, around + 1, options) //Need to include the message itself
+                        .Concat(GetEventUsersAsync(client, guildEvent, fromUserId, Direction.After, around, options));
+                else //Shouldn't happen since there's no public overload for ulong? and Direction
+                    return GetEventUsersAsync(client, guildEvent, null, Direction.Before, around + 1, options);
+            }
+
+            return new PagedAsyncEnumerable<RestUser>(
+                DiscordConfig.MaxGuildEventUsersPerBatch,
+                async (info, ct) =>
+                {
+                    var args = new GetEventUsersParams
+                    {
+                        RelativeDirection = dir,
+                        Limit = info.PageSize
+                    };
+                    if (info.Position != null)
+                        args.RelativeUserId = info.Position.Value;
+
+                    var models = await client.ApiClient.GetGuildScheduledEventUsersAsync(guildEvent.Id, guildEvent.Guild.Id, args, options).ConfigureAwait(false);
+                    var builder = ImmutableArray.CreateBuilder<RestUser>();
+                    foreach (var model in models)
+                    {
+                        if (model.GuildMember.IsSpecified && model.GuildMember.Value != null)
+                        {
+                            var guildMember = model.GuildMember.Value;
+                            guildMember.User = model;
+
+                            builder.Add(RestGuildUser.Create(client, guildEvent.Guild, guildMember));
+                        }
+                        else
+                        {
+                            builder.Add(RestUser.Create(client, model));
+                        }
+                    }
+                    return builder.ToImmutable();
+                },
+                nextPage: (info, lastPage) =>
+                {
+                    if (lastPage.Count != DiscordConfig.MaxGuildEventUsersPerBatch)
+                        return false;
+                    if (dir == Direction.Before)
+                        info.Position = lastPage.Min(x => x.Id);
+                    else
+                        info.Position = lastPage.Max(x => x.Id);
+                    return true;
+                },
+                start: fromUserId,
+                count: limit
+            );
         }
 
         public static async Task<API.GuildScheduledEvent> ModifyGuildEventAsync(BaseDiscordClient client, Action<GuildScheduledEventsProperties> func,
@@ -686,12 +794,11 @@ namespace Discord.Rest
                 Type = args.Type
             };
 
-            if(args.SpeakerIds.IsSpecified || args.Location.IsSpecified)
+            if(args.Location.IsSpecified)
             {
                 apiArgs.EntityMetadata = new API.GuildScheduledEventEntityMetadata()
                 {
                     Location = args.Location,
-                    SpeakerIds = args.SpeakerIds.IsSpecified ? args.SpeakerIds.Value.ToArray() : Optional<ulong[]>.Unspecified
                 };
             }
 
@@ -723,7 +830,6 @@ namespace Discord.Rest
             string description = null,
             DateTimeOffset? endTime = null,
             ulong? channelId = null,
-            IEnumerable<ulong> speakers = null,
             string location = null,
             RequestOptions options = null)
         {
@@ -738,12 +844,11 @@ namespace Discord.Rest
                 Type = type
             };
 
-            if(speakers != null || location != null)
+            if(location != null)
             {
                 apiArgs.EntityMetadata = new API.GuildScheduledEventEntityMetadata()
                 {
-                    Location = location ?? Optional<string>.Unspecified,
-                    SpeakerIds = speakers?.ToArray() ?? Optional<ulong[]>.Unspecified
+                    Location = location
                 };
             }
 

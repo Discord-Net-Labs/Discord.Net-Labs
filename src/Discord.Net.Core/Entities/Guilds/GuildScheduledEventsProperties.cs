@@ -15,10 +15,6 @@ namespace Discord
         ///     Gets or sets the channel id of the event.
         /// </summary>
         public Optional<ulong> ChannelId { get; set; }
-        /// <summary>
-        ///     Gets or sets a collection of speakers for this event.
-        /// </summary>
-        public Optional<IEnumerable<ulong>> SpeakerIds { get; set; }
 
         /// <summary>
         ///     Gets or sets the location of this event.

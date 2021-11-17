@@ -115,7 +115,7 @@ namespace Discord
         /// <returns>
         ///     Paged collection of users.
         /// </returns>
-        IAsyncEnumerable<IReadOnlyCollection<IUser>> GetUsersAsync(int limit = DiscordConfig.MaxGuildEventUsersPerBatch,RequestOptions options = null);
+        IAsyncEnumerable<IReadOnlyCollection<IUser>> GetUsersAsync(RequestOptions options = null);
 
         /// <summary>
         ///     Gets a collection of N users interested in the event.
