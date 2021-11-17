@@ -464,7 +464,16 @@ namespace Discord.WebSocket
             }
             _voiceStates = voiceStates;
 
-           
+            var events = new ConcurrentDictionary<ulong, SocketGuildEvent>(ConcurrentHashSet.DefaultConcurrencyLevel, (int)(model.GuildScheduledEvents.Length * 1.05));
+            {
+                for (int i = 0; i < model.GuildScheduledEvents.Length; i++)
+                {
+                    var guildEvent = SocketGuildEvent.Create(Discord, this, model.GuildScheduledEvents[i]);
+                    events.TryAdd(guildEvent.Id, guildEvent);
+                }
+            }
+            _events = events;
+
 
             _syncPromise = new TaskCompletionSource<bool>();
             _downloaderPromise = new TaskCompletionSource<bool>();

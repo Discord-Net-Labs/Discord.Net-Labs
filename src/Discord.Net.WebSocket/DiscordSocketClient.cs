@@ -2601,7 +2601,15 @@ namespace Discord.WebSocket
 
                                     var after = guild.AddOrUpdateEvent(data);
 
-                                    await TimedInvokeAsync(_guildScheduledEventUpdated, nameof(GuildScheduledEventUpdated), beforeCacheable, after).ConfigureAwait(false);
+                                    if((before != null ? before.Status != GuildScheduledEventStatus.Completed : true) && data.Status == GuildScheduledEventStatus.Completed)
+                                    {
+                                        await TimedInvokeAsync(_guildScheduledEventCompleted, nameof(GuildScheduledEventCompleted), after).ConfigureAwait(false);
+                                    }
+                                    else if((before != null ? before.Status != GuildScheduledEventStatus.Active : false) && data.Status == GuildScheduledEventStatus.Active)
+                                    {
+                                        await TimedInvokeAsync(_guildScheduledEventStarted, nameof(GuildScheduledEventStarted), after).ConfigureAwait(false);
+                                    }
+                                    else await TimedInvokeAsync(_guildScheduledEventUpdated, nameof(GuildScheduledEventUpdated), beforeCacheable, after).ConfigureAwait(false);
                                 }
                                 break;
                             case "GUILD_SCHEDULED_EVENT_DELETE":
@@ -2620,18 +2628,7 @@ namespace Discord.WebSocket
 
                                     var guildEvent = guild.RemoveEvent(data.Id) ?? SocketGuildEvent.Create(this, guild, data);
 
-                                    switch (guildEvent.Status)
-                                    {
-                                        case GuildScheduledEventStatus.Cancelled:
-                                            await TimedInvokeAsync(_guildScheduledEventCancelled, nameof(GuildScheduledEventCancelled), guildEvent).ConfigureAwait(false);
-                                            break;
-                                        case GuildScheduledEventStatus.Completed:
-                                            await TimedInvokeAsync(_guildScheduledEventCompleted, nameof(GuildScheduledEventCompleted), guildEvent).ConfigureAwait(false);
-                                            break;
-                                        default:
-                                            await TimedInvokeAsync(_guildScheduledEventDeleted, nameof(GuildScheduledEventDeleted), guildEvent).ConfigureAwait(false);
-                                            break;
-                                    }
+                                    await TimedInvokeAsync(_guildScheduledEventCancelled, nameof(GuildScheduledEventCancelled), guildEvent).ConfigureAwait(false);
                                 }
                                 break;
 

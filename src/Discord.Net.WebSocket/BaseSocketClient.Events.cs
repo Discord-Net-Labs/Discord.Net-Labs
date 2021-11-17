@@ -396,6 +396,15 @@ namespace Discord.WebSocket
         }
         internal readonly AsyncEvent<Func<SocketGuildEvent, Task>> _guildScheduledEventCompleted = new AsyncEvent<Func<SocketGuildEvent, Task>>();
 
+        /// <summary>
+        ///     Fired when a guild event is started.
+        /// </summary>
+        public event Func<SocketGuildEvent, Task> GuildScheduledEventStarted
+        {
+            add { _guildScheduledEventStarted.Add(value); }
+            remove { _guildScheduledEventStarted.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketGuildEvent, Task>> _guildScheduledEventStarted = new AsyncEvent<Func<SocketGuildEvent, Task>>();
 
         #endregion
 
