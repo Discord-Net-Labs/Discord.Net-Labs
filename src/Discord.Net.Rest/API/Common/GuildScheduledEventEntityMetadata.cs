@@ -9,8 +9,6 @@ namespace Discord.API
 {
     internal class GuildScheduledEventEntityMetadata
     {
-        [JsonProperty("speaker_ids")]
-        public Optional<ulong[]> SpeakerIds { get; set; }
         [JsonProperty("location")]
         public Optional<string> Location { get; set; }
     }

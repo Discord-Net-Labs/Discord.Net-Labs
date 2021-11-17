@@ -47,9 +47,6 @@ namespace Discord.Rest
         public ulong? EntityId { get; private set; }
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<ulong> Speakers { get; private set; }
-
-        /// <inheritdoc/>
         public string Location { get; private set; }
 
         /// <inheritdoc/>
@@ -99,7 +96,6 @@ namespace Discord.Rest
             Status = model.Status;
             Type = model.EntityType;
             EntityId = model.EntityId;
-            Speakers = model.EntityMetadata?.SpeakerIds.GetValueOrDefault(new ulong[0]).ToImmutableArray() ?? ImmutableArray<ulong>.Empty;
             Location = model.EntityMetadata?.Location.GetValueOrDefault();
             UserCount = model.UserCount.ToNullable();
         }

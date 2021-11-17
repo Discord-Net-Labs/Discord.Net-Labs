@@ -53,11 +53,6 @@ namespace Discord.WebSocket
         /// <inheritdoc/>
         public ulong? EntityId { get; private set; }
 
-        /// <summary>
-        ///     Gets a collection of speakers in this event.
-        /// </summary>
-        public IReadOnlyCollection<SocketGuildUser> Speakers { get; private set; }
-
         /// <inheritdoc/>
         public string Location { get; private set; }
 
@@ -107,7 +102,6 @@ namespace Discord.WebSocket
 
             EntityId = model.EntityId;
             Location = model.EntityMetadata?.Location.GetValueOrDefault();
-            Speakers = model.EntityMetadata?.SpeakerIds.GetValueOrDefault(new ulong[0]).Select(x => Guild.GetUser(x)).Where(x => x != null).ToImmutableArray() ?? ImmutableArray.Create<SocketGuildUser>();
             Type = model.EntityType;
 
             PrivacyLevel = model.PrivacyLevel;
@@ -145,8 +139,6 @@ namespace Discord.WebSocket
         IUser IGuildScheduledEvent.Creator => Creator;
         /// <inheritdoc/>
         ulong? IGuildScheduledEvent.ChannelId => Channel?.Id;
-        /// <inheritdoc/>
-        IReadOnlyCollection<ulong> IGuildScheduledEvent.Speakers => Speakers.Select(x => x.Id).ToImmutableArray();
         /// <inheritdoc/>
         async Task<IReadOnlyCollection<IGuildUser>> IGuildScheduledEvent.GetUsersAsync(int limit, RequestOptions options)
             => await GetUsersAsync(limit, options);
