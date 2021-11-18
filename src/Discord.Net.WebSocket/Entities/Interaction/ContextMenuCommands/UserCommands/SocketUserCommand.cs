@@ -6,7 +6,7 @@ namespace Discord.WebSocket
     /// <summary>
     ///     Represents a Websocket-based slash command received over the gateway.
     /// </summary>
-    public class SocketUserCommand : SocketCommandBase, IDiscordInteraction
+    public class SocketUserCommand : SocketCommandBase, IUserCommandInteraction, IDiscordInteraction
     {
         /// <summary>
         ///     The data associated with this interaction.
@@ -34,6 +34,8 @@ namespace Discord.WebSocket
             return entity;
         }
 
-        IDiscordInteractionData IDiscordInteraction.Data => Data;
+        //IUserCommandInteraction
+        /// <inheritdoc/>
+        IUserCommandInteractionData IUserCommandInteraction.Data => Data;
     }
 }
