@@ -37,5 +37,9 @@ namespace Discord.WebSocket
         //IMessageCommandInteraction
         /// <inheritdoc/>
         IMessageCommandInteractionData IMessageCommandInteraction.Data => Data;
+
+        //IDiscordInteraction
+        /// <inheritdoc/>
+        IDiscordInteractionData IDiscordInteraction.Data => Data;
     }
 }

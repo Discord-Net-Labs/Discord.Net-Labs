@@ -118,5 +118,9 @@ namespace Discord.WebSocket
         //IAutocompleteInteraction
         /// <inheritdoc/>
         IAutocompleteInteractionData IAutocompleteInteraction.Data => Data;
+
+        //IDiscordInteraction
+        /// <inheritdoc/>
+        IDiscordInteractionData IDiscordInteraction.Data => Data;
     }
 }

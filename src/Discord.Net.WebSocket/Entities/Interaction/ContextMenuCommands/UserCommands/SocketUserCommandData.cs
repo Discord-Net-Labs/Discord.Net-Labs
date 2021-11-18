@@ -34,6 +34,6 @@ namespace Discord.WebSocket
 
         //IUserCommandInteractionData
         /// <inheritdoc/>
-        IUser IUserCommandInteractionData.User => User;
+        IUser IUserCommandInteractionData.User => Member;
     }
 }

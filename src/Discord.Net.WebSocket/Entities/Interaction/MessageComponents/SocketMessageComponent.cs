@@ -428,5 +428,9 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         IUserMessage IComponentInteraction.Message => Message;
+
+        //IDiscordInteraction
+        /// <inheritdoc/>
+        IDiscordInteractionData IDiscordInteraction.Data => Data;
     }
 }
