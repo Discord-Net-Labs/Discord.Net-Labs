@@ -1,7 +1,7 @@
 namespace Discord
 {
     /// <summary>
-    ///     Represents a Message Command interaction received over the gateway.
+    ///     Represents a Message Command interaction.
     /// </summary>
     public interface IMessageCommandInteraction : IDiscordInteraction
     {

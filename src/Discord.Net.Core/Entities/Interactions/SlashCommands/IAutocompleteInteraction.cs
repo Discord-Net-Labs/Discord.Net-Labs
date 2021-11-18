@@ -1,12 +1,12 @@
 namespace Discord
 {
     /// <summary>
-    ///     Represents a <see cref="InteractionType.ApplicationCommandAutocomplete"/> received over the gateway.
+    ///     Represents a <see cref="InteractionType.ApplicationCommandAutocomplete"/>.
     /// </summary>
     public interface IAutocompleteInteraction : IDiscordInteraction
     {
         /// <summary>
-        ///     The autocomplete data of this interaction.
+        ///     Gets the autocomplete data of this interaction.
         /// </summary>
         new IAutocompleteInteractionData Data { get; }
     }

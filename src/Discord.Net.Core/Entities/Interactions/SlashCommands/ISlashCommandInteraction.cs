@@ -1,12 +1,12 @@
 namespace Discord
 {
     /// <summary>
-    ///     Represents a slash command interaction received over the gateway.
+    ///     Represents a slash command interaction.
     /// </summary>
     public interface ISlashCommandInteraction : IDiscordInteraction
     {
         /// <summary>
-        ///     The data associated with this interaction.
+        ///     Gets the data associated with this interaction.
         /// </summary>
         new IApplicationCommandInteractionData Data { get; }
     }
