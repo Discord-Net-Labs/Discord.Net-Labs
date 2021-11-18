@@ -782,6 +782,17 @@ namespace Discord.Rest
 
             func(args);
 
+            if (args.Status.IsSpecified)
+            {
+                switch (args.Status.Value)
+                {
+                    case GuildScheduledEventStatus.Active    when guildEvent.Status != GuildScheduledEventStatus.Scheduled:
+                    case GuildScheduledEventStatus.Completed when guildEvent.Status != GuildScheduledEventStatus.Active:
+                    case GuildScheduledEventStatus.Cancelled when guildEvent.Status != GuildScheduledEventStatus.Scheduled:
+                        throw new ArgumentException($"Cannot set event to {args.Status.Value} when events status is {guildEvent.Status}");
+                }
+            }
+
             var apiArgs = new ModifyGuildScheduledEventParams()
             {
                 ChannelId = args.ChannelId,
@@ -833,6 +844,29 @@ namespace Discord.Rest
             string location = null,
             RequestOptions options = null)
         {
+            if(location != null)
+            {
+                Preconditions.AtMost(location.Length, 100, nameof(location));
+            }
+
+            switch (type)
+            {
+                case GuildScheduledEventType.Stage or GuildScheduledEventType.Voice when channelId == null:
+                    throw new ArgumentException($"{nameof(channelId)} must not be null when type is {type}", nameof(channelId));
+                case GuildScheduledEventType.External when channelId != null:
+                    throw new ArgumentException($"{nameof(channelId)} must be null when using external event type", nameof(channelId));
+                case GuildScheduledEventType.External when location == null:
+                    throw new ArgumentException($"{nameof(location)} must not be null when using external event type", nameof(location));
+                case GuildScheduledEventType.External when endTime == null:
+                    throw new ArgumentException($"{nameof(endTime)} must not be null when using external event type", nameof(endTime));
+            }
+
+            if (startTime <= DateTimeOffset.Now)
+                throw new ArgumentOutOfRangeException(nameof(startTime), "The start time for an event cannot be in the past");
+
+            if (endTime != null && endTime <= startTime)
+                throw new ArgumentOutOfRangeException(nameof(endTime), $"{nameof(endTime)} cannot be before the start time");
+
             var apiArgs = new CreateGuildScheduledEventParams()
             {
                 ChannelId = channelId ?? Optional<ulong>.Unspecified,
@@ -850,14 +884,6 @@ namespace Discord.Rest
                 {
                     Location = location
                 };
-            }
-
-            if ((type == GuildScheduledEventType.Stage || type == GuildScheduledEventType.Voice) && channelId == null)
-                throw new ArgumentException("Stage or voice event types must have a channel id set!");
-
-            if(type == GuildScheduledEventType.External && endTime == null)
-            {
-                throw new ArgumentException("An end time is required for external events");
             }
 
             var model = await client.ApiClient.CreateGuildScheduledEventAsync(apiArgs, guild.Id, options).ConfigureAwait(false);
