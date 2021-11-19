@@ -1,5 +1,3 @@
-using Discord.Rest;
-using Discord.WebSocket;
 using System;
 using System.Threading.Tasks;
 
@@ -10,27 +8,18 @@ namespace Discord.Interactions
     /// </summary>
     public class MessageCommandInfo : ContextCommandInfo
     {
-        internal MessageCommandInfo (Builders.ContextCommandBuilder builder, ModuleInfo module, InteractionService commandService)
+        internal MessageCommandInfo(Builders.ContextCommandBuilder builder, ModuleInfo module, InteractionService commandService)
             : base(builder, module, commandService) { }
 
         /// <inheritdoc/>
-        public override async Task<IResult> ExecuteAsync (IInteractionContext context, IServiceProvider services)
+        public override async Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services)
         {
+            if (context.Interaction is not IMessageCommandInteraction messageCommand)
+                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Message Command Interation");
+
             try
             {
-                object[] args;
-
-                switch (context.Interaction)
-                {
-                    case RestMessageCommand restMessageCommand:
-                        args = new object[1] { restMessageCommand.Data.Message };
-                        break;
-                    case SocketMessageCommand socketMessageCommand:
-                        args = new object[1] { socketMessageCommand.Data.Message };
-                        break;
-                    default:
-                        return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Message Command Interation");
-                }
+                object[] args = new object[1] { messageCommand.Data.Message };
 
                 return await RunAsync(context, args, services).ConfigureAwait(false);
             }
@@ -41,7 +30,7 @@ namespace Discord.Interactions
         }
 
         /// <inheritdoc/>
-        protected override string GetLogString (IInteractionContext context)
+        protected override string GetLogString(IInteractionContext context)
         {
             if (context.Guild != null)
                 return $"Message Command: \"{base.ToString()}\" for {context.User} in {context.Guild}/{context.Channel}";

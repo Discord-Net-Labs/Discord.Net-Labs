@@ -1,6 +1,4 @@
 using Discord.Interactions.Builders;
-using Discord.Rest;
-using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -40,7 +38,7 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public override async Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services)
         {
-            if (context.Interaction is not SocketAutocompleteInteraction || context.Interaction is not RestAutocompleteInteraction)
+            if (context.Interaction is not IAutocompleteInteraction)
                 return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Autocomplete Interaction");
 
             try

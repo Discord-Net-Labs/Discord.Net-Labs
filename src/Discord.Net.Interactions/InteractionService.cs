@@ -511,23 +511,18 @@ namespace Discord.Interactions
 
             return interaction switch
             {
-                SocketSlashCommand slashCommand => await ExecuteSlashCommandAsync(context, slashCommand.Data, services).ConfigureAwait(false),
-                RestSlashCommand restSlashCommand => await ExecuteSlashCommandAsync(context, restSlashCommand.Data, services).ConfigureAwait(false),
-                SocketMessageComponent messageComponent => await ExecuteComponentCommandAsync(context, messageComponent.Data.CustomId, services).ConfigureAwait(false),
-                RestMessageComponent restMessageComponent => await ExecuteComponentCommandAsync(context, restMessageComponent.Data.CustomId, services).ConfigureAwait(false),
-                SocketUserCommand userCommand => await ExecuteContextCommandAsync(context, userCommand.CommandName, ApplicationCommandType.User, services).ConfigureAwait(false),
-                RestUserCommand restUserCommand => await ExecuteContextCommandAsync(context, restUserCommand.CommandName, ApplicationCommandType.User, services).ConfigureAwait(false),
-                SocketMessageCommand messageCommand => await ExecuteContextCommandAsync(context, messageCommand.CommandName, ApplicationCommandType.Message, services).ConfigureAwait(false),
-                RestMessageCommand restMessageCommand => await ExecuteContextCommandAsync(context, restMessageCommand.CommandName, ApplicationCommandType.Message, services).ConfigureAwait(false),
-                SocketAutocompleteInteraction autocomplete => await ExecuteAutocompleteAsync(context, autocomplete, services).ConfigureAwait(false),
-                RestAutocompleteInteraction restAutocomplete => throw new NotImplementedException($"RestAutocompleteInteraction"),
+                ISlashCommandInteraction slashCommand => await ExecuteSlashCommandAsync(context, slashCommand, services).ConfigureAwait(false),
+                IComponentInteraction messageComponent => await ExecuteComponentCommandAsync(context, messageComponent.Data.CustomId, services).ConfigureAwait(false),
+                IUserCommandInteraction userCommand => await ExecuteContextCommandAsync(context, userCommand.Data.Name, ApplicationCommandType.User, services).ConfigureAwait(false),
+                IMessageCommandInteraction messageCommand => await ExecuteContextCommandAsync(context, messageCommand.Data.Name, ApplicationCommandType.Message, services).ConfigureAwait(false),
+                IAutocompleteInteraction autocomplete => await ExecuteAutocompleteAsync(context, autocomplete, services).ConfigureAwait(false),
                 _ => throw new InvalidOperationException($"{interaction.Type} interaction type cannot be executed by the Interaction service"),
             };
         }
 
-        private async Task<IResult> ExecuteSlashCommandAsync (IInteractionContext context, IApplicationCommandInteractionData data, IServiceProvider services)
+        private async Task<IResult> ExecuteSlashCommandAsync (IInteractionContext context, ISlashCommandInteraction interaction, IServiceProvider services)
         {
-            var keywords = data.GetCommandKeywords();
+            var keywords = interaction.Data.GetCommandKeywords();
 
             var result = _slashCommandMap.GetCommand(keywords);
 
@@ -575,9 +570,9 @@ namespace Discord.Interactions
             return await result.Command.ExecuteAsync(context, services, result.RegexCaptureGroups).ConfigureAwait(false);
         }
 
-        private async Task<IResult> ExecuteAutocompleteAsync (IInteractionContext context, SocketAutocompleteInteraction autocompleteInteraction, IServiceProvider services )
+        private async Task<IResult> ExecuteAutocompleteAsync (IInteractionContext context, IAutocompleteInteraction interaction, IServiceProvider services )
         {
-            var keywords = autocompleteInteraction.Data.GetCommandKeywords();
+            var keywords = interaction.Data.GetCommandKeywords();
 
             if(_enableAutocompleters)
             {
@@ -585,10 +580,10 @@ namespace Discord.Interactions
 
                 if(autocompleterResult.IsSuccess)
                 {
-                    var parameter = autocompleterResult.Command.Parameters.FirstOrDefault(x => string.Equals(x.Name, autocompleteInteraction.Data.Current.Name, StringComparison.Ordinal));
+                    var parameter = autocompleterResult.Command.Parameters.FirstOrDefault(x => string.Equals(x.Name, interaction.Data.Current.Name, StringComparison.Ordinal));
 
                     if(parameter is not null)
-                        return await parameter.Autocompleter.ExecuteAsync(context, autocompleteInteraction, parameter, services).ConfigureAwait(false);
+                        return await parameter.Autocompleter.ExecuteAsync(context, interaction, parameter, services).ConfigureAwait(false);
                 }
             }
 
@@ -596,7 +591,7 @@ namespace Discord.Interactions
 
             if(!commandResult.IsSuccess)
             {
-                await _cmdLogger.DebugAsync($"Unknown command name, skipping autocomplete process ({autocompleteInteraction.Data.CommandName.ToUpper()})");
+                await _cmdLogger.DebugAsync($"Unknown command name, skipping autocomplete process ({interaction.Data.CommandName.ToUpper()})");
 
                 return commandResult;
             }

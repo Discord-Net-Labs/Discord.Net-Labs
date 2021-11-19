@@ -40,19 +40,10 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public override async Task<IResult> ExecuteAsync (IInteractionContext context, IServiceProvider services)
         {
-            IEnumerable<IApplicationCommandInteractionDataOption> options;
+            if(context.Interaction is not ISlashCommandInteraction slashCommand)
+                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Slash Command Interaction");
 
-            switch (context.Interaction)
-            {
-                case RestSlashCommand restSlashCommand:
-                    options = restSlashCommand.Data.Options;
-                    break;
-                case SocketSlashCommand socketSlashCommand:
-                    options = socketSlashCommand.Data.Options;
-                    break;
-                default:
-                    return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Slash Command Interaction");
-            } 
+            var options = slashCommand.Data.Options;
 
             while (options != null && options.Any(x => x.Type == ApplicationCommandOptionType.SubCommand || x.Type == ApplicationCommandOptionType.SubCommandGroup))
                 options = options.ElementAt(0)?.Options;

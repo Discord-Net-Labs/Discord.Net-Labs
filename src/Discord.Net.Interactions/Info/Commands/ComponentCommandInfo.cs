@@ -1,5 +1,4 @@
 using Discord.Interactions.Builders;
-using Discord.Rest;
 using Discord.WebSocket;
 using System;
 using System.Collections.Generic;
@@ -20,13 +19,13 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public override bool SupportsWildCards => true;
 
-        internal ComponentCommandInfo (ComponentCommandBuilder builder, ModuleInfo module, InteractionService commandService) : base(builder, module, commandService)
+        internal ComponentCommandInfo(ComponentCommandBuilder builder, ModuleInfo module, InteractionService commandService) : base(builder, module, commandService)
         {
             Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
         }
 
         /// <inheritdoc/>
-        public override async Task<IResult> ExecuteAsync (IInteractionContext context, IServiceProvider services)
+        public override async Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services)
             => await ExecuteAsync(context, services, null).ConfigureAwait(false);
 
         /// <summary>
@@ -38,35 +37,27 @@ namespace Discord.Interactions
         /// <returns>
         ///     A task representing the asyncronous command execution process
         /// </returns>
-        public async Task<IResult> ExecuteAsync (IInteractionContext context, IServiceProvider services, params string[] additionalArgs)
+        public async Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services, params string[] additionalArgs)
         {
+            if (context.Interaction is not IComponentInteraction componentInteraction)
+                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Message Component Interaction");
+
             var args = new List<string>();
 
             if (additionalArgs is not null)
                 args.AddRange(additionalArgs);
 
-            switch (context.Interaction)
-            {
-                case RestMessageComponent restMessageComponent:
-                    if (restMessageComponent.Data?.Values is not null)
-                        args.AddRange(restMessageComponent.Data.Values);
-                    break;
-                case SocketMessageComponent socketMessageComponent:
-                    if (socketMessageComponent.Data?.Values is not null)
-                        args.AddRange(socketMessageComponent.Data.Values);
-                    break;
-                default:
-                    return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Message Component Interaction");
-            }
+            if (componentInteraction.Data?.Values is not null)
+                args.AddRange(componentInteraction.Data.Values);
 
             return await ExecuteAsync(context, Parameters, args, services);
         }
 
         /// <inheritdoc/>
-        public async Task<IResult> ExecuteAsync (IInteractionContext context, IEnumerable<CommandParameterInfo> paramList, IEnumerable<string> values,
+        public async Task<IResult> ExecuteAsync(IInteractionContext context, IEnumerable<CommandParameterInfo> paramList, IEnumerable<string> values,
             IServiceProvider services)
         {
-            if(context.Interaction is not SocketMessageComponent messageComponent)
+            if (context.Interaction is not SocketMessageComponent messageComponent)
                 return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Component Command Interaction");
 
             try
@@ -99,11 +90,11 @@ namespace Discord.Interactions
             }
         }
 
-        private static object[] GenerateArgs (IEnumerable<CommandParameterInfo> paramList, IEnumerable<string> argList)
+        private static object[] GenerateArgs(IEnumerable<CommandParameterInfo> paramList, IEnumerable<string> argList)
         {
             var result = new object[paramList.Count()];
 
-            for(var i = 0; i < paramList.Count(); i++)
+            for (var i = 0; i < paramList.Count(); i++)
             {
                 var parameter = paramList.ElementAt(i);
 
@@ -127,10 +118,10 @@ namespace Discord.Interactions
             return result;
         }
 
-        protected override Task InvokeModuleEvent (IInteractionContext context, IResult result)
+        protected override Task InvokeModuleEvent(IInteractionContext context, IResult result)
             => CommandService._componentCommandExecutedEvent.InvokeAsync(this, context, result);
 
-        protected override string GetLogString (IInteractionContext context)
+        protected override string GetLogString(IInteractionContext context)
         {
             if (context.Guild != null)
                 return $"Component Interaction: \"{base.ToString()}\" for {context.User} in {context.Guild}/{context.Channel}";

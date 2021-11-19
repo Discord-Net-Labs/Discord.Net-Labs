@@ -1,3 +1,4 @@
+using Discord.Rest;
 using Discord.WebSocket;
 using System;
 using System.Reflection;
@@ -15,13 +16,13 @@ namespace Discord.Interactions
         public InteractionService InteractionService { get; set; }
 
         /// <inheritdoc/>
-        public abstract Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
+        public abstract Task<AutocompletionResult> GenerateSuggestionsAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
             IServiceProvider services);
 
         protected abstract string GetLogString(IInteractionContext context);
 
         /// <inheritdoc/>
-        public async Task<IResult> ExecuteAsync(IInteractionContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
+        public async Task<IResult> ExecuteAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
             IServiceProvider services)
         {
             switch (InteractionService._runMode)
@@ -43,7 +44,7 @@ namespace Discord.Interactions
             return ExecuteResult.FromSuccess();
         }
 
-        private async Task<IResult> ExecuteInternalAsync(IInteractionContext context, SocketAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
+        private async Task<IResult> ExecuteInternalAsync(IInteractionContext context, IAutocompleteInteraction autocompleteInteraction, IParameterInfo parameter,
             IServiceProvider services)
         {
             try
@@ -51,7 +52,16 @@ namespace Discord.Interactions
                 var result = await GenerateSuggestionsAsync(context, autocompleteInteraction, parameter, services).ConfigureAwait(false);
 
                 if (result.IsSuccess)
-                    await autocompleteInteraction.RespondAsync(result.Suggestions).ConfigureAwait(false);
+                    switch (autocompleteInteraction)
+                    {
+                        case RestAutocompleteInteraction restAutocomplete:
+                            var payload = restAutocomplete.Respond(result.Suggestions);
+                            result = RestAutocompletionResult.FromSuccess(result.Suggestions, payload);
+                            break;
+                        case SocketAutocompleteInteraction socketAutocomplete:
+                            await socketAutocomplete.RespondAsync(result.Suggestions).ConfigureAwait(false);
+                            break;
+                    }
 
                 await InteractionService._autocompleterExecutedEvent.InvokeAsync(this, context, result).ConfigureAwait(false);
                 return result;
