@@ -1099,9 +1099,9 @@ namespace Discord
         /// </returns>
         Task<IGuildScheduledEvent> CreateEventAsync(
             string name,
-            GuildScheduledEventPrivacyLevel privacyLevel,
             DateTimeOffset startTime,
             GuildScheduledEventType type,
+            GuildScheduledEventPrivacyLevel privacyLevel = GuildScheduledEventPrivacyLevel.Private,
             string description = null,
             DateTimeOffset? endTime = null,
             ulong? channelId = null,

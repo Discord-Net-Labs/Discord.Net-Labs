@@ -11,6 +11,7 @@ namespace Discord
         /// <summary>
         ///     The scheduled event is public and available in discovery.
         /// </summary>
+        [Obsolete("This event type isn't supported yet! check back later.", true)]
         Public = 1,
 
         /// <summary>

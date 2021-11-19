@@ -1156,9 +1156,9 @@ namespace Discord.Rest
         /// </returns>
         public Task<RestGuildEvent> CreateEventAsync(
             string name,
-            GuildScheduledEventPrivacyLevel privacyLevel,
             DateTimeOffset startTime,
             GuildScheduledEventType type,
+            GuildScheduledEventPrivacyLevel privacyLevel = GuildScheduledEventPrivacyLevel.Private,
             string description = null,
             DateTimeOffset? endTime = null,
             ulong? channelId = null,
@@ -1181,8 +1181,8 @@ namespace Discord.Rest
         IReadOnlyCollection<ICustomSticker> IGuild.Stickers => Stickers;
 
         /// <inheritdoc />
-        async Task<IGuildScheduledEvent> IGuild.CreateEventAsync(string name, GuildScheduledEventPrivacyLevel privacyLevel, DateTimeOffset startTime, GuildScheduledEventType type, string description, DateTimeOffset? endTime, ulong? channelId, string location, RequestOptions options)
-            => await CreateEventAsync(name, privacyLevel, startTime, type, description, endTime, channelId, location, options).ConfigureAwait(false);
+        async Task<IGuildScheduledEvent> IGuild.CreateEventAsync(string name, DateTimeOffset startTime, GuildScheduledEventType type, GuildScheduledEventPrivacyLevel privacyLevel, string description, DateTimeOffset? endTime, ulong? channelId, string location, RequestOptions options)
+            => await CreateEventAsync(name, startTime, type, privacyLevel, description, endTime, channelId, location, options).ConfigureAwait(false);
 
         /// <inheritdoc />
         async Task<IGuildScheduledEvent> IGuild.GetEventAsync(ulong id, RequestOptions options)
