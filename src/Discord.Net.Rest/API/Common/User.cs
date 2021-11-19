@@ -34,9 +34,5 @@ namespace Discord.API
         public Optional<string> Locale { get; set; }
         [JsonProperty("public_flags")]
         public Optional<UserProperties> PublicFlags { get; set; }
-
-        // Guild scheduled events
-        [JsonProperty("guild_member")]
-        public Optional<GuildMember> GuildMember { get; set; }
     }
 }

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Discord
 {
+    /// <summary>
+    ///     Represents the privacy level of a guild scheduled event.
+    /// </summary>
     public enum GuildScheduledEventPrivacyLevel
     {
         /// <summary>

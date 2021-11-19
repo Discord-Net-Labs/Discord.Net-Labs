@@ -116,6 +116,16 @@ namespace Discord.WebSocket
             => GuildHelper.DeleteEventAsync(Discord, this, options);
 
         /// <inheritdoc/>
+        public Task StartAsync(RequestOptions options = null)
+            => ModifyAsync(x => x.Status = GuildScheduledEventStatus.Active);
+
+        /// <inheritdoc/>
+        public Task EndAsync(RequestOptions options = null)
+            => ModifyAsync(x => x.Status = Status == GuildScheduledEventStatus.Scheduled
+                ? GuildScheduledEventStatus.Cancelled
+                : GuildScheduledEventStatus.Completed);
+
+        /// <inheritdoc/>
         public async Task ModifyAsync(Action<GuildScheduledEventsProperties> func, RequestOptions options = null)
         {
             var model = await GuildHelper.ModifyGuildEventAsync(Discord, func, this, options).ConfigureAwait(false);
@@ -194,7 +204,6 @@ namespace Discord.WebSocket
         /// <inheritdoc/>
         IAsyncEnumerable<IReadOnlyCollection<IUser>> IGuildScheduledEvent.GetUsersAsync(ulong fromUserId, Direction dir, int limit, RequestOptions options)
             => GetUsersAsync(fromUserId, dir, limit, options);
-
         /// <inheritdoc/>
         IGuild IGuildScheduledEvent.Guild => Guild;
         /// <inheritdoc/>

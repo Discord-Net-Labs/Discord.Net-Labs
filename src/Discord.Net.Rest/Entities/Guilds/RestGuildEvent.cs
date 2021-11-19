@@ -101,6 +101,16 @@ namespace Discord.Rest
         }
 
         /// <inheritdoc/>
+        public Task StartAsync(RequestOptions options = null)
+            => ModifyAsync(x => x.Status = GuildScheduledEventStatus.Active);
+
+        /// <inheritdoc/>
+        public Task EndAsync(RequestOptions options = null)
+            => ModifyAsync(x => x.Status = Status == GuildScheduledEventStatus.Scheduled
+                ? GuildScheduledEventStatus.Cancelled
+                : GuildScheduledEventStatus.Completed);
+
+        /// <inheritdoc/>
         public Task DeleteAsync(RequestOptions options = null)
             => GuildHelper.DeleteEventAsync(Discord, this, options);
 

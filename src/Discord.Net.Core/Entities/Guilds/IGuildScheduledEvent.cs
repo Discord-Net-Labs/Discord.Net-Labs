@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Discord
 {
+    /// <summary>
+    ///     Represents a generic guild scheduled event.
+    /// </summary>
     public interface IGuildScheduledEvent : IEntity<ulong>
     {
         /// <summary>
@@ -76,6 +79,23 @@ namespace Discord
         ///     Gets the user count of the event.
         /// </summary>
         int? UserCount { get; }
+
+        /// <summary>
+        ///     Starts the event.
+        /// </summary>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous start operation.
+        /// </returns>
+        Task StartAsync(RequestOptions options = null);
+        /// <summary>
+        ///     Ends or canceles the event.
+        /// </summary>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous end operation.
+        /// </returns>
+        Task EndAsync(RequestOptions options = null);
 
         /// <summary>
         ///     Modifies the guild event.

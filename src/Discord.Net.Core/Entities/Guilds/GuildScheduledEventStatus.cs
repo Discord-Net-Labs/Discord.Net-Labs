@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Discord
 {
+    /// <summary>
+    ///     Represents the status of a guild event.
+    /// </summary>
     public enum GuildScheduledEventStatus
     {
         /// <summary>
