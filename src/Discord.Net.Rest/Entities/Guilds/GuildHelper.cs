@@ -657,20 +657,7 @@ namespace Discord.Rest
         {
             var models = await client.ApiClient.GetGuildScheduledEventUsersAsync(guildEvent.Id, guildEvent.Guild.Id, limit, options).ConfigureAwait(false);
 
-            return models.Select(x =>
-            {
-                if(x.GuildMember.IsSpecified && x.GuildMember.Value != null)
-                {
-                    var guildMember = x.GuildMember.Value;
-                    guildMember.User = x;
-
-                    return RestGuildUser.Create(client, guildEvent.Guild, guildMember);
-                }
-                else
-                {
-                    return RestUser.Create(client, x);
-                }
-            }).ToImmutableArray();
+            return models.Select(x => RestUser.Create(client, guildEvent.Guild, x)).ToImmutableArray();
         }
 
         public static IAsyncEnumerable<IReadOnlyCollection<RestUser>> GetEventUsersAsync(BaseDiscordClient client, IGuildScheduledEvent guildEvent,
@@ -689,20 +676,7 @@ namespace Discord.Rest
                         args.RelativeUserId = info.Position.Value;
                     var models = await client.ApiClient.GetGuildScheduledEventUsersAsync(guildEvent.Id, guildEvent.Guild.Id, args, options).ConfigureAwait(false);
                     return models
-                        .Select(x =>
-                        {
-                            if (x.GuildMember.IsSpecified && x.GuildMember.Value != null)
-                            {
-                                var guildMember = x.GuildMember.Value;
-                                guildMember.User = x;
-
-                                return RestGuildUser.Create(client, guildEvent.Guild, guildMember);
-                            }
-                            else
-                            {
-                                return RestUser.Create(client, x);
-                            }
-                        })
+                        .Select(x => RestUser.Create(client, guildEvent.Guild, x))
                         .ToImmutableArray();
                 },
                 nextPage: (info, lastPage) =>
@@ -746,17 +720,7 @@ namespace Discord.Rest
                     var builder = ImmutableArray.CreateBuilder<RestUser>();
                     foreach (var model in models)
                     {
-                        if (model.GuildMember.IsSpecified && model.GuildMember.Value != null)
-                        {
-                            var guildMember = model.GuildMember.Value;
-                            guildMember.User = model;
-
-                            builder.Add(RestGuildUser.Create(client, guildEvent.Guild, guildMember));
-                        }
-                        else
-                        {
-                            builder.Add(RestUser.Create(client, model));
-                        }
+                        builder.Add(RestUser.Create(client, guildEvent.Guild, model));
                     }
                     return builder.ToImmutable();
                 },
@@ -790,6 +754,24 @@ namespace Discord.Rest
                     case GuildScheduledEventStatus.Completed when guildEvent.Status != GuildScheduledEventStatus.Active:
                     case GuildScheduledEventStatus.Cancelled when guildEvent.Status != GuildScheduledEventStatus.Scheduled:
                         throw new ArgumentException($"Cannot set event to {args.Status.Value} when events status is {guildEvent.Status}");
+                }
+            }
+
+            if (args.Type.IsSpecified)
+            {
+                // taken from https://discord.com/developers/docs/resources/guild-scheduled-event#modify-guild-scheduled-event
+                switch (args.Type.Value)
+                {
+                    case GuildScheduledEventType.External:
+                        if (!args.Location.IsSpecified)
+                            throw new ArgumentException("Location must be specified for external events.");
+                        if (!args.EndTime.IsSpecified)
+                            throw new ArgumentException("End time must be specified for external events.");
+                        if (!args.ChannelId.IsSpecified)
+                            throw new ArgumentException("Channel id must be set to null!");
+                        if (args.ChannelId.Value != null)
+                            throw new ArgumentException("Channel id must be set to null!");
+                        break;
                 }
             }
 

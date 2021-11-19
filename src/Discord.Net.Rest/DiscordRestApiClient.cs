@@ -1928,7 +1928,7 @@ namespace Discord.API
 
             var ids = new BucketIds(guildId: guildId);
 
-            return await NullifyNotFound<GuildScheduledEvent>(SendAsync<GuildScheduledEvent>("GET", () => $"guilds/{guildId}/scheduled-events/{eventId}", ids, options: options)).ConfigureAwait(false);
+            return await NullifyNotFound<GuildScheduledEvent>(SendAsync<GuildScheduledEvent>("GET", () => $"guilds/{guildId}/scheduled-events/{eventId}?with_user_count=true", ids, options: options)).ConfigureAwait(false);
         }
 
         public async Task<GuildScheduledEvent> CreateGuildScheduledEventAsync(CreateGuildScheduledEventParams args, ulong guildId, RequestOptions options = null)
@@ -1968,7 +1968,7 @@ namespace Discord.API
             await SendAsync("DELETE", () => $"guilds/{guildId}/scheduled-events/{eventId}", ids, options: options).ConfigureAwait(false);
         }
 
-        public async Task<User[]> GetGuildScheduledEventUsersAsync(ulong eventId, ulong guildId, int limit = 100, RequestOptions options = null)
+        public async Task<GuildScheduledEventUser[]> GetGuildScheduledEventUsersAsync(ulong eventId, ulong guildId, int limit = 100, RequestOptions options = null)
         {
             Preconditions.NotEqual(guildId, 0, nameof(guildId));
             Preconditions.NotEqual(eventId, 0, nameof(eventId));
@@ -1977,10 +1977,10 @@ namespace Discord.API
 
             var ids = new BucketIds(guildId: guildId);
 
-            return await SendAsync<User[]>("GET", () => $"guilds/{guildId}/scheduled-events/{eventId}/users?limit={limit}&with_member=true", ids, options: options).ConfigureAwait(false);
+            return await SendAsync<GuildScheduledEventUser[]>("GET", () => $"guilds/{guildId}/scheduled-events/{eventId}/users?limit={limit}&with_member=true", ids, options: options).ConfigureAwait(false);
         }
 
-        public async Task<User[]> GetGuildScheduledEventUsersAsync(ulong eventId, ulong guildId, GetEventUsersParams args, RequestOptions options = null)
+        public async Task<GuildScheduledEventUser[]> GetGuildScheduledEventUsersAsync(ulong eventId, ulong guildId, GetEventUsersParams args, RequestOptions options = null)
         {
             Preconditions.NotEqual(eventId, 0, nameof(eventId));
             Preconditions.NotNull(args, nameof(args));
@@ -2003,7 +2003,7 @@ namespace Discord.API
             else
                 endpoint = () => $"guilds/{guildId}/scheduled-events/{eventId}/users?with_member=true&limit={limit}";
 
-            return await SendAsync<User[]>("GET", endpoint, ids, options: options).ConfigureAwait(false);
+            return await SendAsync<GuildScheduledEventUser[]>("GET", endpoint, ids, options: options).ConfigureAwait(false);
         }
 
         #endregion

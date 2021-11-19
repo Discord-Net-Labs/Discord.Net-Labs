@@ -1303,7 +1303,23 @@ namespace Discord.WebSocket
             ulong? channelId = null,
             string location = null,
             RequestOptions options = null)
-            => GuildHelper.CreateGuildEventAsync(Discord, this, name, privacyLevel, startTime, type, description, endTime, channelId, location, options);
+        {
+            // requirements taken from https://discord.com/developers/docs/resources/guild-scheduled-event#guild-scheduled-event-permissions-requirements
+            switch (type)
+            {
+                case GuildScheduledEventType.Stage:
+                    CurrentUser.GuildPermissions.Ensure(GuildPermission.ManageEvents | GuildPermission.ManageChannels | GuildPermission.MuteMembers | GuildPermission.MoveMembers);
+                break;
+                case GuildScheduledEventType.Voice:
+                    CurrentUser.GuildPermissions.Ensure(GuildPermission.ManageEvents | GuildPermission.ViewChannel | GuildPermission.Connect);
+                    break;
+                case GuildScheduledEventType.External:
+                    CurrentUser.GuildPermissions.Ensure(GuildPermission.ManageEvents);
+                    break;
+            }
+
+            return GuildHelper.CreateGuildEventAsync(Discord, this, name, privacyLevel, startTime, type, description, endTime, channelId, location, options);
+        }
 
 
         #endregion

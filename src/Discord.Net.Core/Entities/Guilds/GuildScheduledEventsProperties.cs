@@ -14,7 +14,7 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the channel id of the event.
         /// </summary>
-        public Optional<ulong> ChannelId { get; set; }
+        public Optional<ulong?> ChannelId { get; set; }
 
         /// <summary>
         ///     Gets or sets the location of this event.

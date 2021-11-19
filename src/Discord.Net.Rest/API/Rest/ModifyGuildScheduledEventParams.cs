@@ -10,7 +10,7 @@ namespace Discord.API.Rest
     internal class ModifyGuildScheduledEventParams
     {
         [JsonProperty("channel_id")]
-        public Optional<ulong> ChannelId { get; set; }
+        public Optional<ulong?> ChannelId { get; set; }
         [JsonProperty("entity_metadata")]
         public Optional<GuildScheduledEventEntityMetadata> EntityMetadata { get; set; }
         [JsonProperty("name")]
