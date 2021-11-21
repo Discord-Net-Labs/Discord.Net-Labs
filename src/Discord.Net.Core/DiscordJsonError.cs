@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Discord
 {
     /// <summary>
-    ///     Represents a generic parsed json error received from discord after preforming a rest request.
+    ///     Represents a generic parsed json error received from discord after performing a rest request.
     /// </summary>
     public struct DiscordJsonError
     {
