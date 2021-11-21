@@ -40,7 +40,7 @@ namespace Discord
         public string Code { get; }
 
         /// <summary>
-        ///     Gets the message of the error.
+        ///     Gets the message describing what went wrong.
         /// </summary>
         public string Message { get; }
 
