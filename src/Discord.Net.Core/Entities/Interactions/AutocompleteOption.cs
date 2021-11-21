@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Discord
 {
     /// <summary>
@@ -12,7 +6,7 @@ namespace Discord
     public class AutocompleteOption
     {
         /// <summary>
-        ///     Gets the type of this option
+        ///     Gets the type of this option.
         /// </summary>
         public ApplicationCommandOptionType Type { get; }
 

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using GatewayModel = Discord.API.Gateway.ApplicationCommandCreatedUpdatedEvent;
 using Model = Discord.API.ApplicationCommand;
@@ -11,7 +10,7 @@ using Model = Discord.API.ApplicationCommand;
 namespace Discord.WebSocket
 {
     /// <summary>
-    ///     Represends a Websocket-based <see cref="IApplicationCommand"/>.
+    ///     Represents a Websocket-based <see cref="IApplicationCommand"/>.
     /// </summary>
     public class SocketApplicationCommand : SocketEntity<ulong>, IApplicationCommand
     {
@@ -35,7 +34,7 @@ namespace Discord.WebSocket
         public string Description { get; private set; }
 
         /// <inheritdoc/>
-        public bool DefaultPermission { get; private set; }
+        public bool IsDefaultPermission { get; private set; }
 
         /// <summary>
         ///     A collection of <see cref="SocketApplicationCommandOption"/>'s for this command.
@@ -81,37 +80,30 @@ namespace Discord.WebSocket
             ApplicationId = model.ApplicationId;
             Description = model.Description;
             Name = model.Name;
-            DefaultPermission = model.DefaultPermissions.GetValueOrDefault(true);
+            IsDefaultPermission = model.DefaultPermissions.GetValueOrDefault(true);
             Type = model.Type;
 
             Options = model.Options.IsSpecified
-                ? model.Options.Value.Select(x => SocketApplicationCommandOption.Create(x)).ToImmutableArray()
-                : new ImmutableArray<SocketApplicationCommandOption>();
+                ? model.Options.Value.Select(SocketApplicationCommandOption.Create).ToImmutableArray()
+                : ImmutableArray.Create<SocketApplicationCommandOption>();
         }
 
         /// <inheritdoc/>
         public Task DeleteAsync(RequestOptions options = null)
-            => InteractionHelper.DeleteUnknownApplicationCommand(Discord, GuildId, this, options);
+            => InteractionHelper.DeleteUnknownApplicationCommandAsync(Discord, GuildId, this, options);
 
         /// <inheritdoc />
         public Task ModifyAsync(Action<ApplicationCommandProperties> func, RequestOptions options = null)
         {
             return ModifyAsync<ApplicationCommandProperties>(func, options);
         }
-        
+
         /// <inheritdoc />
         public async Task ModifyAsync<TArg>(Action<TArg> func, RequestOptions options = null) where TArg : ApplicationCommandProperties
         {
-            Model command = null;
-
-            if (IsGlobalCommand)
-            {
-                command = await InteractionHelper.ModifyGlobalCommand<TArg>(Discord, this, func, options).ConfigureAwait(false);
-            }
-            else
-            {
-                command = await InteractionHelper.ModifyGuildCommand<TArg>(Discord, this, GuildId.Value, func, options);
-            }
+            var command = IsGlobalCommand
+                ? await InteractionHelper.ModifyGlobalCommandAsync(Discord, this, func, options).ConfigureAwait(false)
+                : await InteractionHelper.ModifyGuildCommandAsync(Discord, this, GuildId.Value, func, options);
 
             Update(command);
         }

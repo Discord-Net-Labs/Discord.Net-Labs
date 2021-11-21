@@ -1,10 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.Net.Converters
 {
@@ -26,7 +22,7 @@ namespace Discord.Net.Converters
 
             // Remove the data property for manual deserialization
             var result = obj.GetValue("data", StringComparison.OrdinalIgnoreCase);
-            result.Parent.Remove();
+            result?.Parent.Remove();
 
             // Populate the remaining properties.
             using (var subReader = obj.CreateReader())

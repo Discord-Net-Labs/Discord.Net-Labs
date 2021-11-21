@@ -1,9 +1,5 @@
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.API
 {
@@ -33,11 +29,20 @@ namespace Discord.API
         [JsonProperty("autocomplete")]
         public Optional<bool> Autocomplete { get; set; }
 
+        [JsonProperty("min_value")]
+        public Optional<double> MinValue { get; set; }
+
+        [JsonProperty("max_value")]
+        public Optional<double> MaxValue { get; set; }
+
+        [JsonProperty("channel_types")]
+        public Optional<ChannelType[]> ChannelTypes { get; set; }
+
         public ApplicationCommandOption() { }
 
         public ApplicationCommandOption(IApplicationCommandOption cmd)
         {
-            Choices = cmd.Choices.Select(x => new ApplicationCommandOptionChoice()
+            Choices = cmd.Choices.Select(x => new ApplicationCommandOptionChoice
             {
                 Name = x.Name,
                 Value = x.Value
@@ -45,38 +50,34 @@ namespace Discord.API
 
             Options = cmd.Options.Select(x => new ApplicationCommandOption(x)).ToArray();
 
-            Required = cmd.Required.HasValue
-                ? cmd.Required.Value
-                : Optional<bool>.Unspecified;
-            Default = cmd.Default.HasValue
-                ? cmd.Default.Value
-                : Optional<bool>.Unspecified;
+            ChannelTypes = cmd.ChannelTypes.ToArray();
+
+            Required = cmd.IsRequired ?? Optional<bool>.Unspecified;
+            Default = cmd.IsDefault ?? Optional<bool>.Unspecified;
+            MinValue = cmd.MinValue ?? Optional<double>.Unspecified;
+            MaxValue = cmd.MaxValue ?? Optional<double>.Unspecified;
 
             Name = cmd.Name;
             Type = cmd.Type;
             Description = cmd.Description;
         }
-        public ApplicationCommandOption(Discord.ApplicationCommandOptionProperties option)
+        public ApplicationCommandOption(ApplicationCommandOptionProperties option)
         {
-            Choices = option.Choices != null
-                ? option.Choices.Select(x => new ApplicationCommandOptionChoice()
-                {
-                    Name = x.Name,
-                    Value = x.Value
-                }).ToArray()
-                : Optional<ApplicationCommandOptionChoice[]>.Unspecified;
+            Choices = option.Choices?.Select(x => new ApplicationCommandOptionChoice
+            {
+                Name = x.Name,
+                Value = x.Value
+            }).ToArray() ?? Optional<ApplicationCommandOptionChoice[]>.Unspecified;
 
-            Options = option.Options != null
-                ? option.Options.Select(x => new ApplicationCommandOption(x)).ToArray()
-                : Optional<ApplicationCommandOption[]>.Unspecified;
+            Options = option.Options?.Select(x => new ApplicationCommandOption(x)).ToArray() ?? Optional<ApplicationCommandOption[]>.Unspecified;
 
-            Required = option.Required.HasValue
-                ? option.Required.Value
-                : Optional<bool>.Unspecified;
+            Required = option.Required ?? Optional<bool>.Unspecified;
 
-            Default = option.Default.HasValue
-                ? option.Default.Value
-                : Optional<bool>.Unspecified;
+            Default = option.Default ?? Optional<bool>.Unspecified;
+            MinValue = option.MinValue ?? Optional<double>.Unspecified;
+            MaxValue = option.MaxValue ?? Optional<double>.Unspecified;
+
+            ChannelTypes = option.ChannelTypes?.ToArray() ?? Optional<ChannelType[]>.Unspecified;
 
             Name = option.Name;
             Type = option.Type;

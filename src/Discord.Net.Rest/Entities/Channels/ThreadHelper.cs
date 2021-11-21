@@ -1,8 +1,6 @@
 using Discord.API.Rest;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Model = Discord.API.Channel;
 
@@ -13,23 +11,24 @@ namespace Discord.Rest
         public static async Task<Model> CreateThreadAsync(BaseDiscordClient client, ITextChannel channel, string name, ThreadType type = ThreadType.PublicThread,
             ThreadArchiveDuration autoArchiveDuration = ThreadArchiveDuration.OneDay, IMessage message = null, RequestOptions options = null)
         {
-            if (autoArchiveDuration == ThreadArchiveDuration.OneWeek && !channel.Guild.Features.Contains("SEVEN_DAY_THREAD_ARCHIVE"))
-                throw new ArgumentException($"The guild {channel.Guild.Name} does not have the SEVEN_DAY_THREAD_ARCHIVE feature!");
+            var features = channel.Guild.Features;
+            if (autoArchiveDuration == ThreadArchiveDuration.OneWeek && !features.HasFeature(GuildFeature.SevenDayThreadArchive))
+                throw new ArgumentException($"The guild {channel.Guild.Name} does not have the SEVEN_DAY_THREAD_ARCHIVE feature!", nameof(autoArchiveDuration));
 
-            if (autoArchiveDuration == ThreadArchiveDuration.ThreeDays && !channel.Guild.Features.Contains("THREE_DAY_THREAD_ARCHIVE"))
-                throw new ArgumentException($"The guild {channel.Guild.Name} does not have the THREE_DAY_THREAD_ARCHIVE feature!");
+            if (autoArchiveDuration == ThreadArchiveDuration.ThreeDays && !features.HasFeature(GuildFeature.ThreeDayThreadArchive))
+                throw new ArgumentException($"The guild {channel.Guild.Name} does not have the THREE_DAY_THREAD_ARCHIVE feature!", nameof(autoArchiveDuration));
 
-            if (type == ThreadType.PrivateThread && !channel.Guild.Features.Contains("PRIVATE_THREADS"))
-                throw new ArgumentException($"The guild {channel.Guild.Name} does not have the PRIVATE_THREADS feature!");
+            if (type == ThreadType.PrivateThread && !features.HasFeature(GuildFeature.PrivateThreads))
+                throw new ArgumentException($"The guild {channel.Guild.Name} does not have the PRIVATE_THREADS feature!", nameof(type));
 
-            var args = new StartThreadParams()
+            var args = new StartThreadParams
             {
                 Name = name,
                 Duration = autoArchiveDuration,
                 Type = type
             };
 
-            Model model = null;
+            Model model;
 
             if (message != null)
                 model = await client.ApiClient.StartThreadAsync(channel.Id, message.Id, args, options).ConfigureAwait(false);
@@ -45,7 +44,7 @@ namespace Discord.Rest
         {
             var args = new TextChannelProperties();
             func(args);
-            var apiArgs = new API.Rest.ModifyThreadParams
+            var apiArgs = new ModifyThreadParams
             {
                 Name = args.Name,
                 Archived = args.Archived,
@@ -63,7 +62,11 @@ namespace Discord.Rest
             return users.Select(x => RestThreadUser.Create(client, channel.Guild, x, channel)).ToArray();
         }
 
-        public static async Task<RestThreadUser> GetUserAsync(ulong userdId, IThreadChannel channel, BaseDiscordClient client, RequestOptions options = null)
-            => (await GetUsersAsync(channel, client, options).ConfigureAwait(false)).FirstOrDefault(x => x.Id == userdId);
+        public static async Task<RestThreadUser> GetUserAsync(ulong userId, IThreadChannel channel, BaseDiscordClient client, RequestOptions options = null)
+        {
+            var model = await client.ApiClient.GetThreadMemberAsync(channel.Id, userId, options).ConfigureAwait(false);
+
+            return RestThreadUser.Create(client, channel.Guild, model, channel);
+        }
     }
 }

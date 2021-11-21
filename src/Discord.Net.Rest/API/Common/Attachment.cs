@@ -8,6 +8,10 @@ namespace Discord.API
         public ulong Id { get; set; }
         [JsonProperty("filename")]
         public string Filename { get; set; }
+        [JsonProperty("description")]
+        public Optional<string> Description { get; set; }
+        [JsonProperty("content_type")]
+        public Optional<string> ContentType { get; set; }
         [JsonProperty("size")]
         public int Size { get; set; }
         [JsonProperty("url")]
@@ -18,5 +22,7 @@ namespace Discord.API
         public Optional<int> Height { get; set; }
         [JsonProperty("width")]
         public Optional<int> Width { get; set; }
+        [JsonProperty("ephemeral")]
+        public Optional<bool> Ephemeral { get; set; }
     }
 }

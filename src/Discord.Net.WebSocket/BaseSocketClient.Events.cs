@@ -335,6 +335,68 @@ namespace Discord.WebSocket
             remove { _guildUpdatedEvent.Remove(value); }
         }
         internal readonly AsyncEvent<Func<SocketGuild, SocketGuild, Task>> _guildUpdatedEvent = new AsyncEvent<Func<SocketGuild, SocketGuild, Task>>();
+        /// <summary>Fired when a user leaves without agreeing to the member screening </summary>
+        public event Func<Cacheable<SocketGuildUser, ulong>, SocketGuild, Task> GuildJoinRequestDeleted
+        {
+            add { _guildJoinRequestDeletedEvent.Add(value); }
+            remove { _guildJoinRequestDeletedEvent.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<Cacheable<SocketGuildUser, ulong>, SocketGuild, Task>> _guildJoinRequestDeletedEvent = new AsyncEvent<Func<Cacheable<SocketGuildUser, ulong>, SocketGuild, Task>>();
+        #endregion
+
+        #region Guild Events
+
+        /// <summary>
+        ///     Fired when a guild event is created.
+        /// </summary>
+        public event Func<SocketGuildEvent, Task> GuildScheduledEventCreated
+        {
+            add { _guildScheduledEventCreated.Add(value); }
+            remove { _guildScheduledEventCreated.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketGuildEvent, Task>> _guildScheduledEventCreated = new AsyncEvent<Func<SocketGuildEvent, Task>>();
+
+        /// <summary>
+        ///     Fired when a guild event is updated.
+        /// </summary>
+        public event Func<Cacheable<SocketGuildEvent, ulong>, SocketGuildEvent, Task> GuildScheduledEventUpdated
+        {
+            add { _guildScheduledEventUpdated.Add(value); }
+            remove { _guildScheduledEventUpdated.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<Cacheable<SocketGuildEvent, ulong>, SocketGuildEvent, Task>> _guildScheduledEventUpdated = new AsyncEvent<Func<Cacheable<SocketGuildEvent, ulong>, SocketGuildEvent, Task>>();
+
+        
+        /// <summary>
+        ///     Fired when a guild event is cancelled.
+        /// </summary>
+        public event Func<SocketGuildEvent, Task> GuildScheduledEventCancelled
+        {
+            add { _guildScheduledEventCancelled.Add(value); }
+            remove { _guildScheduledEventCancelled.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketGuildEvent, Task>> _guildScheduledEventCancelled = new AsyncEvent<Func<SocketGuildEvent, Task>>();
+
+        /// <summary>
+        ///     Fired when a guild event is completed.
+        /// </summary>
+        public event Func<SocketGuildEvent, Task> GuildScheduledEventCompleted
+        {
+            add { _guildScheduledEventCompleted.Add(value); }
+            remove { _guildScheduledEventCompleted.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketGuildEvent, Task>> _guildScheduledEventCompleted = new AsyncEvent<Func<SocketGuildEvent, Task>>();
+
+        /// <summary>
+        ///     Fired when a guild event is started.
+        /// </summary>
+        public event Func<SocketGuildEvent, Task> GuildScheduledEventStarted
+        {
+            add { _guildScheduledEventStarted.Add(value); }
+            remove { _guildScheduledEventStarted.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketGuildEvent, Task>> _guildScheduledEventStarted = new AsyncEvent<Func<SocketGuildEvent, Task>>();
+
         #endregion
 
         #region Users
@@ -469,7 +531,7 @@ namespace Discord.WebSocket
 
         #region Interactions
         /// <summary>
-        ///     Fired when an Interaction is created. This event covers all types of interactions including but not limited to: buttons, select menus, slash commands.
+        ///     Fired when an Interaction is created. This event covers all types of interactions including but not limited to: buttons, select menus, slash commands, autocompletes.
         /// </summary>
         /// <remarks>
         ///     <para>
@@ -535,6 +597,15 @@ namespace Discord.WebSocket
             remove => _messageCommandExecuted.Remove(value);
         }
         internal readonly AsyncEvent<Func<SocketMessageCommand, Task>> _messageCommandExecuted = new AsyncEvent<Func<SocketMessageCommand, Task>>();
+        /// <summary>
+        ///     Fired when an autocomplete is used and its interaction is received.
+        /// </summary>
+        public event Func<SocketAutocompleteInteraction, Task> AutocompleteExecuted
+        {
+            add => _autocompleteExecuted.Add(value);
+            remove => _autocompleteExecuted.Remove(value);
+        }
+        internal readonly AsyncEvent<Func<SocketAutocompleteInteraction, Task>> _autocompleteExecuted = new AsyncEvent<Func<SocketAutocompleteInteraction, Task>>();
 
         /// <summary>
         ///     Fired when a guild application command is created.

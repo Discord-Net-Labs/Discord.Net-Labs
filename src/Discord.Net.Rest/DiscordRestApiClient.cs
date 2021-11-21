@@ -373,7 +373,9 @@ namespace Discord.API
             Preconditions.NotNull(args, nameof(args));
             Preconditions.AtLeast(args.Position, 0, nameof(args.Position));
             Preconditions.NotNullOrWhitespace(args.Name, nameof(args.Name));
-            Preconditions.LessThan(args.Name.Value.Length, 100, nameof(args.Name));
+
+            if(args.Name.IsSpecified)
+                Preconditions.LessThan(args.Name.Value.Length, 100, nameof(args.Name));
 
             options = RequestOptions.CreateOrClone(options);
 
@@ -387,8 +389,12 @@ namespace Discord.API
             Preconditions.NotNull(args, nameof(args));
             Preconditions.AtLeast(args.Position, 0, nameof(args.Position));
             Preconditions.NotNullOrWhitespace(args.Name, nameof(args.Name));
-            Preconditions.LessThan(args.Name.Value.Length, 100, nameof(args.Name));
-            Preconditions.LessThan(args.Topic.Value.Length, 1024, nameof(args.Name));
+
+            if(args.Name.IsSpecified)
+                Preconditions.LessThan(args.Name.Value.Length, 100, nameof(args.Name));
+            if(args.Topic.IsSpecified)
+                Preconditions.LessThan(args.Topic.Value.Length, 1024, nameof(args.Name));
+
             Preconditions.AtLeast(args.SlowModeInterval, 0, nameof(args.SlowModeInterval));
             Preconditions.AtMost(args.SlowModeInterval, 21600, nameof(args.SlowModeInterval));
             options = RequestOptions.CreateOrClone(options);
@@ -519,7 +525,19 @@ namespace Discord.API
 
             var bucket = new BucketIds(channelId: channelId);
 
-            return await SendAsync<ThreadMember[]>("GET", () => $"channels/{channelId}/thread-members", bucket, options: options);
+            return await SendAsync<ThreadMember[]>("GET", () => $"channels/{channelId}/thread-members", bucket, options: options).ConfigureAwait(false);
+        }
+
+        public async Task<ThreadMember> GetThreadMemberAsync(ulong channelId, ulong userId, RequestOptions options = null)
+        {
+            Preconditions.NotEqual(channelId, 0, nameof(channelId));
+            Preconditions.NotEqual(userId, 0, nameof(userId));
+
+            options = RequestOptions.CreateOrClone(options);
+
+            var bucket = new BucketIds(channelId: channelId);
+
+            return await SendAsync<ThreadMember>("GET", () => $"channels/{channelId}/thread-members/{userId}", bucket, options: options).ConfigureAwait(false);
         }
 
         public async Task<ChannelThreads> GetActiveThreadsAsync(ulong channelId, RequestOptions options = null)
@@ -530,7 +548,7 @@ namespace Discord.API
 
             var bucket = new BucketIds(channelId: channelId);
 
-            return await SendAsync<ChannelThreads>("GET", () => $"channels/{channelId}/threads/active", bucket);
+            return await SendAsync<ChannelThreads>("GET", () => $"channels/{channelId}/threads/active", bucket, options: options);
         }
 
         public async Task<ChannelThreads> GetPublicArchivedThreadsAsync(ulong channelId, DateTimeOffset? before = null, int? limit = null, RequestOptions options = null)
@@ -605,7 +623,6 @@ namespace Discord.API
         #region Stage
         public async Task<StageInstance> CreateStageInstanceAsync(CreateStageInstanceParams args, RequestOptions options = null)
         {
-
             options = RequestOptions.CreateOrClone(options);
 
             var bucket = new BucketIds();
@@ -896,6 +913,19 @@ namespace Discord.API
 
             var ids = new BucketIds(channelId: channelId);
             return await SendJsonAsync<Message>("PATCH", () => $"channels/{channelId}/messages/{messageId}", args, ids, clientBucket: ClientBucketType.SendEdit, options: options).ConfigureAwait(false);
+        }
+
+        public async Task<Message> ModifyMessageAsync(ulong channelId, ulong messageId, Rest.UploadFileParams args, RequestOptions options = null)
+        {
+            Preconditions.NotEqual(channelId, 0, nameof(channelId));
+            Preconditions.NotEqual(messageId, 0, nameof(messageId));
+            Preconditions.NotNull(args, nameof(args));
+            if (args.Content.IsSpecified && args.Content.Value?.Length > DiscordConfig.MaxMessageSize)
+                throw new ArgumentOutOfRangeException($"Message content is too long, length must be less or equal to {DiscordConfig.MaxMessageSize}.", nameof(args.Content));
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(channelId: channelId);
+            return await SendMultipartAsync<Message>("PATCH", () => $"channels/{channelId}/messages/{messageId}", args.ToDictionary(), ids, clientBucket: ClientBucketType.SendEdit, options: options).ConfigureAwait(false);
         }
         #endregion
 
@@ -1879,6 +1909,105 @@ namespace Discord.API
         }
         #endregion
 
+        #region Guild Events
+
+        public async Task<GuildScheduledEvent[]> ListGuildScheduledEventsAsync(ulong guildId, RequestOptions options = null)
+        {
+            Preconditions.NotEqual(guildId, 0, nameof(guildId));
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+            return await SendAsync<GuildScheduledEvent[]>("GET", () => $"guilds/{guildId}/scheduled-events?with_user_count=true", ids, options: options).ConfigureAwait(false);
+        }
+
+        public async Task<GuildScheduledEvent> GetGuildScheduledEventAsync(ulong eventId, ulong guildId, RequestOptions options = null)
+        {
+            Preconditions.NotEqual(guildId, 0, nameof(guildId));
+            Preconditions.NotEqual(eventId, 0, nameof(eventId));
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+
+            return await NullifyNotFound<GuildScheduledEvent>(SendAsync<GuildScheduledEvent>("GET", () => $"guilds/{guildId}/scheduled-events/{eventId}?with_user_count=true", ids, options: options)).ConfigureAwait(false);
+        }
+
+        public async Task<GuildScheduledEvent> CreateGuildScheduledEventAsync(CreateGuildScheduledEventParams args, ulong guildId, RequestOptions options = null)
+        {
+            Preconditions.NotEqual(guildId, 0, nameof(guildId));
+            Preconditions.NotNull(args, nameof(args));
+
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+
+            return await SendJsonAsync<GuildScheduledEvent>("POST", () => $"guilds/{guildId}/scheduled-events", args, ids, options: options).ConfigureAwait(false);
+        }
+
+        public async Task<GuildScheduledEvent> ModifyGuildScheduledEventAsync(ModifyGuildScheduledEventParams args, ulong eventId, ulong guildId, RequestOptions options = null)
+        {
+            Preconditions.NotEqual(guildId, 0, nameof(guildId));
+            Preconditions.NotEqual(eventId, 0, nameof(eventId));
+            Preconditions.NotNull(args, nameof(args));
+
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+
+            return await SendJsonAsync<GuildScheduledEvent>("PATCH", () => $"guilds/{guildId}/scheduled-events/{eventId}", args, ids, options: options).ConfigureAwait(false);
+        }
+
+        public async Task DeleteGuildScheduledEventAsync(ulong eventId, ulong guildId, RequestOptions options = null)
+        {
+            Preconditions.NotEqual(guildId, 0, nameof(guildId));
+            Preconditions.NotEqual(eventId, 0, nameof(eventId));
+
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+
+            await SendAsync("DELETE", () => $"guilds/{guildId}/scheduled-events/{eventId}", ids, options: options).ConfigureAwait(false);
+        }
+
+        public async Task<GuildScheduledEventUser[]> GetGuildScheduledEventUsersAsync(ulong eventId, ulong guildId, int limit = 100, RequestOptions options = null)
+        {
+            Preconditions.NotEqual(guildId, 0, nameof(guildId));
+            Preconditions.NotEqual(eventId, 0, nameof(eventId));
+
+            options = RequestOptions.CreateOrClone(options);
+
+            var ids = new BucketIds(guildId: guildId);
+
+            return await SendAsync<GuildScheduledEventUser[]>("GET", () => $"guilds/{guildId}/scheduled-events/{eventId}/users?limit={limit}&with_member=true", ids, options: options).ConfigureAwait(false);
+        }
+
+        public async Task<GuildScheduledEventUser[]> GetGuildScheduledEventUsersAsync(ulong eventId, ulong guildId, GetEventUsersParams args, RequestOptions options = null)
+        {
+            Preconditions.NotEqual(eventId, 0, nameof(eventId));
+            Preconditions.NotNull(args, nameof(args));
+            Preconditions.AtLeast(args.Limit, 0, nameof(args.Limit));
+            Preconditions.AtMost(args.Limit, DiscordConfig.MaxMessagesPerBatch, nameof(args.Limit));
+            options = RequestOptions.CreateOrClone(options);
+
+            int limit = args.Limit.GetValueOrDefault(DiscordConfig.MaxGuildEventUsersPerBatch);
+            ulong? relativeId = args.RelativeUserId.IsSpecified ? args.RelativeUserId.Value : (ulong?)null;
+            var relativeDir = args.RelativeDirection.GetValueOrDefault(Direction.Before) switch
+            {
+                Direction.After => "after",
+                Direction.Around => "around",
+                _ => "before",
+            };
+            var ids = new BucketIds(guildId: guildId);
+            Expression<Func<string>> endpoint;
+            if (relativeId != null)
+                endpoint = () => $"guilds/{guildId}/scheduled-events/{eventId}/users?with_member=true&limit={limit}&{relativeDir}={relativeId}";
+            else
+                endpoint = () => $"guilds/{guildId}/scheduled-events/{eventId}/users?with_member=true&limit={limit}";
+
+            return await SendAsync<GuildScheduledEventUser[]>("GET", endpoint, ids, options: options).ConfigureAwait(false);
+        }
+
+        #endregion
+
         #region Users
         public async Task<User> GetUserAsync(ulong userId, RequestOptions options = null)
         {
@@ -2227,7 +2356,7 @@ namespace Discord.API
                     Array.Copy(elements, 0, methodArgs, 1, elements.Length);
                 }
 
-                int endIndex = format.IndexOf('?'); //Dont include params
+                int endIndex = format.IndexOf('?'); //Don't include params
                 if (endIndex == -1)
                     endIndex = format.Length;
 
