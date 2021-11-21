@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Discord
 {
+    /// <summary>
+    ///     Represents a set of json error codes received by discord.
+    /// </summary>
     public enum DiscordErrorCode
     {
         GeneralError = 0,
