@@ -48,10 +48,9 @@ namespace Discord.Net.Converters
         private List<ErrorDetails> ReadErrors(JsonReader reader, string path = "")
         {
             List<ErrorDetails> errs = new List<ErrorDetails>();
-
             var obj = JObject.Load(reader);
-
-            foreach (var prop in obj.Properties())
+            var props = obj.Properties();
+            foreach (var prop in props)
             {
                 if (prop.Name == "_errors" && path == "") // root level error
                 {
@@ -71,13 +70,13 @@ namespace Discord.Net.Converters
                 }
                 else if(int.TryParse(prop.Name, out var i)) // array value
                 {
-                    var r = prop.CreateReader();
+                    var r = prop.Value.CreateReader();
                     errs.AddRange(ReadErrors(r, path + $"[{i}]"));
                 }
                 else // property name
                 {
-                    var r = prop.CreateReader();
-                    errs.AddRange(ReadErrors(r, path + $".{prop.Name}"));
+                    var r = prop.Value.CreateReader();
+                    errs.AddRange(ReadErrors(r, path + $"{(path != "" ? "." : "")}{prop.Name[0].ToString().ToUpper() + new string(prop.Name.Skip(1).ToArray())}"));
                 }
             }
 

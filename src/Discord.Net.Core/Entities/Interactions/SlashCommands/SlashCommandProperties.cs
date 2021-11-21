@@ -18,6 +18,6 @@ namespace Discord
         /// </summary>
         public Optional<List<ApplicationCommandOptionProperties>> Options { get; set; }
 
-        internal SlashCommandProperties() { }
+        public SlashCommandProperties() { }
     }
 }
