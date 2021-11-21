@@ -85,6 +85,7 @@ namespace Discord
         MaximumThreadMembersReached = 30033,
         MaximumBansForNonGuildMembersReached = 30035,
         MaximumBanFetchesReached = 30037,
+        MaximumUncompleteGuildScheduledEvents = 30038,
         MaximumStickersReached = 30039,
         MaximumPruneRequestReached = 30040,
         MaximumGuildWigitsReached = 30042,
@@ -183,6 +184,11 @@ namespace Discord
         LottieMaximumDimentionsExceeded = 170005,
         StickerFramerateBoundsExceeed = 170006,
         StickerAnimationDurationTooLong = 170007,
+        #endregion
+
+        #region Guild Scheduled Events
+        CannotUpdateFinishedEvent = 180000,
+        FailedStageCreation = 180002,
         #endregion
     }
 }
