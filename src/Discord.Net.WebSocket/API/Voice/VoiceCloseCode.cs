@@ -16,7 +16,7 @@ namespace Discord.API.Voice
         /// </summary>
         UnknownOpcode = 4001,
         /// <summary>
-        ///     You sent a invalid payload in your identifying to the Gateway.
+        ///     You sent an invalid payload in your identifying to the Gateway.
         /// </summary>
         DecodeFailure = 4002,
         /// <summary>
