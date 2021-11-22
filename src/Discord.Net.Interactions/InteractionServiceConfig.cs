@@ -1,3 +1,6 @@
+using System;
+using System.Threading.Tasks;
+
 namespace Discord.Interactions
 {
     /// <summary>
@@ -51,5 +54,10 @@ namespace Discord.Interactions
         ///     disabled to decrease the lookup time
         /// </remarks>
         public bool EnableAutocompleters { get; set; } = true;
+
+        /// <summary>
+        ///     Define a delegate to be used by the <see cref="InteractionService"/> when responding to a Rest based interaction
+        /// </summary>
+        public Func<string, Task> RestResponseCallback { get; set; } = (str) => Task.CompletedTask;
     }
 }

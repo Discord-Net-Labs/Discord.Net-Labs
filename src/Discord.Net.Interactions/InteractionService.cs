@@ -65,10 +65,12 @@ namespace Discord.Interactions
         private readonly SemaphoreSlim _lock;
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
+        internal readonly DiscordRestClient _restClient;
 
         internal readonly bool _throwOnError, _deleteUnkownSlashCommandAck, _useCompiledLambda, _enableAutocompleters;
         internal readonly string _wildCardExp;
         internal readonly RunMode _runMode;
+        internal readonly Func<string, Task> _restResponseCallback;
 
         /// <summary>
         ///     Represents all modules loaded within <see cref="InteractionService"/>
@@ -91,17 +93,12 @@ namespace Discord.Interactions
         public IReadOnlyCollection<ComponentCommandInfo> ComponentCommands => _moduleDefs.SelectMany(x => x.ComponentCommands).ToList();
 
         /// <summary>
-        ///     Underlying Discord Client
-        /// </summary>
-        public BaseSocketClient Client { get; }
-
-        /// <summary>
         ///     Initialize a <see cref="InteractionService"/> with provided configurations
         /// </summary>
         /// <param name="discord">The discord client</param>
         /// <param name="config">The configuration class</param>
         public InteractionService (DiscordSocketClient discord, InteractionServiceConfig config = null)
-            : this(discord as BaseSocketClient, config ?? new InteractionServiceConfig()) { }
+            : this(discord.Rest, config ?? new InteractionServiceConfig()) { }
 
         /// <summary>
         ///     Initialize a <see cref="InteractionService"/> with provided configurations
@@ -109,10 +106,25 @@ namespace Discord.Interactions
         /// <param name="discord">The discord client</param>
         /// <param name="config">The configuration class</param>
         public InteractionService (DiscordShardedClient discord, InteractionServiceConfig config = null)
-            : this(discord as BaseSocketClient, config ?? new InteractionServiceConfig()) { }
+            : this(discord.Rest, config ?? new InteractionServiceConfig()) { }
 
-        private InteractionService (BaseSocketClient discord, InteractionServiceConfig config)
+        /// <summary>
+        ///     Initialize a <see cref="InteractionService"/> with provided configurations
+        /// </summary>
+        /// <param name="discord">The discord client</param>
+        /// <param name="config">The configuration class</param>
+        public InteractionService (BaseSocketClient discord, InteractionServiceConfig config = null)
+            :this(discord.Rest, config ?? new InteractionServiceConfig()) { }
+
+        /// <summary>
+        ///     Initialize a <see cref="InteractionService"/> with provided configurations
+        /// </summary>
+        /// <param name="discord">The discord client</param>
+        /// <param name="config">The configuration class</param>
+        public InteractionService (DiscordRestClient discord, InteractionServiceConfig config = null)
         {
+            config ??= new InteractionServiceConfig();
+
             _lock = new SemaphoreSlim(1, 1);
             _typedModuleDefs = new ConcurrentDictionary<Type, ModuleInfo>();
             _moduleDefs = new HashSet<ModuleInfo>();
@@ -126,7 +138,7 @@ namespace Discord.Interactions
             _componentCommandMap = new CommandMap<ComponentCommandInfo>(this, config.InteractionCustomIdDelimiters);
             _autocompleteCommandMap = new CommandMap<AutocompleteCommandInfo>(this, config.AutocompleteNameDelimiters);
 
-            Client = discord;
+            _restClient = discord;
 
             _runMode = config.DefaultRunMode;
             if (_runMode == RunMode.Default)
@@ -137,6 +149,7 @@ namespace Discord.Interactions
             _wildCardExp = config.WildCardExpression;
             _useCompiledLambda = config.UseCompiledLambda;
             _enableAutocompleters = config.EnableAutocompleters;
+            _restResponseCallback = config.RestResponseCallback;
 
             _genericTypeConverters = new ConcurrentDictionary<Type, Type>
             {
@@ -298,12 +311,12 @@ namespace Discord.Interactions
             if (!deleteMissing)
             {
 
-                var existing = await Client.Rest.GetGuildApplicationCommands(guildId).ConfigureAwait(false);
+                var existing = await _restClient.GetGuildApplicationCommands(guildId).ConfigureAwait(false);
                 var missing = existing.Where(x => !props.Any(y => y.Name.IsSpecified && y.Name.Value == x.Name));
                 props.AddRange(missing.Select(x => x.ToApplicationCommandProps()));
             }
 
-            return await Client.Rest.BulkOverwriteGuildCommands(props.ToArray(), guildId).ConfigureAwait(false);
+            return await _restClient.BulkOverwriteGuildCommands(props.ToArray(), guildId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -322,12 +335,12 @@ namespace Discord.Interactions
 
             if (!deleteMissing)
             {
-                var existing = await Client.Rest.GetGlobalApplicationCommands().ConfigureAwait(false);
+                var existing = await _restClient.GetGlobalApplicationCommands().ConfigureAwait(false);
                 var missing = existing.Where(x => !props.Any(y => y.Name.IsSpecified && y.Name.Value == x.Name));
                 props.AddRange(missing.Select(x => x.ToApplicationCommandProps()));
             }
 
-            return await Client.Rest.BulkOverwriteGlobalCommands(props.ToArray()).ConfigureAwait(false);
+            return await _restClient.BulkOverwriteGlobalCommands(props.ToArray()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -349,7 +362,7 @@ namespace Discord.Interactions
             if (guild is null)
                 throw new ArgumentNullException(nameof(guild));
 
-            var existing = await Client.Rest.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
+            var existing = await _restClient.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
 
             var props = new List<ApplicationCommandProperties>();
 
@@ -374,7 +387,7 @@ namespace Discord.Interactions
                 props.AddRange(missing.Select(x => x.ToApplicationCommandProps()));
             }
 
-            return await Client.Rest.BulkOverwriteGuildCommands(props.ToArray(), guild.Id).ConfigureAwait(false);
+            return await _restClient.BulkOverwriteGuildCommands(props.ToArray(), guild.Id).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -392,13 +405,13 @@ namespace Discord.Interactions
             if (guild is null)
                 throw new ArgumentNullException(nameof(guild));
 
-            var existing = await Client.Rest.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
+            var existing = await _restClient.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
             var props = modules.SelectMany(x => x.ToApplicationCommandProps(true)).ToList();
 
             foreach (var command in existing)
                 props.Add(command.ToApplicationCommandProps());
 
-            return await Client.Rest.BulkOverwriteGuildCommands(props.ToArray(), guild.Id).ConfigureAwait(false);
+            return await _restClient.BulkOverwriteGuildCommands(props.ToArray(), guild.Id).ConfigureAwait(false);
         }
 
         private void LoadModuleInternal (ModuleInfo module)
@@ -711,7 +724,7 @@ namespace Discord.Interactions
             if (guild is null)
                 throw new ArgumentNullException("guild");
 
-            var commands = await Client.Rest.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
+            var commands = await _restClient.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
             var appCommand = commands.First(x => x.Name == module.SlashGroupName);
 
             return await appCommand.ModifyCommandPermissions(permissions).ConfigureAwait(false);
@@ -752,7 +765,7 @@ namespace Discord.Interactions
             if (guild is null)
                 throw new ArgumentNullException("guild");
 
-            var commands = await Client.Rest.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
+            var commands = await _restClient.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
             var appCommand = commands.First(x => x.Name == ( command as IApplicationCommandInfo ).Name);
 
             return await appCommand.ModifyCommandPermissions(permissions).ConfigureAwait(false);
@@ -846,9 +859,9 @@ namespace Discord.Interactions
             return scorePairs.OrderBy(x => x.Value).ElementAt(0).Key;
         }
 
-        private void EnsureClientReady ( )
+        private void EnsureClientReady()
         {
-            if (Client.CurrentUser is null || Client.CurrentUser?.Id == 0)
+            if (_restClient.CurrentUser is null || _restClient.CurrentUser?.Id == 0)
                 throw new InvalidOperationException($"Provided client is not ready to execute this operation, invoke this operation after a `Client Ready` event");
         }
     }

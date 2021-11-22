@@ -6,7 +6,7 @@ namespace Discord.Interactions
     /// <summary>
     ///     Provides a base class for a command module to inherit from.
     /// </summary>
-    /// <typeparam name="T">Type of slash command context to be injected into the module</typeparam>
+    /// <typeparam name="T">Type of interaction context to be injected into the module</typeparam>
     public abstract class InteractionModuleBase<T> : IInteractionModuleBase where T : class, IInteractionContext
     {
         /// <summary>
