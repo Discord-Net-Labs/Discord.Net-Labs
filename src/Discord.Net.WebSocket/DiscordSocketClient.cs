@@ -65,7 +65,7 @@ namespace Discord.WebSocket
         private Optional<IActivity> _activity;
         #endregion
 
-        //From DiscordSocketConfig
+        // From DiscordSocketConfig
         internal int TotalShards { get; private set; }
         internal int MessageCacheSize { get; private set; }
         internal int LargeThreshold { get; private set; }
@@ -74,6 +74,8 @@ namespace Discord.WebSocket
         internal WebSocketProvider WebSocketProvider { get; private set; }
         internal bool AlwaysDownloadUsers { get; private set; }
         internal int? HandlerTimeout { get; private set; }
+        internal bool AlwaysDownloadDefaultStickers { get; private set; }
+        internal bool AlwaysResolveStickers { get; private set; }
         internal new DiscordSocketApiClient ApiClient => base.ApiClient;
         /// <inheritdoc />
         public override IReadOnlyCollection<SocketGuild> Guilds => State.Guilds;
@@ -143,6 +145,8 @@ namespace Discord.WebSocket
             UdpSocketProvider = config.UdpSocketProvider;
             WebSocketProvider = config.WebSocketProvider;
             AlwaysDownloadUsers = config.AlwaysDownloadUsers;
+            AlwaysDownloadDefaultStickers = config.AlwaysDownloadDefaultStickers;
+            AlwaysResolveStickers = config.AlwaysResolveStickers;
             HandlerTimeout = config.HandlerTimeout;
             State = new ClientState(0, 0);
             Rest = new DiscordSocketRestClient(config, ApiClient);
@@ -209,7 +213,7 @@ namespace Discord.WebSocket
 
         internal override async Task OnLoginAsync(TokenType tokenType, string token)
         {
-            if(_shardedClient == null && _defaultStickers.Length == 0)
+            if (_shardedClient == null && _defaultStickers.Length == 0 && AlwaysDownloadDefaultStickers)
             {
                 var models = await ApiClient.ListNitroStickerPacksAsync().ConfigureAwait(false);
 
@@ -2545,17 +2549,127 @@ namespace Discord.WebSocket
                                     switch (type)
                                     {
                                         case "STAGE_INSTANCE_CREATE":
-                                            await TimedInvokeAsync(_stageStarted, nameof(StageStarted), stageChannel);
+                                            await TimedInvokeAsync(_stageStarted, nameof(StageStarted), stageChannel).ConfigureAwait(false);
                                             return;
                                         case "STAGE_INSTANCE_DELETE":
-                                            await TimedInvokeAsync(_stageEnded, nameof(StageEnded), stageChannel);
+                                            await TimedInvokeAsync(_stageEnded, nameof(StageEnded), stageChannel).ConfigureAwait(false);
                                             return;
                                         case "STAGE_INSTANCE_UPDATE":
-                                            await TimedInvokeAsync(_stageUpdated, nameof(StageUpdated), before, stageChannel);
+                                            await TimedInvokeAsync(_stageUpdated, nameof(StageUpdated), before, stageChannel).ConfigureAwait(false);
                                             return;
                                     }
                                 }
                                 break;
+                            #endregion
+
+                            #region Guild Scheduled Events
+                            case "GUILD_SCHEDULED_EVENT_CREATE":
+                                {
+                                    await _gatewayLogger.DebugAsync($"Received Dispatch ({type})").ConfigureAwait(false);
+
+                                    var data = (payload as JToken).ToObject<GuildScheduledEvent>(_serializer);
+
+                                    var guild = State.GetGuild(data.GuildId);
+
+                                    if (guild == null)
+                                    {
+                                        await UnknownGuildAsync(type, data.GuildId).ConfigureAwait(false);
+                                        return;
+                                    }
+
+                                    var newEvent = guild.AddOrUpdateEvent(data);
+
+                                    await TimedInvokeAsync(_guildScheduledEventCancelled, nameof(GuildScheduledEventCreated), newEvent).ConfigureAwait(false);
+                                }
+                                break;
+                            case "GUILD_SCHEDULED_EVENT_UPDATE":
+                                {
+                                    await _gatewayLogger.DebugAsync($"Received Dispatch ({type})").ConfigureAwait(false);
+
+                                    var data = (payload as JToken).ToObject<GuildScheduledEvent>(_serializer);
+
+                                    var guild = State.GetGuild(data.GuildId);
+
+                                    if (guild == null)
+                                    {
+                                        await UnknownGuildAsync(type, data.GuildId).ConfigureAwait(false);
+                                        return;
+                                    }
+
+                                    var before = guild.GetEvent(data.Id);
+
+                                    var beforeCacheable = new Cacheable<SocketGuildEvent, ulong>(before, data.Id, before != null, () => Task.FromResult((SocketGuildEvent)null));
+
+                                    var after = guild.AddOrUpdateEvent(data);
+
+                                    if((before != null ? before.Status != GuildScheduledEventStatus.Completed : true) && data.Status == GuildScheduledEventStatus.Completed)
+                                    {
+                                        await TimedInvokeAsync(_guildScheduledEventCompleted, nameof(GuildScheduledEventCompleted), after).ConfigureAwait(false);
+                                    }
+                                    else if((before != null ? before.Status != GuildScheduledEventStatus.Active : false) && data.Status == GuildScheduledEventStatus.Active)
+                                    {
+                                        await TimedInvokeAsync(_guildScheduledEventStarted, nameof(GuildScheduledEventStarted), after).ConfigureAwait(false);
+                                    }
+                                    else await TimedInvokeAsync(_guildScheduledEventUpdated, nameof(GuildScheduledEventUpdated), beforeCacheable, after).ConfigureAwait(false);
+                                }
+                                break;
+                            case "GUILD_SCHEDULED_EVENT_DELETE":
+                                {
+                                    await _gatewayLogger.DebugAsync($"Received Dispatch ({type})").ConfigureAwait(false);
+
+                                    var data = (payload as JToken).ToObject<GuildScheduledEvent>(_serializer);
+
+                                    var guild = State.GetGuild(data.GuildId);
+
+                                    if (guild == null)
+                                    {
+                                        await UnknownGuildAsync(type, data.GuildId).ConfigureAwait(false);
+                                        return;
+                                    }
+
+                                    var guildEvent = guild.RemoveEvent(data.Id) ?? SocketGuildEvent.Create(this, guild, data);
+
+                                    await TimedInvokeAsync(_guildScheduledEventCancelled, nameof(GuildScheduledEventCancelled), guildEvent).ConfigureAwait(false);
+                                }
+                                break;
+                            case "GUILD_SCHEDULED_EVENT_USER_ADD" or "GUILD_SCHEDULED_EVENT_USER_REMOVE":
+                                {
+                                    await _gatewayLogger.DebugAsync($"Received Dispatch ({type})").ConfigureAwait(false);
+
+                                    var data = (payload as JToken).ToObject<GuildScheduledEventUserAddRemoveEvent>(_serializer);
+
+                                    var guild = State.GetGuild(data.GuildId);
+
+                                    if(guild == null)
+                                    {
+                                        await UnknownGuildAsync(type, data.GuildId).ConfigureAwait(false);
+                                        return;
+                                    }
+
+                                    var guildEvent = guild.GetEvent(data.EventId);
+
+                                    if (guildEvent == null)
+                                    {
+                                        await UnknownGuildEventAsync(type, data.EventId, data.GuildId).ConfigureAwait(false);
+                                        return;
+                                    }
+
+                                    var user = (SocketUser)guild.GetUser(data.UserId) ?? State.GetUser(data.UserId);
+
+                                    var cacheableUser = new Cacheable<SocketUser, RestUser, IUser, ulong>(user, data.UserId, user != null, () => Rest.GetUserAsync(data.UserId));
+
+                                    switch (type)
+                                    {
+                                        case "GUILD_SCHEDULED_EVENT_USER_ADD":
+                                            await TimedInvokeAsync(_guildScheduledEventUserAdd, nameof(GuildScheduledEventUserAdd), cacheableUser, guildEvent).ConfigureAwait(false);
+                                            break;
+                                        case "GUILD_SCHEDULED_EVENT_USER_REMOVE":
+                                            await TimedInvokeAsync(_guildScheduledEventUserRemove, nameof(GuildScheduledEventUserRemove), cacheableUser, guildEvent).ConfigureAwait(false);
+                                            break;
+                                    }
+                                }
+                                break;
+
                             #endregion
 
                             #region Ignored (User only)
@@ -2870,6 +2984,12 @@ namespace Discord.WebSocket
         {
             string details = $"{evnt} Guild={guildId}";
             await _gatewayLogger.WarningAsync($"Unknown Guild ({details}).").ConfigureAwait(false);
+        }
+
+        private async Task UnknownGuildEventAsync(string evnt, ulong eventId, ulong guildId)
+        {
+            string details = $"{evnt} Event={eventId} Guild={guildId}";
+            await _gatewayLogger.WarningAsync($"Unknown Guild Event ({details}).").ConfigureAwait(false);
         }
         private async Task UnsyncedGuildAsync(string evnt, ulong guildId)
         {
