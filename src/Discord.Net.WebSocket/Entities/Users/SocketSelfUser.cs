@@ -10,7 +10,7 @@ namespace Discord.WebSocket
     ///     Represents the logged-in WebSocket-based user.
     /// </summary>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    public class SocketSelfUser : SocketUser, ISelfUser
+    public class SocketSelfUser : SocketUser<Cache.User>, ISelfUser
     {
         /// <inheritdoc />
         public string Email { get; private set; }
@@ -85,6 +85,62 @@ namespace Discord.WebSocket
                 hasGlobalChanges = true;
             }
             return hasGlobalChanges;
+        }
+
+        internal override void Update(DiscordSocketClient discord, Cache.User model)
+        {
+            base.Update(discord, model);
+
+            if (model.CurrentUser.HasValue)
+            {
+                var currentUser = model.CurrentUser.Value;
+                if (currentUser.Email != null)
+                {
+                    Email = currentUser.Email;
+                }
+                if (currentUser.Verified.HasValue)
+                {
+                    IsVerified = currentUser.Verified.Value;
+                }
+                if (currentUser.MfaEnabled.HasValue)
+                {
+                    IsMfaEnabled = currentUser.MfaEnabled.Value;
+                }
+                if (currentUser.Flags.HasValue && currentUser.Flags.Value != Flags)
+                {
+                    Flags = currentUser.Flags.Value;
+                }
+                if (currentUser.PremiumType.HasValue && currentUser.PremiumType.Value != PremiumType)
+                {
+                    PremiumType = currentUser.PremiumType.Value;
+                }
+                if (currentUser.Locale != null && currentUser.Locale != Locale)
+                {
+                    Locale = currentUser.Locale;
+                }
+            }
+        }
+
+        internal override Cache.User ToCacheModel()
+        {
+            return new Cache.User()
+            {
+                Avatar = AvatarId,
+                CurrentUser = new Cache.CurrentUser
+                {
+                    Email = Email,
+                    Flags = Flags,
+                    Locale = Locale,
+                    MfaEnabled = IsMfaEnabled,
+                    PremiumType = PremiumType,
+                    PublicFlags = PublicFlags,
+                    Verified = IsVerified
+                },
+                Discriminator = Discriminator,
+                Id = Id,
+                IsBot = IsBot,
+                Username = Username
+            };
         }
 
         /// <inheritdoc />

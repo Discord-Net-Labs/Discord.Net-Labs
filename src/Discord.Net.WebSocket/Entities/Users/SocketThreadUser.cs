@@ -4,14 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Model = Discord.API.ThreadMember;
 using System.Collections.Immutable;
+using Discord.WebSocket.Cache;
 
 namespace Discord.WebSocket
 {
     /// <summary>
     ///     Represents a thread user received over the gateway.
     /// </summary>
-    public class SocketThreadUser : SocketUser, IGuildUser
+    public class SocketThreadUser : SocketUser<Cache.ThreadUser>, IGuildUser
     {
+        private ulong _guildId;
+        private ulong _threadId;
+        private long _joinedAtTicks;
+
         /// <summary>
         ///     Gets the <see cref="SocketThreadChannel"/> this user is in.
         /// </summary>
@@ -20,7 +25,8 @@ namespace Discord.WebSocket
         /// <summary>
         ///     Gets the timestamp for when this user joined this thread.
         /// </summary>
-        public DateTimeOffset ThreadJoinedAt { get; private set; }
+        public DateTimeOffset ThreadJoinedAt
+            => DateTimeUtils.FromTicks(_joinedAtTicks);
 
         /// <summary>
         ///     Gets the guild this user is in.
@@ -134,9 +140,18 @@ namespace Discord.WebSocket
             return entity;
         }
 
+        internal override void Update(DiscordSocketClient discord, Cache.ThreadUser model)
+        {
+            base.Update(discord, model);
+            GuildUser.Update(discord, model.ToGuildMember());
+            _joinedAtTicks = model.ThreadJoinedAt;
+            _guildId = model.GuildId;
+            _threadId = model.ThreadId;
+        }
+
         internal void Update(Model model)
         {
-            ThreadJoinedAt = model.JoinTimestamp;
+            _joinedAtTicks = model.JoinTimestamp.UtcTicks;
 
             if (model.Presence.IsSpecified)
             {
@@ -199,6 +214,31 @@ namespace Discord.WebSocket
         internal override SocketGlobalUser GlobalUser => GuildUser.GlobalUser;
 
         internal override SocketPresence Presence { get => GuildUser.Presence; set => GuildUser.Presence = value; }
+
+        internal override ThreadUser ToCacheModel()
+        {
+            var guildMemberModel = GuildUser.ToCacheModel();
+
+            return new ThreadUser()
+            {
+                ThreadId = _threadId,
+                GuildId = _guildId,
+                Avatar = guildMemberModel.Avatar,
+                CurrentUser = guildMemberModel.CurrentUser,
+                Discriminator = guildMemberModel.Discriminator,
+                GuildAvatar = guildMemberModel.GuildAvatar,
+                GuildMemberJoinedAt = guildMemberModel.JoinedAt,
+                Id = Id,
+                IsBot = IsBot,
+                Nickname = Nickname,
+                Pending = guildMemberModel.Pending,
+                PremiumSince = guildMemberModel.PremiumSince,
+                RoleIds = guildMemberModel.RoleIds,
+                ThreadJoinedAt = ThreadJoinedAt.UtcTicks,
+                Username = guildMemberModel.Username,
+                VoiceState = guildMemberModel.VoiceState
+            };
+        }
 
         /// <summary>
         ///     Gets the guild user of this thread user.

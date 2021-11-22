@@ -12,7 +12,7 @@ namespace Discord.WebSocket
     ///     Represents a WebSocket-based role to be given to a guild user.
     /// </summary>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    public class SocketRole : SocketEntity<ulong>, IRole
+    public class SocketRole : SocketCacheableEntity<Cache.Role, ulong>, IRole
     {
         #region SocketRole
         /// <summary>
@@ -71,6 +71,28 @@ namespace Discord.WebSocket
             entity.Update(state, model);
             return entity;
         }
+
+        internal static SocketRole Create(SocketGuild guild, ClientState state, Cache.Role model)
+        {
+            var entity = new SocketRole(guild, model.Id);
+            entity.Update(guild.Discord, model);
+            return entity;
+        }
+
+        internal override void Update(DiscordSocketClient discord, Cache.Role model)
+        {
+            Name = model.Name;
+            Icon = model.Icon;
+            IsHoisted = model.Hoist;
+            IsManaged = model.Managed;
+            IsMentionable = model.Mentionable;
+            Position = model.Position;
+            Color = new Color(model.Color);
+            Permissions = new GuildPermissions(model.Permissions);
+            if (model.Tags.HasValue)
+                Tags = model.Tags.Value.ToEntity();
+        }
+
         internal void Update(ClientState state, Model model)
         {
             Name = model.Name;
@@ -95,6 +117,29 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public string GetIconUrl()
             => CDN.GetGuildRoleIconUrl(Id, Icon);
+
+        internal override Cache.Role ToCacheModel()
+        {
+            return new Cache.Role()
+            {
+                Color = Color.RawValue,
+                Hoist = IsHoisted,
+                Icon = Icon,
+                Id = Id,
+                Managed = IsManaged,
+                Mentionable = IsMentionable,
+                Name = Name,
+                Position = Position,
+                Permissions = Permissions.RawValue,
+                Tags = Tags != null
+                ? new Cache.RoleTags()
+                {
+                    BotId = Tags.BotId,
+                    IntegrationId = Tags.IntegrationId,
+                    PremiumSubscriber = Tags.IsPremiumSubscriberRole
+                } : null,
+            };
+        }
 
         /// <summary>
         ///     Gets the name of the role.

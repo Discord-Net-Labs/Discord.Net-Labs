@@ -11,7 +11,7 @@ namespace Discord.WebSocket
     ///     A user may not be recognized due to the user missing from the cache or failed to be recognized properly.
     /// </remarks>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    public class SocketUnknownUser : SocketUser
+    public class SocketUnknownUser : SocketUser<Cache.User>
     {
         /// <inheritdoc />
         public override string Username { get; internal set; }
@@ -41,6 +41,18 @@ namespace Discord.WebSocket
             var entity = new SocketUnknownUser(discord, model.Id);
             entity.Update(state, model);
             return entity;
+        }
+
+        internal override Cache.User ToCacheModel()
+        {
+            return new Cache.User()
+            {
+                Username = Username,
+                Avatar = AvatarId,
+                Discriminator = Discriminator,
+                Id = Id,
+                IsBot = IsBot,
+            };
         }
 
         private string DebuggerDisplay => $"{Username}#{Discriminator} ({Id}{(IsBot ? ", Bot" : "")}, Unknown)";

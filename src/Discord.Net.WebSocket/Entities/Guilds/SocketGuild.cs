@@ -29,7 +29,7 @@ namespace Discord.WebSocket
     ///     Represents a WebSocket-based guild object.
     /// </summary>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    public class SocketGuild : SocketEntity<ulong>, IGuild, IDisposable
+    public class SocketGuild : SocketCacheableEntity<Cache.Guild, ulong>, IGuild, IDisposable
     {
         #region SocketGuild
 #pragma warning disable IDISP002, IDISP006
@@ -389,6 +389,84 @@ namespace Discord.WebSocket
             entity.Update(state, model);
             return entity;
         }
+
+        internal override void Update(DiscordSocketClient discord, Cache.Guild model)
+        {
+            AFKChannelId = model.AFKChannelId;
+            if (model.WidgetChannelId.HasValue)
+                WidgetChannelId = model.WidgetChannelId.Value;
+            SystemChannelId = model.SystemChannelId;
+            RulesChannelId = model.RulesChannelId;
+            PublicUpdatesChannelId = model.PublicUpdatesChannelId;
+            AFKTimeout = model.AFKTimeout;
+            if (model.WidgetEnabled.HasValue)
+                IsWidgetEnabled = model.WidgetEnabled.Value;
+            IconId = model.Icon;
+            Name = model.Name;
+            OwnerId = model.OwnerId;
+            VoiceRegionId = model.Region;
+            SplashId = model.Splash;
+            DiscoverySplashId = model.DiscoverySplash;
+            VerificationLevel = model.VerificationLevel;
+            MfaLevel = model.MfaLevel;
+            DefaultMessageNotifications = model.DefaultMessageNotifications;
+            ExplicitContentFilter = model.ExplicitContentFilter;
+            ApplicationId = model.ApplicationId;
+            PremiumTier = model.PremiumTier;
+            VanityURLCode = model.VanityURLCode;
+            BannerId = model.Banner;
+            SystemChannelFlags = model.SystemChannelFlags;
+            Description = model.Description;
+            PremiumSubscriptionCount = model.PremiumSubscriptionCount.GetValueOrDefault();
+            NsfwLevel = model.NsfwLevel;
+            MaxPresences = model.MaxPresences ?? 25000;
+            MaxMembers = model.MaxMembers;
+            if (model.MaxVideoChannelUsers.HasValue)
+                MaxVideoChannelUsers = model.MaxVideoChannelUsers.Value;
+            PreferredLocale = model.PreferredLocale;
+            PreferredCulture = PreferredLocale == null ? null : new CultureInfo(PreferredLocale);
+            IsBoostProgressBarEnabled = model.BoostProgressBarEnabled;
+            if (model.Emotes != null)
+            {
+                var emojis = ImmutableArray.CreateBuilder<GuildEmote>(model.Emotes.Length);
+                for (int i = 0; i < model.Emotes.Length; i++)
+                    emojis.Add(model.Emotes[i].ToEntity());
+                _emotes = emojis.ToImmutable();
+            }
+            else
+                _emotes = ImmutableArray.Create<GuildEmote>();
+
+            Features = new GuildFeatures(model.Features, model.ExperimentalGuildFeatures);
+
+            var roles = new ConcurrentDictionary<ulong, SocketRole>(ConcurrentHashSet.DefaultConcurrencyLevel, (int)(model.Roles.Length * 1.05));
+            if (model.Roles != null)
+            {
+                for (int i = 0; i < model.Roles.Length; i++)
+                {
+                    var role = SocketRole.Create(this, Discord.State, model.Roles[i]);
+                    roles.TryAdd(role.Id, role);
+                }
+            }
+            _roles = roles;
+
+            if (model.Stickers != null)
+            {
+                var stickers = new ConcurrentDictionary<ulong, SocketCustomSticker>(ConcurrentHashSet.DefaultConcurrencyLevel, (int)(model.Stickers.Length * 1.05));
+                for (int i = 0; i < model.Stickers.Length; i++)
+                {
+                    var sticker = model.Stickers[i];
+                    
+                    var entity = SocketCustomSticker.Create(Discord, sticker, this, sticker.User.IsSpecified ? sticker.User.Value.Id : null);
+
+                    stickers.TryAdd(sticker.Id, entity);
+                }
+
+                _stickers = stickers;
+            }
+            else
+                _stickers = new ConcurrentDictionary<ulong, SocketCustomSticker>(ConcurrentHashSet.DefaultConcurrencyLevel, 7);
+        }
+
         internal void Update(ClientState state, ExtendedModel model)
         {
             IsAvailable = !(model.Unavailable ?? false);

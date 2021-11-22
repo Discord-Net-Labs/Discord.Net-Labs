@@ -10,11 +10,17 @@ using Model = Discord.API.User;
 
 namespace Discord.WebSocket
 {
+    public abstract class SocketUser : SocketUser<Cache.ICachedUser>
+    {
+        internal SocketUser(DiscordSocketClient client, ulong id)
+            : base(client, id) { }
+    }
     /// <summary>
     ///     Represents a WebSocket-based user.
     /// </summary>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    public abstract class SocketUser : SocketEntity<ulong>, IUser
+    public abstract class SocketUser<TCacheModel> : SocketCacheableEntity<TCacheModel, ulong>, IUser
+        where TCacheModel : ICacheModel, Cache.ICachedUser
     {
         /// <inheritdoc />
         public abstract bool IsBot { get; internal set; }
@@ -89,6 +95,31 @@ namespace Discord.WebSocket
                 hasChanges = true;
             }
             return hasChanges;
+        }
+
+        internal override void Update(DiscordSocketClient discord, TCacheModel model)
+        {
+            IsBot = model.IsBot;
+            AvatarId = model.Avatar;
+
+            if (model.Discriminator != null)
+            {
+                var newVal = ushort.Parse(model.Discriminator, NumberStyles.None, CultureInfo.InvariantCulture);
+                if (newVal != DiscriminatorValue)
+                {
+                    DiscriminatorValue = ushort.Parse(model.Discriminator, NumberStyles.None, CultureInfo.InvariantCulture);
+                }
+            }
+
+            Username = model.Username;
+
+            if (model.CurrentUser.HasValue)
+            {
+                var currentUser = model.CurrentUser.Value;
+
+                if (currentUser.PublicFlags.HasValue)
+                    PublicFlags = currentUser.PublicFlags.Value;
+            }
         }
 
         /// <inheritdoc />

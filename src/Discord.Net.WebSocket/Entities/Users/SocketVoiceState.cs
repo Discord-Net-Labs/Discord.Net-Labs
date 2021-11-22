@@ -8,12 +8,9 @@ namespace Discord.WebSocket
     ///     Represents a WebSocket user's voice connection status.
     /// </summary>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    public struct SocketVoiceState : IVoiceState
+    public class SocketVoiceState : SocketCacheableEntity<Cache.VoiceState, string>, IVoiceState
     {
-        /// <summary>
-        ///     Initializes a default <see cref="SocketVoiceState"/> with everything set to <c>null</c> or <c>false</c>.
-        /// </summary>
-        public static readonly SocketVoiceState Default = new SocketVoiceState(null, null, null, false, false, false, false, false, false);
+        private ulong _channelId { get; set; }
 
         [Flags]
         private enum Flags : byte
@@ -25,14 +22,15 @@ namespace Discord.WebSocket
             SelfMuted = 0x08,
             SelfDeafened = 0x10,
             SelfStream = 0x20,
+            SelfVideo = 0x40,
         }
 
-        private readonly Flags _voiceStates;
+        private Flags _voiceStates;
 
         /// <summary>
         ///     Gets the voice channel that the user is currently in; or <c>null</c> if none.
         /// </summary>
-        public SocketVoiceChannel VoiceChannel { get; }
+        public SocketVoiceChannel VoiceChannel => (SocketVoiceChannel)Discord.State.GetChannel(_channelId);
         /// <inheritdoc />
         public string VoiceSessionId { get; }
         /// <inheritdoc/>
@@ -50,11 +48,18 @@ namespace Discord.WebSocket
         public bool IsSelfDeafened => (_voiceStates & Flags.SelfDeafened) != 0;
         /// <inheritdoc />
         public bool IsStreaming => (_voiceStates & Flags.SelfStream) != 0;
-        
+        /// <inheritdoc />
+        public bool IsVideo => (_voiceStates & Flags.SelfVideo) != 0;
 
-        internal SocketVoiceState(SocketVoiceChannel voiceChannel, DateTimeOffset? requestToSpeak, string sessionId, bool isSelfMuted, bool isSelfDeafened, bool isMuted, bool isDeafened, bool isSuppressed, bool isStream)
+        internal SocketVoiceState(DiscordSocketClient client, string session)
+            : base(client, session)
         {
-            VoiceChannel = voiceChannel;
+
+        }
+
+        internal SocketVoiceState(DiscordSocketClient client, DateTimeOffset? requestToSpeak, string sessionId, bool isSelfMuted, bool isSelfDeafened, bool isMuted, bool isDeafened, bool isSuppressed, bool isStream, bool isVideo)
+            : base(client, sessionId)
+        {
             VoiceSessionId = sessionId;
             RequestToSpeakTimestamp = requestToSpeak;
 
@@ -71,11 +76,55 @@ namespace Discord.WebSocket
                 voiceStates |= Flags.Suppressed;
             if (isStream)
                 voiceStates |= Flags.SelfStream;
+            if (isVideo)
+                voiceStates |= Flags.SelfVideo;
             _voiceStates = voiceStates;
         }
-        internal static SocketVoiceState Create(SocketVoiceChannel voiceChannel, Model model)
+
+        internal static SocketVoiceState Create(DiscordSocketClient client, Model model)
         {
-            return new SocketVoiceState(voiceChannel, model.RequestToSpeakTimestamp.IsSpecified ? model.RequestToSpeakTimestamp.Value : null, model.SessionId, model.SelfMute, model.SelfDeaf, model.Mute, model.Deaf, model.Suppress, model.SelfStream);
+            return new SocketVoiceState(client, model.RequestToSpeakTimestamp.IsSpecified ? model.RequestToSpeakTimestamp.Value : null, model.SessionId, model.SelfMute, model.SelfDeaf, model.Mute, model.Deaf, model.Suppress, model.SelfStream, model.SelfVideo);
+        }
+
+        internal override void Update(DiscordSocketClient discord, Cache.VoiceState model)
+        {
+            _channelId = model.ChannelId;
+
+            Flags voiceStates = Flags.Normal;
+            if (model.SelfMute)
+                voiceStates |= Flags.SelfMuted;
+            if (model.SelfDeaf)
+                voiceStates |= Flags.SelfDeafened;
+            if (model.Mute)
+                voiceStates |= Flags.Muted;
+            if (model.Deaf)
+                voiceStates |= Flags.Deafened;
+            if (model.Suppress)
+                voiceStates |= Flags.Suppressed;
+            if (model.SelfStream ?? false)
+                voiceStates |= Flags.SelfStream;
+            if (model.SelfVideo)
+                voiceStates |= Flags.SelfVideo;
+            _voiceStates = voiceStates;
+
+            RequestToSpeakTimestamp = DateTimeUtils.FromTicks(model.RequestToSpeak);
+        }
+
+        internal override Cache.VoiceState ToCacheModel()
+        {
+            return new Cache.VoiceState()
+            {
+                ChannelId = _channelId,
+                Deaf = IsDeafened,
+                Mute = IsMuted,
+                RequestToSpeak = RequestToSpeakTimestamp.HasValue ? RequestToSpeakTimestamp.Value.UtcTicks : null,
+                SelfDeaf = IsSelfDeafened,
+                SelfMute = IsSelfMuted,
+                SelfStream = IsStreaming,
+                SelfVideo = IsVideo,
+                SessionId = Id,
+                Suppress = IsSuppressed,
+            };
         }
 
         /// <summary>

@@ -6,7 +6,7 @@ using PresenceModel = Discord.API.Presence;
 namespace Discord.WebSocket
 {
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    internal class SocketGlobalUser : SocketUser
+    internal class SocketGlobalUser : SocketUser<Cache.User>
     {
         public override bool IsBot { get; internal set; }
         public override string Username { get; internal set; }
@@ -51,6 +51,20 @@ namespace Discord.WebSocket
         internal void Update(ClientState state, PresenceModel model)
         {
             Presence = SocketPresence.Create(model);
+        }
+
+        internal override void Update(DiscordSocketClient discord, Cache.User model) => base.Update(discord, model);
+        internal override Cache.User ToCacheModel()
+        {
+            return new Cache.User()
+            {
+                CurrentUser = null, // NA
+                Avatar = AvatarId,
+                Discriminator = Discriminator,
+                Id = Id,
+                IsBot = IsBot,
+                Username = Username
+            };
         }
 
         private string DebuggerDisplay => $"{Username}#{Discriminator} ({Id}{(IsBot ? ", Bot" : "")}, Global)";

@@ -11,13 +11,13 @@ namespace Discord.WebSocket
     ///     Represents a WebSocket-based webhook user.
     /// </summary>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    public class SocketWebhookUser : SocketUser, IWebhookUser
+    public class SocketWebhookUser : SocketUser<Cache.WebhookUser>, IWebhookUser
     {
         #region SocketWebhookUser
         /// <summary> Gets the guild of this webhook. </summary>
         public SocketGuild Guild { get; }
         /// <inheritdoc />
-        public ulong WebhookId { get; }
+        public ulong WebhookId { get; private set; }
 
         /// <inheritdoc />
         public override string Username { get; internal set; }
@@ -48,6 +48,25 @@ namespace Discord.WebSocket
             var entity = new SocketWebhookUser(guild, model.Id, webhookId);
             entity.Update(state, model);
             return entity;
+        }
+
+        internal override void Update(DiscordSocketClient discord, Cache.WebhookUser model)
+        {
+            base.Update(discord, model);
+            WebhookId = model.WebhookId;
+        }
+
+        internal override Cache.WebhookUser ToCacheModel()
+        {
+            return new Cache.WebhookUser()
+            {
+                Avatar = AvatarId,
+                Discriminator = Discriminator,
+                Id = Id,
+                IsBot = IsBot,
+                Username = Username,
+                WebhookId = WebhookId
+            };
         }
 
         private string DebuggerDisplay => $"{Username}#{Discriminator} ({Id}{(IsBot ? ", Bot" : "")}, Webhook)";

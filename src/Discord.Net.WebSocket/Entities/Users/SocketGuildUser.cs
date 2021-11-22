@@ -16,11 +16,12 @@ namespace Discord.WebSocket
     ///     Represents a WebSocket-based guild user.
     /// </summary>
     [DebuggerDisplay(@"{DebuggerDisplay,nq}")]
-    public class SocketGuildUser : SocketUser, IGuildUser
+    public class SocketGuildUser : SocketUser<Cache.GuildMember>, IGuildUser
     {
         #region SocketGuildUser
         private long? _premiumSinceTicks;
         private long? _joinedAtTicks;
+        private ulong _guildId;
         private ImmutableArray<ulong> _roleIds;
 
         internal override SocketGlobalUser GlobalUser { get; }
@@ -63,8 +64,6 @@ namespace Discord.WebSocket
         public DateTimeOffset? RequestToSpeakTimestamp => VoiceState?.RequestToSpeakTimestamp ?? null;
         /// <inheritdoc />
         public bool? IsPending { get; private set; }
-
-
         /// <inheritdoc />
         public DateTimeOffset? JoinedAt => DateTimeUtils.FromTicks(_joinedAtTicks);
         /// <summary>
@@ -85,7 +84,7 @@ namespace Discord.WebSocket
         ///     A <see cref="SocketVoiceState" /> representing the user's voice status; <c>null</c> if the user is not
         ///     connected to a voice channel.
         /// </returns>
-        public SocketVoiceState? VoiceState => Guild.GetVoiceState(Id);
+        public SocketVoiceState VoiceState { get; private set; }
         public AudioInStream AudioStream => Guild.GetAudioStream(Id);
         /// <inheritdoc />
         public DateTimeOffset? PremiumSince => DateTimeUtils.FromTicks(_premiumSinceTicks);
@@ -174,6 +173,31 @@ namespace Discord.WebSocket
             if (model.PremiumSince.IsSpecified)
                 _premiumSinceTicks = model.PremiumSince.Value?.UtcTicks;
         }
+
+        internal override void Update(DiscordSocketClient discord, Cache.GuildMember model)
+        {
+            base.Update(discord, model);
+            _guildId = model.GuildId;
+            Nickname = model.Nickname;
+            GuildAvatarId = model.GuildAvatar;
+            UpdateRoles(model.RoleIds);
+
+            if (model.JoinedAt.HasValue)
+            {
+                _joinedAtTicks = model.JoinedAt;
+            }
+
+            if (model.VoiceState.HasValue)
+            {
+                var voiceState = new SocketVoiceState(Discord, model.VoiceState.Value.SessionId);
+                voiceState.Update(Discord, model.VoiceState.Value);
+                VoiceState = voiceState;
+            }
+
+            IsPending = model.Pending;
+            _premiumSinceTicks = model.PremiumSince;
+        }
+
         private void UpdateRoles(ulong[] roleIds)
         {
             var roles = ImmutableArray.CreateBuilder<ulong>(roleIds.Length + 1);
@@ -220,6 +244,27 @@ namespace Discord.WebSocket
         public string GetGuildAvatarUrl(ImageFormat format = ImageFormat.Auto, ushort size = 128)
             => CDN.GetGuildUserAvatarUrl(Id, Guild.Id, GuildAvatarId, size, format);
 
+        internal override Cache.GuildMember ToCacheModel()
+        {
+            return new Cache.GuildMember()
+            {
+                GuildId = _guildId,
+                Avatar = AvatarId,
+                Discriminator = Discriminator,
+                GuildAvatar = GuildAvatarId,
+                Id = Id,
+                IsBot = IsBot,
+                JoinedAt = _joinedAtTicks,
+                Nickname = Nickname,
+                Pending = IsPending,
+                PremiumSince = _premiumSinceTicks,
+                RoleIds = _roleIds.ToArray(),
+                Username = Username,
+                VoiceState = VoiceState != null
+                ? VoiceState.ToCacheModel()
+                : null,
+            };
+        }
         private string DebuggerDisplay => $"{Username}#{Discriminator} ({Id}{(IsBot ? ", Bot" : "")}, Guild)";
         internal new SocketGuildUser Clone() => MemberwiseClone() as SocketGuildUser;
         #endregion

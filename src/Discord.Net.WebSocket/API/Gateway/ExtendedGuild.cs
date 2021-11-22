@@ -27,7 +27,7 @@ namespace Discord.API.Gateway
         public DateTimeOffset JoinedAt { get; set; }
 
         [JsonProperty("threads")]
-        public new Channel[] Threads { get; set; }
+        public Channel[] Threads { get; set; }
 
         [JsonProperty("guild_scheduled_events")]
         public GuildScheduledEvent[] GuildScheduledEvents { get; set; }

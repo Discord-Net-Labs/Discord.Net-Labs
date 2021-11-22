@@ -8,7 +8,7 @@ namespace Discord.WebSocket
     ///     Represents a WebSocket-based group user.
     /// </summary>
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
-    public class SocketGroupUser : SocketUser, IGroupUser
+    public class SocketGroupUser : SocketUser<Cache.GroupUser>, IGroupUser
     {
         #region SocketGroupUser
         /// <summary>
@@ -48,6 +48,24 @@ namespace Discord.WebSocket
             return entity;
         }
 
+        internal override void Update(DiscordSocketClient discord, Cache.GroupUser model)
+        {
+            GlobalUser.Update(discord, model.ToUser());
+        }
+
+        internal override Cache.GroupUser ToCacheModel()
+        {
+            return new Cache.GroupUser()
+            {
+                CurrentUser = null,
+                ChannelId = Channel.Id,
+                Id = Id,
+                Avatar = AvatarId,
+                Discriminator = Discriminator,
+                IsBot = IsBot,
+                Username = Username,
+            };
+        }
         private string DebuggerDisplay => $"{Username}#{Discriminator} ({Id}{(IsBot ? ", Bot" : "")}, Group)";
         internal new SocketGroupUser Clone() => MemberwiseClone() as SocketGroupUser;
         #endregion

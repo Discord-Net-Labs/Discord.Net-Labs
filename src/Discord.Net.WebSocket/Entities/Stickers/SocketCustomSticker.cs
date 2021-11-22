@@ -47,6 +47,18 @@ namespace Discord.WebSocket
             return entity;
         }
 
+        internal static SocketCustomSticker Create(DiscordSocketClient client, Cache.GuildSticker model, SocketGuild guild)
+        {
+            var entity = new SocketCustomSticker(client, model.Id, guild, model.User?.Id);
+            entity.Update(client, model);
+            return entity;
+        }
+        internal void Update(DiscordSocketClient client, Cache.GuildSticker model)
+        {
+            IsAvailable = model.Available;
+            // TODO
+        }
+
         /// <inheritdoc/>
         public async Task ModifyAsync(Action<StickerProperties> func, RequestOptions options = null)
         {
