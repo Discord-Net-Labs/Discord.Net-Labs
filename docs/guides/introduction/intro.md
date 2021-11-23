@@ -44,5 +44,5 @@ resources to get you started.
 
 ## Still have questions?
 
-Please visit us at the [Labs Discord](https://discord.gg/dnet-labs) server.
+Please visit us at the [Discord](https://discord.gg/dnet-labs) server.
 Describe the problem in details to us, what you've tried and what you need help with.

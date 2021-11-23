@@ -47,33 +47,11 @@ This repo is a custom fork of Discord.Net that introduces the newest features of
 ## How to use
 Setting up labs in your project is really simple, here's how to do it:
 1) Remove Discord.Net from your project
-2) Add Discord.Net Labs nuget to your project
+2) Add Discord.Net Labs NuGet package to your project
 3) That's all!
 
-## Implementations
-What Discord.NET-labs has that Discord.NET does not:
-
-- Major changes
-  * Added Interaction Support.
-  * Added Application commands (slash, user, message).
-  * Added Message Components (buttons, select menus).
-  * Added Thread Channels.
-  * Added Stage Channels.
-  * Revamped Stickers.
-
-- Minor changes
-  * Added `TimestampTag`.
-  * Made `Hierarchy` a `IGuildUser` property.
-  * Changes embed discription length to 4096.
-  * Added `Name` property to teams.
-  * Added url validation to embeds.
-  * Added `NsfwLevel` to Guilds.
-  * Added helpers to `Emoji` for parsing.
-  * Fixed gateway serialization to include nulls.
-  * Added banner and accent color to guild users.
-  * Fixed `CurrentUserId` in sharded clients being null.
-  * Fixed Guild owner and Admin `GuildPermissions.All`.
-  * Added `RatelimitCallback` to `RequestOptions`.
+## MyGet builds:
+This library supports MyGet, you can download the MyGet packages [here](https://www.myget.org/feed/Packages/discord-net-labs). 
 
 ## Branches
 
