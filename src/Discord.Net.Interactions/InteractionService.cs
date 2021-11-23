@@ -136,7 +136,7 @@ namespace Discord.Interactions
             _slashCommandMap = new CommandMap<SlashCommandInfo>(this);
             _contextCommandMaps = new ConcurrentDictionary<ApplicationCommandType, CommandMap<ContextCommandInfo>>();
             _componentCommandMap = new CommandMap<ComponentCommandInfo>(this, config.InteractionCustomIdDelimiters);
-            _autocompleteCommandMap = new CommandMap<AutocompleteCommandInfo>(this, config.AutocompleteNameDelimiters);
+            _autocompleteCommandMap = new CommandMap<AutocompleteCommandInfo>(this);
 
             _restClient = discord;
 

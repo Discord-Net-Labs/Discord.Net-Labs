@@ -7,7 +7,7 @@ namespace Discord.Interactions
     /// <summary>
     ///     Contains the information of a Autocomplete Interaction result.
     /// </summary>
-    public class AutocompletionResult : IResult
+    public struct AutocompletionResult : IResult
     {
         /// <inheritdoc/>
         public InteractionCommandError? Error { get; }
@@ -23,7 +23,7 @@ namespace Discord.Interactions
         /// </summary>
         public IReadOnlyCollection<AutocompleteResult> Suggestions { get; }
 
-        protected AutocompletionResult(IEnumerable<AutocompleteResult> suggestions, InteractionCommandError? error, string reason)
+        private AutocompletionResult(IEnumerable<AutocompleteResult> suggestions, InteractionCommandError? error, string reason)
         {
             Suggestions = suggestions?.ToImmutableArray();
             Error = error;

@@ -29,8 +29,6 @@ namespace Discord.Interactions
         /// </summary>
         public char[] InteractionCustomIdDelimiters { get; set; }
 
-        public char[] AutocompleteNameDelimiters { get; set; }
-
         /// <summary>
         ///     The string expression that will be treated as a wild card
         /// </summary>
