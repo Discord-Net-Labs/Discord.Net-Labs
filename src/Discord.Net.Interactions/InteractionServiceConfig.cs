@@ -58,6 +58,8 @@ namespace Discord.Interactions
         /// <summary>
         ///     Define a delegate to be used by the <see cref="InteractionService"/> when responding to a Rest based interaction
         /// </summary>
-        public Func<string, Task> RestResponseCallback { get; set; } = (str) => Task.CompletedTask;
+        public RestResponseCallback RestResponseCallback { get; set; } = (ctx, str) => Task.CompletedTask;
     }
+
+    public delegate Task RestResponseCallback(IInteractionContext context, string responseBody);
 }

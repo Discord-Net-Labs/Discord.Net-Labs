@@ -70,7 +70,7 @@ namespace Discord.Interactions
         internal readonly bool _throwOnError, _deleteUnkownSlashCommandAck, _useCompiledLambda, _enableAutocompleters;
         internal readonly string _wildCardExp;
         internal readonly RunMode _runMode;
-        internal readonly Func<string, Task> _restResponseCallback;
+        internal readonly RestResponseCallback _restResponseCallback;
 
         /// <summary>
         ///     Represents all modules loaded within <see cref="InteractionService"/>

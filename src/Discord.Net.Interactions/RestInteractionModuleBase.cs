@@ -8,7 +8,7 @@ namespace Discord.Interactions
     ///     Provides a base class for a Rest based command module to inherit from.
     /// </summary>
     /// <typeparam name="T">Type of interaction context to be injected into the module</typeparam>
-    public class RestInteractionModuleBase<T> : InteractionModuleBase<T>
+    public abstract class RestInteractionModuleBase<T> : InteractionModuleBase<T>
         where T : class, IInteractionContext
     {
         public InteractionService InteractionService { get; set; }
@@ -27,7 +27,7 @@ namespace Discord.Interactions
             if (Context.Interaction is not RestInteraction restInteraction)
                 throw new InvalidOperationException($"Invalid interaction type. Interaction must be a type of {nameof(RestInteraction)} in order to execute this method");
 
-            await InteractionService._restResponseCallback(restInteraction.Defer(ephemeral, options)).ConfigureAwait(false);
+            await InteractionService._restResponseCallback(Context, restInteraction.Defer(ephemeral, options)).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Discord.Interactions
             if (Context.Interaction is not RestInteraction restInteraction)
                 throw new InvalidOperationException($"Invalid interaction type. Interaction must be a type of {nameof(RestInteraction)} in order to execute this method");
 
-            await InteractionService._restResponseCallback(restInteraction.Respond(text, embeds, isTTS, ephemeral, allowedMentions, options, component, embed)).ConfigureAwait(false);
+            await InteractionService._restResponseCallback(Context, restInteraction.Respond(text, embeds, isTTS, ephemeral, allowedMentions, options, component, embed)).ConfigureAwait(false);
         }
     }
 }

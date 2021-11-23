@@ -56,7 +56,7 @@ namespace Discord.Interactions
                     {
                         case RestAutocompleteInteraction restAutocomplete:
                             var payload = restAutocomplete.Respond(result.Suggestions);
-                            await InteractionService._restResponseCallback(payload).ConfigureAwait(false);
+                            await InteractionService._restResponseCallback(context, payload).ConfigureAwait(false);
                             break;
                         case SocketAutocompleteInteraction socketAutocomplete:
                             await socketAutocomplete.RespondAsync(result.Suggestions).ConfigureAwait(false);
