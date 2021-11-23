@@ -57,8 +57,6 @@
       topicUid: Guides.SlashCommands.BulkOverwrite
 - name: Working with Context commands
   items:
-    - name: Introduction
-      topicUid: Guides.ContextCommands.Intro
     - name: Creating Context Commands
       topicUid: Guides.ContextCommands.Creating
     - name: Receiving Context Commands

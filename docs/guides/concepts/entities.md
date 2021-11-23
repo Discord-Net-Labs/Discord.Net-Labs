@@ -53,7 +53,7 @@ DiscordSocketClient.
 > a `GetXXX` method. It is recommended that you enable Discord's
 > _developer mode_ to allow easy access to entity IDs, found in
 > Settings > Appearance > Advanced. Read more about it in the
-> [FAQ](xref:FAQ.Basics.GetStarted) page.
+> FAQ page.
 
 More detailed versions of entities can be pulled from the basic
 entities, e.g., `SocketGuild.GetUser`, which returns a

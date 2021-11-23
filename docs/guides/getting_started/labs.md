@@ -17,7 +17,7 @@ Are you looking to test or play with new features?
 [NuGet] - This only includes releases, on which features are ready to test.
 
 > [!NOTE]
-> Installing NuGet packages is covered fully at [Installing Discord NET](installing.md)
+> Installing NuGet packages is covered fully at [Installing Discord NET](xref:Guides.GettingStarted.Installation)
 
 [MyGet] - Available for current builds and unreleased features.
 
