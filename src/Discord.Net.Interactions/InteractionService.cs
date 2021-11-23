@@ -65,12 +65,14 @@ namespace Discord.Interactions
         private readonly SemaphoreSlim _lock;
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
-        internal readonly DiscordRestClient _restClient;
+        internal readonly Func<DiscordRestClient> _getRestClient;
 
         internal readonly bool _throwOnError, _deleteUnkownSlashCommandAck, _useCompiledLambda, _enableAutocompleters;
         internal readonly string _wildCardExp;
         internal readonly RunMode _runMode;
         internal readonly RestResponseCallback _restResponseCallback;
+
+        public DiscordRestClient RestClient { get => _getRestClient(); }
 
         /// <summary>
         ///     Represents all modules loaded within <see cref="InteractionService"/>
@@ -98,7 +100,7 @@ namespace Discord.Interactions
         /// <param name="discord">The discord client</param>
         /// <param name="config">The configuration class</param>
         public InteractionService (DiscordSocketClient discord, InteractionServiceConfig config = null)
-            : this(discord.Rest, config ?? new InteractionServiceConfig()) { }
+            : this(() => discord.Rest, config ?? new InteractionServiceConfig()) { }
 
         /// <summary>
         ///     Initialize a <see cref="InteractionService"/> with provided configurations
@@ -106,7 +108,7 @@ namespace Discord.Interactions
         /// <param name="discord">The discord client</param>
         /// <param name="config">The configuration class</param>
         public InteractionService (DiscordShardedClient discord, InteractionServiceConfig config = null)
-            : this(discord.Rest, config ?? new InteractionServiceConfig()) { }
+            : this(() => discord.Rest, config ?? new InteractionServiceConfig()) { }
 
         /// <summary>
         ///     Initialize a <see cref="InteractionService"/> with provided configurations
@@ -114,7 +116,7 @@ namespace Discord.Interactions
         /// <param name="discord">The discord client</param>
         /// <param name="config">The configuration class</param>
         public InteractionService (BaseSocketClient discord, InteractionServiceConfig config = null)
-            :this(discord.Rest, config ?? new InteractionServiceConfig()) { }
+            :this(() => discord.Rest, config ?? new InteractionServiceConfig()) { }
 
         /// <summary>
         ///     Initialize a <see cref="InteractionService"/> with provided configurations
@@ -122,6 +124,9 @@ namespace Discord.Interactions
         /// <param name="discord">The discord client</param>
         /// <param name="config">The configuration class</param>
         public InteractionService (DiscordRestClient discord, InteractionServiceConfig config = null)
+            :this(() => discord, config ?? new InteractionServiceConfig()) { }
+
+        private InteractionService (Func<DiscordRestClient> getRestClient, InteractionServiceConfig config = null)
         {
             config ??= new InteractionServiceConfig();
 
@@ -138,7 +143,7 @@ namespace Discord.Interactions
             _componentCommandMap = new CommandMap<ComponentCommandInfo>(this, config.InteractionCustomIdDelimiters);
             _autocompleteCommandMap = new CommandMap<AutocompleteCommandInfo>(this);
 
-            _restClient = discord;
+            _getRestClient = getRestClient;
 
             _runMode = config.DefaultRunMode;
             if (_runMode == RunMode.Default)
@@ -311,12 +316,12 @@ namespace Discord.Interactions
             if (!deleteMissing)
             {
 
-                var existing = await _restClient.GetGuildApplicationCommands(guildId).ConfigureAwait(false);
+                var existing = await RestClient.GetGuildApplicationCommands(guildId).ConfigureAwait(false);
                 var missing = existing.Where(x => !props.Any(y => y.Name.IsSpecified && y.Name.Value == x.Name));
                 props.AddRange(missing.Select(x => x.ToApplicationCommandProps()));
             }
 
-            return await _restClient.BulkOverwriteGuildCommands(props.ToArray(), guildId).ConfigureAwait(false);
+            return await RestClient.BulkOverwriteGuildCommands(props.ToArray(), guildId).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -335,12 +340,12 @@ namespace Discord.Interactions
 
             if (!deleteMissing)
             {
-                var existing = await _restClient.GetGlobalApplicationCommands().ConfigureAwait(false);
+                var existing = await RestClient.GetGlobalApplicationCommands().ConfigureAwait(false);
                 var missing = existing.Where(x => !props.Any(y => y.Name.IsSpecified && y.Name.Value == x.Name));
                 props.AddRange(missing.Select(x => x.ToApplicationCommandProps()));
             }
 
-            return await _restClient.BulkOverwriteGlobalCommands(props.ToArray()).ConfigureAwait(false);
+            return await RestClient.BulkOverwriteGlobalCommands(props.ToArray()).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -362,7 +367,7 @@ namespace Discord.Interactions
             if (guild is null)
                 throw new ArgumentNullException(nameof(guild));
 
-            var existing = await _restClient.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
+            var existing = await RestClient.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
 
             var props = new List<ApplicationCommandProperties>();
 
@@ -387,7 +392,7 @@ namespace Discord.Interactions
                 props.AddRange(missing.Select(x => x.ToApplicationCommandProps()));
             }
 
-            return await _restClient.BulkOverwriteGuildCommands(props.ToArray(), guild.Id).ConfigureAwait(false);
+            return await RestClient.BulkOverwriteGuildCommands(props.ToArray(), guild.Id).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -405,13 +410,13 @@ namespace Discord.Interactions
             if (guild is null)
                 throw new ArgumentNullException(nameof(guild));
 
-            var existing = await _restClient.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
+            var existing = await RestClient.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
             var props = modules.SelectMany(x => x.ToApplicationCommandProps(true)).ToList();
 
             foreach (var command in existing)
                 props.Add(command.ToApplicationCommandProps());
 
-            return await _restClient.BulkOverwriteGuildCommands(props.ToArray(), guild.Id).ConfigureAwait(false);
+            return await RestClient.BulkOverwriteGuildCommands(props.ToArray(), guild.Id).ConfigureAwait(false);
         }
 
         private void LoadModuleInternal (ModuleInfo module)
@@ -724,7 +729,7 @@ namespace Discord.Interactions
             if (guild is null)
                 throw new ArgumentNullException("guild");
 
-            var commands = await _restClient.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
+            var commands = await RestClient.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
             var appCommand = commands.First(x => x.Name == module.SlashGroupName);
 
             return await appCommand.ModifyCommandPermissions(permissions).ConfigureAwait(false);
@@ -765,7 +770,7 @@ namespace Discord.Interactions
             if (guild is null)
                 throw new ArgumentNullException("guild");
 
-            var commands = await _restClient.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
+            var commands = await RestClient.GetGuildApplicationCommands(guild.Id).ConfigureAwait(false);
             var appCommand = commands.First(x => x.Name == ( command as IApplicationCommandInfo ).Name);
 
             return await appCommand.ModifyCommandPermissions(permissions).ConfigureAwait(false);
@@ -861,7 +866,7 @@ namespace Discord.Interactions
 
         private void EnsureClientReady()
         {
-            if (_restClient.CurrentUser is null || _restClient.CurrentUser?.Id == 0)
+            if (RestClient?.CurrentUser is null || RestClient?.CurrentUser?.Id == 0)
                 throw new InvalidOperationException($"Provided client is not ready to execute this operation, invoke this operation after a `Client Ready` event");
         }
     }

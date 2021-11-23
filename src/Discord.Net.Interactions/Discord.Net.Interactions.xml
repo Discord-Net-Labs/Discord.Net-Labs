@@ -1733,60 +1733,6 @@
             </summary>
             <param name="reason">The reason of failure.</param>
         </member>
-        <member name="T:Discord.Interactions.RestAutocompletionResult">
-            <summary>
-                Contains the information of a Rest based Autocomplete Interaction result.
-            </summary>
-        </member>
-        <member name="P:Discord.Interactions.RestAutocompletionResult.SerializedPayload">
-            <summary>
-                A string that contains json to write back to the incoming http request.
-            </summary>
-        </member>
-        <member name="M:Discord.Interactions.RestAutocompletionResult.FromSuccess(System.Collections.Generic.IEnumerable{Discord.AutocompleteResult},System.String)">
-            <summary>
-                Initializes a new <see cref="T:Discord.Interactions.AutocompletionResult" /> with no error.
-            </summary>
-            <param name="suggestions">Autocomplete suggestions to be displayed to the user</param>
-            <param name="serializedPayload">A string that contains json to write back to the incoming http request.</param>
-            <returns>
-                A <see cref="T:Discord.Interactions.AutocompletionResult" /> that does not contain any errors.
-            </returns>
-        </member>
-        <member name="M:Discord.Interactions.RestAutocompletionResult.FromError(Discord.Interactions.IResult)">
-            <summary>
-                Initializes a new <see cref="T:Discord.Interactions.AutocompletionResult" /> with a specified result; this may or may not be an
-                successful execution depending on the <see cref="P:Discord.Interactions.IResult.Error" /> and
-                <see cref="P:Discord.Interactions.IResult.ErrorReason" /> specified.
-            </summary>
-            <param name="result">The result to inherit from.</param>
-            <returns>
-                A <see cref="T:Discord.Interactions.AutocompletionResult"/> that inherits the <see cref="T:Discord.Interactions.IResult"/> error type and reason.
-            </returns>
-        </member>
-        <member name="M:Discord.Interactions.RestAutocompletionResult.FromError(System.Exception)">
-            <summary>
-                Initializes a new <see cref="T:Discord.Interactions.AutocompletionResult" /> with a specified exception, indicating an unsuccessful
-                execution.
-            </summary>
-            <param name="exception">The exception that caused the autocomplete process to fail.</param>
-            <returns>
-                A <see cref="T:Discord.Interactions.AutocompletionResult" /> that contains the exception that caused the unsuccessful execution, along
-                with a <see cref="T:Discord.Interactions.InteractionCommandError" /> of type <see cref="T:System.Exception"/> as well as the exception message as the
-                reason.
-            </returns>
-        </member>
-        <member name="M:Discord.Interactions.RestAutocompletionResult.FromError(Discord.Interactions.InteractionCommandError,System.String)">
-            <summary>
-                Initializes a new <see cref="T:Discord.Interactions.AutocompletionResult" /> with a specified <see cref="T:Discord.Interactions.InteractionCommandError" /> and its
-                reason, indicating an unsuccessful execution.
-            </summary>
-            <param name="error">The type of error.</param>
-            <param name="reason">The reason behind the error.</param>
-            <returns>
-                A <see cref="T:Discord.Interactions.AutocompletionResult" /> that contains a <see cref="T:Discord.Interactions.InteractionCommandError" /> and reason.
-            </returns>
-        </member>
         <member name="P:Discord.Interactions.RuntimeResult.Error">
             <inheritdoc/>
         </member>
