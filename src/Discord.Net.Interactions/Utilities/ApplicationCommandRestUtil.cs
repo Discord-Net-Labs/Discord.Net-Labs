@@ -14,14 +14,14 @@ namespace Discord.Interactions
                 Name = parameterInfo.Name,
                 Description = parameterInfo.Description,
                 Type = parameterInfo.DiscordOptionType,
-                Required = parameterInfo.IsRequired,
+                IsRequired = parameterInfo.IsRequired,
                 Choices = parameterInfo.Choices?.Select(x => new ApplicationCommandOptionChoiceProperties
                 {
                     Name = x.Name,
                     Value = x.Value
                 })?.ToList(),
                 ChannelTypes = parameterInfo.ChannelTypes?.ToList(),
-                Autocomplete = parameterInfo.Autocomplete,
+                IsAutocomplete = parameterInfo.Autocomplete,
                 MaxValue = parameterInfo.MaxValue,
                 MinValue = parameterInfo.MinValue
             };
@@ -39,7 +39,7 @@ namespace Discord.Interactions
             {
                 Name = commandInfo.Name,
                 Description = commandInfo.Description,
-                DefaultPermission = commandInfo.DefaultPermission,
+                IsDefaultPermission = commandInfo.DefaultPermission,
                 Options = commandInfo.Parameters.Select(x => x.ToApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified
             };
 
@@ -49,7 +49,7 @@ namespace Discord.Interactions
                 Name = commandInfo.Name,
                 Description = commandInfo.Description,
                 Type = ApplicationCommandOptionType.SubCommand,
-                Required = false,
+                IsRequired = false,
                 Options = commandInfo.Parameters?.Select(x => x.ToApplicationCommandOptionProps())?.ToList()
             };
 
@@ -57,7 +57,7 @@ namespace Discord.Interactions
             new ContextCommandProperties(commandInfo.CommandType)
             {
                 Name = commandInfo.Name,
-                DefaultPermission = commandInfo.DefaultPermission
+                IsDefaultPermission = commandInfo.DefaultPermission
             };
         #endregion
 
@@ -103,7 +103,7 @@ namespace Discord.Interactions
                 {
                     Name = moduleInfo.SlashGroupName.ToLower(),
                     Description = moduleInfo.Description,
-                    DefaultPermission = moduleInfo.DefaultPermission,
+                    IsDefaultPermission = moduleInfo.DefaultPermission,
                     Options = options
                 });
             }
@@ -150,13 +150,13 @@ namespace Discord.Interactions
                 {
                     Name = command.Name,
                     Description = command.Description,
-                    DefaultPermission = command.IsDefaultPermission,
+                    IsDefaultPermission = command.IsDefaultPermission,
                     Options = command.Options?.Select(x => x.ToApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified
                 },
                 ApplicationCommandType.User or ApplicationCommandType.Message => new ContextCommandProperties(command.Type)
                 {
                     Name = command.Name,
-                    DefaultPermission = command.IsDefaultPermission
+                    IsDefaultPermission = command.IsDefaultPermission
                 },
                 _ => throw new InvalidOperationException($"Cannot create command properties for command type {command.Type}"),
             };
@@ -168,7 +168,7 @@ namespace Discord.Interactions
                 Name = commandOption.Name,
                 Description = commandOption.Description,
                 Type = commandOption.Type,
-                Required = commandOption.IsRequired,
+                IsRequired = commandOption.IsRequired,
                 Choices = commandOption.Choices?.Select(x => new ApplicationCommandOptionChoiceProperties
                 {
                     Name = x.Name,

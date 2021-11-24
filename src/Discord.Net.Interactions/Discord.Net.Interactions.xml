@@ -6,7 +6,7 @@
     <members>
         <member name="T:Discord.Interactions.AutocompleteAttribute">
             <summary>
-                Set the <see cref="P:Discord.ApplicationCommandOptionProperties.Autocomplete"/> to <see langword="true"/>
+                Set the <see cref="!:ApplicationCommandOptionProperties.Autocomplete"/> to <see langword="true"/>
             </summary>
         </member>
         <member name="P:Discord.Interactions.AutocompleteAttribute.AutocompleterType">
@@ -16,7 +16,7 @@
         </member>
         <member name="M:Discord.Interactions.AutocompleteAttribute.#ctor(System.Type)">
             <summary>
-                Set the <see cref="P:Discord.ApplicationCommandOptionProperties.Autocomplete"/> to <see langword="true"/> and define a <see cref="T:Discord.Interactions.Autocompleter"/> to handle
+                Set the <see cref="!:ApplicationCommandOptionProperties.Autocomplete"/> to <see langword="true"/> and define a <see cref="T:Discord.Interactions.Autocompleter"/> to handle
                 Autocomplete interactions targeting the parameter this <see cref="T:System.Attribute"/> is applied to
             </summary>
             <remarks>
@@ -25,7 +25,7 @@
         </member>
         <member name="M:Discord.Interactions.AutocompleteAttribute.#ctor">
             <summary>
-                Set the <see cref="P:Discord.ApplicationCommandOptionProperties.Autocomplete"/> to <see langword="true"/> without specifying a <see cref="T:Discord.Interactions.Autocompleter"/>
+                Set the <see cref="!:ApplicationCommandOptionProperties.Autocomplete"/> to <see langword="true"/> without specifying a <see cref="T:Discord.Interactions.Autocompleter"/>
             </summary>
         </member>
         <member name="T:Discord.Interactions.ChannelTypesAttribute">
@@ -1104,6 +1104,11 @@
                 Occurs when a Autocompleter is executed
             </summary>
         </member>
+        <member name="P:Discord.Interactions.InteractionService.RestClient">
+            <summary>
+                Rest client to be used to register application commands
+            </summary>
+        </member>
         <member name="P:Discord.Interactions.InteractionService.Modules">
             <summary>
                 Represents all modules loaded within <see cref="T:Discord.Interactions.InteractionService"/>
@@ -1369,7 +1374,7 @@
             </returns>
             <exception cref="T:System.InvalidOperationException">Module or Context Command couldn't be found</exception>
         </member>
-        <member name="M:Discord.Interactions.InteractionService.GetInteractionInfo``1(System.String)">
+        <member name="M:Discord.Interactions.InteractionService.GetComponentCommandInfo``1(System.String)">
             <summary>
                 Get a <see cref="T:Discord.Interactions.ComponentCommandInfo"/>
             </summary>
