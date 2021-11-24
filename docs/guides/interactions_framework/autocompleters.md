@@ -14,3 +14,9 @@ Interactions Service uses this method to generate a response to a Autocomplete I
 
 1. Returning the parameterless `AutocompletionResult.FromSuccess()` will display "No options match your search." message to the user.
 2. Returning `AutocompleteResult.FromError()` will make the Interaction Service not respond to the interation, consequently displaying the user "Loading options failed." message.
+
+## Resolving Autocompleter Dependencies
+
+Autocompleter dependencies are resolved using the same dependency injection pattern as the Interaction Modules. Property injection and constructor injection are both valid ways to get service dependencies.
+
+Because Autocompleters are constructed at service startup, class dependencies are resolved only once. If you need to access per-request dependencies you can use the IServiceProvider parameter of the `GenerateSuggestionsAsync()` method.

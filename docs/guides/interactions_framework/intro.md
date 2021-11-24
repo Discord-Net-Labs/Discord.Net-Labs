@@ -47,7 +47,7 @@ Valid **Interaction Commands** must comply with the following requirements:
 |[Slash Command](#slash-commands)| `Task`/`Task<RuntimeResult>` | 25                  | any*                           | `[SlashCommand]`         |
 |[User Command](#user-commands)  | `Task`/`Task<RuntimeResult>` | 1                   | Implementations of `IUser`    | `[UserCommand]`          |
 |[Message Command](#message-commands)| `Task`/`Task<RuntimeResult>` | 1                   | Implementations of `IMessage` | `[MessageCommand]`       |
-|[Component Interaction Command](#component-interaction-commands)| `Task`/`Task<RuntimeResult>` | -                 | `string` or `string[]`        | `[ComponentInteraction]` |
+|[Component Interaction Command](#component-interaction-commands)| `Task`/`Task<RuntimeResult>` | inf                 | `string` or `string[]`        | `[ComponentInteraction]` |
 |[Autocomplete Command](#autocomplete-commands)| `Task`/`Task<RuntimeResult>` | -             | -                   | `[AutocompleteCommand]`|
 
 **a `TypeConverter` that is capable of parsing type in question must be registered to the `InteractionService` instance.*
@@ -68,7 +68,7 @@ public async Task Echo(string input)
 
 #### Parameters
 
-Slash Commands can have up to 25 method parameters. You must name your parameters in accordance with [Discords Naming Guidelines](https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-naming). By default, your methods can feature the following parameter types:
+Slash Commands can have up to 25 method parameters. You must name your parameters in accordance with [Discords Naming Guidelines](https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-naming). Interaction Service also features a pascal casing seperator for formatting parameter names with pascal casing into Discord compliant parameter names('parameterName' => 'parameter-name'). By default, your methods can feature the following parameter types:
 
 - Implementations of `IUser`
 - Implementations of `IChannel`*
@@ -81,7 +81,7 @@ Slash Commands can have up to 25 method parameters. You must name your parameter
 - `sbyte`, `byte`
 - `int16`, `int32`, `int64`
 - `uint16`, `uint32`, `uint64`
-- `enum` (Values are registered as multiple choice options and are enforced by Discord)
+- `enum` (Values are registered as multiple choice options and are enforced by Discord. Use `[HideAttribute]' on enum values to prevent them from getting registered.)
 - `DateTime`
 - `TimeSpan`
 
@@ -262,13 +262,44 @@ public async Task Autocomplete()
 
 Alternatively, you can use the *Autocompleters* to simplify this workflow.
 
-## Command Context
+## Interaction Context
 
 Every command module provides its commands with an execution context. This context property includes general information about the underlying interaction that triggered the command execution. The base command context.
 
-You can design your modules to work with different implementation types of `IInteractionCommandContext`. To achieve this, make sure your module classes inherit from the generic variant of the `InteractionModuleBase`.
+You can design your modules to work with different implementation types of `IInteractionContext`. To achieve this, make sure your module classes inherit from the generic variant of the `InteractionModuleBase`.
 
 > Context type must be consistent throughout the project, or you will run into issues during runtime.
+
+Interaction Service ships with 4 different kinds of `InteractionContext`s:
+
+1. InteractionContext: A bare-bones execution context consisting of only implementation netural interfaces
+2. SocketInteractionContext: An execution context for use with `DiscordSocketClient`. Socket entities are exposed in this context without the need of casting them.
+3. ShardedInteractionContext: `DiscordShardedClient` variant of the `SocketInteractionContext`
+4. RestInteractionContext: An execution context designed to be used with a `DiscordRestClient` and webhook based interactions pattern
+
+You can create custom Interaction Contexts by implementing the `IInteracitonContext` interface.
+
+One problem with using the concrete type InteractionContexts is that you cannot access the information that is specific to different interaction types without casting. Concrete type interaction contexts are great for creating shared interaction modules but you can also use the generic variants of the built-in interaction contexts to create interaction specific interaction modules.
+
+Ex.
+Message component interactions have access to a special method called `UpdateAsync()` to update the body of the method the interaction originated from. Normally this wouldn't be accessable without casting the `Context.Interaction`.
+
+```csharp
+discordClient.ButtonExecuted += async (interaction) => 
+{
+    var ctx = new SocketInteractionContext<SocketMessageComponent>(discordClient, interaction);
+    await interactionService.ExecuteAsync(ctx, serviceProvider);
+};
+
+public class MessageComponentModule : InteractionModuleBase<SocketInteractionContext<SocketMessageComponent>>
+{
+    [ComponentInteraction("custom_id")]
+    public async Command()
+    {
+        Context.Interaction.UpdateAsync(...);
+    }
+}
+```
 
 ## Loading Modules
 
@@ -307,3 +338,17 @@ Time it takes to create a module instance and execute a `Task.Delay(0)` method u
 |----------------- |----------:|---------:|---------:|
 | ReflectionInvoke | 225.93 ns | 4.522 ns | 7.040 ns |
 |   CompiledLambda |  48.79 ns | 0.981 ns | 1.276 ns |
+
+## Registering Commands to Discord
+
+Application commands loaded to the Interaciton Service can be registered to Discord using a number of different methods. In most cases `RegisterCommandsGloballyAsync()` and `RegisterCommandsToGuildAsync()` are the methods to use. Command registration methods can only be used after the gateway client is ready or the rest client is logged in.
+
+In debug environment, since Global commands can take up to 1 hour to register/update, you should register your commands to a test guild for your changes to take effect immediately. You can use the preprocessor directives to create a simple logic for registering commands:
+
+```csharp
+#if DEBUG
+    await interactionService.RegisterCommandsToGuildAsync(<test_guild_id>);
+#else
+    await interactionService.RegisterCommandsGloballyAsync();
+#endif
+```

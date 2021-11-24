@@ -72,6 +72,9 @@ namespace Discord.Interactions
         internal readonly RunMode _runMode;
         internal readonly RestResponseCallback _restResponseCallback;
 
+        /// <summary>
+        ///     Rest client to be used to register application commands
+        /// </summary>
         public DiscordRestClient RestClient { get => _getRestClient(); }
 
         /// <summary>
@@ -554,6 +557,7 @@ namespace Discord.Interactions
                     await response.DeleteAsync().ConfigureAwait(false);
                 }
 
+                await _slashCommandExecutedEvent.InvokeAsync(null, context, result).ConfigureAwait(false);
                 return result;
             }
             return await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
@@ -570,6 +574,7 @@ namespace Discord.Interactions
             {
                 await _cmdLogger.DebugAsync($"Unknown context command, skipping execution ({result.Text.ToUpper()})");
 
+                await _contextCommandExecutedEvent.InvokeAsync(null, context, result).ConfigureAwait(false);
                 return result;
             }
             return await result.Command.ExecuteAsync(context, services).ConfigureAwait(false);
@@ -583,6 +588,7 @@ namespace Discord.Interactions
             {
                 await _cmdLogger.DebugAsync($"Unknown custom interaction id, skipping execution ({input.ToUpper()})");
 
+                await _componentCommandExecutedEvent.InvokeAsync(null, context, result).ConfigureAwait(false);
                 return result;
             }
             return await result.Command.ExecuteAsync(context, services, result.RegexCaptureGroups).ConfigureAwait(false);
@@ -611,6 +617,7 @@ namespace Discord.Interactions
             {
                 await _cmdLogger.DebugAsync($"Unknown command name, skipping autocomplete process ({interaction.Data.CommandName.ToUpper()})");
 
+                await _autocompleteCommandExecutedEvent.InvokeAsync(null, context, commandResult).ConfigureAwait(false);
                 return commandResult;
             }
 
@@ -817,7 +824,7 @@ namespace Discord.Interactions
         ///     <see cref="ComponentCommandInfo"/> instance for this command
         /// </returns>
         /// <exception cref="InvalidOperationException">Module or Component Command couldn't be found</exception>
-        public ComponentCommandInfo GetInteractionInfo<TModule> (string methodName) where TModule : class
+        public ComponentCommandInfo GetComponentCommandInfo<TModule> (string methodName) where TModule : class
         {
             var module = GetModuleInfo<TModule>();
 
