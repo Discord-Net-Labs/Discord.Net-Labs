@@ -1,4 +1,4 @@
-using System;
+    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -132,13 +132,10 @@ namespace Discord.Interactions.Builders
                 {
                     BuildModule(builder, submodule, commandService, services);
 
-                    if (parent.IsSlashGroup)
-                        slashGroupDepth++;
-
                     if (slashGroupDepth >= MaxCommandDepth - 1)
                         throw new InvalidOperationException("Slash Commands only support 2 command prefixes for sub-commands");
 
-                    BuildSubModules(builder, submodule.DeclaredNestedTypes, builtTypes, commandService, services, builder.Name != null ? ++slashGroupDepth : slashGroupDepth);
+                    BuildSubModules(builder, submodule.DeclaredNestedTypes, builtTypes, commandService, services, builder.IsSlashGroup ? slashGroupDepth + 1 : slashGroupDepth);
                 });
                 builtTypes.Add(submodule);
             }
