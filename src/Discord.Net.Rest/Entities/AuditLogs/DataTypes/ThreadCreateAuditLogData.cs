@@ -56,7 +56,7 @@ namespace Discord.Rest
         /// <returns>
         ///     A thread object representing the thread that was created if it still exists, otherwise returns <c>null</c>.
         /// </returns>
-        public IThreadChannel Thread;
+        public IThreadChannel Thread { get; }
 
         /// <summary>
         ///     Gets the snowflake ID of the thread.
