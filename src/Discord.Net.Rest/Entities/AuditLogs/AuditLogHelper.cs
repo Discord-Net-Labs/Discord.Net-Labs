@@ -52,6 +52,7 @@ namespace Discord.Rest
             [ActionType.MessagePinned] = MessagePinAuditLogData.Create,
             [ActionType.MessageUnpinned] = MessageUnpinAuditLogData.Create,
 
+            [ActionType.ThreadDelete] = ThreadDeleteAuditLogData.Create,
         };
 
         public static IAuditLogData CreateData(BaseDiscordClient discord, Model log, EntryModel entry)
