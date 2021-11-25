@@ -6,7 +6,7 @@ namespace Discord.Interactions
     public interface IResult
     {
         /// <summary>
-        ///     Describes the error type that may have occurred during the operation.
+        ///     Gets the error type that may have occurred during the operation.
         /// </summary>
         /// <returns>
         ///     A <see cref="InteractionCommandError" /> indicating the type of error that may have occurred during the operation; 
@@ -15,7 +15,7 @@ namespace Discord.Interactions
         InteractionCommandError? Error { get; }
 
         /// <summary>
-        ///     Describes the reason for the error.
+        ///     Gets the reason for the error.
         /// </summary>
         /// <returns>
         ///     A string containing the error reason.

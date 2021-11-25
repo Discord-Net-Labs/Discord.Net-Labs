@@ -19,7 +19,7 @@ namespace Discord.Interactions
         public bool IsSuccess => Error is null;
 
         /// <summary>
-        ///     Collection of Autocomplete suggestions to be displayed to the user
+        ///     Get the collection of Autocomplete suggestions to be displayed to the user.
         /// </summary>
         public IReadOnlyCollection<AutocompleteResult> Suggestions { get; }
 
@@ -32,7 +32,7 @@ namespace Discord.Interactions
 
         /// <summary>
         ///     Initializes a new <see cref="AutocompletionResult" /> with no error and without any <see cref="AutocompleteResult"/> indicating the command service shouldn't
-        ///     return any suggestions
+        ///     return any suggestions.
         /// </summary>
         /// <returns>
         ///     A <see cref="AutocompletionResult" /> that does not contain any errors.
@@ -87,8 +87,13 @@ namespace Discord.Interactions
         public static AutocompletionResult FromError(InteractionCommandError error, string reason) =>
             new AutocompletionResult(null, error, reason);
 
+        /// <summary>
+        ///     Gets a string that indicates the autocompletion result.
+        /// </summary>
+        /// <returns>
+        ///     <c>Success</c> if <see cref="IsSuccess"/> is <c>true</c>; otherwise "<see cref="Error"/>: 
+        ///     <see cref="ErrorReason"/>".
+        /// </returns>
         public override string ToString() => IsSuccess ? "Success" : $"{Error}: {ErrorReason}";
     }
 }
-
-

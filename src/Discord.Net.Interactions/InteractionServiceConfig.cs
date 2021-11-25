@@ -25,39 +25,47 @@ namespace Discord.Interactions
         public bool ThrowOnError { get; set; } = true;
 
         /// <summary>
-        ///     Delimiters that will be used to seperate group names and the method name when a Message Component Interaction is recieved
+        ///     Gets or sets the delimiters that will be used to seperate group names and the method name when a Message Component Interaction is recieved
         /// </summary>
         public char[] InteractionCustomIdDelimiters { get; set; }
 
         /// <summary>
-        ///     The string expression that will be treated as a wild card
+        ///     Gets or sets the string expression that will be treated as a wild card
         /// </summary>
         public string WildCardExpression { get; set; }
 
         /// <summary>
-        ///     Delete Slash Command acknowledgements if no Slash Command handler is found in the <see cref="InteractionService"/>
+        ///     Gets or sets the option to delete Slash Command acknowledgements if no Slash Command handler is found in the <see cref="InteractionService"/>
         /// </summary>
         public bool DeleteUnknownSlashCommandAck { get; set; } = true;
 
         /// <summary>
-        ///     Use compiled lambda expressions to create module instances and execute commands. This method improves performance at the cost of memory
+        ///     Gets or sets the option to use compiled lambda expressions to create module instances and execute commands. This method improves performance at the cost of memory
         /// </summary>
         public bool UseCompiledLambda { get; set; } = false;
 
         /// <summary>
-        ///     Allows you to use <see cref="Autocompleter"/>s
+        ///     Gets or sets the option allowing you to use <see cref="AutocompleteHandler"/>s
         /// </summary>
         /// <remarks>
-        ///     Since <see cref="Autocompleter"/>s are prioritized over <see cref="AutocompleteCommandInfo"/>s, if <see cref="Autocompleter"/>s are not used, this should be
+        ///     Since <see cref="AutocompleteHandler"/>s are prioritized over <see cref="AutocompleteCommandInfo"/>s, if <see cref="AutocompleteHandler"/>s are not used, this should be
         ///     disabled to decrease the lookup time
         /// </remarks>
-        public bool EnableAutocompleters { get; set; } = true;
+        public bool EnableAutocompleteHandlers { get; set; } = true;
 
         /// <summary>
-        ///     Define a delegate to be used by the <see cref="InteractionService"/> when responding to a Rest based interaction
+        ///     Gets or sets delegate to be used by the <see cref="InteractionService"/> when responding to a Rest based interaction
         /// </summary>
         public RestResponseCallback RestResponseCallback { get; set; } = (ctx, str) => Task.CompletedTask;
     }
 
+    /// <summary>
+    ///     Represents a cached delegate for creating interaction responses to webhook based Discord Interactions.
+    /// </summary>
+    /// <param name="context">Execution context that will be injected into the module class.</param>
+    /// <param name="responseBody">Body of the interaction response.</param>
+    /// <returns>
+    ///     A task representing the response operation.
+    /// </returns>
     public delegate Task RestResponseCallback(IInteractionContext context, string responseBody);
 }

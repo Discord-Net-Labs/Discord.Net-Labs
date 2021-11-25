@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Represents the base parameter info class for <see cref="InteractionService"/> commands
+    ///     Represents the base parameter info class for <see cref="InteractionService"/> commands.
     /// </summary>
     public class CommandParameterInfo : IParameterInfo
     {
@@ -21,7 +21,6 @@ namespace Discord.Interactions
 
         /// <inheritdoc/>
         public bool IsRequired { get; }
-
 
         /// <inheritdoc/>
         public bool IsParameterArray { get; }

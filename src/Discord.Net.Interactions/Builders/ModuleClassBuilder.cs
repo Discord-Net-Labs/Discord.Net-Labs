@@ -1,4 +1,4 @@
-    using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -80,9 +80,9 @@ namespace Discord.Interactions.Builders
                             builder.Description = group.Description;
                         }
                         break;
-                    case DefaultPermissionAttribute defPermission:
+                    case IsDefaultPermissionAttribute defPermission:
                         {
-                            builder.DefaultPermission = defPermission.Allow;
+                            builder.DefaultPermission = defPermission.IsDefaultPermission;
                         }
                         break;
                     case PreconditionAttribute precondition:
@@ -160,9 +160,9 @@ namespace Discord.Interactions.Builders
                             builder.RunMode = command.RunMode;
                         }
                         break;
-                    case DefaultPermissionAttribute defaultPermission:
+                    case IsDefaultPermissionAttribute defaultPermission:
                         {
-                            builder.DefaultPermission = defaultPermission.Allow;
+                            builder.DefaultPermission = defaultPermission.IsDefaultPermission;
                         }
                         break;
                     case PreconditionAttribute precondition:
@@ -202,9 +202,9 @@ namespace Discord.Interactions.Builders
                             command.CheckMethodDefinition(methodInfo);
                         }
                         break;
-                    case DefaultPermissionAttribute defaultPermission:
+                    case IsDefaultPermissionAttribute defaultPermission:
                         {
-                            builder.DefaultPermission = defaultPermission.Allow;
+                            builder.DefaultPermission = defaultPermission.IsDefaultPermission;
                         }
                         break;
                     case PreconditionAttribute precondition:
@@ -379,8 +379,8 @@ namespace Discord.Interactions.Builders
                         break;
                     case AutocompleteAttribute autocomplete:
                         builder.Autocomplete = true;
-                        if(autocomplete.AutocompleterType is not null)
-                            builder.WithAutocompleter(autocomplete.AutocompleterType, services);
+                        if(autocomplete.AutocompleteHandlerType is not null)
+                            builder.WithAutocompleteHandler(autocomplete.AutocompleteHandlerType, services);
                         break;
                     case MaxValueAttribute maxValue:
                         builder.MaxValue = maxValue.Value;

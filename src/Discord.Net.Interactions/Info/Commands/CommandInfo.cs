@@ -11,21 +11,21 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Represents a cached method execution delegate
+    ///     Represents a cached method execution delegate.
     /// </summary>
-    /// <param name="context">Execution context that will be injected into the module class</param>
-    /// <param name="args">Method arguments array</param>
-    /// <param name="serviceProvider">Service collection for initializing the module</param>
-    /// <param name="commandInfo">Command info class of the executed method</param>
+    /// <param name="context">Execution context that will be injected into the module class.</param>
+    /// <param name="args">Method arguments array.</param>
+    /// <param name="serviceProvider">Service collection for initializing the module.</param>
+    /// <param name="commandInfo">Command info class of the executed method.</param>
     /// <returns>
-    ///     A task representing the execution operation
+    ///     A task representing the execution operation.
     /// </returns>
     public delegate Task ExecuteCallback (IInteractionContext context, object[] args, IServiceProvider serviceProvider, ICommandInfo commandInfo);
 
     /// <summary>
-    ///     The base information class for <see cref="InteractionService"/> commands
+    ///     The base information class for <see cref="InteractionService"/> commands.
     /// </summary>
-    /// <typeparam name="TParameter">The type of <see cref="IParameterInfo"/> that is used by this command type</typeparam>
+    /// <typeparam name="TParameter">The type of <see cref="IParameterInfo"/> that is used by this command type.</typeparam>
     public abstract class CommandInfo<TParameter> : ICommandInfo where TParameter : class, IParameterInfo
     {
         private readonly ExecuteCallback _action;

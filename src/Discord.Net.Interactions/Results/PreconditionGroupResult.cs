@@ -10,7 +10,7 @@ namespace Discord.Interactions
     public class PreconditionGroupResult : PreconditionResult
     {
         /// <summary>
-        ///     Results of the preconditions of this group
+        ///     Gets the results of the preconditions of this group.
         /// </summary>
         public IReadOnlyCollection<PreconditionResult> Results { get; }
 

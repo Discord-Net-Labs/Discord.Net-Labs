@@ -9,7 +9,6 @@
     <Authors>Discord.Net Contributors</Authors>
     <RootNamespace>Discord.Interactions</RootNamespace>
     <AssemblyName>Discord.Net.Interactions</AssemblyName>
-    <DocumentationFile>..\Discord.Net.Interactions\Discord.Net.Interactions.xml</DocumentationFile>
     <PackageId>Discord.Net.Labs.Interactions</PackageId>
     <Description>A Discord.Net Labs extension adding support for Application Commands.</Description>
   </PropertyGroup>

@@ -4,6 +4,9 @@ using System.Reflection;
 
 namespace Discord.Interactions.Builders
 {
+    /// <summary>
+    ///     Represents a builder for creating <see cref="ModuleInfo"/>.
+    /// </summary>
     public class ModuleBuilder
     {
         private readonly List<Attribute> _attributes;
@@ -14,28 +17,86 @@ namespace Discord.Interactions.Builders
         private readonly List<ComponentCommandBuilder> _componentCommands;
         private readonly List<AutocompleteCommandBuilder> _autocompleteCommands;
 
-        public InteractionService CommandService { get; }
+        /// <summary>
+        ///     Gets the underlying Interaction Service.
+        /// </summary>
+        public InteractionService InteractionService { get; }
+
+        /// <summary>
+        ///     Gets the parent module if this module is a sub-module.
+        /// </summary>
         public ModuleBuilder Parent { get; }
+
+        /// <summary>
+        ///     Gets the name of this module.
+        /// </summary>
         public string Name { get; internal set; }
+
+        /// <summary>
+        ///     Gets the group name of this module.
+        /// </summary>
         public string SlashGroupName { get; set; }
+
+        /// <summary>
+        ///     Gets whether this has a <see cref="GroupAttribute"/>.
+        /// </summary>
         public bool IsSlashGroup => !string.IsNullOrEmpty(SlashGroupName);
+
+        /// <summary>
+        ///     Gets the description of this module.
+        /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        ///     Gets the default permission of this module.
+        /// </summary>
         public bool DefaultPermission { get; set; } = true;
+
+        /// <summary>
+        ///     Gets whether this has a <see cref="DontAutoRegisterAttribute"/>.
+        /// </summary>
         public bool DontAutoRegister { get; set; } = false;
 
+        /// <summary>
+        ///     Gets a collection of the attributes of this module.
+        /// </summary>
         public IReadOnlyList<Attribute> Attributes => _attributes;
+
+        /// <summary>
+        ///     Gets a collection of the preconditions of this module.
+        /// </summary>
         public IReadOnlyCollection<PreconditionAttribute> Preconditions => _preconditions;
+
+        /// <summary>
+        ///     Gets a collection of the sub-modules of this module.
+        /// </summary>
         public IReadOnlyList<ModuleBuilder> SubModules => _subModules;
+
+        /// <summary>
+        ///     Gets a collection of the Slash Commands of this module.
+        /// </summary>
         public IReadOnlyList<SlashCommandBuilder> SlashCommands => _slashCommands;
+
+        /// <summary>
+        ///     Gets a collection of the Context Commands of this module.
+        /// </summary>
         public IReadOnlyList<ContextCommandBuilder> ContextCommands => _contextCommands;
+
+        /// <summary>
+        ///     Gets a collection of the Component Commands of this module.
+        /// </summary>
         public IReadOnlyList<ComponentCommandBuilder> ComponentCommands => _componentCommands;
+
+        /// <summary>
+        ///     Gets a collection of the Autocomplete Commands of this module.
+        /// </summary>
         public IReadOnlyList<AutocompleteCommandBuilder> AutocompleteCommands => _autocompleteCommands;
 
         internal TypeInfo TypeInfo { get; set; }
 
         internal ModuleBuilder (InteractionService interactionService, ModuleBuilder parent = null)
         {
-            CommandService = interactionService;
+            InteractionService = interactionService;
             Parent = parent;
 
             _attributes = new List<Attribute>();
@@ -47,41 +108,89 @@ namespace Discord.Interactions.Builders
             _preconditions = new List<PreconditionAttribute>();
         }
 
+        /// <summary>
+        ///     Initializes a new <see cref="ModuleBuilder"/>.
+        /// </summary>
+        /// <param name="interactionService">The underlying Interaction Service.</param>
+        /// <param name="name">Name of this module.</param>
+        /// <param name="parent">Parent module of this sub-module.</param>
         public ModuleBuilder (InteractionService interactionService, string name, ModuleBuilder parent = null) : this(interactionService, parent)
         {
             Name = name;
         }
 
+        /// <summary>
+        ///     Sets <see cref="SlashGroupName"/>.
+        /// </summary>
+        /// <param name="name">New value of the <see cref="SlashGroupName"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
         public ModuleBuilder WithGroupName (string name)
         {
             SlashGroupName = name;
             return this;
         }
 
+        /// <summary>
+        ///     Sets <see cref="Description"/>.
+        /// </summary>
+        /// <param name="description">New value of the <see cref="Description"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
         public ModuleBuilder WithDescription (string description)
         {
             Description = description;
             return this;
         }
 
+        /// <summary>
+        ///     Sets <see cref="DefaultPermission"/>.
+        /// </summary>
+        /// <param name="permission">New value of the <see cref="DefaultPermission"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
         public ModuleBuilder WithDefaultPermision (bool permission)
         {
             DefaultPermission = permission;
             return this;
         }
 
+        /// <summary>
+        ///     Adds attributes to <see cref="Attributes"/>
+        /// </summary>
+        /// <param name="attributes">New attributes to be added to <see cref="Attributes"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
         public ModuleBuilder AddAttributes (params Attribute[] attributes)
         {
             _attributes.AddRange(attributes);
             return this;
         }
 
+        /// <summary>
+        ///     Adds preconditions to <see cref="Preconditions"/>
+        /// </summary>
+        /// <param name="preconditions">New preconditions to be added to <see cref="Preconditions"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
         public ModuleBuilder AddPreconditions (params PreconditionAttribute[] preconditions)
         {
             _preconditions.AddRange(preconditions);
             return this;
         }
 
+        /// <summary>
+        ///     Adds slash command builder to <see cref="SlashCommands"/>
+        /// </summary>
+        /// <param name="configure"><see cref="SlashCommandBuilder"/> factory.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
         public ModuleBuilder AddSlashCommand (Action<SlashCommandBuilder> configure)
         {
             var command = new SlashCommandBuilder(this);
@@ -90,6 +199,13 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
+        /// <summary>
+        ///     Adds context command builder to <see cref="ContextCommands"/>
+        /// </summary>
+        /// <param name="configure"><see cref="ContextCommandBuilder"/> factory.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
         public ModuleBuilder AddContextCommand (Action<ContextCommandBuilder> configure)
         {
             var command = new ContextCommandBuilder(this);
@@ -98,6 +214,13 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
+        /// <summary>
+        ///     Adds component command builder to <see cref="ComponentCommands"/>
+        /// </summary>
+        /// <param name="configure"><see cref="ComponentCommandBuilder"/> factory.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
         public ModuleBuilder AddComponentCommand (Action<ComponentCommandBuilder> configure)
         {
             var command = new ComponentCommandBuilder(this);
@@ -106,6 +229,13 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
+        /// <summary>
+        ///     Adds autocomplete command builder to <see cref="AutocompleteCommands"/>
+        /// </summary>
+        /// <param name="configure"><see cref="AutocompleteCommands"/> factory.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
         public ModuleBuilder AddAutocompleteCommand(Action<AutocompleteCommandBuilder> configure)
         {
             var command = new AutocompleteCommandBuilder(this);
@@ -114,9 +244,16 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
+        /// <summary>
+        ///     Adds sub-module builder to <see cref="SubModules"/>
+        /// </summary>
+        /// <param name="configure"><see cref="ModuleBuilder"/> factory.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
         public ModuleBuilder AddModule (Action<ModuleBuilder> configure)
         {
-            var subModule = new ModuleBuilder(CommandService, this);
+            var subModule = new ModuleBuilder(InteractionService, this);
             configure(subModule);
             _subModules.Add(subModule);
             return this;

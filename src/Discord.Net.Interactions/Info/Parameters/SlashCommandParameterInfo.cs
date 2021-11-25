@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Represents the parameter info class for <see cref="SlashCommandInfo"/> commands
+    ///     Represents the parameter info class for <see cref="SlashCommandInfo"/> commands.
     /// </summary>
     public class SlashCommandParameterInfo : CommandParameterInfo
     {
@@ -12,37 +12,43 @@ namespace Discord.Interactions
         public new SlashCommandInfo Command => base.Command as SlashCommandInfo;
 
         /// <summary>
-        ///     Description of the Slash Command Parameter
+        ///     Gets the description of the Slash Command Parameter.
         /// </summary>
         public string Description { get; }
 
         /// <summary>
-        ///     Get the minimum value permitted for a number type parameter
+        ///     Gets the minimum value permitted for a number type parameter.
         /// </summary>
         public double? MinValue { get; }
 
         /// <summary>
-        ///     Get the maxmimum value permitted for a number type parameter
+        ///     Gets the maxmimum value permitted for a number type parameter.
         /// </summary>
         public double? MaxValue { get; }
 
         /// <summary>
-        ///     <see cref="TypeConverter{T}"/> that will be used to convert the incoming <see cref="Discord.WebSocket.SocketSlashCommandDataOption"/> into
-        ///     <see cref="CommandParameterInfo.ParameterType"/>
+        ///     Gets the <see cref="TypeConverter{T}"/> that will be used to convert the incoming <see cref="Discord.WebSocket.SocketSlashCommandDataOption"/> into
+        ///     <see cref="CommandParameterInfo.ParameterType"/>.
         /// </summary>
         public TypeConverter TypeConverter { get; }
 
-        public IAutocompleter Autocompleter { get; }
-
-        public bool Autocomplete => Autocompleter is not null;
+        /// <summary>
+        ///     Gets the <see cref="IAutocompleteHandler"/> thats linked to this parameter.
+        /// </summary>
+        public IAutocompleteHandler AutocompleteHandler { get; }
 
         /// <summary>
-        ///     Discord option type this parameter represents
+        ///     Gets whether this parameter is configured for Autocomplete Interactions.
+        /// </summary>
+        public bool IsAutocomplete => AutocompleteHandler is not null;
+
+        /// <summary>
+        ///     Gets the Discord option type this parameter represents.
         /// </summary>
         public ApplicationCommandOptionType DiscordOptionType => TypeConverter.GetDiscordType();
 
         /// <summary>
-        ///     Get the parameter choices of this Slash Application Command parameter
+        ///     Gets the parameter choices of this Slash Application Command parameter.
         /// </summary>
         public IReadOnlyCollection<ParameterChoice> Choices { get; }
 
@@ -54,7 +60,7 @@ namespace Discord.Interactions
         internal SlashCommandParameterInfo(Builders.SlashCommandParameterBuilder builder, SlashCommandInfo command) : base(builder, command)
         {
             TypeConverter = builder.TypeConverter;
-            Autocompleter = builder.Autocompleter;
+            AutocompleteHandler = builder.AutocompleteHandler;
             Description = builder.Description;
             MaxValue = builder.MaxValue;
             MinValue = builder.MinValue;

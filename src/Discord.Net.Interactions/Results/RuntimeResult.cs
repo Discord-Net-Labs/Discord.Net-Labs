@@ -1,5 +1,8 @@
 namespace Discord.Interactions
 {
+    /// <summary>
+    ///     Represents the base class for creating command result containers.
+    /// </summary>
     public abstract class RuntimeResult : IResult
     {
         /// <inheritdoc/>
@@ -22,6 +25,13 @@ namespace Discord.Interactions
             ErrorReason = reason;
         }
 
+        /// <summary>
+        ///     Gets a string that indicates the runtime result.
+        /// </summary>
+        /// <returns>
+        ///     <c>Success</c> if <see cref="IsSuccess"/> is <c>true</c>; otherwise "<see cref="Error"/>: 
+        ///     <see cref="ErrorReason"/>".
+        /// </returns>
         public override string ToString ( ) => ErrorReason ?? ( IsSuccess ? "Successful" : "Unsuccessful" );
     }
 }

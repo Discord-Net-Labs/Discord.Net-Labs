@@ -11,6 +11,9 @@ namespace Discord.Interactions
     public abstract class RestInteractionModuleBase<T> : InteractionModuleBase<T>
         where T : class, IInteractionContext
     {
+        /// <summary>
+        ///     Gets or sets the underlying Interaction Service
+        /// </summary>
         public InteractionService InteractionService { get; set; }
 
         /// <summary>

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Represents the info class of an attribute based method for command type <see cref="ApplicationCommandType.Message"/>
+    ///     Represents the info class of an attribute based method for command type <see cref="ApplicationCommandType.Message"/>.
     /// </summary>
     public class MessageCommandInfo : ContextCommandInfo
     {

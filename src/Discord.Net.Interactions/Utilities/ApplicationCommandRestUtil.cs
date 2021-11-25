@@ -21,7 +21,7 @@ namespace Discord.Interactions
                     Value = x.Value
                 })?.ToList(),
                 ChannelTypes = parameterInfo.ChannelTypes?.ToList(),
-                IsAutocomplete = parameterInfo.Autocomplete,
+                IsAutocomplete = parameterInfo.IsAutocomplete,
                 MaxValue = parameterInfo.MaxValue,
                 MinValue = parameterInfo.MinValue
             };

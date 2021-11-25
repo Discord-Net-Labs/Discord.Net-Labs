@@ -3,21 +3,23 @@ using System;
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Add a pre-determined argument value to a command parameter
+    ///     Add a pre-determined argument value to a command parameter.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = true, Inherited = true)]
     public class ChoiceAttribute : Attribute
     {
         /// <summary>
-        ///     Name of the choice
+        ///     Gets the name of the choice.
         /// </summary>
         public string Name { get; }
+
         /// <summary>
-        ///     Type of this choice
+        ///     Gets the type of this choice.
         /// </summary>
         public SlashCommandChoiceType Type { get; }
+
         /// <summary>
-        ///     Value that will be used whenever this choice is selected
+        ///     Gets the value that will be used whenever this choice is selected.
         /// </summary>
         public object Value { get; }
 
@@ -27,10 +29,10 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Create a parameter choice with type <see cref="SlashCommandChoiceType.String"/>
+        ///     Create a parameter choice with type <see cref="SlashCommandChoiceType.String"/>.
         /// </summary>
-        /// <param name="name">Name of the choice</param>
-        /// <param name="value">Predefined value of the choice</param>
+        /// <param name="name">Name of the choice.</param>
+        /// <param name="value">Predefined value of the choice.</param>
         public ChoiceAttribute (string name, string value) : this(name)
         {
             Type = SlashCommandChoiceType.String;
@@ -38,10 +40,10 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Create a parameter choice with type <see cref="SlashCommandChoiceType.Integer"/>
+        ///     Create a parameter choice with type <see cref="SlashCommandChoiceType.Integer"/>.
         /// </summary>
-        /// <param name="name">Name of the choice</param>
-        /// <param name="value">Predefined value of the choice</param>
+        /// <param name="name">Name of the choice.</param>
+        /// <param name="value">Predefined value of the choice.</param>
         public ChoiceAttribute (string name, int value) : this(name)
         {
             Type = SlashCommandChoiceType.Integer;
@@ -49,10 +51,10 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Create a parameter choice with type <see cref="SlashCommandChoiceType.Number"/>
+        ///     Create a parameter choice with type <see cref="SlashCommandChoiceType.Number"/>.
         /// </summary>
-        /// <param name="name">Name of the choice</param>
-        /// <param name="value">Predefined value of the choice</param>
+        /// <param name="name">Name of the choice.</param>
+        /// <param name="value">Predefined value of the choice.</param>
         public ChoiceAttribute (string name, double value) : this(name)
         {
             Type = SlashCommandChoiceType.Number;

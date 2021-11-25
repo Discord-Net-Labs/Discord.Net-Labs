@@ -13,45 +13,45 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Provides the framework for building and registering Discord Application Commands
+    ///     Provides the framework for building and registering Discord Application Commands.
     /// </summary>
     public class InteractionService : IDisposable
     {
         /// <summary>
-        ///     Occurs when a Slash Command related information is recieved
+        ///     Occurs when a Slash Command related information is recieved.
         /// </summary>
         public event Func<LogMessage, Task> Log { add { _logEvent.Add(value); } remove { _logEvent.Remove(value); } }
         internal readonly AsyncEvent<Func<LogMessage, Task>> _logEvent = new ();
 
         /// <summary>
-        ///     Occurs when a Slash Command is executed
+        ///     Occurs when a Slash Command is executed.
         /// </summary>
         public event Func<SlashCommandInfo, IInteractionContext, IResult, Task> SlashCommandExecuted { add { _slashCommandExecutedEvent.Add(value); } remove { _slashCommandExecutedEvent.Remove(value); } }
         internal readonly AsyncEvent<Func<SlashCommandInfo, IInteractionContext, IResult, Task>> _slashCommandExecutedEvent = new ();
 
         /// <summary>
-        ///     Occurs when a Context Command is executed
+        ///     Occurs when a Context Command is executed.
         /// </summary>
         public event Func<ContextCommandInfo, IInteractionContext, IResult, Task> ContextCommandExecuted { add { _contextCommandExecutedEvent.Add(value); } remove { _contextCommandExecutedEvent.Remove(value); } }
         internal readonly AsyncEvent<Func<ContextCommandInfo, IInteractionContext, IResult, Task>> _contextCommandExecutedEvent = new ();
 
         /// <summary>
-        ///     Occurs when a Message Component command is executed
+        ///     Occurs when a Message Component command is executed.
         /// </summary>
         public event Func<ComponentCommandInfo, IInteractionContext, IResult, Task> ComponentCommandExecuted { add { _componentCommandExecutedEvent.Add(value); } remove { _componentCommandExecutedEvent.Remove(value); } }
         internal readonly AsyncEvent<Func<ComponentCommandInfo, IInteractionContext, IResult, Task>> _componentCommandExecutedEvent = new ();
 
         /// <summary>
-        ///     Occurs when a Autocomplete command is executed
+        ///     Occurs when a Autocomplete command is executed.
         /// </summary>
         public event Func<AutocompleteCommandInfo, IInteractionContext, IResult, Task> AutocompleteCommandExecuted { add { _autocompleteCommandExecutedEvent.Add(value); } remove { _autocompleteCommandExecutedEvent.Remove(value); } }
         internal readonly AsyncEvent<Func<AutocompleteCommandInfo, IInteractionContext, IResult, Task>> _autocompleteCommandExecutedEvent = new();
 
         /// <summary>
-        ///     Occurs when a Autocompleter is executed
+        ///     Occurs when a AutocompleteHandler is executed.
         /// </summary>
-        public event Func<IAutocompleter, IInteractionContext, IResult, Task> AutocompleterExecuted { add { _autocompleterExecutedEvent.Add(value); } remove { _autocompleterExecutedEvent.Remove(value); } }
-        internal readonly AsyncEvent<Func<IAutocompleter, IInteractionContext, IResult, Task>> _autocompleterExecutedEvent = new();
+        public event Func<IAutocompleteHandler, IInteractionContext, IResult, Task> AutocompleteHandlerExecuted { add { _autocompleteHandlerExecutedEvent.Add(value); } remove { _autocompleteHandlerExecutedEvent.Remove(value); } }
+        internal readonly AsyncEvent<Func<IAutocompleteHandler, IInteractionContext, IResult, Task>> _autocompleteHandlerExecutedEvent = new();
 
         private readonly ConcurrentDictionary<Type, ModuleInfo> _typedModuleDefs;
         private readonly CommandMap<SlashCommandInfo> _slashCommandMap;
@@ -61,71 +61,71 @@ namespace Discord.Interactions
         private readonly HashSet<ModuleInfo> _moduleDefs;
         private readonly ConcurrentDictionary<Type, TypeConverter> _typeConverters;
         private readonly ConcurrentDictionary<Type, Type> _genericTypeConverters;
-        private readonly ConcurrentDictionary<Type, IAutocompleter> _autocompleters = new();
+        private readonly ConcurrentDictionary<Type, IAutocompleteHandler> _autocompleteHandlers = new();
         private readonly SemaphoreSlim _lock;
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
         internal readonly Func<DiscordRestClient> _getRestClient;
 
-        internal readonly bool _throwOnError, _deleteUnkownSlashCommandAck, _useCompiledLambda, _enableAutocompleters;
+        internal readonly bool _throwOnError, _deleteUnkownSlashCommandAck, _useCompiledLambda, _enableAutocompleteHandlers;
         internal readonly string _wildCardExp;
         internal readonly RunMode _runMode;
         internal readonly RestResponseCallback _restResponseCallback;
 
         /// <summary>
-        ///     Rest client to be used to register application commands
+        ///     Rest client to be used to register application commands.
         /// </summary>
         public DiscordRestClient RestClient { get => _getRestClient(); }
 
         /// <summary>
-        ///     Represents all modules loaded within <see cref="InteractionService"/>
+        ///     Represents all modules loaded within <see cref="InteractionService"/>.
         /// </summary>
         public IReadOnlyList<ModuleInfo> Modules => _moduleDefs.ToList();
 
         /// <summary>
-        ///     Represents all Slash Commands loaded within <see cref="InteractionService"/>
+        ///     Represents all Slash Commands loaded within <see cref="InteractionService"/>.
         /// </summary>
         public IReadOnlyList<SlashCommandInfo> SlashCommands => _moduleDefs.SelectMany(x => x.SlashCommands).ToList();
 
         /// <summary>
-        ///     Represents all Context Commands loaded within <see cref="InteractionService"/>
+        ///     Represents all Context Commands loaded within <see cref="InteractionService"/>.
         /// </summary>
         public IReadOnlyList<ContextCommandInfo> ContextCommands => _moduleDefs.SelectMany(x => x.ContextCommands).ToList();
 
         /// <summary>
-        ///     Represents all Component Commands loaded within <see cref="InteractionService"/>
+        ///     Represents all Component Commands loaded within <see cref="InteractionService"/>.
         /// </summary>
         public IReadOnlyCollection<ComponentCommandInfo> ComponentCommands => _moduleDefs.SelectMany(x => x.ComponentCommands).ToList();
 
         /// <summary>
-        ///     Initialize a <see cref="InteractionService"/> with provided configurations
+        ///     Initialize a <see cref="InteractionService"/> with provided configurations.
         /// </summary>
-        /// <param name="discord">The discord client</param>
-        /// <param name="config">The configuration class</param>
+        /// <param name="discord">The discord client.</param>
+        /// <param name="config">The configuration class.</param>
         public InteractionService (DiscordSocketClient discord, InteractionServiceConfig config = null)
             : this(() => discord.Rest, config ?? new InteractionServiceConfig()) { }
 
         /// <summary>
-        ///     Initialize a <see cref="InteractionService"/> with provided configurations
+        ///     Initialize a <see cref="InteractionService"/> with provided configurations.
         /// </summary>
-        /// <param name="discord">The discord client</param>
-        /// <param name="config">The configuration class</param>
+        /// <param name="discord">The discord client.</param>
+        /// <param name="config">The configuration class.</param>
         public InteractionService (DiscordShardedClient discord, InteractionServiceConfig config = null)
             : this(() => discord.Rest, config ?? new InteractionServiceConfig()) { }
 
         /// <summary>
-        ///     Initialize a <see cref="InteractionService"/> with provided configurations
+        ///     Initialize a <see cref="InteractionService"/> with provided configurations.
         /// </summary>
-        /// <param name="discord">The discord client</param>
-        /// <param name="config">The configuration class</param>
+        /// <param name="discord">The discord client.</param>
+        /// <param name="config">The configuration class.</param>
         public InteractionService (BaseSocketClient discord, InteractionServiceConfig config = null)
             :this(() => discord.Rest, config ?? new InteractionServiceConfig()) { }
 
         /// <summary>
-        ///     Initialize a <see cref="InteractionService"/> with provided configurations
+        ///     Initialize a <see cref="InteractionService"/> with provided configurations.
         /// </summary>
-        /// <param name="discord">The discord client</param>
-        /// <param name="config">The configuration class</param>
+        /// <param name="discord">The discord client.</param>
+        /// <param name="config">The configuration class.</param>
         public InteractionService (DiscordRestClient discord, InteractionServiceConfig config = null)
             :this(() => discord, config ?? new InteractionServiceConfig()) { }
 
@@ -156,7 +156,7 @@ namespace Discord.Interactions
             _deleteUnkownSlashCommandAck = config.DeleteUnknownSlashCommandAck;
             _wildCardExp = config.WildCardExpression;
             _useCompiledLambda = config.UseCompiledLambda;
-            _enableAutocompleters = config.EnableAutocompleters;
+            _enableAutocompleteHandlers = config.EnableAutocompleteHandlers;
             _restResponseCallback = config.RestResponseCallback;
 
             _genericTypeConverters = new ConcurrentDictionary<Type, Type>
@@ -204,9 +204,9 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Discover and load command modules from an <see cref="Assembly"/>
+        ///     Discover and load command modules from an <see cref="Assembly"/>.
         /// </summary>
-        /// <param name="assembly"><see cref="Assembly"/> the command modules are defined in</param>
+        /// <param name="assembly"><see cref="Assembly"/> the command modules are defined in.</param>
         /// <param name="services">The <see cref="IServiceProvider"/> for your dependency injection solution if using one; otherwise, pass <c>null</c>.</param>
         /// <returns>
         ///     A task representing the operation for adding modules. The task result contains a collection of the modules added.
@@ -236,35 +236,35 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Add a command module from a <see cref="Type"/>
+        ///     Add a command module from a <see cref="Type"/>.
         /// </summary>
-        /// <typeparam name="T">Type of the module</typeparam>
+        /// <typeparam name="T">Type of the module.</typeparam>
         /// <param name="services">The <see cref="IServiceProvider" /> for your dependency injection solution if using one; otherwise, pass <c>null</c> .</param>
         /// <returns>
-        ///     A task representing the operation for adding the module. The task result contains the built module
+        ///     A task representing the operation for adding the module. The task result contains the built module.
         /// </returns>
         /// <exception cref="ArgumentException">
         ///     Thrown if this module has already been added.
         /// </exception>
         /// <exception cref="InvalidOperationException">
-        ///     Thrown when the <typeparamref name="T"/> is not a valid module definition
+        ///     Thrown when the <typeparamref name="T"/> is not a valid module definition.
         /// </exception>
         public Task<ModuleInfo> AddModuleAsync<T> (IServiceProvider services) where T : class =>
             AddModuleAsync(typeof(T), services);
 
         /// <summary>
-        ///     Add a command module from a <see cref="Type"/>
+        ///     Add a command module from a <see cref="Type"/>.
         /// </summary>
-        /// <param name="type">Type of the module</param>
+        /// <param name="type">Type of the module.</param>
         /// <param name="services">The <see cref="IServiceProvider" /> for your dependency injection solution if using one; otherwise, pass <c>null</c> .</param>
         /// <returns>
-        ///     A task representing the operation for adding the module. The task result contains the built module
+        ///     A task representing the operation for adding the module. The task result contains the built module.
         /// </returns>
         /// <exception cref="ArgumentException">
         ///     Thrown if this module has already been added.
         /// </exception>
         /// <exception cref="InvalidOperationException">
-        ///     Thrown when the <paramref name="type"/> is not a valid module definition
+        ///     Thrown when the <paramref name="type"/> is not a valid module definition.
         /// </exception>
         public async Task<ModuleInfo> AddModuleAsync (Type type, IServiceProvider services)
         {
@@ -302,12 +302,12 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Register Application Commands from <see cref="ContextCommands"/> and <see cref="SlashCommands"/> to a guild 
+        ///     Register Application Commands from <see cref="ContextCommands"/> and <see cref="SlashCommands"/> to a guild. 
         /// </summary>
-        /// <param name="guildId">Id of the target guild</param>
-        /// <param name="deleteMissing">If <see langword="false"/>, this operation will not delete the commands that are missing from <see cref="InteractionService"/></param>
+        /// <param name="guildId">Id of the target guild.</param>
+        /// <param name="deleteMissing">If <see langword="false"/>, this operation will not delete the commands that are missing from <see cref="InteractionService"/>.</param>
         /// <returns>
-        ///     A task representing the command registration process. The task result contains the active application commands of the target guild
+        ///     A task representing the command registration process. The task result contains the active application commands of the target guild.
         /// </returns>
         public async Task<IReadOnlyCollection<RestGuildCommand>> RegisterCommandsToGuildAsync (ulong guildId, bool deleteMissing = true)
         {
@@ -328,11 +328,11 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Register Application Commands from <see cref="ContextCommands"/> and <see cref="SlashCommands"/> to Discord on in global scope
+        ///     Register Application Commands from <see cref="ContextCommands"/> and <see cref="SlashCommands"/> to Discord on in global scope.
         /// </summary>
-        /// <param name="deleteMissing">If <see langword="false"/>, this operation will not delete the commands that are missing from <see cref="InteractionService"/></param>
+        /// <param name="deleteMissing">If <see langword="false"/>, this operation will not delete the commands that are missing from <see cref="InteractionService"/>.</param>
         /// <returns>
-        ///    A task representing the command registration process. The task result contains the active global application commands of bot
+        ///    A task representing the command registration process. The task result contains the active global application commands of bot.
         /// </returns>
         public async Task<IReadOnlyCollection<RestGlobalCommand>> RegisterCommandsGloballyAsync (bool deleteMissing = true)
         {
@@ -352,16 +352,16 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Register Application Commands from <paramref name="commands"/> to a guild 
+        ///     Register Application Commands from <paramref name="commands"/> to a guild.
         /// </summary>
         /// <remarks>
         ///     Commands will be registered as standalone commands, if you want the <see cref="GroupAttribute"/> to take effect,
-        ///     use <see cref="AddModulesToGuildAsync(IGuild, ModuleInfo[])"/>
+        ///     use <see cref="AddModulesToGuildAsync(IGuild, ModuleInfo[])"/>.
         /// </remarks>
-        /// <param name="guild">The target guild</param>
-        /// <param name="commands">Commands to be registered to Discord</param>
+        /// <param name="guild">The target guild.</param>
+        /// <param name="commands">Commands to be registered to Discord.</param>
         /// <returns>
-        ///     A task representing the command registration process. The task result contains the active application commands of the target guild
+        ///     A task representing the command registration process. The task result contains the active application commands of the target guild.
         /// </returns>
         public async Task<IReadOnlyCollection<RestGuildCommand>> AddCommandsToGuildAsync (IGuild guild, params IApplicationCommandInfo[] commands)
         {
@@ -399,12 +399,12 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Register Application Commands from modules provided in <paramref name="modules"/> to a guild 
+        ///     Register Application Commands from modules provided in <paramref name="modules"/> to a guild. 
         /// </summary>
-        /// <param name="guild">The target guild</param>
-        /// <param name="modules">Modules to be registered to Discord</param>
+        /// <param name="guild">The target guild.</param>
+        /// <param name="modules">Modules to be registered to Discord.</param>
         /// <returns>
-        ///     A task representing the command registration process. The task result contains the active application commands of the target guild
+        ///     A task representing the command registration process. The task result contains the active application commands of the target guild.
         /// </returns>
         public async Task<IReadOnlyCollection<RestGuildCommand>> AddModulesToGuildAsync (IGuild guild, params ModuleInfo[] modules)
         {
@@ -443,7 +443,7 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Remove a command module
+        ///     Remove a command module.
         /// </summary>
         /// <typeparam name="T">The <see cref="Type"/> of the module.</typeparam>
         /// <returns>
@@ -454,7 +454,7 @@ namespace Discord.Interactions
             RemoveModuleAsync(typeof(T));
 
         /// <summary>
-        ///     Remove a command module
+        ///     Remove a command module.
         /// </summary>
         /// <param name="type">The <see cref="Type"/> of the module.</param>
         /// <returns>
@@ -479,12 +479,12 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Remove a command module
+        ///     Remove a command module.
         /// </summary>
-        /// <param name="module">The <see cref="ModuleInfo" /> to be removed from the service</param>
+        /// <param name="module">The <see cref="ModuleInfo" /> to be removed from the service.</param>
         /// <returns>
         ///     A task that represents the asynchronous removal operation. The task result contains a value that
-        ///     indicates whether the <paramref name="module"/> is successfully removed
+        ///     indicates whether the <paramref name="module"/> is successfully removed.
         /// </returns>
         public async Task<bool> RemoveModuleAsync(ModuleInfo module)
         {
@@ -519,12 +519,12 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Execute a Command from a given <see cref="IInteractionContext"/>
+        ///     Execute a Command from a given <see cref="IInteractionContext"/>.
         /// </summary>
-        /// <param name="context">Name context of the command</param>
+        /// <param name="context">Name context of the command.</param>
         /// <param name="services">The service to be used in the command's dependency injection.</param>
         /// <returns>
-        ///     A task representing the command execution process. The task result contains the result of the execution
+        ///     A task representing the command execution process. The task result contains the result of the execution.
         /// </returns>
         public async Task<IResult> ExecuteCommandAsync (IInteractionContext context, IServiceProvider services)
         {
@@ -598,16 +598,16 @@ namespace Discord.Interactions
         {
             var keywords = interaction.Data.GetCommandKeywords();
 
-            if(_enableAutocompleters)
+            if(_enableAutocompleteHandlers)
             {
-                var autocompleterResult = _slashCommandMap.GetCommand(keywords);
+                var autocompleteHandlerResult = _slashCommandMap.GetCommand(keywords);
 
-                if(autocompleterResult.IsSuccess)
+                if(autocompleteHandlerResult.IsSuccess)
                 {
-                    var parameter = autocompleterResult.Command.Parameters.FirstOrDefault(x => string.Equals(x.Name, interaction.Data.Current.Name, StringComparison.Ordinal));
+                    var parameter = autocompleteHandlerResult.Command.Parameters.FirstOrDefault(x => string.Equals(x.Name, interaction.Data.Current.Name, StringComparison.Ordinal));
 
                     if(parameter is not null)
-                        return await parameter.Autocompleter.ExecuteAsync(context, interaction, parameter, services).ConfigureAwait(false);
+                        return await parameter.AutocompleteHandler.ExecuteAsync(context, interaction, parameter, services).ConfigureAwait(false);
                 }
             }
 
@@ -646,18 +646,18 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Add a concrete type <see cref="TypeConverter"/>
+        ///     Add a concrete type <see cref="TypeConverter"/>.
         /// </summary>
-        /// <typeparam name="T">Primary target <see cref="Type"/> of the <see cref="TypeConverter"/></typeparam>
-        /// <param name="converter">The <see cref="TypeConverter"/> instance</param>
+        /// <typeparam name="T">Primary target <see cref="Type"/> of the <see cref="TypeConverter"/>.</typeparam>
+        /// <param name="converter">The <see cref="TypeConverter"/> instance.</param>
         public void AddTypeConverter<T> (TypeConverter converter) =>
             AddTypeConverter(typeof(T), converter);
 
         /// <summary>
-        ///     Add a concrete type <see cref="TypeConverter"/>
+        ///     Add a concrete type <see cref="TypeConverter"/>.
         /// </summary>
-        /// <param name="type">Primary target <see cref="Type"/> of the <see cref="TypeConverter"/></param>
-        /// <param name="converter">The <see cref="TypeConverter"/> instance</param>
+        /// <param name="type">Primary target <see cref="Type"/> of the <see cref="TypeConverter"/>.</param>
+        /// <param name="converter">The <see cref="TypeConverter"/> instance.</param>
         public void AddTypeConverter (Type type, TypeConverter converter)
         {
             if (!converter.CanConvertTo(type))
@@ -667,19 +667,19 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Add a generic type <see cref="TypeConverter{T}"/>
+        ///     Add a generic type <see cref="TypeConverter{T}"/>.
         /// </summary>
-        /// <typeparam name="T">Generic Type constraint of the <see cref="Type"/> of the <see cref="TypeConverter{T}"/></typeparam>
-        /// <param name="converterType">Type of the <see cref="TypeConverter{T}"/></param>
+        /// <typeparam name="T">Generic Type constraint of the <see cref="Type"/> of the <see cref="TypeConverter{T}"/>.</typeparam>
+        /// <param name="converterType">Type of the <see cref="TypeConverter{T}"/>.</param>
 
         public void AddGenericTypeConverter<T> (Type converterType) =>
             AddGenericTypeConverter(typeof(T), converterType);
 
         /// <summary>
-        ///     Add a generic type <see cref="TypeConverter{T}"/>
+        ///     Add a generic type <see cref="TypeConverter{T}"/>.
         /// </summary>
-        /// <param name="targetType">Generic Type constraint of the <see cref="Type"/> of the <see cref="TypeConverter{T}"/></param>
-        /// <param name="converterType">Type of the <see cref="TypeConverter{T}"/></param>
+        /// <param name="targetType">Generic Type constraint of the <see cref="Type"/> of the <see cref="TypeConverter{T}"/>.</param>
+        /// <param name="converterType">Type of the <see cref="TypeConverter{T}"/>.</param>
         public void AddGenericTypeConverter (Type targetType, Type converterType)
         {
             if (!converterType.IsGenericTypeDefinition)
@@ -698,31 +698,31 @@ namespace Discord.Interactions
             _genericTypeConverters[targetType] = converterType;
         }
 
-        internal IAutocompleter GetAutocompleter(Type autocompleterType, IServiceProvider services = null)
+        internal IAutocompleteHandler GetAutocompleteHandler(Type autocompleteHandlerType, IServiceProvider services = null)
         {
             services ??= EmptyServiceProvider.Instance;
 
-            if (!_enableAutocompleters)
-                throw new InvalidOperationException($"Autocompleters are not enabled. To use this feature set {nameof(InteractionServiceConfig.EnableAutocompleters)} to TRUE");
+            if (!_enableAutocompleteHandlers)
+                throw new InvalidOperationException($"{nameof(IAutocompleteHandler)}s are not enabled. To use this feature set {nameof(InteractionServiceConfig.EnableAutocompleteHandlers)} to TRUE");
 
-            if (_autocompleters.TryGetValue(autocompleterType, out var autocompleter))
-                return autocompleter;
+            if (_autocompleteHandlers.TryGetValue(autocompleteHandlerType, out var autocompleteHandler))
+                return autocompleteHandler;
             else
             {
-                autocompleter = ReflectionUtils<IAutocompleter>.CreateObject(autocompleterType.GetTypeInfo(), this, services);
-                _autocompleters[autocompleterType] = autocompleter;
-                return autocompleter;
+                autocompleteHandler = ReflectionUtils<IAutocompleteHandler>.CreateObject(autocompleteHandlerType.GetTypeInfo(), this, services);
+                _autocompleteHandlers[autocompleteHandlerType] = autocompleteHandler;
+                return autocompleteHandler;
             }
         }
 
         /// <summary>
-        ///     Modify the command permissions of the matching Discord Slash Command
+        ///     Modify the command permissions of the matching Discord Slash Command.
         /// </summary>
-        /// <param name="module">Module representing the top level Slash Command</param>
-        /// <param name="guild">Target guild</param>
-        /// <param name="permissions">New permission values</param>
+        /// <param name="module">Module representing the top level Slash Command.</param>
+        /// <param name="guild">Target guild.</param>
+        /// <param name="permissions">New permission values.</param>
         /// <returns>
-        ///     The active command permissions after the modification
+        ///     The active command permissions after the modification.
         /// </returns>
         public async Task<GuildApplicationCommandPermission> ModifySlashCommandPermissionsAsync (ModuleInfo module, IGuild guild,
             params ApplicationCommandPermission[] permissions)
@@ -743,26 +743,26 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Modify the command permissions of the matching Discord Slash Command
+        ///     Modify the command permissions of the matching Discord Slash Command.
         /// </summary>
-        /// <param name="command">The Slash Command</param>
-        /// <param name="guild">Target guild</param>
-        /// <param name="permissions">New permission values</param>
+        /// <param name="command">The Slash Command.</param>
+        /// <param name="guild">Target guild.</param>
+        /// <param name="permissions">New permission values.</param>
         /// <returns>
-        ///     The active command permissions after the modification
+        ///     The active command permissions after the modification.
         /// </returns>
         public async Task<GuildApplicationCommandPermission> ModifySlashCommandPermissionsAsync (SlashCommandInfo command, IGuild guild,
             params ApplicationCommandPermission[] permissions) =>
             await ModifyApplicationCommandPermissionsAsync(command, guild, permissions).ConfigureAwait(false);
 
         /// <summary>
-        ///     Modify the command permissions of the matching Discord Slash Command
+        ///     Modify the command permissions of the matching Discord Slash Command.
         /// </summary>
-        /// <param name="command">The Context Command</param>
-        /// <param name="guild">Target guild</param>
-        /// <param name="permissions">New permission values</param>
+        /// <param name="command">The Context Command.</param>
+        /// <param name="guild">Target guild.</param>
+        /// <param name="permissions">New permission values.</param>
         /// <returns>
-        ///     The active command permissions after the modification
+        ///     The active command permissions after the modification.
         /// </returns>
         public async Task<GuildApplicationCommandPermission> ModifyContextCommandPermissionsAsync (ContextCommandInfo command, IGuild guild,
             params ApplicationCommandPermission[] permissions) =>
@@ -784,14 +784,14 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Get a <see cref="SlashCommandInfo"/>
+        ///     Get a <see cref="SlashCommandInfo"/>.
         /// </summary>
-        /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="InteractionModuleBase{T}"/></typeparam>
-        /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
+        /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="InteractionModuleBase{T}"/>.</typeparam>
+        /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended.</param>
         /// <returns>
-        ///     <see cref="SlashCommandInfo"/> instance for this command
+        ///     <see cref="SlashCommandInfo"/> instance for this command.
         /// </returns>
-        /// <exception cref="InvalidOperationException">Module or Slash Command couldn't be found</exception>
+        /// <exception cref="InvalidOperationException">Module or Slash Command couldn't be found.</exception>
         public SlashCommandInfo GetSlashCommandInfo<TModule> (string methodName) where TModule : class
         {
             var module = GetModuleInfo<TModule>();
@@ -800,14 +800,14 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Get a <see cref="ContextCommandInfo"/>
+        ///     Get a <see cref="ContextCommandInfo"/>.
         /// </summary>
-        /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="InteractionModuleBase{T}"/></typeparam>
-        /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
+        /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="InteractionModuleBase{T}"/>.</typeparam>
+        /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended.</param>
         /// <returns>
-        ///     <see cref="ContextCommandInfo"/> instance for this command
+        ///     <see cref="ContextCommandInfo"/> instance for this command.
         /// </returns>
-        /// <exception cref="InvalidOperationException">Module or Context Command couldn't be found</exception>
+        /// <exception cref="InvalidOperationException">Module or Context Command couldn't be found.</exception>
         public ContextCommandInfo GetContextCommandInfo<TModule> (string methodName) where TModule : class
         {
             var module = GetModuleInfo<TModule>();
@@ -816,14 +816,14 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Get a <see cref="ComponentCommandInfo"/>
+        ///     Get a <see cref="ComponentCommandInfo"/>.
         /// </summary>
-        /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="InteractionModuleBase{T}"/></typeparam>
-        /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended</param>
+        /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="InteractionModuleBase{T}"/>.</typeparam>
+        /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended.</param>
         /// <returns>
-        ///     <see cref="ComponentCommandInfo"/> instance for this command
+        ///     <see cref="ComponentCommandInfo"/> instance for this command.
         /// </returns>
-        /// <exception cref="InvalidOperationException">Module or Component Command couldn't be found</exception>
+        /// <exception cref="InvalidOperationException">Module or Component Command couldn't be found.</exception>
         public ComponentCommandInfo GetComponentCommandInfo<TModule> (string methodName) where TModule : class
         {
             var module = GetModuleInfo<TModule>();
@@ -832,11 +832,11 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Get a built <see cref="ModuleInfo"/>
+        ///     Get a built <see cref="ModuleInfo"/>.
         /// </summary>
-        /// <typeparam name="TModule">Type of the module, must be a type of <see cref="InteractionModuleBase{T}"/></typeparam>
+        /// <typeparam name="TModule">Type of the module, must be a type of <see cref="InteractionModuleBase{T}"/>.</typeparam>
         /// <returns>
-        ///     <see cref="ModuleInfo"/> instance for this module
+        ///     <see cref="ModuleInfo"/> instance for this module.
         /// </returns>
         public ModuleInfo GetModuleInfo<TModule> ( ) where TModule : class
         {

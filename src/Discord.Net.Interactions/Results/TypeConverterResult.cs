@@ -3,12 +3,12 @@ using System;
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Represents a result type for <see cref="TypeConverter.ReadAsync(IInteractionContext, WebSocket.SocketSlashCommandDataOption, IServiceProvider)"/>
+    ///     Represents a result type for <see cref="TypeConverter.ReadAsync(IInteractionContext, WebSocket.SocketSlashCommandDataOption, IServiceProvider)"/>.
     /// </summary>
     public struct TypeConverterResult : IResult
     {
         /// <summary>
-        ///     Result of the convertion if the operation was successful
+        ///     Gets the result of the convertion if the operation was successful.
         /// </summary>
         public object Value { get; }
 

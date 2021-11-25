@@ -11,7 +11,7 @@ namespace Discord.Interactions
         UnknownCommand,
 
         /// <summary>
-        ///     Thrown when the Slash Command parameter fails to be converted by a TypeReader .
+        ///     Thrown when the Slash Command parameter fails to be converted by a TypeReader.
         /// </summary>
         ConvertFailed,
 
@@ -36,7 +36,7 @@ namespace Discord.Interactions
         UnmetPrecondition,
 
         /// <summary>
-        ///     Thrown when the command context cannot be parsed by the <see cref="ICommandInfo"/>
+        ///     Thrown when the command context cannot be parsed by the <see cref="ICommandInfo"/>.
         /// </summary>
         ParseFailed
     }

@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Represents the info class of an attribute based method for handling Autocomplete Interaction events
+    ///     Represents the info class of an attribute based method for handling Autocomplete Interaction events.
     /// </summary>
     public sealed class AutocompleteCommandInfo : CommandInfo<CommandParameterInfo>
     {
         /// <summary>
-        ///     Name of the target parameter
+        ///     Gets the name of the target parameter.
         /// </summary>
         public string ParameterName { get; }
 
         /// <summary>
-        ///     Name of the target command
+        ///     Gets the name of the target command.
         /// </summary>
         public string CommandName { get; }
 

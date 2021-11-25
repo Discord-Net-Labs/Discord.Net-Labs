@@ -11,7 +11,7 @@ namespace Discord.Interactions
     public abstract class PreconditionAttribute : Attribute
     {
         /// <summary>
-        ///     Specifies a group that this precondition belongs to.
+        ///     Gets the group that this precondition belongs to.
         /// </summary>
         /// <remarks>
         ///     <see cref="Preconditions" /> of the same group require only one of the preconditions to pass in order to
@@ -21,15 +21,18 @@ namespace Discord.Interactions
         public string Group { get; set; } = null;
 
         /// <summary>
+        ///     Gets the error message to be returned if execution context doesn't pass the precondition check.
+        /// </summary>
+        /// <remarks>
         ///     When overridden in a derived class, uses the supplied string
         ///     as the error message if the precondition doesn't pass.
         ///     Setting this for a class that doesn't override
         ///     this property is a no-op.
-        /// </summary>
+        /// </remarks>
         public virtual string ErrorMessage { get; }
 
         /// <summary>
-        ///     Checks if the <paramref name="commandInfo"/> command to be executed meets the precondition requirements
+        ///     Checks if the <paramref name="commandInfo"/> command to be executed meets the precondition requirements.
         /// </summary>
         /// <param name="context">The context of the command.</param>
         /// <param name="commandInfo">The command being executed.</param>

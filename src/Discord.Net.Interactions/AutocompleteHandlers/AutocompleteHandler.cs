@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Base class for creating Autocompleters. <see cref="InteractionService"/> uses Autocompleters to generate parameter suggestions
+    ///     Base class for creating Autocompleters. <see cref="InteractionService"/> uses Autocompleters to generate parameter suggestions.
     /// </summary>
-    public abstract class Autocompleter : IAutocompleter
+    public abstract class AutocompleteHandler : IAutocompleteHandler
     {
         /// <inheritdoc/>
         public InteractionService InteractionService { get; set; }
@@ -63,7 +63,7 @@ namespace Discord.Interactions
                             break;
                     }
 
-                await InteractionService._autocompleterExecutedEvent.InvokeAsync(this, context, result).ConfigureAwait(false);
+                await InteractionService._autocompleteHandlerExecutedEvent.InvokeAsync(this, context, result).ConfigureAwait(false);
                 return result;
             }
             catch (Exception ex)
@@ -75,7 +75,7 @@ namespace Discord.Interactions
                 await InteractionService._cmdLogger.ErrorAsync(ex).ConfigureAwait(false);
 
                 var result = ExecuteResult.FromError(ex);
-                await InteractionService._autocompleterExecutedEvent.InvokeAsync(this, context, result).ConfigureAwait(false);
+                await InteractionService._autocompleteHandlerExecutedEvent.InvokeAsync(this, context, result).ConfigureAwait(false);
 
                 if (InteractionService._throwOnError)
                 {

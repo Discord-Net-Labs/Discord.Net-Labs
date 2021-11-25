@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Represents the info class of an attribute based method for command type <see cref="ApplicationCommandType.Slash"/>
+    ///     Represents the info class of an attribute based method for command type <see cref="ApplicationCommandType.Slash"/>.
     /// </summary>
     public class SlashCommandInfo : CommandInfo<SlashCommandParameterInfo>, IApplicationCommandInfo
     {
         /// <summary>
-        ///     The command description that will be displayed on Discord
+        ///     Gets the command description that will be displayed on Discord.
         /// </summary>
         public string Description { get; }
 
@@ -51,7 +51,7 @@ namespace Discord.Interactions
             return await ExecuteAsync(context, Parameters, options?.ToList(), services);
         }
 
-        public async Task<IResult> ExecuteAsync (IInteractionContext context, IEnumerable<SlashCommandParameterInfo> paramList,
+        private async Task<IResult> ExecuteAsync (IInteractionContext context, IEnumerable<SlashCommandParameterInfo> paramList,
             List<IApplicationCommandInteractionDataOption> argList, IServiceProvider services)
         {
             try

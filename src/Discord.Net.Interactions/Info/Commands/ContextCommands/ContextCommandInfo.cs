@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Base information class for attribute based context command handlers
+    ///     Base information class for attribute based context command handlers.
     /// </summary>
     public abstract class ContextCommandInfo : CommandInfo<CommandParameterInfo>, IApplicationCommandInfo
     {

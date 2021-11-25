@@ -1,44 +1,44 @@
 namespace Discord.Rest
 {
     /// <summary>
-    ///     Represents a Rest based context of an <see cref="IDiscordInteraction"/>
+    ///     Represents a Rest based context of an <see cref="IDiscordInteraction"/>.
     /// </summary>
     public class RestInteractionContext<TInteraction> : IInteractionContext
         where TInteraction : RestInteraction
     {
         /// <summary>
-        ///     Get the <see cref="DiscordRestClient"/> that the command will be executed with
+        ///     Gets the <see cref="DiscordRestClient"/> that the command will be executed with.
         /// </summary>
         public DiscordRestClient Client { get; }
 
         /// <summary>
-        ///     Get the <see cref="RestGuild"/> the command originated from
+        ///     Gets the <see cref="RestGuild"/> the command originated from.
         /// </summary>
         /// <remarks>
-        ///     Will be null if the command is from a DM Channel
+        ///     Will be null if the command is from a DM Channel.
         /// </remarks>
         public RestGuild Guild { get; }
 
         /// <summary>
-        ///     Get the <see cref="IRestMessageChannel"/> the command originated from
+        ///     Gets the <see cref="IRestMessageChannel"/> the command originated from.
         /// </summary>
         public IRestMessageChannel Channel { get; }
 
         /// <summary>
-        ///     Get the <see cref="RestUser"/> who executed the command
+        ///     Gets the <see cref="RestUser"/> who executed the command.
         /// </summary>
         public RestUser User { get; }
 
         /// <summary>
-        ///     Get the <see cref="RestInteraction"/> the command was recieved with
+        ///     Gets the <see cref="RestInteraction"/> the command was recieved with.
         /// </summary>
         public TInteraction Interaction { get; }
 
         /// <summary>
-        ///     Initializes a new <see cref="RestInteractionContext{TInteraction}"/> 
+        ///     Initializes a new <see cref="RestInteractionContext{TInteraction}"/>. 
         /// </summary>
-        /// <param name="client">The underlying client</param>
-        /// <param name="interaction">The underlying interaction</param>
+        /// <param name="client">The underlying client.</param>
+        /// <param name="interaction">The underlying interaction.</param>
         public RestInteractionContext(DiscordRestClient client, TInteraction interaction)
         {
             Client = client;

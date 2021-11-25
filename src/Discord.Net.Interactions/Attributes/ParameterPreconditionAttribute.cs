@@ -11,11 +11,14 @@ namespace Discord.Interactions
     public abstract class ParameterPreconditionAttribute : Attribute
     {
         /// <summary>
+        ///     Gets the error message to be returned if execution context doesn't pass the precondition check.
+        /// </summary>
+        /// <remarks>
         ///     When overridden in a derived class, uses the supplied string
         ///     as the error message if the precondition doesn't pass.
         ///     Setting this for a class that doesn't override
         ///     this property is a no-op.
-        /// </summary>
+        /// </remarks>
         public virtual string ErrorMessage { get; }
 
         /// <summary>
