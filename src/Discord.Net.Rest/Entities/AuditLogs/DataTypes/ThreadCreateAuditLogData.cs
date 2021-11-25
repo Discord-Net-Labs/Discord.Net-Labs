@@ -35,12 +35,12 @@ namespace Discord.Rest
             var autoArchiveDurationModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "auto_archive_duration");
             var lockedModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "locked");
 
-            var name = nameModel.OldValue.ToObject<string>(discord.ApiClient.Serializer);
-            var type = typeModel.OldValue.ToObject<ThreadType>(discord.ApiClient.Serializer);
+            var name = nameModel.NewValue.ToObject<string>(discord.ApiClient.Serializer);
+            var type = typeModel.NewValue.ToObject<ThreadType>(discord.ApiClient.Serializer);
 
-            var archived = archivedModel.OldValue.ToObject<bool>(discord.ApiClient.Serializer);
-            var autoArchiveDuration = autoArchiveDurationModel.OldValue.ToObject<ThreadArchiveDuration>(discord.ApiClient.Serializer);
-            var locked = lockedModel.OldValue.ToObject<bool>(discord.ApiClient.Serializer);
+            var archived = archivedModel.NewValue.ToObject<bool>(discord.ApiClient.Serializer);
+            var autoArchiveDuration = autoArchiveDurationModel.NewValue.ToObject<ThreadArchiveDuration>(discord.ApiClient.Serializer);
+            var locked = lockedModel.NewValue.ToObject<bool>(discord.ApiClient.Serializer);
 
             var threadInfo = log.Threads.FirstOrDefault(x => x.Id == id);
             var threadChannel = threadInfo == null ? null : RestThreadChannel.Create(discord, (IGuild)null, threadInfo);
