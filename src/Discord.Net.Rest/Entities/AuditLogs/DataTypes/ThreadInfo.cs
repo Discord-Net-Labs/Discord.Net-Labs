@@ -22,12 +22,18 @@ namespace Discord.Rest
         /// </summary>
         public bool IsLocked { get; }
 
-        internal ThreadInfo(string name, bool archived, ThreadArchiveDuration autoArchiveDuration, bool locked)
+        /// <summary>
+        ///     Gets the slow-mode delay of the ´thread.
+        /// </summary>
+        public int? SlowModeInterval { get; }
+
+        internal ThreadInfo(string name, bool archived, ThreadArchiveDuration autoArchiveDuration, bool locked, int? rateLimit)
         {
             Name = name;
             IsArchived = archived;
             AutoArchiveDuration = autoArchiveDuration;
             IsLocked = locked;
+            SlowModeInterval = rateLimit;
         }
     }
 }

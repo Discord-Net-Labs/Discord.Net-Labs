@@ -30,20 +30,23 @@ namespace Discord.Rest
             var archivedModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "archived");
             var autoArchiveDurationModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "auto_archive_duration");
             var lockedModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "locked");
+            var rateLimitPerUserModel = changes.FirstOrDefault(x => x.ChangedProperty == "rate_limit_per_user");
 
             var type = typeModel.OldValue.ToObject<ThreadType>(discord.ApiClient.Serializer);
 
-            var oldName = nameModel.NewValue.ToObject<string>(discord.ApiClient.Serializer);
-            var oldArchived = archivedModel.NewValue.ToObject<bool>(discord.ApiClient.Serializer);
-            var oldAutoArchiveDuration = autoArchiveDurationModel.NewValue.ToObject<ThreadArchiveDuration>(discord.ApiClient.Serializer);
-            var oldLocked = lockedModel.NewValue.ToObject<bool>(discord.ApiClient.Serializer);
-            var before = new ThreadInfo(oldName, oldArchived, oldAutoArchiveDuration, oldLocked);
+            var oldName = nameModel.OldValue.ToObject<string>(discord.ApiClient.Serializer);
+            var oldArchived = archivedModel.OldValue.ToObject<bool>(discord.ApiClient.Serializer);
+            var oldAutoArchiveDuration = autoArchiveDurationModel.OldValue.ToObject<ThreadArchiveDuration>(discord.ApiClient.Serializer);
+            var oldLocked = lockedModel.OldValue.ToObject<bool>(discord.ApiClient.Serializer);
+            var oldRateLimit = rateLimitPerUserModel?.OldValue?.ToObject<int>(discord.ApiClient.Serializer);
+            var before = new ThreadInfo(oldName, oldArchived, oldAutoArchiveDuration, oldLocked, oldRateLimit);
 
             var newName = nameModel.NewValue.ToObject<string>(discord.ApiClient.Serializer);
             var newArchived = archivedModel.NewValue.ToObject<bool>(discord.ApiClient.Serializer);
             var newAutoArchiveDuration = autoArchiveDurationModel.NewValue.ToObject<ThreadArchiveDuration>(discord.ApiClient.Serializer);
             var newLocked = lockedModel.NewValue.ToObject<bool>(discord.ApiClient.Serializer);
-            var after = new ThreadInfo(newName, newArchived, newAutoArchiveDuration, newLocked);
+            var newRateLimit = rateLimitPerUserModel?.NewValue?.ToObject<int>(discord.ApiClient.Serializer);
+            var after = new ThreadInfo(newName, newArchived, newAutoArchiveDuration, newLocked, newRateLimit);
 
             var threadInfo = log.Threads.FirstOrDefault(x => x.Id == id);
             var threadChannel = threadInfo == null ? null : RestThreadChannel.Create(discord, (IGuild)null, threadInfo);

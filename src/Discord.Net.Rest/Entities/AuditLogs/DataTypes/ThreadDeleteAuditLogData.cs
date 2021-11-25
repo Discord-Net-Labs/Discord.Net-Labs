@@ -10,7 +10,8 @@ namespace Discord.Rest
     /// </summary>
     public class ThreadDeleteAuditLogData : IAuditLogData
     {
-        private ThreadDeleteAuditLogData(ulong id, string name, ThreadType type, bool archived, ThreadArchiveDuration autoArchiveDuration, bool locked)
+        private ThreadDeleteAuditLogData(ulong id, string name, ThreadType type, bool archived,
+            ThreadArchiveDuration autoArchiveDuration, bool locked, int? rateLimit)
         {
             ThreadId = id;
             ThreadName = name;
@@ -18,6 +19,7 @@ namespace Discord.Rest
             IsArchived = archived;
             AutoArchiveDuration = autoArchiveDuration;
             IsLocked = locked;
+            SlowModeInterval = rateLimit;
         }
 
         internal static ThreadDeleteAuditLogData Create(BaseDiscordClient discord, Model log, EntryModel entry)
@@ -33,6 +35,7 @@ namespace Discord.Rest
             var archivedModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "archived");
             var autoArchiveDurationModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "auto_archive_duration");
             var lockedModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "locked");
+            var rateLimitPerUserModel = changes.FirstOrDefault(x => x.ChangedProperty == "rate_limit_per_user");
 
             var name = nameModel.OldValue.ToObject<string>(discord.ApiClient.Serializer);
             var type = typeModel.OldValue.ToObject<ThreadType>(discord.ApiClient.Serializer);
@@ -40,8 +43,9 @@ namespace Discord.Rest
             var archived = archivedModel.OldValue.ToObject<bool>(discord.ApiClient.Serializer);
             var autoArchiveDuration = autoArchiveDurationModel.OldValue.ToObject<ThreadArchiveDuration>(discord.ApiClient.Serializer);
             var locked = lockedModel.OldValue.ToObject<bool>(discord.ApiClient.Serializer);
+            var rateLimit = rateLimitPerUserModel?.NewValue?.ToObject<int>(discord.ApiClient.Serializer);
 
-            return new ThreadDeleteAuditLogData(id, name, type, archived, autoArchiveDuration, locked);
+            return new ThreadDeleteAuditLogData(id, name, type, archived, autoArchiveDuration, locked, rateLimit);
         }
 
         /// <summary>
@@ -86,5 +90,14 @@ namespace Discord.Rest
         ///     <c>true</c> if this thread had the Locked flag enabled; otherwise <c>false</c>.
         /// </returns>
         public bool IsLocked { get; }
+        /// <summary>
+        ///     Gets the slow-mode delay of the deleted thread.
+        /// </summary>
+        /// <returns>
+        ///     An <see cref="int"/> representing the time in seconds required before the user can send another
+        ///     message; <c>0</c> if disabled.
+        ///     <c>null</c> if this is not mentioned in this entry.
+        /// </returns>
+        public int? SlowModeInterval { get; }
     }
 }

@@ -11,7 +11,7 @@ namespace Discord.Rest
     public class ThreadCreateAuditLogData : IAuditLogData
     {
         private ThreadCreateAuditLogData(IThreadChannel thread, ulong id, string name, ThreadType type, bool archived,
-            ThreadArchiveDuration autoArchiveDuration, bool locked)
+            ThreadArchiveDuration autoArchiveDuration, bool locked, int? rateLimit)
         {
             Thread = thread;
             ThreadId = id;
@@ -20,6 +20,7 @@ namespace Discord.Rest
             IsArchived = archived;
             AutoArchiveDuration = autoArchiveDuration;
             IsLocked = locked;
+            SlowModeInterval = rateLimit;
         }
 
         internal static ThreadCreateAuditLogData Create(BaseDiscordClient discord, Model log, EntryModel entry)
@@ -34,6 +35,7 @@ namespace Discord.Rest
             var archivedModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "archived");
             var autoArchiveDurationModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "auto_archive_duration");
             var lockedModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "locked");
+            var rateLimitPerUserModel = changes.FirstOrDefault(x => x.ChangedProperty == "rate_limit_per_user");
 
             var name = nameModel.NewValue.ToObject<string>(discord.ApiClient.Serializer);
             var type = typeModel.NewValue.ToObject<ThreadType>(discord.ApiClient.Serializer);
@@ -41,11 +43,12 @@ namespace Discord.Rest
             var archived = archivedModel.NewValue.ToObject<bool>(discord.ApiClient.Serializer);
             var autoArchiveDuration = autoArchiveDurationModel.NewValue.ToObject<ThreadArchiveDuration>(discord.ApiClient.Serializer);
             var locked = lockedModel.NewValue.ToObject<bool>(discord.ApiClient.Serializer);
+            var rateLimit = rateLimitPerUserModel?.NewValue?.ToObject<int>(discord.ApiClient.Serializer);
 
             var threadInfo = log.Threads.FirstOrDefault(x => x.Id == id);
             var threadChannel = threadInfo == null ? null : RestThreadChannel.Create(discord, (IGuild)null, threadInfo);
 
-            return new ThreadCreateAuditLogData(threadChannel, id, name, type, archived, autoArchiveDuration, locked);
+            return new ThreadCreateAuditLogData(threadChannel, id, name, type, archived, autoArchiveDuration, locked, rateLimit);
         }
 
         // Doc Note: Corresponds to the *current* data
@@ -99,5 +102,14 @@ namespace Discord.Rest
         ///     <c>true</c> if this thread has the Locked flag enabled; otherwise <c>false</c>.
         /// </returns>
         public bool IsLocked { get; }
+        /// <summary>
+        ///     Gets the slow-mode delay of the thread.
+        /// </summary>
+        /// <returns>
+        ///     An <see cref="int"/> representing the time in seconds required before the user can send another
+        ///     message; <c>0</c> if disabled.
+        ///     <c>null</c> if this is not mentioned in this entry.
+        /// </returns>
+        public int? SlowModeInterval { get; }
     }
 }
