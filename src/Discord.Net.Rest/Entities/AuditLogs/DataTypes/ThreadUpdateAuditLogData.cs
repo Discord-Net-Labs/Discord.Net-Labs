@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using System.Linq;
 
 using Model = Discord.API.AuditLog;
 using EntryModel = Discord.API.AuditLogEntry;
-using Discord.API;
 
 namespace Discord.Rest
 {
