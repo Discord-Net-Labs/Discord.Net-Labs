@@ -1,0 +1,87 @@
+using System.Collections.Generic;
+using System.Linq;
+
+using Model = Discord.API.AuditLog;
+using EntryModel = Discord.API.AuditLogEntry;
+using Discord.API;
+
+namespace Discord.Rest
+{
+    /// <summary>
+    ///     Contains a piece of audit log data related to a thread update.
+    /// </summary>
+    public class ThreadUpdateAuditLogData : IAuditLogData
+    {
+        private ThreadUpdateAuditLogData(IThreadChannel thread, ThreadType type, ThreadInfo before, ThreadInfo after)
+        {
+            Thread = thread;
+            ThreadType = type;
+            Before = before;
+            After = After;
+        }
+
+        internal static ThreadUpdateAuditLogData Create(BaseDiscordClient discord, Model log, EntryModel entry)
+        {
+            var changes = entry.Changes;
+
+            var id = entry.TargetId.Value;
+
+            var nameModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "name");
+            var typeModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "type");
+
+            var archivedModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "archived");
+            var autoArchiveDurationModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "auto_archive_duration");
+            var lockedModel = entry.Changes.FirstOrDefault(x => x.ChangedProperty == "locked");
+
+            var type = typeModel.OldValue.ToObject<ThreadType>(discord.ApiClient.Serializer);
+
+            var oldName = nameModel.NewValue.ToObject<string>(discord.ApiClient.Serializer);
+            var oldArchived = archivedModel.NewValue.ToObject<bool>(discord.ApiClient.Serializer);
+            var oldAutoArchiveDuration = autoArchiveDurationModel.NewValue.ToObject<ThreadArchiveDuration>(discord.ApiClient.Serializer);
+            var oldLocked = lockedModel.NewValue.ToObject<bool>(discord.ApiClient.Serializer);
+            var before = new ThreadInfo(oldName, oldArchived, oldAutoArchiveDuration, oldLocked);
+
+            var newName = nameModel.NewValue.ToObject<string>(discord.ApiClient.Serializer);
+            var newArchived = archivedModel.NewValue.ToObject<bool>(discord.ApiClient.Serializer);
+            var newAutoArchiveDuration = autoArchiveDurationModel.NewValue.ToObject<ThreadArchiveDuration>(discord.ApiClient.Serializer);
+            var newLocked = lockedModel.NewValue.ToObject<bool>(discord.ApiClient.Serializer);
+            var after = new ThreadInfo(newName, newArchived, newAutoArchiveDuration, newLocked);
+
+            var threadInfo = log.Threads.FirstOrDefault(x => x.Id == id);
+            var threadChannel = threadInfo == null ? null : RestThreadChannel.Create(discord, (IGuild)null, threadInfo);
+
+            return new ThreadUpdateAuditLogData(threadChannel,type, before, after);
+        }
+
+        // Doc Note: Corresponds to the *current* data
+
+        /// <summary>
+        ///     Gets the thread that was created if it still exists.
+        /// </summary>
+        /// <returns>
+        ///     A thread object representing the thread that was created if it still exists, otherwise returns <c>null</c>.
+        /// </returns>
+        public IThreadChannel Thread { get; }
+        /// <summary>
+        ///     Gets the type of the thread.
+        /// </summary>
+        /// <returns>
+        ///     The type of thread.
+        /// </returns>
+        public ThreadType ThreadType { get; }
+        /// <summary>
+        ///     Gets the thread information before the changes.
+        /// </summary>
+        /// <returns>
+        ///     A thread information object representing the thread before the changes were made.
+        /// </returns>
+        public ThreadInfo Before { get; }
+        /// <summary>
+        ///     Gets the thread information after the changes.
+        /// </summary>
+        /// <returns>
+        ///     A thread information object representing the thread after the changes were made.
+        /// </returns>
+        public ThreadInfo After { get; }
+    }
+}

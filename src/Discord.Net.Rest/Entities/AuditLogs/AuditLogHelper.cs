@@ -53,6 +53,7 @@ namespace Discord.Rest
             [ActionType.MessageUnpinned] = MessageUnpinAuditLogData.Create,
 
             [ActionType.ThreadCreate] = ThreadCreateAuditLogData.Create,
+            [ActionType.ThreadUpdate] = ThreadUpdateAuditLogData.Create,
             [ActionType.ThreadDelete] = ThreadDeleteAuditLogData.Create,
         };
 
