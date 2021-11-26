@@ -12,7 +12,7 @@ This section answers basic questions and common mistakes in handling application
 The difference between these 3 functions is in how you handle the command response.
 [RespondAsync] and
 [DeferAsync] let the API know you have succesfully received the command. This is also called 'acknowledging' a command.
-DeferAsync will not send out a response, RespondAsync will not.
+DeferAsync will not send out a response, RespondAsync will.
 [FollowupAsync] follows up on succesful acknowledgement. 
 
 > [!WARNING]
@@ -51,33 +51,20 @@ Branching structure is covered properly here: xref:Guides.SlashCommands.SubComma
 ## My interaction commands are not showing up?
 
 If you registered your commands globally, it can take up to 1 hour for them to register.
-Did you register a guild command, or waited more than an hour and still don't have them show up?
+Did you register a guild command (should be instant), or waited more than an hour and still don't have them show up?
 
 - Try to check for any errors in the console, there is a good chance something might have been thrown.
 
-- Register your commands after the Ready event in the client:
-```cs
-// Subscribe to the Ready event of your client.
-_client.Ready += ReadyAsync;
-
-...
-
-private async Task ReadyAsync()
-{
-  // Register your command once this is called, not before it.
-  // The application is not configured to handle command before this point.
-}
-```
+- Register your commands after the Ready event in the client. The client is not configured to register commands before this moment.
 
 - Check if no bad form exception is thrown; If so, refer to the above question.
 
 ## There are many options for creating commands, which do I use?
 
-Examples where what applies:
 ```cs
 private async Task ReadyAsync()
 {
-  // pull your commands from some array
+  // pull your commands from some array, everyone has a different approach for this.
   var commands = _builders.ToArray();
 
   // write your list of commands globally in one go.

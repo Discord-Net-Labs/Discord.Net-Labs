@@ -1,5 +1,5 @@
 ---
-uid: Guides.Commands.NamedArguments
+uid: Guides.ChatCommands.NamedArguments
 title: Named Arguments
 ---
 

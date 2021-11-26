@@ -1,5 +1,5 @@
 ---
-uid: Guides.Commands.DI
+uid: Guides.ChatCommands.DI
 title: Dependency Injection
 ---
 

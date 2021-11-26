@@ -23,21 +23,25 @@
       topicUid: Guides.Concepts.ManageConnections
     - name: Entities
       topicUid: Guides.Concepts.Entities
-- name: Working with Message Commands
+- name: Working with Chat Commands
   items:
     - name: Introduction
-      topicUid: Guides.Commands.Intro
+      topicUid: Guides.ChatCommands.Intro
     - name: TypeReaders
-      topicUid: Guides.Commands.TypeReaders
+      topicUid: Guides.ChatCommands.TypeReaders
     - name: Named Arguments
-      topicUid: Guides.Commands.NamedArguments
+      topicUid: Guides.ChatCommands.NamedArguments
     - name: Preconditions
-      topicUid: Guides.Commands.Preconditions
+      topicUid: Guides.ChatCommands.Preconditions
     - name: Dependency Injection
-      topicUid: Guides.Commands.DI
+      topicUid: Guides.ChatCommands.DI
     - name: Post-execution Handling
-      topicUid: Guides.Commands.PostExecution
-- name: Working with Slash commands
+      topicUid: Guides.ChatCommands.PostExecution
+- name: Working with Interaction Commands
+  items:
+    - name: Introduction
+      topicUid: Guides.IntCommands.Intro
+- name: Slash command basics
   items:
     - name: Introduction
       topicUid: Guides.SlashCommands.Intro
@@ -55,13 +59,13 @@
       topicUid: Guides.SlashCommands.Choices
     - name: Slash commands Bulk Overwrites
       topicUid: Guides.SlashCommands.BulkOverwrite
-- name: Working with Context commands
+- name: Context command basics
   items:
     - name: Creating Context Commands
       topicUid: Guides.ContextCommands.Creating
     - name: Receiving Context Commands
       topicUid: Guides.ContextCommands.Reveiving
-- name: Working with Message Components
+- name: Message component basics
   items:
     - name: Introduction
       topicUid: Guides.MessageComponents.Intro

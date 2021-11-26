@@ -1,5 +1,5 @@
 ---
-uid: Guides.Commands.Preconditions
+uid: Guides.ChatCommands.Preconditions
 title: Preconditions
 ---
 
