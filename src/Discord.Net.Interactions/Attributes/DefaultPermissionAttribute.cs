@@ -6,7 +6,7 @@ namespace Discord.Interactions
     ///     Set the "Default Permission" property of an Application Command.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-    public class IsDefaultPermissionAttribute : Attribute
+    public class DefaultPermissionAttribute : Attribute
     {
         /// <summary>
         ///     Gets whether the users are allowed to use a Slash Command by default or not.
@@ -17,7 +17,7 @@ namespace Discord.Interactions
         ///     Set the default permission of a Slash Command.
         /// </summary>
         /// <param name="isDefaultPermission"><see langword="true"/> if the users are allowed to use this command.</param>
-        public IsDefaultPermissionAttribute (bool isDefaultPermission)
+        public DefaultPermissionAttribute (bool isDefaultPermission)
         {
             IsDefaultPermission = isDefaultPermission;
         }

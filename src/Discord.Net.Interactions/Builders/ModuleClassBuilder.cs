@@ -80,7 +80,7 @@ namespace Discord.Interactions.Builders
                             builder.Description = group.Description;
                         }
                         break;
-                    case IsDefaultPermissionAttribute defPermission:
+                    case DefaultPermissionAttribute defPermission:
                         {
                             builder.DefaultPermission = defPermission.IsDefaultPermission;
                         }
@@ -133,7 +133,7 @@ namespace Discord.Interactions.Builders
                     BuildModule(builder, submodule, commandService, services);
 
                     if (slashGroupDepth >= MaxCommandDepth - 1)
-                        throw new InvalidOperationException("Slash Commands only support 2 command prefixes for sub-commands");
+                        throw new InvalidOperationException($"Slash Commands only support {MaxCommandDepth - 1} command prefixes for sub-commands");
 
                     BuildSubModules(builder, submodule.DeclaredNestedTypes, builtTypes, commandService, services, builder.IsSlashGroup ? slashGroupDepth + 1 : slashGroupDepth);
                 });
@@ -160,7 +160,7 @@ namespace Discord.Interactions.Builders
                             builder.RunMode = command.RunMode;
                         }
                         break;
-                    case IsDefaultPermissionAttribute defaultPermission:
+                    case DefaultPermissionAttribute defaultPermission:
                         {
                             builder.DefaultPermission = defaultPermission.IsDefaultPermission;
                         }
@@ -202,7 +202,7 @@ namespace Discord.Interactions.Builders
                             command.CheckMethodDefinition(methodInfo);
                         }
                         break;
-                    case IsDefaultPermissionAttribute defaultPermission:
+                    case DefaultPermissionAttribute defaultPermission:
                         {
                             builder.DefaultPermission = defaultPermission.IsDefaultPermission;
                         }

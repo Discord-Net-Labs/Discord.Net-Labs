@@ -1,10 +1,9 @@
-using System;
 using System.Threading.Tasks;
 
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Represents a configuration class for <see cref="InteractionService"/>
+    ///     Represents a configuration class for <see cref="InteractionService"/>.
     /// </summary>
     public class InteractionServiceConfig
     {
@@ -25,36 +24,36 @@ namespace Discord.Interactions
         public bool ThrowOnError { get; set; } = true;
 
         /// <summary>
-        ///     Gets or sets the delimiters that will be used to seperate group names and the method name when a Message Component Interaction is recieved
+        ///     Gets or sets the delimiters that will be used to seperate group names and the method name when a Message Component Interaction is recieved.
         /// </summary>
         public char[] InteractionCustomIdDelimiters { get; set; }
 
         /// <summary>
-        ///     Gets or sets the string expression that will be treated as a wild card
+        ///     Gets or sets the string expression that will be treated as a wild card.
         /// </summary>
         public string WildCardExpression { get; set; }
 
         /// <summary>
-        ///     Gets or sets the option to delete Slash Command acknowledgements if no Slash Command handler is found in the <see cref="InteractionService"/>
+        ///     Gets or sets the option to delete Slash Command acknowledgements if no Slash Command handler is found in the <see cref="InteractionService"/>.
         /// </summary>
         public bool DeleteUnknownSlashCommandAck { get; set; } = true;
 
         /// <summary>
-        ///     Gets or sets the option to use compiled lambda expressions to create module instances and execute commands. This method improves performance at the cost of memory
+        ///     Gets or sets the option to use compiled lambda expressions to create module instances and execute commands. This method improves performance at the cost of memory.
         /// </summary>
         public bool UseCompiledLambda { get; set; } = false;
 
         /// <summary>
-        ///     Gets or sets the option allowing you to use <see cref="AutocompleteHandler"/>s
+        ///     Gets or sets the option allowing you to use <see cref="AutocompleteHandler"/>s.
         /// </summary>
         /// <remarks>
         ///     Since <see cref="AutocompleteHandler"/>s are prioritized over <see cref="AutocompleteCommandInfo"/>s, if <see cref="AutocompleteHandler"/>s are not used, this should be
-        ///     disabled to decrease the lookup time
+        ///     disabled to decrease the lookup time.
         /// </remarks>
         public bool EnableAutocompleteHandlers { get; set; } = true;
 
         /// <summary>
-        ///     Gets or sets delegate to be used by the <see cref="InteractionService"/> when responding to a Rest based interaction
+        ///     Gets or sets delegate to be used by the <see cref="InteractionService"/> when responding to a Rest based interaction.
         /// </summary>
         public RestResponseCallback RestResponseCallback { get; set; } = (ctx, str) => Task.CompletedTask;
     }

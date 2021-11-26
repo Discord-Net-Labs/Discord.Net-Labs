@@ -33,7 +33,7 @@ namespace Discord.Interactions.Builders
         public string Name { get; internal set; }
 
         /// <summary>
-        ///     Gets the group name of this module.
+        ///     Gets and sets the group name of this module.
         /// </summary>
         public string SlashGroupName { get; set; }
 
@@ -43,17 +43,17 @@ namespace Discord.Interactions.Builders
         public bool IsSlashGroup => !string.IsNullOrEmpty(SlashGroupName);
 
         /// <summary>
-        ///     Gets the description of this module.
+        ///     Gets and sets the description of this module.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        ///     Gets the default permission of this module.
+        ///     Gets and sets the default permission of this module.
         /// </summary>
         public bool DefaultPermission { get; set; } = true;
 
         /// <summary>
-        ///     Gets whether this has a <see cref="DontAutoRegisterAttribute"/>.
+        ///     Gets and sets whether this has a <see cref="DontAutoRegisterAttribute"/>.
         /// </summary>
         public bool DontAutoRegister { get; set; } = false;
 

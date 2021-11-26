@@ -26,7 +26,7 @@ namespace _04_interactions_framework.Modules
         // Slash Commands are declared using the [SlashCommand], you need to provide a name and a description, both following the Discord guidelines
         [SlashCommand("ping", "Recieve a pong")]
         // By setting the DefaultPermission to false, you can disable the command by default. No one can use the command until you give them permission
-        [IsDefaultPermission(false)]
+        [DefaultPermission(false)]
         public async Task Ping ( )
         {
             await RespondAsync("pong");
