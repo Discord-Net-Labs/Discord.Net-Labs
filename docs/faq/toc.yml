@@ -6,20 +6,16 @@
       topicUid: FAQ.Basics.BasicOp
     - name: Client Basics
       topicUid: FAQ.Basics.ClientBasics
-- name: Message Commands
+    - name: Interactions
+      topicUid: FAQ.Basics.InteractionBasics
+- name: Commands
   items: 
-    - name: General
+    - name: String commands
       topicUid: FAQ.Commands.General
+    - name: Interaction commands
+      topicUid: FAQ.Commands.Interaction
     - name: Dependency Injection
       topicUid: FAQ.Commands.DI
-- name: Interactions
-  items:
-    - name: Basics
-      topicUid: FAQ.Interactions.Basics
-    - name: Naming practice
-      topicUid: FAQ.Interactions.Naming
-    - name: Misc
-      topicUid: FAQ.Interactions.Misc
 - name: Glossary
   topicUid: FAQ.Glossary
 - name: Legacy or Upgrade

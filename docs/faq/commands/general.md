@@ -1,6 +1,6 @@
 ---
 uid: FAQ.Commands.General
-title: General Questions about Commands
+title: General Questions about string Commands
 ---
 
 # Command-related Questions
