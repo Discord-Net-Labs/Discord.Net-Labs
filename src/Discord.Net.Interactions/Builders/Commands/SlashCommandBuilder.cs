@@ -10,12 +10,12 @@ namespace Discord.Interactions.Builders
         protected override SlashCommandBuilder Instance => this;
 
         /// <summary>
-        ///     Gets the description of this command.
+        ///     Gets and sets the description of this command.
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        ///     Gets the default permission of this command.
+        ///     Gets and sets the default permission of this command.
         /// </summary>
         public bool DefaultPermission { get; set; } = true;
 

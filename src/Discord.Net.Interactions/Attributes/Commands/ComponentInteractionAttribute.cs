@@ -24,7 +24,7 @@ namespace Discord.Interactions
         public bool IgnoreGroupNames { get; }
 
         /// <summary>
-        ///     Get the run mode this command gets executed with.
+        ///     Gets the run mode this command gets executed with.
         /// </summary>
         public RunMode RunMode { get; }
 

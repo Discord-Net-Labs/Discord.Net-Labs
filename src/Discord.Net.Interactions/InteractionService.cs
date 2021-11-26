@@ -176,12 +176,14 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     
+        ///     Create and loads a <see cref="ModuleInfo"/> using a builder factory.
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="services"></param>
-        /// <param name="buildFunc"></param>
-        /// <returns></returns>
+        /// <param name="name">Name of the module.</param>
+        /// <param name="services">The <see cref="IServiceProvider"/> for your dependency injection solution if using one; otherwise, pass <c>null</c>.</param>
+        /// <param name="buildFunc">Module builder factory.</param>
+        /// <returns>
+        ///     A task representing the operation for adding modules. The task result contains the built module instance.
+        /// </returns>
         public async Task<ModuleInfo> CreateModuleAsync(string name, IServiceProvider services, Action<ModuleBuilder> buildFunc)
         {
             services ??= EmptyServiceProvider.Instance;
@@ -784,7 +786,7 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Get a <see cref="SlashCommandInfo"/>.
+        ///     Gets a <see cref="SlashCommandInfo"/>.
         /// </summary>
         /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="InteractionModuleBase{T}"/>.</typeparam>
         /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended.</param>
@@ -800,7 +802,7 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Get a <see cref="ContextCommandInfo"/>.
+        ///     Gets a <see cref="ContextCommandInfo"/>.
         /// </summary>
         /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="InteractionModuleBase{T}"/>.</typeparam>
         /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended.</param>
@@ -816,7 +818,7 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Get a <see cref="ComponentCommandInfo"/>.
+        ///     Gets a <see cref="ComponentCommandInfo"/>.
         /// </summary>
         /// <typeparam name="TModule">Declaring module type of this command, must be a type of <see cref="InteractionModuleBase{T}"/>.</typeparam>
         /// <param name="methodName">Method name of the handler, use of <see langword="nameof"/> is recommended.</param>
@@ -832,7 +834,7 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        ///     Get a built <see cref="ModuleInfo"/>.
+        ///     Gets a built <see cref="ModuleInfo"/>.
         /// </summary>
         /// <typeparam name="TModule">Type of the module, must be a type of <see cref="InteractionModuleBase{T}"/>.</typeparam>
         /// <returns>

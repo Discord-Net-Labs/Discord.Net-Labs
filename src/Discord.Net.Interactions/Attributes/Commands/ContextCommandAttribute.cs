@@ -20,7 +20,7 @@ namespace Discord.Interactions
         public ApplicationCommandType CommandType { get; }
 
         /// <summary>
-        ///     Get the run mode this command gets executed with.
+        ///     Gets the run mode this command gets executed with.
         /// </summary>
         public RunMode RunMode { get; }
 
