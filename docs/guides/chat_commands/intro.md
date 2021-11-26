@@ -1,6 +1,6 @@
 ---
 uid: Guides.ChatCommands.Intro
-title: Introduction to Command Service
+title: Introduction to the Chat Command Service
 ---
 
 # The Chat Command Service

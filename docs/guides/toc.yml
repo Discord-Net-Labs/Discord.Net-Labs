@@ -41,6 +41,12 @@
   items:
     - name: Introduction
       topicUid: Guides.IntCommands.Intro
+    - name: Auto-Completion
+      topicUid: Guides.IntCommands.AutoCompletion
+    - name: TypeConverters
+      topicUid: Guides.IntCommands.TypeConverters
+    - name: Post-execution Handling
+      topicUid: Guides.IntCommands.PostExecution
 - name: Slash command basics
   items:
     - name: Introduction
