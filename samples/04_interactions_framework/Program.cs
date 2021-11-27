@@ -68,7 +68,7 @@ namespace _04_interactions_framework
             return new ServiceCollection()
                 .AddSingleton(configuration)
                 .AddSingleton<DiscordSocketClient>()
-                .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
+                .AddSingleton<InteractionService>()
                 .AddSingleton<CommandHandler>()
                 .BuildServiceProvider();
         }
