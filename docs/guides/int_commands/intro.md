@@ -55,13 +55,17 @@ Valid **Interaction Commands** must comply with the following requirements:
 |[Component Interaction Command](#component-interaction-commands)| `Task`/`Task<RuntimeResult>` | inf                 | `string` or `string[]`        | `[ComponentInteraction]` |
 |[Autocomplete Command](#autocomplete-commands)| `Task`/`Task<RuntimeResult>` | -             | -                   | `[AutocompleteCommand]`|
 
-**a `TypeConverter` that is capable of parsing type in question must be registered to the `InteractionService` instance.*
+> [!NOTE]
+> a `TypeConverter` that is capable of parsing type in question must be registered to the [InteractionService] instance.
 
 > You should avoid using long running code in your command module. Depending on your setup, long running code may block the Gateway thread of your bot, interrupting its connection to Discord.
 
-### Slash Commands
+## Slash Commands
 
-Slash Commands are created using the `[SlashCommandAttribute]`. Every Slash Command must declare a name and a description. You can check Discords **Application Command Naming Guidelines** [here](https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-naming).
+Slash Commands are created using the [SlashCommandAttribute].
+Every Slash Command must declare a name and a description.
+You can check Discords **Application Command Naming Guidelines**
+[here](https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-naming).
 
 ```csharp
 [SlashCommand("echo", "Echo an input")]
@@ -71,14 +75,18 @@ public async Task Echo(string input)
 }
 ```
 
-#### Parameters
+### Parameters
 
-Slash Commands can have up to 25 method parameters. You must name your parameters in accordance with [Discords Naming Guidelines](https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-naming). Interaction Service also features a pascal casing seperator for formatting parameter names with pascal casing into Discord compliant parameter names('parameterName' => 'parameter-name'). By default, your methods can feature the following parameter types:
+Slash Commands can have up to 25 method parameters. You must name your parameters in accordance with
+[Discords Naming Guidelines](https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-naming).
+[InteractionService] also features a pascal casing seperator for formatting parameter names with
+pascal casing into Discord compliant parameter names('parameterName' => 'parameter-name').
+By default, your methods can feature the following parameter types:
 
-- Implementations of `IUser`
-- Implementations of `IChannel`*
-- Implementations of `IRole`
-- Implementations of `IMentionable`
+- Implementations of [IUser]
+- Implementations of [IChannel]
+- Implementations of [IRole]
+- Implementations of [IMentionable]
 - `string`
 - `float`, `double`, `decimal`
 - `bool`
@@ -92,7 +100,7 @@ Slash Commands can have up to 25 method parameters. You must name your parameter
 
 ---
 
-**You can use more specialized implementations of `IChannel` to restrict the allowed channel types for a channel type option.*
+**You can use more specialized implementations of [IChannel] to restrict the allowed channel types for a channel type option.*
 | interface           | Channel Type                  |
 |---------------------|-------------------------------|
 | `IStageChannel`     | Stage Channels                |
@@ -106,21 +114,21 @@ Slash Commands can have up to 25 method parameters. You must name your parameter
 
 ---
 
-##### Optional Parameters
+#### Optional Parameters
 
 Parameters with default values (ie. `int count = 0`) will be displayed as optional parameters on Discord Client.
 
-##### Parameter Summary
+#### Parameter Summary
 
-By using the `[SummaryAttribute]` you can customize the displayed name and description of a parameter
+By using the [SummaryAttribute] you can customize the displayed name and description of a parameter
 
 ```csharp
 [Summary(description: "this is a parameter description")] string input
 ```
 
-##### Parameter Choices
+#### Parameter Choices
 
-`[ChoiceAttribute]` can be used to add choices to a parameter.
+[ChoiceAttribute] can be used to add choices to a parameter.
 
 ```csharp
 [SlashCommand("blep", "Send a random adorable animal photo")]
@@ -149,9 +157,9 @@ public async Task Blep(Animal animal)
 
 This Slash Command will be displayed exactly the same as the previous example.
 
-##### Channel Types
+#### Channel Types
 
-Channel types for an `IChannel` parameter can also be restricted using the `[ChannelTypesAttribute]`.
+Channel types for an `IChannel` parameter can also be restricted using the [ChannelTypesAttribute].
 
 ```csharp
 [SlashCommand("name", "Description")]
@@ -163,15 +171,11 @@ public async Task Command([ChannelTypes(ChannelType.Stage, ChannelType.Text)]ICh
 
 In this case, user can only input Stage Channels and Text Channels to this parameter.
 
-##### Autocomplete
+#### Min/Max Value
 
-You can enable Autocomple Interactions for a Slash Command parameter using the `[AutocompleteAttribute]`. To handle the Autocomplete Interactions raised by this parameter you can either create [Autocomplete Commands](#autocomplete-commands) or you can opt to use the [Autocompleters Pattern](./autocompleters)
+You can specify the permitted max/min value for a number type parameter using the [MaxValueAttribute] and [MinValueAttribute].
 
-##### Min/Max Value
-
-You can specify the permitted max/min value for a number type parameter using the `[MaxValueAttribute]` and `[MinValueAttribute]`.
-
-### User Commands
+## User Commands
 
 A valid User Command must have the following structure:
 
@@ -183,9 +187,9 @@ public async Task SayHello(IUser user)
 }
 ```
 
-User commands can only have one parameter and its type must be an implementation of `IUser`.
+User commands can only have one parameter and its type must be an implementation of [IUser].
 
-### Message Commands
+## Message Commands
 
 A valid Message Command must have the following structure:
 
@@ -197,11 +201,12 @@ public async Task Bookmark(IUser user)
 }
 ```
 
-Message commands can only have one parameter and its type must be an implementation of `IMessage`.
+Message commands can only have one parameter and its type must be an implementation of [IMessage].
 
-### Component Interaction Commands
+## Component Interaction Commands
 
-Component Interaction Commands are used to handle interactions that originate from **Discord Message Component**s. This pattern is particularly useful if you will be reusing a set a **Custom ID**s.
+Component Interaction Commands are used to handle interactions that originate from **Discord Message Component**s.
+This pattern is particularly useful if you will be reusing a set a **Custom ID**s.
 
 ```csharp
 [ComponentInteraction("custom_id")]
@@ -211,11 +216,15 @@ public async Task RoleSelection()
 }
 ```
 
-Component Interaction Commands support wild card matching, by default `*` character can be used to create a wild card pattern. Interaction Service will use lazy matching to capture the words corresponding to the wild card character. And the captured words will be passed on to the command method in the same order they were captured.
+Component Interaction Commands support wild card matching,
+by default `*` character can be used to create a wild card pattern.
+Interaction Service will use lazy matching to capture the words corresponding to the wild card character.
+And the captured words will be passed on to the command method in the same order they were captured.
 
-*Ex.*
-
-If Interaction Service recieves a component interaction with **player:play,rickroll** custom id, `op` will be *play* and `name` will be *rickroll*
+> [!INFO]
+> If Interaction Service recieves a component interaction with **player:play,rickroll** custom id,
+> `op` will be *play* and
+> `name` will be *rickroll*
 
 ```csharp
 [ComponentInteraction("player:*,*")]
@@ -227,9 +236,10 @@ public async Task Play(string op, string name)
 
 You may use as many wild card characters as you want.
 
-#### Select Menus
+## Select Menus
 
-Unlike button interactions, select menu interactions also contain the values of the selected menu items. In this case, you should structure your method to accept a string array.
+Unlike button interactions, select menu interactions also contain the values of the selected menu items.
+In this case, you should structure your method to accept a string array.
 
 ```csharp
 [ComponentInteraction("role_selection")]
@@ -239,7 +249,9 @@ public async Task RoleSelection(string[] selectedRoles)
 }
 ```
 
- Wild card pattern can also be used to match select menu custom ids but remember that the array containing the select menu values should be the last parameter.
+> [!NOTE]
+> Wild card pattern can also be used to match select menu custom id''s
+> but remember that the array containing the select menu values should be the last parameter.
 
 ```csharp
 [ComponentInteraction("role_selection_*")]
@@ -249,7 +261,7 @@ public async Task RoleSelection(string id, string[] selectedRoles)
 }
 ```
 
-### Autocomplete Commands
+## Autocomplete Commands
 
 Autocomplete commands must be parameterless methods. A valid Autocomplete command must  have the following structure:
 
@@ -265,29 +277,34 @@ public async Task Autocomplete()
 }
 ```
 
-Alternatively, you can use the *Autocompleters* to simplify this workflow.
+Alternatively, you can use the [Autocompleters] to simplify this workflow.
 
 ## Interaction Context
 
-Every command module provides its commands with an execution context. This context property includes general information about the underlying interaction that triggered the command execution. The base command context.
+Every command module provides its commands with an execution context.
+This context property includes general information about the underlying interaction that triggered the command execution.
+The base command context.
 
-You can design your modules to work with different implementation types of `IInteractionContext`. To achieve this, make sure your module classes inherit from the generic variant of the `InteractionModuleBase`.
+You can design your modules to work with different implementation types of [IInteractionContext].
+To achieve this, make sure your module classes inherit from the generic variant of the [InteractionModuleBase].
 
+> [!NOTE]
 > Context type must be consistent throughout the project, or you will run into issues during runtime.
 
-Interaction Service ships with 4 different kinds of `InteractionContext`s:
+The [InteractionService] ships with 4 different kinds of [InteractionContext]:
 
-1. InteractionContext: A bare-bones execution context consisting of only implementation netural interfaces
-2. SocketInteractionContext: An execution context for use with `DiscordSocketClient`. Socket entities are exposed in this context without the need of casting them.
-3. ShardedInteractionContext: `DiscordShardedClient` variant of the `SocketInteractionContext`
-4. RestInteractionContext: An execution context designed to be used with a `DiscordRestClient` and webhook based interactions pattern
+1. [InteractionContext]]: A bare-bones execution context consisting of only implementation neutral interfaces
+2. [SocketInteractionContext]: An execution context for use with [DiscordSocketClient]. Socket entities are exposed in this context without the need of casting them.
+3. [ShardedInteractionContext]: [DiscordShardedClient] variant of the [SocketInteractionContext]
+4. [RestInteractionContext]: An execution context designed to be used with a [DiscordRestClient] and webhook based interactions pattern
 
-You can create custom Interaction Contexts by implementing the `IInteracitonContext` interface.
+You can create custom Interaction Contexts by implementing the [IInteractionContext] interface.
 
 One problem with using the concrete type InteractionContexts is that you cannot access the information that is specific to different interaction types without casting. Concrete type interaction contexts are great for creating shared interaction modules but you can also use the generic variants of the built-in interaction contexts to create interaction specific interaction modules.
 
-Ex.
-Message component interactions have access to a special method called `UpdateAsync()` to update the body of the method the interaction originated from. Normally this wouldn't be accessable without casting the `Context.Interaction`.
+> [!INFO]
+> Message component interactions have access to a special method called `UpdateAsync()` to update the body of the method the interaction originated from.
+> Normally this wouldn't be accessable without casting the `Context.Interaction`.
 
 ```csharp
 discordClient.ButtonExecuted += async (interaction) => 
@@ -308,34 +325,46 @@ public class MessageComponentModule : InteractionModuleBase<SocketInteractionCon
 
 ## Loading Modules
 
-Interaction Service can automatically discover and load modules that inherit `InteractionModuleBase` from an `Assembly`. Call `InteractionService.AddModulesAsync()` to use this functionality.
+[InteractionService] can automatically discover and load modules that inherit [InteractionModuleBase] from an `Assembly`.
+Call `InteractionService.AddModulesAsync()` to use this functionality.
 
-You can also manually add Interaction modules using the `InteractionService.AddModuleAsync()` method by providing the module type you want to load.
+> [!NOTE]
+> You can also manually add Interaction modules using the `InteractionService.AddModuleAsync()`
+> method by providing the module type you want to load.
 
 ## Resolving Module Dependencies
 
-Module dependencies are resolved using the Constructor Injection and Property Injection patterns. Meaning, the constructor parameters and public settable properties of a module will be assigned using the `IServiceProvider`. For more information on dependency injection, check out [Dependency Injection](.\dependency-injection)
+Module dependencies are resolved using the Constructor Injection and Property Injection patterns.
+Meaning, the constructor parameters and public settable properties of a module will be assigned using the `IServiceProvider`.
+For more information on dependency injection, read the [DependencyInjection] guides.
 
 ## Module Groups
 
-Module groups allow you to create sub-commands and sub-commands groups. By nesting commands inside a module that is tagged with `[GroupAttribute]` you can create prefixed commands.
+Module groups allow you to create sub-commands and sub-commands groups.
+By nesting commands inside a module that is tagged with [GroupAttribute] you can create prefixed commands.
 
-Although creating nested module stuctures are allowed, you are not permitted to use more than 2 `[GroupAttribute]`s in module hierarchy.
+> [!WARNING]
+> Although creating nested module stuctures are allowed,
+> you are not permitted to use more than 2 [GroupAttribute]'s in module hierarchy.
 
 ## Executing Commands
 
 Any of the following socket events can be used to execute commands:
 
-- InteractionCreated
-- ButtonExecuted
-- SelectMenuExecuted
-- AutocompleteExecuted
-- UserCommandExecuted
-- MessageCommandExecuted
+- [InteractionCreated]
+- [ButtonExecuted]
+- [SelectMenuExecuted]
+- [AutocompleteExecuted]
+- [UserCommandExecuted]
+- [MessageCommandExecuted]
 
 Commands can be either executed on the gateway thread or on a seperate thread from the thread pool. This behaviour can be configured by changing the *RunMode* property of `InteractionServiceConfig` or by setting the *runMode* parameter of a command attribute.
 
-You can also configure the way `InteractionService` executes the commands. By default, commands are executed using `ConstructorInfo.Invoke()` to create module instances and `MethodInfo.Invoke()` method for executing the method bodies. By setting, `InteractionServiceConfig.UseCompiledLambda` to `true`, you can make `InteractionService` create module instances and execute commands using *Compiled Lambda* expressions. This cuts down on command execution time but it might add some memory overhead.
+You can also configure the way [InteractionService] executes the commands.
+By default, commands are executed using `ConstructorInfo.Invoke()` to create module instances and
+`MethodInfo.Invoke()` method for executing the method bodies.
+By setting, `InteractionServiceConfig.UseCompiledLambda` to `true`, you can make [InteractionService] create module instances and execute commands using
+*Compiled Lambda* expressions. This cuts down on command execution time but it might add some memory overhead.
 
 Time it takes to create a module instance and execute a `Task.Delay(0)` method using the Reflection methods compared to Compiled Lambda expressions:
 
@@ -346,9 +375,13 @@ Time it takes to create a module instance and execute a `Task.Delay(0)` method u
 
 ## Registering Commands to Discord
 
-Application commands loaded to the Interaciton Service can be registered to Discord using a number of different methods. In most cases `RegisterCommandsGloballyAsync()` and `RegisterCommandsToGuildAsync()` are the methods to use. Command registration methods can only be used after the gateway client is ready or the rest client is logged in.
+Application commands loaded to the Interaciton Service can be registered to Discord using a number of different methods.
+In most cases `RegisterCommandsGloballyAsync()` and `RegisterCommandsToGuildAsync()` are the methods to use.
+Command registration methods can only be used after the gateway client is ready or the rest client is logged in.
 
-In debug environment, since Global commands can take up to 1 hour to register/update, you should register your commands to a test guild for your changes to take effect immediately. You can use the preprocessor directives to create a simple logic for registering commands:
+In debug environment, since Global commands can take up to 1 hour to register/update,
+you should register your commands to a test guild for your changes to take effect immediately.
+You can use the preprocessor directives to create a simple logic for registering commands:
 
 ```csharp
 #if DEBUG
@@ -357,3 +390,35 @@ In debug environment, since Global commands can take up to 1 hour to register/up
     await interactionService.RegisterCommandsGloballyAsync();
 #endif
 ```
+
+[GroupAttribute]:
+[DependencyInjection]:
+[InteractionService]:
+[InteractionModuleBase]:
+[SlashCommandAttribute]:
+[InteractionCreated]:
+[ButtonExecuted]:
+[SelectMenuExecuted]:
+[AutocompleteExecuted]:
+[UserCommandExecuted]:
+[MessageCommandExecuted]:
+[DiscordSocketClient]:
+[DiscordRestClient]:
+[SocketInteractionContext]:
+[ShardedInteractionContext]:
+[InteractionContext]:
+[IInteractionContect]:
+[InteractionContext]:
+[RestInteractionContext]:
+[Autocompleters]:
+[SummaryAttribute]:
+[ChoiceAttribute]:
+[ChannelTypesAttribute]:
+[MaxValueAttribute]:
+[MinValueAttribute]:
+
+[IChannel]:
+[IRole]:
+[IUser]:
+[IMessage]:
+[IMentionable]:

@@ -59,6 +59,9 @@ Did you register a guild command (should be instant), or waited more than an hou
 
 - Check if no bad form exception is thrown; If so, refer to the above question.
 
+- Do you have the application commands scope checked when adding your bot to guilds?
+![Scope check](images/scope.png)
+
 ## There are many options for creating commands, which do I use?
 
 ```cs
