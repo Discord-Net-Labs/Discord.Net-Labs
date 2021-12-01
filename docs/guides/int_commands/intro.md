@@ -390,35 +390,34 @@ You can use the preprocessor directives to create a simple logic for registering
     await interactionService.RegisterCommandsGloballyAsync();
 #endif
 ```
+[Autocompleters]: xref:Guides.IntCommands.Autocompleters
+[DependencyInjection]: xref:Guides.ChatCommands.DI
 
-[GroupAttribute]:
-[DependencyInjection]:
-[InteractionService]:
-[InteractionModuleBase]:
-[SlashCommandAttribute]:
-[InteractionCreated]:
-[ButtonExecuted]:
-[SelectMenuExecuted]:
-[AutocompleteExecuted]:
-[UserCommandExecuted]:
-[MessageCommandExecuted]:
-[DiscordSocketClient]:
-[DiscordRestClient]:
-[SocketInteractionContext]:
-[ShardedInteractionContext]:
-[InteractionContext]:
-[IInteractionContect]:
-[InteractionContext]:
-[RestInteractionContext]:
-[Autocompleters]:
-[SummaryAttribute]:
-[ChoiceAttribute]:
-[ChannelTypesAttribute]:
-[MaxValueAttribute]:
-[MinValueAttribute]:
+[GroupAttribute]: xref:Discord.Interaction.
+[InteractionService]: xref:Discord.Interaction.
+[InteractionModuleBase]: xref:Discord.Interaction.
+[SlashCommandAttribute]: xref:Discord.Interaction.
+[InteractionCreated]: xref:Discord.WebSocket.BaseSocketClient
+[ButtonExecuted]: xref:Discord.WebSocket.BaseSocketClient
+[SelectMenuExecuted]: xref:Discord.WebSocket.BaseSocketClient
+[AutocompleteExecuted]: xref:Discord.WebSocket.BaseSocketClient
+[UserCommandExecuted]: xref:Discord.WebSocket.BaseSocketClient
+[MessageCommandExecuted]: xref:Discord.WebSocket.BaseSocketClient
+[DiscordSocketClient]: xref:Discord.WebSocket.DiscordSocketClient
+[DiscordRestClient]: xref:Discord.Rest.DiscordRestClient
+[SocketInteractionContext]: xref:Discord.Interaction.
+[ShardedInteractionContext]: xref:Discord.Interaction.
+[InteractionContext]: xref:Discord.Interaction.
+[IInteractionContect]: xref:Discord.Interaction.
+[RestInteractionContext]: xref:Discord.Interaction.
+[SummaryAttribute]: xref:Discord.Interaction.
+[ChoiceAttribute]: xref:Discord.Interaction.
+[ChannelTypesAttribute]: xref:Discord.Interaction.
+[MaxValueAttribute]: xref:Discord.Interaction.
+[MinValueAttribute]: xref:Discord.Interaction.
 
-[IChannel]:
-[IRole]:
-[IUser]:
-[IMessage]:
-[IMentionable]:
+[IChannel]: xref:Discord.IChannel
+[IRole]: xref:Discord.IRole
+[IUser]: xref:Discord.IUser
+[IMessage]: xref:Discord.IMessage
+[IMentionable]: xref:Discord.IMentionable
