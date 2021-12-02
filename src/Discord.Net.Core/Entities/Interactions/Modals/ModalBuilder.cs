@@ -127,10 +127,7 @@ namespace Discord
         /// <summary>
         ///     The max amount of rows a <see cref="ModalComponent"/> can have.
         /// </summary>
-        /// <remarks>
-        ///     Set to 10 for testing, actual value unknown
-        /// </remarks>
-        public const int MaxActionRowCount = 10;
+        public const int MaxActionRowCount = 5;
 
         /// <summary>
         ///     Gets or sets the Action Rows for this Component Builder.

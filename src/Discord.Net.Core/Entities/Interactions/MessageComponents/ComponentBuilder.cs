@@ -1069,6 +1069,8 @@ namespace Discord
 
     public class TextInputBuilder
     {
+        public const int LargestMaxLength = 4000;
+
         /// <summary>
         ///     Gets or sets the custom id of the current text input.
         /// </summary>
@@ -1103,15 +1105,49 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the minimum length of the current text input.
         /// </summary>
-        public int? MinLength { get; set; }
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="MinLength"/> is less than 0.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="MinLength"/> is greater than <see cref="LargestMaxLength"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="MinLength"/> is greater than <see cref="MaxLength"/>.</exception>
+        public int? MinLength
+        {
+            get => _minLength;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), $"MinLength must not be less than 0");
+                if (value > LargestMaxLength)
+                    throw new ArgumentOutOfRangeException(nameof(value), $"MinLength must not be greater than {LargestMaxLength}");
+                if (value > (MaxLength ?? LargestMaxLength))
+                    throw new ArgumentOutOfRangeException(nameof(value), $"MinLength must be less than MaxLength");
+                _minLength = value;
+            }
+        }
 
         /// <summary>
         ///     Gets or sets the maximum length of the current text input.
         /// </summary>
-        public int? MaxLength { get; set; }
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="MaxLength"/> is less than 0.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="MaxLength"/> is greater than <see cref="LargestMaxLength"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="MaxLength"/> is less than <see cref="MinLength"/>.</exception>
+        public int? MaxLength
+        {
+            get => _maxLength;
+            set
+            {
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException(nameof(value), $"MaxLength must not be less than 0");
+                if (value > LargestMaxLength)
+                    throw new ArgumentOutOfRangeException(nameof(value), $"MaxLength most not be greater than {LargestMaxLength}");
+                if (value < (MinLength ?? -1))
+                    throw new ArgumentOutOfRangeException(nameof(value), $"MaxLength must be greater than MinLength");
+                _maxLength = value;
+            }
+        }
 
 
         private string _customId;
+        private int? _maxLength;
+        private int? _minLength;
 
         /// <summary>
         ///     Creates a new instance of a <see cref="TextInputBuilder"/>.
