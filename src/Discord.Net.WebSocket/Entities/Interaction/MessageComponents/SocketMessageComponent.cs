@@ -444,7 +444,7 @@ namespace Discord.WebSocket
 
             lock (_lock)
             {
-                if (_hasResponded)
+                if (HasResponded)
                 {
                     throw new InvalidOperationException("Cannot respond twice to the same interaction");
                 }
@@ -454,7 +454,7 @@ namespace Discord.WebSocket
 
             lock (_lock)
             {
-                _hasResponded = true;
+                HasResponded = true;
             }
         }
         //IComponentInteraction
