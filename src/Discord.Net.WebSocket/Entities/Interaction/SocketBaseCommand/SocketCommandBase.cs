@@ -33,7 +33,7 @@ namespace Discord.WebSocket
         /// </summary>
         internal new SocketCommandBaseData Data { get; }
 
-        internal override bool _hasResponded { get; set; }
+        public override bool HasResponded { get; internal set; }
 
         private object _lock = new object();
 
@@ -126,7 +126,7 @@ namespace Discord.WebSocket
 
             lock (_lock)
             {
-                if (_hasResponded)
+                if (HasResponded)
                 {
                     throw new InvalidOperationException("Cannot respond twice to the same interaction");
                 }
@@ -136,7 +136,7 @@ namespace Discord.WebSocket
 
             lock (_lock)
             {
-                _hasResponded = true;
+                HasResponded = true;
             }
         }
 
@@ -321,7 +321,7 @@ namespace Discord.WebSocket
 
             lock (_lock)
             {
-                if (_hasResponded)
+                if (HasResponded)
                 {
                     throw new InvalidOperationException("Cannot respond or defer twice to the same interaction");
                 }
@@ -331,7 +331,7 @@ namespace Discord.WebSocket
 
             lock (_lock)
             {
-                _hasResponded = true;
+                HasResponded = true;
             }
         }
     }

@@ -19,7 +19,7 @@ namespace Discord
             set
             {
                 Preconditions.NotNullOrEmpty(value, nameof(Name));
-                Preconditions.AtLeast(value.Length, 3, nameof(Name));
+                Preconditions.AtLeast(value.Length, 1, nameof(Name));
                 Preconditions.AtMost(value.Length, MaxNameLength, nameof(Name));
 
                 _name = value;
@@ -42,7 +42,7 @@ namespace Discord
             var props = new UserCommandProperties
             {
                 Name = Name,
-                DefaultPermission = IsDefaultPermission
+                IsDefaultPermission = IsDefaultPermission
             };
 
             return props;

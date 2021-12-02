@@ -55,7 +55,7 @@ namespace Discord.API
             _restClientProvider = restClientProvider;
             UserAgent = userAgent;
             DefaultRetryMode = defaultRetryMode;
-            _serializer = serializer ?? new JsonSerializer { ContractResolver = new DiscordContractResolver(), NullValueHandling = NullValueHandling.Include };
+            _serializer = serializer ?? new JsonSerializer { ContractResolver = new DiscordContractResolver() };
             UseSystemClock = useSystemClock;
 
             RequestQueue = new RequestQueue();
@@ -341,9 +341,9 @@ namespace Discord.API
             Preconditions.NotNull(args, nameof(args));
             Preconditions.GreaterThan(args.Bitrate, 0, nameof(args.Bitrate));
             Preconditions.NotNullOrWhitespace(args.Name, nameof(args.Name));
-            Preconditions.LessThan(args.Name.Length, 100, nameof(args.Name));
+            Preconditions.AtMost(args.Name.Length, 100, nameof(args.Name));
             if (args.Topic.IsSpecified)
-                Preconditions.LessThan(args.Topic.Value.Length, 1024, nameof(args.Name));
+                Preconditions.AtMost(args.Topic.Value.Length, 1024, nameof(args.Name));
 
             options = RequestOptions.CreateOrClone(options);
 
@@ -377,7 +377,7 @@ namespace Discord.API
             Preconditions.NotNullOrWhitespace(args.Name, nameof(args.Name));
 
             if(args.Name.IsSpecified)
-                Preconditions.LessThan(args.Name.Value.Length, 100, nameof(args.Name));
+                Preconditions.AtMost(args.Name.Value.Length, 100, nameof(args.Name));
 
             options = RequestOptions.CreateOrClone(options);
 
@@ -393,9 +393,9 @@ namespace Discord.API
             Preconditions.NotNullOrWhitespace(args.Name, nameof(args.Name));
 
             if(args.Name.IsSpecified)
-                Preconditions.LessThan(args.Name.Value.Length, 100, nameof(args.Name));
+                Preconditions.AtMost(args.Name.Value.Length, 100, nameof(args.Name));
             if(args.Topic.IsSpecified)
-                Preconditions.LessThan(args.Topic.Value.Length, 1024, nameof(args.Name));
+                Preconditions.AtMost(args.Topic.Value.Length, 1024, nameof(args.Name));
 
             Preconditions.AtLeast(args.SlowModeInterval, 0, nameof(args.SlowModeInterval));
             Preconditions.AtMost(args.SlowModeInterval, 21600, nameof(args.SlowModeInterval));
@@ -1189,7 +1189,7 @@ namespace Discord.API
         {
             Preconditions.NotNull(command, nameof(command));
             Preconditions.AtMost(command.Name.Length, 32, nameof(command.Name));
-            Preconditions.AtLeast(command.Name.Length, 3, nameof(command.Name));
+            Preconditions.AtLeast(command.Name.Length, 1, nameof(command.Name));
 
             if (command.Type == ApplicationCommandType.Slash)
             {
@@ -1260,7 +1260,7 @@ namespace Discord.API
         {
             Preconditions.NotNull(command, nameof(command));
             Preconditions.AtMost(command.Name.Length, 32, nameof(command.Name));
-            Preconditions.AtLeast(command.Name.Length, 3, nameof(command.Name));
+            Preconditions.AtLeast(command.Name.Length, 1, nameof(command.Name));
 
             if (command.Type == ApplicationCommandType.Slash)
             {
@@ -2237,7 +2237,7 @@ namespace Discord.API
                         if (x.HttpCode == HttpStatusCode.BadRequest)
                         {
                             var json = (x.Request as JsonRestRequest).Json;
-                            throw new ApplicationCommandException(json, x);
+                            throw new ApplicationCommandException(x);
                         }
                     }
 
@@ -2251,7 +2251,7 @@ namespace Discord.API
                 if (x.HttpCode == HttpStatusCode.BadRequest)
                 {
                     var json = (x.Request as JsonRestRequest).Json;
-                    throw new ApplicationCommandException(json, x);
+                    throw new ApplicationCommandException(x);
                 }
 
                 throw;
