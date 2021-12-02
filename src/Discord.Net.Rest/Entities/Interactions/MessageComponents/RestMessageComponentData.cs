@@ -27,6 +27,9 @@ namespace Discord.Rest
         /// </summary>
         public IReadOnlyCollection<string> Values { get; }
 
+        /// <inheritdoc/>
+        public string Value { get; }
+
         internal RestMessageComponentData(Model model)
         {
             CustomId = model.CustomId;

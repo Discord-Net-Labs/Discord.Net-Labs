@@ -53,6 +53,11 @@ namespace Discord
         /// <summary>
         ///     Respond with a set of choices to a autocomplete interaction.
         /// </summary>
-        ApplicationCommandAutocompleteResult = 8
+        ApplicationCommandAutocompleteResult = 8,
+
+        /// <summary>
+        ///     Respond by showing the user a model.
+        /// </summary>
+        Modal = 9,
     }
 }

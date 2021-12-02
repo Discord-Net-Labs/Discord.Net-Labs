@@ -21,5 +21,10 @@ namespace Discord
         ///     Gets the value(s) of a <see cref="SelectMenuComponent"/> interaction response.
         /// </summary>
         IReadOnlyCollection<string> Values { get; }
+
+        /// <summary>
+        ///     Gets the value of a <see cref="TextInputComponent"/> interaction responce.
+        /// </summary>
+        public string Value { get; }
     }
 }

@@ -422,6 +422,41 @@ namespace Discord.WebSocket
             }
         }
 
+        /// <inheritdoc/>
+        public override async Task RespondWithModalAsync(Modal modal, RequestOptions options)
+        {
+            if (!IsValidToken)
+                throw new InvalidOperationException("Interaction token is no longer valid");
+
+            if (!InteractionHelper.CanSendResponse(this))
+                throw new TimeoutException($"Cannot respond to an interaction after {InteractionHelper.ResponseTimeLimit} seconds!");
+
+            var response = new API.InteractionResponse
+            {
+                Type = InteractionResponseType.Modal,
+                Data = new API.InteractionCallbackData
+                {
+                    CustomId = modal.CustomId,
+                    Title = modal.Title,
+                    Components = modal.Component.Components.Select(x => new Discord.API.ActionRowComponent(x)).ToArray()
+                }
+            };
+
+            lock (_lock)
+            {
+                if (_hasResponded)
+                {
+                    throw new InvalidOperationException("Cannot respond twice to the same interaction");
+                }
+            }
+
+            await InteractionHelper.SendInteractionResponseAsync(Discord, response, Id, Token, options).ConfigureAwait(false);
+
+            lock (_lock)
+            {
+                _hasResponded = true;
+            }
+        }
         //IComponentInteraction
         /// <inheritdoc/>
         IComponentInteractionData IComponentInteraction.Data => Data;

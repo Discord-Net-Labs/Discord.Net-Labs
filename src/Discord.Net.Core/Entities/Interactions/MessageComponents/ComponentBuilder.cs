@@ -244,6 +244,11 @@ namespace Discord
         /// <returns>A <see cref="MessageComponent"/> that can be sent with <see cref="IMessageChannel.SendMessageAsync"/>.</returns>
         public MessageComponent Build()
         {
+            if (_actionRows?.SelectMany(x => x.Components)?.Any(x => x.Type == ComponentType.TextInput) ?? false)
+                throw new ArgumentException("TextInputComponents are not allowed in messages.", nameof(ActionRows));
+            if (_actionRows?.SelectMany(x => x.Components)?.Any(x => x.Type == ComponentType.Modal) ?? false)
+                throw new ArgumentException("ModalSubmit components are not allowed in messages.", nameof(ActionRows));
+            
             return _actionRows != null
                 ? new MessageComponent(_actionRows.Select(x => x.Build()).ToList())
                 : MessageComponent.Empty;
@@ -1059,6 +1064,147 @@ namespace Discord
         public SelectMenuOption Build()
         {
             return new SelectMenuOption(Label, Value, Description, Emote, IsDefault);
+        }
+    }
+
+    public class TextInputBuilder
+    {
+        /// <summary>
+        ///     Gets or sets the custom id of the current text input.
+        /// </summary>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="CustomId"/> length exceeds <see cref="ComponentBuilder.MaxCustomIdLength"/></exception>
+        /// <exception cref="ArgumentException" accessor="set"><see cref="CustomId"/> length subceeds 1.</exception>
+        public string CustomId
+        {
+            get => _customId;
+            set => _customId = value?.Length switch
+            {
+                > ComponentBuilder.MaxCustomIdLength => throw new ArgumentOutOfRangeException(nameof(value), $"Custom Id length must be less or equal to {ComponentBuilder.MaxCustomIdLength}."),
+                0 => throw new ArgumentOutOfRangeException(nameof(value), "Custom Id length must be at least 1."),
+                _ => value
+            };
+        }
+
+        /// <summary>
+        ///     Gets or sets the style of the current text input.
+        /// </summary>
+        public TextInputStyle Style { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the label of the current text input.
+        /// </summary>
+        public string Label { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the placeholder of the current text input.
+        /// </summary>
+        public string Placeholder { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the minimum length of the current text input.
+        /// </summary>
+        public int? MinLength { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the maximum length of the current text input.
+        /// </summary>
+        public int? MaxLength { get; set; }
+
+
+        private string _customId;
+
+        /// <summary>
+        ///     Creates a new instance of a <see cref="TextInputBuilder"/>.
+        /// </summary>
+        /// <param name="label">The components label.</param>
+        /// <param name="style">The components style.</param>
+        /// <param name="customId">The compoents custom id.</param>
+        /// <param name="placeholder">The compoents placeholder.</param>-
+        /// <param name="minLength">The compoents minimum length.</param>
+        /// <param name="maxLength">The compoents maximum length.</param>
+        public TextInputBuilder (string label, TextInputStyle style, string customId, string placeholder = null, int? minLength = null, int? maxLength = null)
+        {
+            Label = label;
+            Style = style;
+            CustomId = customId;
+            Placeholder = placeholder;
+            MinLength = minLength;
+            MaxLength = maxLength;
+        }
+
+        /// <summary>
+        ///     Sets the label of the current builder.
+        /// </summary>
+        /// <param name="label">The value to set.</param>
+        /// <returns>the current builder. </returns>
+        public TextInputBuilder WithLabel(string label)
+        {
+            Label = label;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets the style of the current builder.
+        /// </summary>
+        /// <param name="style">The value to set.</param>
+        /// <returns>the current builder. </returns>
+        public TextInputBuilder WithStyle(TextInputStyle style)
+        {
+            Style = style;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets the custom id of the current builder.
+        /// </summary>
+        /// <param name="customId">The value to set.</param>
+        /// <returns>the current builder. </returns>
+        public TextInputBuilder WithCustomId(string customId)
+        {
+            CustomId = customId;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets the placeholder of the current builder.
+        /// </summary>
+        /// <param name="placeholder">The value to set.</param>
+        /// <returns>the current builder. </returns>
+        public TextInputBuilder WithPlaceholder(string placeholder)
+        {
+            Placeholder = placeholder;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets the minimum length of the current builder.
+        /// </summary>
+        /// <param name="placeholder">The value to set.</param>
+        /// <returns>the current builder. </returns>
+        public TextInputBuilder WithMinLength(int minLength)
+        {
+            MinLength = minLength;
+            return this;
+        }
+        
+        /// <summary>
+        ///     Sets the maximum length of the current builder.
+        /// </summary>
+        /// <param name="placeholder">The value to set.</param>
+        /// <returns>the current builder. </returns>
+        public TextInputBuilder WithMaxLength(int maxLength)
+        {
+            MaxLength = maxLength;
+            return this;
+        }
+
+        public TextInputComponent Build()
+        {
+            if (string.IsNullOrEmpty(CustomId))
+                throw new ArgumentException("TextInputComponents must have a custom id.", nameof(CustomId));
+            if (string.IsNullOrWhiteSpace(Label))
+                throw new ArgumentException("TextInputComponents must have a label.", nameof(Label));
+            return new TextInputComponent(CustomId, Label, Placeholder, MinLength, MaxLength, Style);
         }
     }
 }

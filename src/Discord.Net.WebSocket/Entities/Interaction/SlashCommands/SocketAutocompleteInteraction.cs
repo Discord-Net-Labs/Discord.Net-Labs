@@ -115,6 +115,11 @@ namespace Discord.WebSocket
         public override Task RespondAsync(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null)
             => throw new NotSupportedException("Autocomplete interactions cannot be deferred!");
 
+        /// <inheritdoc/>
+        [Obsolete("Autocomplete interactions cannot have normal responses!", true)]
+        public override Task RespondWithModalAsync(Modal modal, RequestOptions requestOptions = null)
+            => throw new NotSupportedException("Autocomplete interactions cannot have normal responces!");
+
         //IAutocompleteInteraction
         /// <inheritdoc/>
         IAutocompleteInteractionData IAutocompleteInteraction.Data => Data;
