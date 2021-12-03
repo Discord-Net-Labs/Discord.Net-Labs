@@ -36,5 +36,17 @@ namespace Discord.Rest
             Type = model.ComponentType;
             Values = model.Values.GetValueOrDefault();
         }
+
+        internal RestMessageComponentData(IMessageComponent component)
+        {
+            CustomId = component.CustomId;
+            Type = component.Type;
+
+            if (component is API.TextInputComponent textInput)
+                Value = textInput.Value.Value;
+
+            if (component is API.SelectMenuComponent select)
+                Values = select.Values.Value;
+        }
     }
 }

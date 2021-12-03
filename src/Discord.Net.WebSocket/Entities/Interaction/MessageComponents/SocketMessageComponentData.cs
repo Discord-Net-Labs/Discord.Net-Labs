@@ -46,7 +46,7 @@ namespace Discord.WebSocket
                 : null;
 
             Values = component.Type == ComponentType.SelectMenu
-                ? (component as API.SelectMenuComponent).Values
+                ? (component as API.SelectMenuComponent).Values.Value
                 : null;
         }
     }

@@ -27,7 +27,7 @@ namespace Discord.API
         public bool Disabled { get; set; }
 
         [JsonProperty("values")]
-        public string[] Values { get; set; }
+        public Optional<string[]> Values { get; set; }
         public SelectMenuComponent() { }
 
         public SelectMenuComponent(Discord.SelectMenuComponent component)

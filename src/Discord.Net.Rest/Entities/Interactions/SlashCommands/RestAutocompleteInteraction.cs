@@ -127,6 +127,7 @@ namespace Discord.Rest
         [Obsolete("Autocomplete interactions cannot have normal responses!", true)]
         public override string Respond(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null)
             => throw new NotSupportedException("Autocomplete interactions cannot be deferred!");
+        public override string RespondWithModal(Modal modal, RequestOptions options = null) => throw new NotSupportedException();
 
         //IAutocompleteInteraction
         /// <inheritdoc/>

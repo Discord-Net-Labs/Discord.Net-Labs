@@ -1,125 +1,56 @@
 using Discord.Net.Rest;
+using Discord.Rest;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
-using DataModel = Discord.API.ApplicationCommandInteractionData;
-using Model = Discord.API.Interaction;
+using DataModel = Discord.API.ModalInteractionData;
+using ModelBase = Discord.API.Interaction;
 
 namespace Discord.Rest
 {
     /// <summary>
-    ///     Represents a REST-based base command interaction.
+    ///     Represents a user submitted <see cref="Discord.Modal"/> received via GateWay.
     /// </summary>
-    public class RestCommandBase : RestInteraction
+    public class RestModal : RestInteraction, IDiscordInteraction
     {
-        /// <summary>
-        ///     Gets the name of the invoked command.
-        /// </summary>
-        public string CommandName
-            => Data.Name;
-
-        /// <summary>
-        ///     Gets the id of the invoked command.
-        /// </summary>
-        public ulong CommandId
-            => Data.Id;
-
-        /// <summary>
-        ///     The data associated with this interaction.
-        /// </summary>
-        internal new RestCommandBaseData Data { get; private set; }
-
-
-        internal override bool _hasResponded { get; set; }
-
-        private object _lock = new object();
-
-        internal RestCommandBase(DiscordRestClient client, Model model)
-            : base(client, model.Id)
+        internal RestModal(DiscordRestClient client, ModelBase model)
+             : base(client, model.Id)
         {
+            var dataModel = model.Data.IsSpecified
+                ? (DataModel)model.Data.Value
+                : null;
+
+            Data = new RestModalData(dataModel);
         }
 
-        internal new static async Task<RestCommandBase> CreateAsync(DiscordRestClient client, Model model)
+        internal new static async Task<RestModal> CreateAsync(DiscordRestClient client, ModelBase model)
         {
-            var entity = new RestCommandBase(client, model);
-            await entity.UpdateAsync(client, model).ConfigureAwait(false);
+            var entity = new RestModal(client, model);
+            await entity.UpdateAsync(client, model);
             return entity;
         }
 
-        internal override async Task UpdateAsync(DiscordRestClient client, Model model)
-        {
-            await base.UpdateAsync(client, model).ConfigureAwait(false);
-        }
+        internal override bool _hasResponded { get; set; }
+        private object _lock = new object();
 
         /// <summary>
-        ///     Responds to an Interaction with type <see cref="InteractionResponseType.ChannelMessageWithSource"/>.
+        ///     Acknowledges this interaction with the <see cref="InteractionResponseType.DeferredChannelMessageWithSource"/>.
         /// </summary>
-        /// <param name="text">The text of the message to be sent.</param>
-        /// <param name="embeds">A array of embeds to send with this response. Max 10.</param>
-        /// <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
-        /// <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
-        /// <param name="allowedMentions">The allowed mentions for this response.</param>
-        /// <param name="options">The request options for this response.</param>
-        /// <param name="component">A <see cref="MessageComponent"/> to be sent with this response.</param>
-        /// <param name="embed">A single embed to send with this response. If this is passed alongside an array of embeds, the single embed will be ignored.</param>
-        /// <exception cref="ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="DiscordConfig.MaxMessageSize"/>.</exception>
-        /// <exception cref="InvalidOperationException">The parameters provided were invalid or the token was invalid.</exception>
         /// <returns>
         ///     A string that contains json to write back to the incoming http request.
         /// </returns>
-        public override string Respond(
-            string text = null,
-            Embed[] embeds = null,
-            bool isTTS = false,
-            bool ephemeral = false,
-            AllowedMentions allowedMentions = null,
-            RequestOptions options = null,
-            MessageComponent component = null,
-            Embed embed = null)
+        public override string Defer(bool ephemeral = false, RequestOptions options = null)
         {
-            if (!IsValidToken)
-                throw new InvalidOperationException("Interaction token is no longer valid");
-
             if (!InteractionHelper.CanSendResponse(this))
-                throw new TimeoutException($"Cannot respond to an interaction after {InteractionHelper.ResponseTimeLimit} seconds!");
-
-            embeds ??= Array.Empty<Embed>();
-            if (embed != null)
-                embeds = new[] { embed }.Concat(embeds).ToArray();
-
-            Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
-            Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
-            Preconditions.AtMost(embeds.Length, 10, nameof(embeds), "A max of 10 embeds are allowed.");
-
-            // check that user flag and user Id list are exclusive, same with role flag and role Id list
-            if (allowedMentions != null && allowedMentions.AllowedTypes.HasValue)
-            {
-                if (allowedMentions.AllowedTypes.Value.HasFlag(AllowedMentionTypes.Users) &&
-                    allowedMentions.UserIds != null && allowedMentions.UserIds.Count > 0)
-                {
-                    throw new ArgumentException("The Users flag is mutually exclusive with the list of User Ids.", nameof(allowedMentions));
-                }
-
-                if (allowedMentions.AllowedTypes.Value.HasFlag(AllowedMentionTypes.Roles) &&
-                    allowedMentions.RoleIds != null && allowedMentions.RoleIds.Count > 0)
-                {
-                    throw new ArgumentException("The Roles flag is mutually exclusive with the list of Role Ids.", nameof(allowedMentions));
-                }
-            }
+                throw new TimeoutException($"Cannot defer an interaction after {InteractionHelper.ResponseTimeLimit} seconds!");
 
             var response = new API.InteractionResponse
             {
-                Type = InteractionResponseType.ChannelMessageWithSource,
+                Type = InteractionResponseType.DeferredChannelMessageWithSource,
                 Data = new API.InteractionCallbackData
                 {
-                    Content = text,
-                    AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
-                    Embeds = embeds.Select(x => x.ToModel()).ToArray(),
-                    TTS = isTTS,
-                    Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified,
                     Flags = ephemeral ? MessageFlags.Ephemeral : Optional<MessageFlags>.Unspecified
                 }
             };
@@ -128,7 +59,7 @@ namespace Discord.Rest
             {
                 if (_hasResponded)
                 {
-                    throw new InvalidOperationException("Cannot respond twice to the same interaction");
+                    throw new InvalidOperationException("Cannot respond or defer twice to the same interaction");
                 }
             }
 
@@ -307,21 +238,71 @@ namespace Discord.Rest
         }
 
         /// <summary>
-        ///     Acknowledges this interaction with the <see cref="InteractionResponseType.DeferredChannelMessageWithSource"/>.
+        ///     Responds to an Interaction with type <see cref="InteractionResponseType.ChannelMessageWithSource"/>.
         /// </summary>
+        /// <param name="text">The text of the message to be sent.</param>
+        /// <param name="embeds">A array of embeds to send with this response. Max 10.</param>
+        /// <param name="isTTS"><see langword="true"/> if the message should be read out by a text-to-speech reader, otherwise <see langword="false"/>.</param>
+        /// <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
+        /// <param name="allowedMentions">The allowed mentions for this response.</param>
+        /// <param name="options">The request options for this response.</param>
+        /// <param name="component">A <see cref="MessageComponent"/> to be sent with this response.</param>
+        /// <param name="embed">A single embed to send with this response. If this is passed alongside an array of embeds, the single embed will be ignored.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="DiscordConfig.MaxMessageSize"/>.</exception>
+        /// <exception cref="InvalidOperationException">The parameters provided were invalid or the token was invalid.</exception>
         /// <returns>
         ///     A string that contains json to write back to the incoming http request.
         /// </returns>
-        public override string Defer(bool ephemeral = false, RequestOptions options = null)
+        public override string Respond(
+            string text = null,
+            Embed[] embeds = null,
+            bool isTTS = false,
+            bool ephemeral = false,
+            AllowedMentions allowedMentions = null,
+            RequestOptions options = null,
+            MessageComponent component = null,
+            Embed embed = null)
         {
+            if (!IsValidToken)
+                throw new InvalidOperationException("Interaction token is no longer valid");
+
             if (!InteractionHelper.CanSendResponse(this))
-                throw new TimeoutException($"Cannot defer an interaction after {InteractionHelper.ResponseTimeLimit} seconds!");
+                throw new TimeoutException($"Cannot respond to an interaction after {InteractionHelper.ResponseTimeLimit} seconds!");
+
+            embeds ??= Array.Empty<Embed>();
+            if (embed != null)
+                embeds = new[] { embed }.Concat(embeds).ToArray();
+
+            Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
+            Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
+            Preconditions.AtMost(embeds.Length, 10, nameof(embeds), "A max of 10 embeds are allowed.");
+
+            // check that user flag and user Id list are exclusive, same with role flag and role Id list
+            if (allowedMentions != null && allowedMentions.AllowedTypes.HasValue)
+            {
+                if (allowedMentions.AllowedTypes.Value.HasFlag(AllowedMentionTypes.Users) &&
+                    allowedMentions.UserIds != null && allowedMentions.UserIds.Count > 0)
+                {
+                    throw new ArgumentException("The Users flag is mutually exclusive with the list of User Ids.", nameof(allowedMentions));
+                }
+
+                if (allowedMentions.AllowedTypes.Value.HasFlag(AllowedMentionTypes.Roles) &&
+                    allowedMentions.RoleIds != null && allowedMentions.RoleIds.Count > 0)
+                {
+                    throw new ArgumentException("The Roles flag is mutually exclusive with the list of Role Ids.", nameof(allowedMentions));
+                }
+            }
 
             var response = new API.InteractionResponse
             {
-                Type = InteractionResponseType.DeferredChannelMessageWithSource,
+                Type = InteractionResponseType.ChannelMessageWithSource,
                 Data = new API.InteractionCallbackData
                 {
+                    Content = text,
+                    AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
+                    Embeds = embeds.Select(x => x.ToModel()).ToArray(),
+                    TTS = isTTS,
+                    Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified,
                     Flags = ephemeral ? MessageFlags.Ephemeral : Optional<MessageFlags>.Unspecified
                 }
             };
@@ -330,7 +311,7 @@ namespace Discord.Rest
             {
                 if (_hasResponded)
                 {
-                    throw new InvalidOperationException("Cannot respond or defer twice to the same interaction");
+                    throw new InvalidOperationException("Cannot respond twice to the same interaction");
                 }
             }
 
@@ -342,44 +323,11 @@ namespace Discord.Rest
             return SerializePayload(response);
         }
 
-        /// <summary>
-        /// Responds to the interaction with a modal.
-        /// </summary>
-        /// <param name="modal">The modal to respond with</param>
-        /// <param name="options">The request options for this <see langword="async"/> request.</param>
-        /// <returns>A string that contains json to write back to the incoming http request.</returns>
-        /// <exception cref="TimeoutException"></exception>
-        /// <exception cref="InvalidOperationException"></exception>
-        public override string RespondWithModal(Modal modal, RequestOptions options = null)
-        {
-            if (!InteractionHelper.CanSendResponse(this))
-                throw new TimeoutException($"Cannot defer an interaction after {InteractionHelper.ResponseTimeLimit} seconds of no response/acknowledgement");
+        /// <inheritdoc/>
+        [Obsolete("Modal interactions cannot have modal responces!", true)]
+        public override string RespondWithModal(Modal modal, RequestOptions requestOptions = null)
+            => throw new NotSupportedException("Modal interactions cannot have modal responces!");
 
-            var response = new API.InteractionResponse
-            {
-                Type = InteractionResponseType.Modal,
-                Data = new API.InteractionCallbackData
-                {
-                    CustomId = modal.CustomId,
-                    Title = modal.Title,
-                    Components = modal.Component.Components.Select(x => new Discord.API.ActionRowComponent(x)).ToArray()
-                }
-            };
-
-            lock (_lock)
-            {
-                if (_hasResponded)
-                {
-                    throw new InvalidOperationException("Cannot respond or defer twice to the same interaction");
-                }
-            }
-
-            lock (_lock)
-            {
-                _hasResponded = true;
-            }
-
-            return SerializePayload(response);
-        }
+        public new RestModalData Data { get; set; }
     }
 }

@@ -92,6 +92,9 @@ namespace Discord.Rest
             if (model.Type == InteractionType.ApplicationCommandAutocomplete)
                 return await RestAutocompleteInteraction.CreateAsync(client, model).ConfigureAwait(false);
 
+            if (model.Type == InteractionType.ModalSubmit)
+                return await RestModal.CreateAsync(client, model).ConfigureAwait(false);
+
             return null;
         }
 
@@ -139,6 +142,10 @@ namespace Discord.Rest
 
         /// <inheritdoc/>
         public abstract string Defer(bool ephemeral = false, RequestOptions options = null);
+
+        /// <inheritdoc/>
+        public abstract string RespondWithModal(Modal modal, RequestOptions options = null);
+
         /// <inheritdoc/>
         public abstract Task<RestFollowupMessage> FollowupAsync(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, RequestOptions options = null, MessageComponent component = null, Embed embed = null);
         /// <summary>
@@ -206,6 +213,9 @@ namespace Discord.Rest
 
         Task IDiscordInteraction.DeferAsync(bool ephemeral, RequestOptions options)
             => Task.FromResult(Defer(ephemeral, options));
+
+        Task IDiscordInteraction.RespondWithModalAsync(Modal modal, RequestOptions options)
+            => Task.FromResult(RespondWithModal(modal, options));
 
         /// <inheritdoc/>
         async Task<IUserMessage> IDiscordInteraction.FollowupAsync(string text, Embed[] embeds, bool isTTS, bool ephemeral, AllowedMentions allowedMentions,
