@@ -189,7 +189,7 @@ namespace Discord.Interactions
         {
             var preconditions = new List<PreconditionAttribute>();
 
-            var parent = builder.Parent;
+            var parent = builder;
 
             while (parent != null)
             {
