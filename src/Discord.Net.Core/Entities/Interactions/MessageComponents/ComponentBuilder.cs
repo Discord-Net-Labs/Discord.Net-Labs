@@ -1090,7 +1090,7 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the style of the current text input.
         /// </summary>
-        public TextInputStyle Style { get; set; }
+        public TextInputStyle Style { get; set; } = TextInputStyle.Short;
 
         /// <summary>
         ///     Gets or sets the label of the current text input.
@@ -1100,7 +1100,14 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the placeholder of the current text input.
         /// </summary>
-        public string Placeholder { get; set; }
+        /// <exception cref="ArgumentException"><see cref="Placeholder"/> is longer than 100 characters</exception>
+        public string Placeholder
+        {
+            get => _placeholder;
+            set => _placeholder = value.Length <= 100
+                ? value
+                : throw new ArgumentException("Placeholder cannot have more than 100 characters.");
+        }
 
         /// <summary>
         ///     Gets or sets the minimum length of the current text input.
@@ -1148,6 +1155,7 @@ namespace Discord
         private string _customId;
         private int? _maxLength;
         private int? _minLength;
+        private string _placeholder;
 
         /// <summary>
         ///     Creates a new instance of a <see cref="TextInputBuilder"/>.
@@ -1158,7 +1166,7 @@ namespace Discord
         /// <param name="placeholder">The compoents placeholder.</param>-
         /// <param name="minLength">The compoents minimum length.</param>
         /// <param name="maxLength">The compoents maximum length.</param>
-        public TextInputBuilder (string label, TextInputStyle style, string customId, string placeholder = null, int? minLength = null, int? maxLength = null)
+        public TextInputBuilder (string label, string customId, TextInputStyle style = TextInputStyle.Short, string placeholder = null, int? minLength = null, int? maxLength = null)
         {
             Label = label;
             Style = style;
@@ -1166,6 +1174,14 @@ namespace Discord
             Placeholder = placeholder;
             MinLength = minLength;
             MaxLength = maxLength;
+        }
+
+        /// <summary>
+        ///     Creates a new insteance of a <see cref="TextInputBuilder"/>.
+        /// </summary>
+        public TextInputBuilder()
+        {
+
         }
 
         /// <summary>
