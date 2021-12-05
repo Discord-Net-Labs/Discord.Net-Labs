@@ -487,7 +487,7 @@ namespace Discord.WebSocket
                 }
             }
 
-            await InteractionHelper.SendInteractionResponseAsync(Discord, response, Id, Token, options).ConfigureAwait(false);
+            await InteractionHelper.SendInteractionResponseAsync(Discord, response, this, Channel, options).ConfigureAwait(false);
 
             lock (_lock)
             {

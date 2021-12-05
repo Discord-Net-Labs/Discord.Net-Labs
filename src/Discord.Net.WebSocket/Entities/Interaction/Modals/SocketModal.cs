@@ -1,6 +1,7 @@
 using Discord.Net.Rest;
 using Discord.Rest;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -15,6 +16,8 @@ namespace Discord.WebSocket
     /// </summary>
     public class SocketModal : SocketInteraction, IDiscordInteraction
     {
+        public new SocketModalData Data { get; set; }
+
         internal SocketModal(DiscordSocketClient client, ModelBase model, ISocketMessageChannel channel)
              : base(client, model.Id, channel)
         {
@@ -73,9 +76,9 @@ namespace Discord.WebSocket
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,
-            RequestOptions options = null,
             MessageComponent component = null,
-            Embed embed = null)
+            Embed embed = null,
+            RequestOptions options = null)
         {
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
@@ -112,9 +115,9 @@ namespace Discord.WebSocket
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,
-            RequestOptions options = null,
             MessageComponent component = null,
-            Embed embed = null)
+            Embed embed = null,
+            RequestOptions options = null)
         {
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
@@ -154,9 +157,9 @@ namespace Discord.WebSocket
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,
-            RequestOptions options = null,
             MessageComponent component = null,
-            Embed embed = null)
+            Embed embed = null,
+            RequestOptions options = null)
         {
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
@@ -190,15 +193,15 @@ namespace Discord.WebSocket
         }
 
         /// <inheritdoc/>
-        public override async Task RespondAsync(
+        public override async Task<RestInteractionMessage> RespondAsync(
             string text = null,
             Embed[] embeds = null,
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,
-            RequestOptions options = null,
             MessageComponent component = null,
-            Embed embed = null)
+            Embed embed = null,
+            RequestOptions options = null)
         {
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
@@ -252,7 +255,7 @@ namespace Discord.WebSocket
                 }
             }
 
-            await InteractionHelper.SendInteractionResponseAsync(Discord, response, Id, Token, options).ConfigureAwait(false);
+            return await InteractionHelper.SendInteractionResponseAsync(Discord, response, this, Channel, options).ConfigureAwait(false);
 
             lock (_lock)
             {
@@ -265,6 +268,73 @@ namespace Discord.WebSocket
         public override Task RespondWithModalAsync(Modal modal, RequestOptions requestOptions = null)
             => throw new NotSupportedException("Modal interactions cannot have modal responces!");
 
-        public new SocketModalData Data { get; set; }
+        /// <inheritdoc/>
+        public override Task<RestFollowupMessage> FollowupWithFileAsync(
+            FileAttachment attachment,
+            string text = null,
+            Embed[] embeds = null,
+            bool isTTS = false,
+            bool ephemeral = false,
+            AllowedMentions allowedMentions = null,
+            MessageComponent components = null,
+            Embed embed = null,
+            RequestOptions options = null)
+        {
+            return FollowupWithFilesAsync(new FileAttachment[] { attachment }, text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options);
+        }
+
+        /// <inheritdoc/>
+        public override async Task<RestFollowupMessage> FollowupWithFilesAsync(
+            IEnumerable<FileAttachment> attachments,
+            string text = null,
+            Embed[] embeds = null,
+            bool isTTS = false,
+            bool ephemeral = false,
+            AllowedMentions allowedMentions = null,
+            MessageComponent components = null,
+            Embed embed = null,
+            RequestOptions options = null)
+        {
+            if (!IsValidToken)
+                throw new InvalidOperationException("Interaction token is no longer valid");
+
+            embeds ??= Array.Empty<Embed>();
+            if (embed != null)
+                embeds = new[] { embed }.Concat(embeds).ToArray();
+
+            Preconditions.AtMost(allowedMentions?.RoleIds?.Count ?? 0, 100, nameof(allowedMentions.RoleIds), "A max of 100 role Ids are allowed.");
+            Preconditions.AtMost(allowedMentions?.UserIds?.Count ?? 0, 100, nameof(allowedMentions.UserIds), "A max of 100 user Ids are allowed.");
+            Preconditions.AtMost(embeds.Length, 10, nameof(embeds), "A max of 10 embeds are allowed.");
+
+            foreach (var attachment in attachments)
+            {
+                Preconditions.NotNullOrEmpty(attachment.FileName, nameof(attachment.FileName), "File Name must not be empty or null");
+            }
+
+            // check that user flag and user Id list are exclusive, same with role flag and role Id list
+            if (allowedMentions != null && allowedMentions.AllowedTypes.HasValue)
+            {
+                if (allowedMentions.AllowedTypes.Value.HasFlag(AllowedMentionTypes.Users) &&
+                    allowedMentions.UserIds != null && allowedMentions.UserIds.Count > 0)
+                {
+                    throw new ArgumentException("The Users flag is mutually exclusive with the list of User Ids.", nameof(allowedMentions));
+                }
+
+                if (allowedMentions.AllowedTypes.Value.HasFlag(AllowedMentionTypes.Roles) &&
+                    allowedMentions.RoleIds != null && allowedMentions.RoleIds.Count > 0)
+                {
+                    throw new ArgumentException("The Roles flag is mutually exclusive with the list of Role Ids.", nameof(allowedMentions));
+                }
+            }
+
+            var flags = MessageFlags.None;
+
+            if (ephemeral)
+                flags |= MessageFlags.Ephemeral;
+
+            var args = new API.Rest.UploadWebhookFileParams(attachments.ToArray()) { Flags = flags, Content = text, IsTTS = isTTS, Embeds = embeds.Any() ? embeds.Select(x => x.ToModel()).ToArray() : Optional<API.Embed[]>.Unspecified, AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified, MessageComponents = components?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified };
+            return await InteractionHelper.SendFollowupAsync(Discord, args, Token, Channel, options).ConfigureAwait(false);
+        }
+
     }
 }
