@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Linq;
 using Model = Discord.API.User;
-using PresenceModel = Discord.API.Presence;
 
 namespace Discord.WebSocket
 {
@@ -48,12 +47,6 @@ namespace Discord.WebSocket
             }
         }
 
-        internal void Update(ClientState state, PresenceModel model)
-        {
-            Presence = SocketPresence.Create(model);
-        }
-
-        internal override void Update(DiscordSocketClient discord, Cache.User model) => base.Update(discord, model);
         internal override Cache.User ToCacheModel()
         {
             return new Cache.User()

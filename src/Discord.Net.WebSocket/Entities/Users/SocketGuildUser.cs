@@ -163,8 +163,7 @@ namespace Discord.WebSocket
         {
             if (updatePresence)
             {
-                Presence = SocketPresence.Create(model);
-                GlobalUser.Update(state, model);
+                Update(model);
             }
             if (model.Nick.IsSpecified)
                 Nickname = model.Nick.Value;
@@ -173,7 +172,7 @@ namespace Discord.WebSocket
             if (model.PremiumSince.IsSpecified)
                 _premiumSinceTicks = model.PremiumSince.Value?.UtcTicks;
         }
-
+        
         internal override void Update(DiscordSocketClient discord, Cache.GuildMember model)
         {
             base.Update(discord, model);
@@ -196,6 +195,14 @@ namespace Discord.WebSocket
 
             IsPending = model.Pending;
             _premiumSinceTicks = model.PremiumSince;
+        }
+
+        internal override void Update(PresenceModel model)
+        {
+            Presence ??= new SocketPresence();
+
+            Presence.Update(model);
+            GlobalUser.Update(model);
         }
 
         private void UpdateRoles(ulong[] roleIds)
