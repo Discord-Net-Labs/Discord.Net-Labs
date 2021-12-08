@@ -7,7 +7,9 @@ title: Introduction to the Interaction Command Service
 
 Interaction Service provides an attribute based framework for creating Discord Interaction handlers.
 
-To start using the Interaction Service, you need to create a service instance. Optionally you can provide the `InterctionService` constructor with a `InteractionServiceConfig` to change the services behaviour to suit your needs.
+To start using the Interaction Service, you need to create a service instance.
+Optionally you can provide the [InteractionService] constructor with a
+[InteractionServiceConfig] to change the services behaviour to suit your needs.
 
 ```csharp
 ...
@@ -19,14 +21,16 @@ var commands = new InteractionService(discord);
 
 ## Modules
 
-Attribute based Interaction handlers must be defined within a command module class. Command modules are responsible for executing the Interaction handlers and providing them with the necessary execution info and helper functions.
+Attribute based Interaction handlers must be defined within a command module class.
+Command modules are responsible for executing the Interaction handlers and providing them with the necessary execution info and helper functions.
 
-Command modules are transient objects. A new module instance is created before a command execution starts then it will be disposed right after the method returns.
+Command modules are transient objects.
+A new module instance is created before a command execution starts then it will be disposed right after the method returns.
 
 Every module class must:
 
 - be public
-- inherit `InteractionModuleBase`
+- inherit [InteractionModuleBase]
 
 Optionally you can override the included :
 
@@ -94,7 +98,7 @@ By default, your methods can feature the following parameter types:
 - `sbyte`, `byte`
 - `int16`, `int32`, `int64`
 - `uint16`, `uint32`, `uint64`
-- `enum` (Values are registered as multiple choice options and are enforced by Discord. Use `[HideAttribute]' on enum values to prevent them from getting registered.)
+- `enum` (Values are registered as multiple choice options and are enforced by Discord. Use `[HideAttribute]` on enum values to prevent them from getting registered.)
 - `DateTime`
 - `TimeSpan`
 
@@ -187,7 +191,8 @@ public async Task SayHello(IUser user)
 }
 ```
 
-User commands can only have one parameter and its type must be an implementation of [IUser].
+> [!NOTE]
+> User commands can only have one parameter and its type must be an implementation of [IUser].
 
 ## Message Commands
 
@@ -201,7 +206,8 @@ public async Task Bookmark(IUser user)
 }
 ```
 
-Message commands can only have one parameter and its type must be an implementation of [IMessage].
+> [!NOTE]
+> Message commands can only have one parameter and its type must be an implementation of [IMessage].
 
 ## Component Interaction Commands
 
@@ -263,7 +269,7 @@ public async Task RoleSelection(string id, string[] selectedRoles)
 
 ## Autocomplete Commands
 
-Autocomplete commands must be parameterless methods. A valid Autocomplete command must  have the following structure:
+Autocomplete commands must be parameterless methods. A valid Autocomplete command must have the following structure:
 
 ```csharp
 [AutocompleteCommand("command_name", "parameter_name")]
@@ -390,11 +396,13 @@ You can use the preprocessor directives to create a simple logic for registering
     await interactionService.RegisterCommandsGloballyAsync();
 #endif
 ```
+
 [AutocompleteHandlers]: xref:Guides.IntCommands.Autocompleters
 [DependencyInjection]: xref:Guides.ChatCommands.DI
 
 [GroupAttribute]: xref:Discord.Interaction.GroupAttribute
 [InteractionService]: xref:Discord.Interaction.InteractionService
+[InteractionServiceConfig]: xref:Discord.Interaction.InteractionServiceConfig
 [InteractionModuleBase]: xref:Discord.Interaction.InteractionModuleBase
 [SlashCommandAttribute]: xref:Discord.Interaction.SlashCommandAttribute
 [InteractionCreated]: xref:Discord.WebSocket.BaseSocketClient
