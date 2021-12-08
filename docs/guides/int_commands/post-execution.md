@@ -20,13 +20,13 @@ you must use the Interaction Service events to get the execution results. When u
 
 Interaction Result come in a handful of different flavours:
 
-1. `AutocompletionResult`: returned by Autocompleters
-2. `ExecuteResult`: contains the result of method body execution process
-3. `PreconditionGroupResult`: returned by Precondition groups
-4. `PreconditionResult`: returned by preconditions
-5. `RuntimeResult`: a user implementable result for returning user defined results
-6. `SearchResult`: returned by command lookup map
-7. `TypeConverterResult`: returned by TypeConverters
+1. [AutocompletionResult]: returned by Autocompleters
+2. [ExecuteResult]: contains the result of method body execution process
+3. [PreconditionGroupResult]: returned by Precondition groups
+4. [PreconditionResult]: returned by preconditions
+5. [RuntimeResult]: a user implementable result for returning user defined results
+6. [SearchResult]: returned by command lookup map
+7. [TypeConverterResult]: returned by TypeConverters
 
 You can either use the `IResult.Error` property of an Interaction result or create type check for the
 afformentioned result types to branch out your post-execution logic to handle different situations.
@@ -76,8 +76,16 @@ InteractionService regularly outputs information about the occuring events to ke
 Interaction commands allow you to return `Task<RuntimeResult>` to pass on additional information about the command execution
 process back to your post-execution logic.
 
-Custom `RuntimeResult` classes can be created by inheriting the base `RuntimeResult` class.
+Custom [RuntimeResult] classes can be created by inheriting the base [RuntimeResult] class.
 
 If command execution process reaches the method body of the command and no exceptions are thrown during
 the execution of the method body, `RuntimeResult` returned by your command will be accessible by casting/type-checking the
 `IResult` parameter of the *CommandExecuted event delegate.
+
+[AutocompletionResult]: xref:Discord.AutoCompleteResult
+[ExecuteResult]: xref:Discord.Interactions.ExecuteResult
+[PreconditionGroupResult]: xref:Discord.Interactions.PreconditionGroupResult
+[PreconditionResult]: xref:Discord.Interactions.PreconditionResult
+[RuntimeResult]: xref:Discord.Interactions.RuntimeResult
+[SearchResult]: xref:Discord.Interactions.SearchResult
+[TypeConverterResult]: xref:Discord.Interactions.TypeConverterResult
