@@ -57,8 +57,8 @@ Valid **Interaction Commands** must comply with the following requirements:
 
 > [!NOTE]
 > a `TypeConverter` that is capable of parsing type in question must be registered to the [InteractionService] instance.
-
-> You should avoid using long running code in your command module. Depending on your setup, long running code may block the Gateway thread of your bot, interrupting its connection to Discord.
+> You should avoid using long running code in your command module.
+> Depending on your setup, long running code may block the Gateway thread of your bot, interrupting its connection to Discord.
 
 ## Slash Commands
 
@@ -159,7 +159,7 @@ This Slash Command will be displayed exactly the same as the previous example.
 
 #### Channel Types
 
-Channel types for an `IChannel` parameter can also be restricted using the [ChannelTypesAttribute].
+Channel types for an [IChannel] parameter can also be restricted using the [ChannelTypesAttribute].
 
 ```csharp
 [SlashCommand("name", "Description")]
@@ -277,7 +277,7 @@ public async Task Autocomplete()
 }
 ```
 
-Alternatively, you can use the [Autocompleters] to simplify this workflow.
+Alternatively, you can use the [AutocompleteHandlers] to simplify this workflow.
 
 ## Interaction Context
 
@@ -375,7 +375,7 @@ Time it takes to create a module instance and execute a `Task.Delay(0)` method u
 
 ## Registering Commands to Discord
 
-Application commands loaded to the Interaciton Service can be registered to Discord using a number of different methods.
+Application commands loaded to the Interaction Service can be registered to Discord using a number of different methods.
 In most cases `RegisterCommandsGloballyAsync()` and `RegisterCommandsToGuildAsync()` are the methods to use.
 Command registration methods can only be used after the gateway client is ready or the rest client is logged in.
 
@@ -390,13 +390,13 @@ You can use the preprocessor directives to create a simple logic for registering
     await interactionService.RegisterCommandsGloballyAsync();
 #endif
 ```
-[Autocompleters]: xref:Guides.IntCommands.Autocompleters
+[AutocompleteHandlers]: xref:Guides.IntCommands.Autocompleters
 [DependencyInjection]: xref:Guides.ChatCommands.DI
 
-[GroupAttribute]: xref:Discord.Interaction.
-[InteractionService]: xref:Discord.Interaction.
-[InteractionModuleBase]: xref:Discord.Interaction.
-[SlashCommandAttribute]: xref:Discord.Interaction.
+[GroupAttribute]: xref:Discord.Interaction.GroupAttribute
+[InteractionService]: xref:Discord.Interaction.InteractionService
+[InteractionModuleBase]: xref:Discord.Interaction.InteractionModuleBase
+[SlashCommandAttribute]: xref:Discord.Interaction.SlashCommandAttribute
 [InteractionCreated]: xref:Discord.WebSocket.BaseSocketClient
 [ButtonExecuted]: xref:Discord.WebSocket.BaseSocketClient
 [SelectMenuExecuted]: xref:Discord.WebSocket.BaseSocketClient
@@ -405,16 +405,16 @@ You can use the preprocessor directives to create a simple logic for registering
 [MessageCommandExecuted]: xref:Discord.WebSocket.BaseSocketClient
 [DiscordSocketClient]: xref:Discord.WebSocket.DiscordSocketClient
 [DiscordRestClient]: xref:Discord.Rest.DiscordRestClient
-[SocketInteractionContext]: xref:Discord.Interaction.
-[ShardedInteractionContext]: xref:Discord.Interaction.
-[InteractionContext]: xref:Discord.Interaction.
-[IInteractionContect]: xref:Discord.Interaction.
-[RestInteractionContext]: xref:Discord.Interaction.
-[SummaryAttribute]: xref:Discord.Interaction.
-[ChoiceAttribute]: xref:Discord.Interaction.
-[ChannelTypesAttribute]: xref:Discord.Interaction.
-[MaxValueAttribute]: xref:Discord.Interaction.
-[MinValueAttribute]: xref:Discord.Interaction.
+[SocketInteractionContext]: xref:Discord.Interaction.SocketInteractionContext
+[ShardedInteractionContext]: xref:Discord.Interaction.ShardedInteractionContext
+[InteractionContext]: xref:Discord.Interaction.InteractionContext
+[IInteractionContect]: xref:Discord.Interaction.IInteractionContext
+[RestInteractionContext]: xref:Discord.Interaction.RestInteractionContext
+[SummaryAttribute]: xref:Discord.Interaction.SummaryAttribute
+[ChoiceAttribute]: xref:Discord.Interaction.ChoiceAttribute
+[ChannelTypesAttribute]: xref:Discord.Interaction.ChannelTypesAttribute
+[MaxValueAttribute]: xref:Discord.Interaction.MaxValueAttribute
+[MinValueAttribute]: xref:Discord.Interaction.MinValueAttribute
 
 [IChannel]: xref:Discord.IChannel
 [IRole]: xref:Discord.IRole
