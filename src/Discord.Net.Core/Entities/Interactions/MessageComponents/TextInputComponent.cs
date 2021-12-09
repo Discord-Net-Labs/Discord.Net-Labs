@@ -36,8 +36,18 @@ namespace Discord
         /// </summary>
         public TextInputStyle Style { get; }
 
+        /// <summary>
+        ///     Gets whether users are required to input text.
+        /// </summary>
+        public bool? Required { get; }
 
-        internal TextInputComponent(string customId, string label, string placeholder, int? minLength, int? maxLength, TextInputStyle style)
+        /// <summary>
+        ///     Gets the default value of the component
+        /// </summary>
+        public string Value { get; }
+
+        internal TextInputComponent(string customId, string label, string placeholder, int? minLength, int? maxLength, 
+            TextInputStyle style, bool? required, string value)
         {
             CustomId = customId;
             Label = label;
@@ -45,6 +55,8 @@ namespace Discord
             MinLength = minLength;
             MaxLength = maxLength;
             Style = style;
+            Required = required;
+            Value = value;
         }
     }
 }
