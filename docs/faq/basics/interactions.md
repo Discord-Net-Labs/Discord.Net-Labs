@@ -83,7 +83,7 @@ private async Task ReadyAsync()
     await _client.Rest.CreateGlobalCommand(c);
 
     // Create a guild command, repeating usage for multiple commands.
-    await _client.Rest.CreateGuildCommand(c);
+    await _client.Rest.CreateGuildCommand(c, guildId);
   }
 }
 ```

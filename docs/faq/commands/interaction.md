@@ -8,11 +8,7 @@ title: Interaction service
 A chapter talking about the interaction service framework.
 For questions about interactions in general, refer to the [Interactions FAQ]
 
-## I'm getting "The application command failed to be created." error when registering the commands.
-
-Make sure your bot has the *Application Commands* permission.
-
-## Module dependencies aren't getting populated by Property Injection.
+## Module dependencies aren't getting populated by Property Injection?
 
 Make sure the properties are publicly accessible and publicly settable.
 
@@ -21,7 +17,7 @@ Make sure the properties are publicly accessible and publicly settable.
 If your interaction context holds a down-casted version of the interaction object, you need to up-cast it.
 Ideally, use pattern matching to make sure its the type of interaction you are expecting it to be.
 
-## `InteracitionService.ExecuteAsync()` always returns a successful result, how do i access the failed command execution results?
+## `InteractionService.ExecuteAsync()` always returns a successful result, how do i access the failed command execution results?
 
 If you are using `RunMode.Async` you need to setup your post-execution pipeline around `CommandExecuted` events.
 
@@ -45,7 +41,7 @@ automatically register `enum`s as multiple choice options.
 The default `enum` [TypeConverter] of the Interaction Service comes with `[Hide]` attribute that
 can be used to prevent certain enum values from getting registered.
 
-## How does Interaciton Service determine the generic TypeConverter to use for a parameter type?
+## How does the InteractionService determine the generic TypeConverter to use for a parameter type?
 
 It compares the _target base type_ key of the
 [TypeConverter] and chooses the one that sits highest on the inheritance hierarchy.
