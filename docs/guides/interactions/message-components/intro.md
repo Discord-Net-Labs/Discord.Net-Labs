@@ -1,5 +1,5 @@
 ---
-uid: Guides.MessageComponents.GettingStarted
+uid: Guides.MessageComponents.Intro
 title: Getting Started with Components
 ---
 

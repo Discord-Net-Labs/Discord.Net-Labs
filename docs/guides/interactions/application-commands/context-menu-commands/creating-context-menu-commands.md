@@ -16,9 +16,9 @@ Guild commands are specific to the guild you specify when making them. Guild com
 - Your app can have a global and guild command with the same name
 - Multiple apps can have commands with the same names
 
-**Note**: Apps can have a maximum of 5 global context menu commands, and an additional 5 guild-specific context menu commands per guild.
-
-If you don't have the code for a bot ready yet please follow [this guide](https://docs.stillu.cc/guides/getting_started/first-bot.html).
+[!IMPORTANT]
+> Apps can have a maximum of 5 global context menu commands,
+> and an additional 5 guild-specific context menu commands per guild.
 
 ## UserCommandBuilder
 
@@ -40,7 +40,9 @@ The context menu message command builder will help you create message commands. 
 | WithName | Function | Sets the field name.                                                                                |
 | Build    | Function | Builds the builder into the appropriate `MessageCommandProperties` class used to make Menu commands |
 
-**Note**: Context Menu command names can be upper and lowercase, and use spaces.
+> [!NOTE]
+> Context Menu command names can be upper and lowercase, and use spaces.
+> They cannot be registered pre-ready.
 
 Let's use the user command builder to make a global and guild command.
 
@@ -102,4 +104,7 @@ public async Task Client_Ready()
 ```
 
 > [!NOTE]
-> Application commands only need to be created once. They do _not_ have to be 'created' on every startup or connection. The example simple shows creating them in the ready event as it's simpler than creating normal bot commands to register application commands.
+> Application commands only need to be created once. They do _not_ have to be
+> 'created' on every startup or connection.
+> The example simple shows creating them in the ready event
+> as it's simpler than creating normal bot commands to register application commands.

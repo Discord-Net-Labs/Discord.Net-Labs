@@ -1,5 +1,5 @@
 ---
-uid: Guides.Commands.PostExecution
+uid: Guides.ChatCommands.PostExecution
 title: Post-command Execution Handling
 ---
 
