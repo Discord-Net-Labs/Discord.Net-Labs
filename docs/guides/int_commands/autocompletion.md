@@ -12,6 +12,8 @@ Interaction Service to handle Autocomplete Interations targeted to a specific Sl
 To start using AutocompleteHandlers, use the `[AutocompleteAttribute(Type type)]` overload of the [AutocompleteAttribute].
 This will dynamically link the parameter to the [AutocompleteHandler] type.
 
+AutocompleteHandlers raise the `AutocompleteHandlerExecuted` event on execution. This event can be also used to create a post-execution logic, just like the `*CommandExecuted` events.
+
 ## Creating AutocompleteHandlers
 
 A valid AutocompleteHandlers must inherit [AutocompleteHandler] base type and implement all of its abstract methods.
@@ -23,8 +25,9 @@ This method should return `AutocompletionResult.FromSuccess(IEnumerable<Autocomp
 display parameter suggestions to the user. If there are no suggestions to be presented to the user, you have two results:
 
 1. Returning the parameterless `AutocompletionResult.FromSuccess()` will display a "No options match your search." message to the user.
-2. Returning `AutocompleteResult.FromError()` will make the Interaction Service not respond to the interaction,
-consequently displaying the user a "Loading options failed." message.
+2. Returning `AutocompleteResult.FromError()` will make the Interaction Service **not** respond to the interaction,
+consequently displaying the user a "Loading options failed." message. `AutocompletionResult.FromError()` is solely used for error handling purposes. Discord currently doesn't allow
+you to display custom error messages. This result type will be directly returned to the `AutocompleteHandlerExecuted` method.
 
 ## Resolving AutocompleteHandler Dependencies
 

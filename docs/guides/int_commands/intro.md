@@ -272,7 +272,7 @@ public async Task RoleSelection(string id, string[] selectedRoles)
 Autocomplete commands must be parameterless methods. A valid Autocomplete command must have the following structure:
 
 ```csharp
-[AutocompleteCommand("command_name", "parameter_name")]
+[AutocompleteCommand("parameter_name", "command_name")]
 public async Task Autocomplete()
 {
     IEnumerable<AutocompleteResult> results;
@@ -344,6 +344,10 @@ Module dependencies are resolved using the Constructor Injection and Property In
 Meaning, the constructor parameters and public settable properties of a module will be assigned using the `IServiceProvider`.
 For more information on dependency injection, read the [DependencyInjection] guides.
 
+> [!NOTE]
+> On every command execution, module dependencies are resolved using a new service scope which allows you to utilize scoped service instances, just like in Asp.Net.
+> Including the precondition checks, every module method is executed using the same service scope and service scopes are disposed right after the `AfterExecute` method returns.
+
 ## Module Groups
 
 Module groups allow you to create sub-commands and sub-commands groups.
@@ -396,6 +400,25 @@ You can use the preprocessor directives to create a simple logic for registering
     await interactionService.RegisterCommandsGloballyAsync();
 #endif
 ```
+
+Methods like `AddModulesToGuildAsync()`, `AddCommandsToGuildAsync()`, `AddModulesGloballyAsync()` and `AddCommandsGloballyAsync()` can be used to register cherry picked modules or commands to global/guild scopes.
+
+## Interaction Utility
+
+Interaction Service ships with a static `InteractionUtiliy` class which contains some helper methods to asynchronously waiting for Discord Interactions. For instance, `WaitForInteractionAsync()` method allows
+you to wait for an Interaction for a given amount of time. This method returns the first encountered Interaction that satisfies the provided predicate.
+
+> [!WARNING]
+> If you are running the Interaction Service on `RunMode.Sync` you should avoid using this method in your commands, as it will block the gateway thread and interrupt your bots connection.
+
+## Webhook Based Interactions
+
+Instead of using the gateway to recieve Discord Interactions, Discord allows you to recieve Interaction events over Webhooks. Interaction Service also supports this Interaction type but to be able to
+respond to the Interactions within your command modules you need to perform the following:
+
+- Make your modules inherit `RestInteractionModuleBase`
+- Set the `ResponseCallback` property of `InteractionServiceConfig` so that the `ResponseCallback` delegate can be used to create HTTP responses from a deserialized json object string.
+- Use the interaction endpoints of the module base instead of the interaction object (ie. `RespondAsync()`, `FollowupAsync()`...).
 
 [AutocompleteHandlers]: xref:Guides.IntCommands.Autocompleters
 [DependencyInjection]: xref:Guides.ChatCommands.DI
