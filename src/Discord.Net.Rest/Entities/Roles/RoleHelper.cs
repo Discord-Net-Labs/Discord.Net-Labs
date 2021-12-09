@@ -19,7 +19,7 @@ namespace Discord.Rest
             var args = new RoleProperties();
             func(args);
 
-            if (args.Icon.IsSpecified)
+            if (args.Icon.IsSpecified || args.Emoji.IsSpecified)
             {
                 role.Guild.Features.EnsureFeature(GuildFeature.RoleIcons);
             }
@@ -31,7 +31,8 @@ namespace Discord.Rest
                 Mentionable = args.Mentionable,
                 Name = args.Name,
                 Permissions = args.Permissions.IsSpecified ? args.Permissions.Value.RawValue.ToString() : Optional.Create<string>(),
-                Icon = args.Icon.IsSpecified ? args.Icon.Value.ToModel() : Optional<API.Image>.Unspecified
+                Icon = args.Icon.IsSpecified ? args.Icon.Value.ToModel() : Optional<API.Image>.Unspecified,
+                Emoji = args.Emoji.IsSpecified ? args.Emoji.Value.ToString() : Optional.Create<string>()
             };
             var model = await client.ApiClient.ModifyGuildRoleAsync(role.Guild.Id, role.Id, apiArgs, options).ConfigureAwait(false);
 
