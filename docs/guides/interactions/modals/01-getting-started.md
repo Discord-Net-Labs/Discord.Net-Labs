@@ -32,14 +32,15 @@ We can use the aptly named `ModalBuilder` for that:
 We know we need to add a text input to the modal, so let's look at that
 method's parameters.
 
-| Parameter     | Description                    |
-| ------------- | ------------------------------ |
-| `label`       | sets the inputs label.         |
-| `customId`    | sets the inputs custom id.     |
-| `style`       | sets the inputs style.         |
-| `placeholder` | sets the inputs placeholder.   |
-| `minLength`   | sets the minimum input length. |
-| `maxLength`   | sets the maximum input length. |
+| Parameter     | Description                                |
+| ------------- | ------------------------------------------ |
+| `label`       | Sets the inputs label.                     |
+| `customId`    | Sets the inputs custom id.                 |
+| `style`       | Sets the inputs style.                     |
+| `placeholder` | Sets the inputs placeholder.               |
+| `minLength`   | Sets the minimum input length.             |
+| `maxLength`   | Sets the maximum input length.             |
+| `required`    | Sets whether or not the modal is required. |
 
 To make a basic text input we would only need to set the `label` and
 `customId`, but in this example we will also use the `placeholder` 
