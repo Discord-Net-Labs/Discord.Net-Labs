@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Discord.Interactions
 {
+    /// <summary>
+    ///     Requires the user invoking the command to have a specified role.
+    /// </summary>
     public class RequireRoleAttribute : PreconditionAttribute
     {
         /// <summary>
@@ -22,16 +25,25 @@ namespace Discord.Interactions
         /// </summary>
         public string NotAGuildErrorMessage { get; set; }
 
+        /// <summary>
+        ///     Requires that the user invoking the command to have a specific Role.
+        /// </summary>
+        /// <param name="roleId">Id of the role that the user must have.</param>
         public RequireRoleAttribute(ulong roleId)
         {
             RoleId = roleId;
         }
 
+        /// <summary>
+        ///     Requires that the user invoking the command to have a specific Role.
+        /// </summary>
+        /// <param name="roleName">Name of the role that the user must have.</param>
         public RequireRoleAttribute(string roleName)
         {
             RoleName = roleName;
         }
 
+        /// <inheritdoc />
         public override Task<PreconditionResult> CheckRequirementsAsync(IInteractionContext context, ICommandInfo commandInfo, IServiceProvider services)
         {
             if (context.User is not IGuildUser guildUser)
