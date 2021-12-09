@@ -28,6 +28,9 @@ namespace Discord.API
         [JsonProperty("value")]
         public Optional<string> Value { get; set; }
 
+        [JsonProperty("required")]
+        public Optional<bool> Required { get; set; }
+
         public TextInputComponent() { }
 
         public TextInputComponent(Discord.TextInputComponent component)
@@ -39,6 +42,8 @@ namespace Discord.API
             Placeholder = component.Placeholder;
             MinLength = component.MinLength ?? Optional<int>.Unspecified;
             MaxLength = component.MaxLength ?? Optional<int>.Unspecified;
+            Required = component.Required ?? Optional<bool>.Unspecified;
+            Value = component.Value ?? Optional<string>.Unspecified;
         }
     }
 }

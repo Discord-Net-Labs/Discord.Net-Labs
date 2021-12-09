@@ -1146,16 +1146,41 @@ namespace Discord
                 if (value > LargestMaxLength)
                     throw new ArgumentOutOfRangeException(nameof(value), $"MaxLength most not be greater than {LargestMaxLength}");
                 if (value < (MinLength ?? -1))
-                    throw new ArgumentOutOfRangeException(nameof(value), $"MaxLength must be greater than MinLength");
+                    throw new ArgumentOutOfRangeException(nameof(value), $"MaxLength must be greater than MinLength ({MinLength})");
                 _maxLength = value;
             }
         }
 
+        /// <summary>
+        ///     Gets or sets whether the user is required to input text.
+        /// </summary>
+        public bool? Required { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the default value of the text input.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><see cref="Value.Length"/> is less than 0.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///     <see cref="Value.Length"/> is greater than <see cref="LargestMaxLength"/> or <see cref="MaxLength"/>.
+        /// </exception>
+        public string Value
+        {
+            get => _value;
+            set
+            {
+                if (value?.Length > (MaxLength ?? LargestMaxLength))
+                    throw new ArgumentOutOfRangeException(nameof(value), $"Value must not be longer than {MaxLength ?? LargestMaxLength}.");
+                if (value?.Length < (MinLength ?? 0))
+                    throw new ArgumentOutOfRangeException(nameof(value), $"Value must not be shorter than {MinLength}");
+                _value = value;
+            }
+        }
 
         private string _customId;
         private int? _maxLength;
         private int? _minLength;
         private string _placeholder;
+        private string? _value;
 
         /// <summary>
         ///     Creates a new instance of a <see cref="TextInputBuilder"/>.
@@ -1163,10 +1188,12 @@ namespace Discord
         /// <param name="label">The components label.</param>
         /// <param name="style">The components style.</param>
         /// <param name="customId">The compoents custom id.</param>
-        /// <param name="placeholder">The compoents placeholder.</param>-
+        /// <param name="placeholder">The compoents placeholder.</param>
         /// <param name="minLength">The compoents minimum length.</param>
         /// <param name="maxLength">The compoents maximum length.</param>
-        public TextInputBuilder (string label, string customId, TextInputStyle style = TextInputStyle.Short, string placeholder = null, int? minLength = null, int? maxLength = null)
+        /// <param name="required">The components required value.</param>
+        public TextInputBuilder (string label, string customId, TextInputStyle style = TextInputStyle.Short, string placeholder = null,
+            int? minLength = null, int? maxLength = null, bool? required = null, string value = null)
         {
             Label = label;
             Style = style;
@@ -1174,6 +1201,8 @@ namespace Discord
             Placeholder = placeholder;
             MinLength = minLength;
             MaxLength = maxLength;
+            Required = required;
+            Value = value;
         }
 
         /// <summary>
@@ -1250,13 +1279,24 @@ namespace Discord
             return this;
         }
 
+        /// <summary>
+        ///     Sets the required value of the current builder.
+        /// </summary>
+        /// <param name="required">The value to set.</param>
+        /// <returns>the current builder. </returns>
+        public TextInputBuilder WithRequired(bool required)
+        {
+            Required = required;
+            return this;
+        }
+
         public TextInputComponent Build()
         {
             if (string.IsNullOrEmpty(CustomId))
                 throw new ArgumentException("TextInputComponents must have a custom id.", nameof(CustomId));
             if (string.IsNullOrWhiteSpace(Label))
                 throw new ArgumentException("TextInputComponents must have a label.", nameof(Label));
-            return new TextInputComponent(CustomId, Label, Placeholder, MinLength, MaxLength, Style);
+            return new TextInputComponent(CustomId, Label, Placeholder, MinLength, MaxLength, Style, Required, Value);
         }
     }
 }

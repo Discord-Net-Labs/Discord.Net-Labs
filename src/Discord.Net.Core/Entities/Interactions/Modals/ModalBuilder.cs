@@ -93,8 +93,9 @@ namespace Discord
         /// <param name="maxLength">The inputs maximum length.</param>
         /// <param name="style">The inputs style.</param>
         /// <returns>The current builder.</returns>
-        public ModalBuilder AddTextInput(string label, string customId, TextInputStyle style = TextInputStyle.Short, string placeholder = "", int? minLength = null, int? maxLength = null)
-            => AddTextInput(new(label, customId, style, placeholder, minLength, maxLength));
+        public ModalBuilder AddTextInput(string label, string customId, TextInputStyle style = TextInputStyle.Short, 
+            string placeholder = "", int? minLength = null, int? maxLength = null, bool? required = null, string value = null)
+            => AddTextInput(new(label, customId, style, placeholder, minLength, maxLength, required, value));
 
         /// <summary>
         ///     Adds components to the current builder.
@@ -203,8 +204,10 @@ namespace Discord
         /// <param name="maxLength">The inputs maximum length.</param>
         /// <param name="style">The inputs style.</param>
         /// <returns>The current builder.</returns>
-        public ModalComponentBuilder WithTextInput(string label, string customId, TextInputStyle style = TextInputStyle.Short, string placeholder = null, int? minLength = null, int? maxLength = null, int row = 0)
-            => WithTextInput(new(label, customId, style, placeholder, minLength, maxLength), row);
+        public ModalComponentBuilder WithTextInput(string label, string customId, TextInputStyle style = TextInputStyle.Short, 
+            string placeholder = null, int? minLength = null, int? maxLength = null, int row = 0, bool? required = null,
+            string value = null)
+            => WithTextInput(new(label, customId, style, placeholder, minLength, maxLength, required, value), row);
 
         /// <summary>
         ///     Adds a <see cref="ButtonBuilder"/> to the <see cref="ComponentBuilder"/> at the specific row.
