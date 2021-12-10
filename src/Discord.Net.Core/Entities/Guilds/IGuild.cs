@@ -313,6 +313,13 @@ namespace Discord
         ///     The approximate number of non-offline members in this guild.
         /// </returns>
         int? ApproximatePresenceCount { get; }
+        /// <summary>
+        ///     Gets the max bitrate for voice channels in this guild.
+        /// </summary>
+        /// <returns>
+        ///     A <see cref="int"/> representing the maximum bitrate value allowed by Discord in this guild.
+        /// </returns>
+        int MaxBitrate { get; }
 
         /// <summary>
         ///     Gets the preferred locale of this guild in IETF BCP 47
@@ -1055,6 +1062,58 @@ namespace Discord
         ///     A task that represents the asynchronous removal operation.
         /// </returns>
         Task DeleteStickerAsync(ICustomSticker sticker, RequestOptions options = null);
+
+        /// <summary>
+        ///     Gets a event within this guild.
+        /// </summary>
+        /// <param name="id">The id of the event.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous get operation.
+        /// </returns>
+        Task<IGuildScheduledEvent> GetEventAsync(ulong id, RequestOptions options = null);
+
+        /// <summary>
+        ///     Gets a collection of events within this guild.
+        /// </summary>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous get operation.
+        /// </returns>
+        Task<IReadOnlyCollection<IGuildScheduledEvent>> GetEventsAsync(RequestOptions options = null);
+
+        /// <summary>
+        ///     Creates an event within this guild.
+        /// </summary>
+        /// <param name="name">The name of the event.</param>
+        /// <param name="privacyLevel">The privacy level of the event.</param>
+        /// <param name="startTime">The start time of the event.</param>
+        /// <param name="type">The type of the event.</param>
+        /// <param name="description">The description of the event.</param>
+        /// <param name="endTime">The end time of the event.</param>
+        /// <param name="channelId">
+        ///     The channel id of the event.
+        ///     <remarks>
+        ///     The event must have a type of <see cref="GuildScheduledEventType.Stage"/> or <see cref="GuildScheduledEventType.Voice"/>
+        ///     in order to use this property.
+        ///     </remarks>
+        /// </param>
+        /// <param name="speakers">A collection of speakers for the event.</param>
+        /// <param name="location">The location of the event; links are supported</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous create operation.
+        /// </returns>
+        Task<IGuildScheduledEvent> CreateEventAsync(
+            string name,
+            DateTimeOffset startTime,
+            GuildScheduledEventType type,
+            GuildScheduledEventPrivacyLevel privacyLevel = GuildScheduledEventPrivacyLevel.Private,
+            string description = null,
+            DateTimeOffset? endTime = null,
+            ulong? channelId = null,
+            string location = null,
+            RequestOptions options = null);
 
         /// <summary>
         ///     Gets this guilds application commands.

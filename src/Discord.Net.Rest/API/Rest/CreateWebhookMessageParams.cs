@@ -13,7 +13,7 @@ namespace Discord.API.Rest
         private static JsonSerializer _serializer = new JsonSerializer { ContractResolver = new DiscordContractResolver() };
 
         [JsonProperty("content")]
-        public string Content { get; set;  }
+        public Optional<string> Content { get; set;  }
 
         [JsonProperty("nonce")]
         public Optional<string> Nonce { get; set; }
@@ -68,6 +68,8 @@ namespace Discord.API.Rest
                 payload["embeds"] = Embeds.Value;
             if (AllowedMentions.IsSpecified)
                 payload["allowed_mentions"] = AllowedMentions.Value;
+            if (Components.IsSpecified)
+                payload["components"] = Components.Value;
 
             var json = new StringBuilder();
             using (var text = new StringWriter(json))

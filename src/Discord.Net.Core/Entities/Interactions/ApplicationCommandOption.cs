@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Discord
@@ -29,6 +30,9 @@ namespace Discord
                 if (!Regex.IsMatch(value, @"^[\w-]{1,32}$"))
                     throw new FormatException($"{nameof(value)} must match the regex ^[\\w-]{{1,32}}$");
 
+                if (value.Any(x => char.IsUpper(x)))
+                    throw new FormatException("Name cannot contain any uppercase characters.");
+
                 _name = value;
             }
         }
@@ -55,17 +59,28 @@ namespace Discord
         /// <summary>
         ///     Gets or sets whether or not this options is the first required option for the user to complete. only one option can be default.
         /// </summary>
-        public bool? Default { get; set; }
+        public bool? IsDefault { get; set; }
 
         /// <summary>
         ///     Gets or sets if the option is required.
         /// </summary>
-        public bool? Required { get; set; }
+        public bool? IsRequired { get; set; }
 
         /// <summary>
         ///     Gets or sets whether or not this option supports autocomplete.
         /// </summary>
-        public bool Autocomplete { get; set; }
+        public bool IsAutocomplete { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the smallest number value the user can input.
+        /// </summary>
+        public double? MinValue { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the largest number value the user can input.
+        /// </summary>
+        public double? MaxValue { get; set; }
+
         /// <summary>
         ///     Gets or sets the choices for string and int types for the user to pick from.
         /// </summary>

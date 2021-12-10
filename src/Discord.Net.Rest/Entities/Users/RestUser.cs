@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Threading.Tasks;
 using Model = Discord.API.User;
+using EventUserModel = Discord.API.GuildScheduledEventUser;
+using System.Collections.Generic;
 
 namespace Discord.Rest
 {
@@ -40,9 +42,9 @@ namespace Discord.Rest
         /// <inheritdoc />
         public virtual UserStatus Status => UserStatus.Offline;
         /// <inheritdoc />
-        public virtual IImmutableSet<ClientType> ActiveClients => ImmutableHashSet<ClientType>.Empty;
+        public virtual IReadOnlyCollection<ClientType> ActiveClients => ImmutableHashSet<ClientType>.Empty;
         /// <inheritdoc />
-        public virtual IImmutableList<IActivity> Activities => ImmutableList<IActivity>.Empty;
+        public virtual IReadOnlyCollection<IActivity> Activities => ImmutableList<IActivity>.Empty;
         /// <inheritdoc />
         public virtual bool IsWebhook => false;
 
@@ -62,6 +64,18 @@ namespace Discord.Rest
             entity.Update(model);
             return entity;
         }
+        internal static RestUser Create(BaseDiscordClient discord, IGuild guild, EventUserModel model)
+        {
+            if (model.Member.IsSpecified)
+            {
+                var member = model.Member.Value;
+                member.User = model.User;
+                return RestGuildUser.Create(discord, guild, member);
+            }
+            else
+                return RestUser.Create(discord, model.User);
+        }
+
         internal virtual void Update(Model model)
         {
             if (model.Avatar.IsSpecified)
@@ -115,8 +129,8 @@ namespace Discord.Rest
         /// <returns>
         ///     A string that resolves to Username#Discriminator of the user.
         /// </returns>
-        public override string ToString() => $"{Username}#{Discriminator}";
-        private string DebuggerDisplay => $"{Username}#{Discriminator} ({Id}{(IsBot ? ", Bot" : "")})";
+        public override string ToString() => Format.UsernameAndDiscriminator(this);
+        private string DebuggerDisplay => $"{Format.UsernameAndDiscriminator(this)} ({Id}{(IsBot ? ", Bot" : "")})";
         #endregion
 
         #region IUser

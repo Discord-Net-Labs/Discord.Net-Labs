@@ -176,18 +176,17 @@ namespace Discord
         /// </remarks>
         ManageEmojisAndStickers = 0x40_00_00_00,
         /// <summary>
-        ///     Allows members to use slash commands in text channels.	
-        /// </summary>
-        [Obsolete("UseSlashCommands has been replaced by UseApplicationCommands", true)]
-        UseSlashCommands        = 0x80_00_00_00,
-        /// <summary>
         ///     Allows members to use application commands like slash commands and context menus in text channels.	
         /// </summary>
         UseApplicationCommands = 0x80_00_00_00,
         /// <summary>
-        ///     Allows for requesting to speak in stage channels. <i>(This permission is under active development and may be changed or removed.)</i>.
+        ///     Allows for requesting to speak in stage channels.
         /// </summary>
         RequestToSpeak          = 0x01_00_00_00_00,
+        /// <summary>
+        ///     Allows for creating, editing, and deleting guild scheduled events.
+        /// </summary>
+        ManageEvents = 0x02_00_00_00_00,
         /// <summary>
         ///     Allows for deleting and archiving threads, and viewing all private threads.
         /// </summary>
@@ -204,16 +203,6 @@ namespace Discord
         ///     Allows for creating private threads.
         /// </summary>
         CreatePrivateThreads = 0x10_00_00_00_00,
-        /// <summary>
-        ///     Allows for creating public threads.
-        /// </summary>
-        [Obsolete("UsePublicThreads has been replaced by CreatePublicThreads and SendMessagesInThreads", true)]
-        UsePublicThreads = 0x08_00_00_00_00,
-        /// <summary>
-        ///     Allows for creating private threads.
-        /// </summary>
-        [Obsolete("UsePrivateThreads has been replaced by CreatePrivateThreads and SendMessagesInThreads", true)]
-        UsePrivateThreads = 0x10_00_00_00_00,
         /// <summary>
         ///     Allows the usage of custom stickers from other servers.
         /// </summary>

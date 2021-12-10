@@ -9,7 +9,7 @@ namespace Discord.Rest
     internal static class ThreadHelper
     {
         public static async Task<Model> CreateThreadAsync(BaseDiscordClient client, ITextChannel channel, string name, ThreadType type = ThreadType.PublicThread,
-            ThreadArchiveDuration autoArchiveDuration = ThreadArchiveDuration.OneDay, IMessage message = null, RequestOptions options = null)
+            ThreadArchiveDuration autoArchiveDuration = ThreadArchiveDuration.OneDay, IMessage message = null, bool? invitable = null, int? slowmode = null, RequestOptions options = null)
         {
             var features = channel.Guild.Features;
             if (autoArchiveDuration == ThreadArchiveDuration.OneWeek && !features.HasFeature(GuildFeature.SevenDayThreadArchive))
@@ -21,11 +21,16 @@ namespace Discord.Rest
             if (type == ThreadType.PrivateThread && !features.HasFeature(GuildFeature.PrivateThreads))
                 throw new ArgumentException($"The guild {channel.Guild.Name} does not have the PRIVATE_THREADS feature!", nameof(type));
 
+            if (channel is INewsChannel && type != ThreadType.NewsThread)
+                throw new ArgumentException($"{nameof(type)} must be a {ThreadType.NewsThread} in News channels");
+
             var args = new StartThreadParams
             {
                 Name = name,
                 Duration = autoArchiveDuration,
-                Type = type
+                Type = type,
+                Invitable = invitable.HasValue ? invitable.Value : Optional<bool>.Unspecified,
+                Ratelimit = slowmode.HasValue ? slowmode.Value : Optional<int?>.Unspecified,
             };
 
             Model model;
