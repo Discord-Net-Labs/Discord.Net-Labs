@@ -5,9 +5,7 @@
     - name: Installation
       topicUid: Guides.GettingStarted.Installation
       items:
-        - name: Nightly Builds
-          topicUid: Guides.GettingStarted.Installation.Nightlies
-        - name: Labs Builds (Experimental)
+        - name: Nightly builds
           topicUid: Guides.GettingStarted.Installation.Labs
     - name: Your First Bot
       topicUid: Guides.GettingStarted.FirstBot
