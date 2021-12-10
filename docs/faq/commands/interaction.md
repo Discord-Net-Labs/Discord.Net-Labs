@@ -21,11 +21,11 @@ Ideally, use pattern matching to make sure its the type of interaction you are e
 
 If you are using `RunMode.Async` you need to setup your post-execution pipeline around `CommandExecuted` events.
 
-## How do i check if the executing user has * permission?
+## How do I check if the executing user has * permission?
 
 Refer to the [documentation about preconditions]
 
-## How do i send the HTTP Response from inside the command modules.
+## How do I send the HTTP Response from inside the command modules.
 
 Set the `RestResponseCallback` property of [InteractionServiceConfig] with a delegate for handling HTTP Responses and use
 [RestInteractionModuleBase] to create your command modules. `RespondAsync()` and `DeferAsync()` methods of this module base will use the
@@ -36,7 +36,7 @@ Set the `RestResponseCallback` property of [InteractionServiceConfig] with a del
 The default `enum` [TypeConverter] of the Interaction Service will
 automatically register `enum`s as multiple choice options.
 
-## How do i add an optional `enum` parameter but make the default value not visible to the user?
+## How do I add an optional `enum` parameter but make the default value not visible to the user?
 
 The default `enum` [TypeConverter] of the Interaction Service comes with `[Hide]` attribute that
 can be used to prevent certain enum values from getting registered.

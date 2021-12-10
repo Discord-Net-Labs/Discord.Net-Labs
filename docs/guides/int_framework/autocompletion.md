@@ -1,5 +1,5 @@
 ---
-uid: Guides.IntCommands.AutoCompletion
+uid: Guides.IntFw.AutoCompletion
 title: Command Autocompletion
 ---
 

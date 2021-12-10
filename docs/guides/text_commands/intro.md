@@ -1,9 +1,9 @@
 ---
-uid: Guides.ChatCommands.Intro
+uid: Guides.TextCommands.Intro
 title: Introduction to the Chat Command Service
 ---
 
-# The Chat Command Service
+# The Text Command Service
 
 [Discord.Commands](xref:Discord.Commands) provides an attribute-based
 command parser.

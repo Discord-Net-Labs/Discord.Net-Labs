@@ -1,9 +1,9 @@
 ---
-uid: Guides.ChatCommands.PostExecution
+uid: Guides.TextCommands.PostExecution
 title: Post-command Execution Handling
 ---
 
-# Post-execution Handling for Commands
+# Post-execution Handling for Text Commands
 
 When developing commands, you may want to consider building a
 post-execution handling system so you can have finer control

@@ -1,13 +1,17 @@
 ---
-uid: Guides.ChatCommands.DI
+uid: Guides.TextCommands.DI
 title: Dependency Injection
 ---
 
 # Dependency Injection
 
-The Command Service is bundled with a very barebone Dependency
+The Text Command Service is bundled with a very barebone Dependency
 Injection service for your convenience. It is recommended that you use
 DI when writing your modules.
+
+> [!WARNING]
+> If you were brought here from the Interaction Service guides,
+> make sure to replace all namespaces that imply `Discord.Commands` with `Discord.Interactions`
 
 ## Setup
 

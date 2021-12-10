@@ -64,29 +64,7 @@ Did you register a guild command (should be instant), or waited more than an hou
 
 ## There are many options for creating commands, which do I use?
 
-```cs
-private async Task ReadyAsync()
-{
-  // pull your commands from some array, everyone has a different approach for this.
-  var commands = _builders.ToArray();
-
-  // write your list of commands globally in one go.
-  await _client.Rest.BulkOverwriteGlobalCommands(commands);
-
-  // write your array of commands to one guild in one go.
-  // You can do a foreach (... in _client.Guilds) approach to write to all guilds.
-  await _client.Rest.BulkOverwriteGuildCommands(commands, /* some guild */);
-
-  foreach(var c in commands)
-  {
-    // Create a global command, repeating usage for multiple commands.
-    await _client.Rest.CreateGlobalCommand(c);
-
-    // Create a guild command, repeating usage for multiple commands.
-    await _client.Rest.CreateGuildCommand(c, guildId);
-  }
-}
-```
+[!code-csharp[Register examples](samples/registerint.cs)]
 
 > [!NOTE] You can use bulkoverwrite even if there are no commands in guild, nor globally.
 > The bulkoverwrite method disposes the old set of commands and replaces it with the new.

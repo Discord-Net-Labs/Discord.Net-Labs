@@ -1,11 +1,11 @@
 ---
-uid: Guides.IntCommands.Intro
-title: Introduction to the Interaction Command Service
+uid: Guides.IntFw.Intro
+title: Introduction to the Interaction Service
 ---
 
 # Getting Started
 
-Interaction Service provides an attribute based framework for creating Discord Interaction handlers.
+The Interaction Service provides an attribute based framework for creating Discord Interaction handlers.
 
 To start using the Interaction Service, you need to create a service instance.
 Optionally you can provide the [InteractionService] constructor with a
@@ -71,13 +71,7 @@ Every Slash Command must declare a name and a description.
 You can check Discords **Application Command Naming Guidelines**
 [here](https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-naming).
 
-```csharp
-[SlashCommand("echo", "Echo an input")]
-public async Task Echo(string input)
-{
-    await RespondAsync(input);
-}
-```
+[!code-csharp[Slash Command](samples/intro/slashcommand.cs)]
 
 ### Parameters
 
@@ -126,38 +120,13 @@ Parameters with default values (ie. `int count = 0`) will be displayed as option
 
 By using the [SummaryAttribute] you can customize the displayed name and description of a parameter
 
-```csharp
-[Summary(description: "this is a parameter description")] string input
-```
+[!code-csharp[Summary Attribute](samples/intro/summaryattribute.cs)]
 
 #### Parameter Choices
 
 [ChoiceAttribute] can be used to add choices to a parameter.
 
-```csharp
-[SlashCommand("blep", "Send a random adorable animal photo")]
-public async Task Blep([Choice("Dog","dog"), Choice("Cat", "cat"), Choice("Penguin", "penguin")] string animal)
-{
-    ...
-}
-```
-
-In most cases, instead of relying on this attribute, you should use an `Enum` to create multiple choice parameters. Ex.
-
-```csharp
-public enum Animal
-{
-    Cat,
-    Dog,
-    Penguin
-}
-
-[SlashCommand("blep", "Send a random adorable animal photo")]
-public async Task Blep(Animal animal)
-{
-    ...
-}
-```
+[!code-csharp[Choice Attribute](samples/intro/groupattribute.cs)]
 
 This Slash Command will be displayed exactly the same as the previous example.
 
@@ -165,13 +134,7 @@ This Slash Command will be displayed exactly the same as the previous example.
 
 Channel types for an [IChannel] parameter can also be restricted using the [ChannelTypesAttribute].
 
-```csharp
-[SlashCommand("name", "Description")]
-public async Task Command([ChannelTypes(ChannelType.Stage, ChannelType.Text)]IChannel channel)
-{
-    ...
-}
-```
+[!code-csharp[Channel Attribute](samples/intro/channelattribute.cs)]
 
 In this case, user can only input Stage Channels and Text Channels to this parameter.
 
@@ -183,13 +146,7 @@ You can specify the permitted max/min value for a number type parameter using th
 
 A valid User Command must have the following structure:
 
-```csharp
-[UserCommand("Say Hello")]
-public async Task SayHello(IUser user)
-{
-    ...
-}
-```
+[!code-csharp[User Command](samples/intro/usercommand.cs)]
 
 > [!NOTE]
 > User commands can only have one parameter and its type must be an implementation of [IUser].
@@ -198,13 +155,7 @@ public async Task SayHello(IUser user)
 
 A valid Message Command must have the following structure:
 
-```csharp
-[UserCommand("Bookmark")]
-public async Task Bookmark(IUser user)
-{
-    ...
-}
-```
+[!code-csharp[Message Command](samples/intro/messagecommand.cs)]
 
 > [!NOTE]
 > Message commands can only have one parameter and its type must be an implementation of [IMessage].
@@ -214,74 +165,36 @@ public async Task Bookmark(IUser user)
 Component Interaction Commands are used to handle interactions that originate from **Discord Message Component**s.
 This pattern is particularly useful if you will be reusing a set a **Custom ID**s.
 
-```csharp
-[ComponentInteraction("custom_id")]
-public async Task RoleSelection()
-{
-    ...
-}
-```
-
 Component Interaction Commands support wild card matching,
 by default `*` character can be used to create a wild card pattern.
 Interaction Service will use lazy matching to capture the words corresponding to the wild card character.
 And the captured words will be passed on to the command method in the same order they were captured.
+
+[!code-csharp[Button](samples/intro/button.cs)]
+
+You may use as many wild card characters as you want.
 
 > [!INFO]
 > If Interaction Service recieves a component interaction with **player:play,rickroll** custom id,
 > `op` will be *play* and
 > `name` will be *rickroll*
 
-```csharp
-[ComponentInteraction("player:*,*")]
-public async Task Play(string op, string name)
-{
-    ...
-}
-```
-
-You may use as many wild card characters as you want.
-
-## Select Menus
+## Select Menu's
 
 Unlike button interactions, select menu interactions also contain the values of the selected menu items.
 In this case, you should structure your method to accept a string array.
 
-```csharp
-[ComponentInteraction("role_selection")]
-public async Task RoleSelection(string[] selectedRoles)
-{
-    ...
-}
-```
+[!code-csharp[Dropdown](samples/intro/dropdown.cs)]
 
 > [!NOTE]
 > Wild card pattern can also be used to match select menu custom id''s
 > but remember that the array containing the select menu values should be the last parameter.
 
-```csharp
-[ComponentInteraction("role_selection_*")]
-public async Task RoleSelection(string id, string[] selectedRoles)
-{
-    ...
-}
-```
-
 ## Autocomplete Commands
 
 Autocomplete commands must be parameterless methods. A valid Autocomplete command must have the following structure:
 
-```csharp
-[AutocompleteCommand("parameter_name", "command_name")]
-public async Task Autocomplete()
-{
-    IEnumerable<AutocompleteResult> results;
-
-    ...
-
-    await (Context.Interaction as SocketAutocompleteInteraction).RespondAsync(results);
-}
-```
+[!code-csharp[Autocomplete Command](samples/intro/autocomplete.cs)]
 
 Alternatively, you can use the [AutocompleteHandlers] to simplify this workflow.
 
@@ -312,22 +225,7 @@ One problem with using the concrete type InteractionContexts is that you cannot 
 > Message component interactions have access to a special method called `UpdateAsync()` to update the body of the method the interaction originated from.
 > Normally this wouldn't be accessable without casting the `Context.Interaction`.
 
-```csharp
-discordClient.ButtonExecuted += async (interaction) => 
-{
-    var ctx = new SocketInteractionContext<SocketMessageComponent>(discordClient, interaction);
-    await interactionService.ExecuteAsync(ctx, serviceProvider);
-};
-
-public class MessageComponentModule : InteractionModuleBase<SocketInteractionContext<SocketMessageComponent>>
-{
-    [ComponentInteraction("custom_id")]
-    public async Command()
-    {
-        Context.Interaction.UpdateAsync(...);
-    }
-}
-```
+[!code-csharp[Context Example](samples/intro/context.cs)]
 
 ## Loading Modules
 
@@ -389,39 +287,40 @@ Application commands loaded to the Interaction Service can be registered to Disc
 In most cases `RegisterCommandsGloballyAsync()` and `RegisterCommandsToGuildAsync()` are the methods to use.
 Command registration methods can only be used after the gateway client is ready or the rest client is logged in.
 
-In debug environment, since Global commands can take up to 1 hour to register/update,
-you should register your commands to a test guild for your changes to take effect immediately.
-You can use the preprocessor directives to create a simple logic for registering commands:
+[!code-csharp[Registering Commands Example](samples/intro/register.cs)]
 
-```csharp
-#if DEBUG
-    await interactionService.RegisterCommandsToGuildAsync(<test_guild_id>);
-#else
-    await interactionService.RegisterCommandsGloballyAsync();
-#endif
-```
+Methods like `AddModulesToGuildAsync()`, `AddCommandsToGuildAsync()`, `AddModulesGloballyAsync()` and `AddCommandsGloballyAsync()`
+can be used to register cherry picked modules or commands to global/guild scopes.
 
-Methods like `AddModulesToGuildAsync()`, `AddCommandsToGuildAsync()`, `AddModulesGloballyAsync()` and `AddCommandsGloballyAsync()` can be used to register cherry picked modules or commands to global/guild scopes.
+> [!NOTE]
+> In debug environment, since Global commands can take up to 1 hour to register/update,
+> it is adviced to register your commands to a test guild for your changes to take effect immediately.
+> You can use preprocessor directives to create a simple logic for registering commands as seen above
 
 ## Interaction Utility
 
-Interaction Service ships with a static `InteractionUtiliy` class which contains some helper methods to asynchronously waiting for Discord Interactions. For instance, `WaitForInteractionAsync()` method allows
-you to wait for an Interaction for a given amount of time. This method returns the first encountered Interaction that satisfies the provided predicate.
+Interaction Service ships with a static `InteractionUtiliy`
+class which contains some helper methods to asynchronously waiting for Discord Interactions.
+For instance, `WaitForInteractionAsync()` method allows you to wait for an Interaction for a given amount of time.
+This method returns the first encountered Interaction that satisfies the provided predicate.
 
 > [!WARNING]
-> If you are running the Interaction Service on `RunMode.Sync` you should avoid using this method in your commands, as it will block the gateway thread and interrupt your bots connection.
+> If you are running the Interaction Service on `RunMode.Sync` you should avoid using this method in your commands,
+> as it will block the gateway thread and interrupt your bots connection.
 
 ## Webhook Based Interactions
 
-Instead of using the gateway to recieve Discord Interactions, Discord allows you to recieve Interaction events over Webhooks. Interaction Service also supports this Interaction type but to be able to
+Instead of using the gateway to recieve Discord Interactions, Discord allows you to recieve Interaction events over Webhooks.
+Interaction Service also supports this Interaction type but to be able to
 respond to the Interactions within your command modules you need to perform the following:
 
 - Make your modules inherit `RestInteractionModuleBase`
-- Set the `ResponseCallback` property of `InteractionServiceConfig` so that the `ResponseCallback` delegate can be used to create HTTP responses from a deserialized json object string.
+- Set the `ResponseCallback` property of `InteractionServiceConfig` so that the `ResponseCallback`
+delegate can be used to create HTTP responses from a deserialized json object string.
 - Use the interaction endpoints of the module base instead of the interaction object (ie. `RespondAsync()`, `FollowupAsync()`...).
 
-[AutocompleteHandlers]: xref:Guides.IntCommands.Autocompleters
-[DependencyInjection]: xref:Guides.ChatCommands.DI
+[AutocompleteHandlers]: xref:Guides.IntFw.Autocompleters
+[DependencyInjection]: xref:Guides.TextCommands.DI
 
 [GroupAttribute]: xref:Discord.Interaction.GroupAttribute
 [InteractionService]: xref:Discord.Interaction.InteractionService

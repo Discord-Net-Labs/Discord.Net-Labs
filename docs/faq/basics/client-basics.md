@@ -74,14 +74,12 @@ There are very few differences from the [DiscordSocketClient] class, and it is v
 to modify your existing code to use a [DiscordShardedClient] when necessary.
 
 1. You can specify the total amount of shards, or shard ids, via [DiscordShardedClient]'s constructors.
+If the total shards are not specified then the library will get the recommended shard count via the
+[Get Gateway Bot](https://discord.com/developers/docs/topics/gateway#get-gateway-bot) route.
 2. The [Connected], [Disconnected], [Ready], and [LatencyUpdated] events
  are replaced with [ShardConnected], [ShardDisconnected], [ShardReady], and [ShardLatencyUpdated].
 3. Every event handler you apply/remove to the [DiscordShardedClient] is applied/removed to each shard.
  If you wish to control a specific shard's events, you can access an individual shard through the `Shards` property.
-
-> [!NOTE]
-> You are not obligated to set a shard count, nor specific ID's. If nothing is set,
-> Discord.NET will set these values itself based on the amount of guilds your client is present in and off of a basic index.
 
 If you do not wish to use the [DiscordShardedClient] and instead reuse the same [DiscordSocketClient] code and manually shard them,
 you can do so by specifying the [ShardId] for the [DiscordSocketConfig] and pass that to the [DiscordSocketClient]'s constructor.

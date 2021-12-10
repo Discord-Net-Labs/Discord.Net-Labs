@@ -107,7 +107,7 @@ reactions.
 
 ## Can I opt-out of preemptive rate limits?
 
-Unfortunately, not at the moment. See [#401](https://github.com/RogueException/Discord.Net/issues/401).
+Unfortunately, not at the moment. See [#401](https://github.com/discord-net/Discord.Net/issues/401).
 
 [IChannel]: xref:Discord.IChannel
 [ICategoryChannel]: xref:Discord.ICategoryChannel

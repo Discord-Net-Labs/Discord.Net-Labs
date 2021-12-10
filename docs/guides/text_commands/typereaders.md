@@ -1,5 +1,5 @@
 ---
-uid: Guides.ChatCommands.TypeReaders
+uid: Guides.TextCommands.TypeReaders
 title: Type Readers
 ---
 
