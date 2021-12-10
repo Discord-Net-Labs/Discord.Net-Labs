@@ -319,7 +319,7 @@ respond to the Interactions within your command modules you need to perform the 
 delegate can be used to create HTTP responses from a deserialized json object string.
 - Use the interaction endpoints of the module base instead of the interaction object (ie. `RespondAsync()`, `FollowupAsync()`...).
 
-[AutocompleteHandlers]: xref:Guides.IntFw.Autocompleters
+[AutocompleteHandlers]: xref:Guides.IntFw.Autocompletion
 [DependencyInjection]: xref:Guides.TextCommands.DI
 
 [GroupAttribute]: xref:Discord.Interactions.GroupAttribute
@@ -339,7 +339,7 @@ delegate can be used to create HTTP responses from a deserialized json object st
 [ShardedInteractionContext]: xref:Discord.Interactions.ShardedInteractionContext
 [InteractionContext]: xref:Discord.Interactions.InteractionContext
 [IInteractionContect]: xref:Discord.Interactions.IInteractionContext
-[RestInteractionContext]: xref:Discord.Interactions.RestInteractionContext
+[RestInteractionContext]: xref:Discord.Rest.RestInteractionContext
 [SummaryAttribute]: xref:Discord.Interactions.SummaryAttribute
 [ChoiceAttribute]: xref:Discord.Interactions.ChoiceAttribute
 [ChannelTypesAttribute]: xref:Discord.Interactions.ChannelTypesAttribute

@@ -111,7 +111,7 @@ Interaction service checks if the target base type satisfies the type constraint
 > Dependencies of Generic TypeConverters are also resolved using the Dependency Injection pattern.
 
 [TypeConverter]: xref:Discord.Interactions.TypeConverter
-[InteractionService]: xref:Discord.Interaction.InteractionService
+[InteractionService]: xref:Discord.Interactions.InteractionService
 [IChannel]: xref:Discord.IChannel
 [IRole]: xref:Discord.IRole
 [IUser]: xref:Discord.IUser
