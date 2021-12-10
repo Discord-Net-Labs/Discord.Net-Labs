@@ -63,7 +63,7 @@ of a parameter type.
 
 This method is used by [InteractionService] to parse the user input.
 This method should return @Discord.Interactions.TypeConverterResult.FromSuccess* if the parsing operation is successful,
-otherwise it should return @Discord.Interactions.TypeConverterResult.FromError*.
+otherwise it should return @Discord.Interactions.TypeConverterResult.FromError* .
 The inner logic of this method is totally up to you,
 however you should avoid using long running code.
 
