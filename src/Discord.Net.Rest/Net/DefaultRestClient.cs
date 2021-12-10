@@ -129,7 +129,12 @@ namespace Discord.Net.Rest
                                     
                                 continue;
                             }
-                            default: throw new InvalidOperationException($"Unsupported param type \"{p.Value.GetType().Name}\".");
+                            default:
+                                {
+                                    content.Add(new StringContent(p.Value.ToString()), p.Key);
+                                    //throw new InvalidOperationException($"Unsupported param type \"{p.Value.GetType().Name}\".");
+                                }
+                                break;
                         }
                     }
                 }
