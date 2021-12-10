@@ -19,6 +19,8 @@ namespace Discord.Rest
             var args = new RoleProperties();
             func(args);
 
+            Optional<string> emoji = args.Emoji.IsSpecified ? args.Emoji.Value.ToString() : Optional.Create<string>();
+            Optional<API.Image>? icon = args.Icon.IsSpecified ? args.Icon.Value.ToModel() : Optional<API.Image>.Unspecified;
             if (args.Icon.IsSpecified || args.Emoji.IsSpecified)
             {
                 if (args.Icon.IsSpecified && args.Emoji.IsSpecified)
@@ -27,6 +29,16 @@ namespace Discord.Rest
                 }
 
                 role.Guild.Features.EnsureFeature(GuildFeature.RoleIcons);
+
+                if (args.Icon.IsSpecified && role.Emoji != null)
+                {
+                    emoji = null;
+                }
+
+                if (args.Emoji.IsSpecified && !string.IsNullOrEmpty(role.Icon))
+                {
+                    icon = null;
+                }
             }
 
             var apiArgs = new API.Rest.ModifyGuildRoleParams
@@ -36,12 +48,8 @@ namespace Discord.Rest
                 Mentionable = args.Mentionable,
                 Name = args.Name,
                 Permissions = args.Permissions.IsSpecified ? args.Permissions.Value.RawValue.ToString() : Optional.Create<string>(),
-                Icon = role.Emoji == null
-                ? (args.Icon.IsSpecified ? args.Icon.Value.ToModel() : Optional<API.Image>.Unspecified)
-                : null,
-                Emoji = string.IsNullOrEmpty(role.Icon)
-                ? (args.Emoji.IsSpecified ? args.Emoji.Value.ToString() : Optional.Create<string>())
-                : null,
+                Icon = icon,
+                Emoji = emoji,
             };
             var model = await client.ApiClient.ModifyGuildRoleAsync(role.Guild.Id, role.Id, apiArgs, options).ConfigureAwait(false);
 
