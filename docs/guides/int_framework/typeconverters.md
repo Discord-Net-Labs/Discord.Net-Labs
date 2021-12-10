@@ -99,7 +99,7 @@ interactionService.AddTypeConverter<string[]>(new StringArrayConverter());
 To register a generic [TypeConverter<T>], you need to invoke the `AddGenericTypeConverter()` method of the Interaction Service class.
 You need to pass the type of your [TypeConverter<T>] and a target base type to this method.
 
-For instance, to register the previously mentioned [Example Enum Converter](#example-enum-converter) the following can be used:
+For instance, to register the previously mentioned enum converter the following can be used:
 
 ```csharp
 interactionService.AddGenericTypeConverter<Enum>(typeof(EnumConverter<>));

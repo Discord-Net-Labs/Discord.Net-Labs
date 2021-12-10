@@ -66,7 +66,8 @@ Did you register a guild command (should be instant), or waited more than an hou
 
 [!code-csharp[Register examples](samples/registerint.cs)]
 
-> [!NOTE] You can use bulkoverwrite even if there are no commands in guild, nor globally.
+> [!NOTE]
+> You can use bulkoverwrite even if there are no commands in guild, nor globally.
 > The bulkoverwrite method disposes the old set of commands and replaces it with the new.
 
 ## Do I need to create commands on startup?

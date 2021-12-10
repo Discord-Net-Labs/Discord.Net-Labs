@@ -287,7 +287,7 @@ Application commands loaded to the Interaction Service can be registered to Disc
 In most cases `RegisterCommandsGloballyAsync()` and `RegisterCommandsToGuildAsync()` are the methods to use.
 Command registration methods can only be used after the gateway client is ready or the rest client is logged in.
 
-[!code-csharp[Registering Commands Example](samples/intro/register.cs)]
+[!code-csharp[Registering Commands Example](samples/intro/registering.cs)]
 
 Methods like `AddModulesToGuildAsync()`, `AddCommandsToGuildAsync()`, `AddModulesGloballyAsync()` and `AddCommandsGloballyAsync()`
 can be used to register cherry picked modules or commands to global/guild scopes.
