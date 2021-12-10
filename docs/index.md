@@ -45,7 +45,7 @@ Frequently asked questions are covered in the
 FAQ. Read it thoroughly because most common questions are already answered there. 
 
 If you still have unanswered questions after reading the [FAQ](xref:FAQ.Basics.GetStarted), further support is available on 
-[Discord](https://discord.gg/dnet-labs).
+[Discord](https://discord.gg/dnet).
 
 ## Commonly used features
 
