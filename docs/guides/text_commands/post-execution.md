@@ -117,4 +117,4 @@ of the command.
 [CommandExecuted]: xref:Discord.Commands.CommandService.CommandExecuted
 [ExecuteAsync]: xref:Discord.Commands.CommandService.ExecuteAsync*
 [ExecuteResult]: xref:Discord.Commands.ExecuteResult
-[Command Guide]: xref:Guides.Commands.Intro
+[Command Guide]: xref:Guides.TextCommands.Intro

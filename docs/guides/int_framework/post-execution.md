@@ -35,7 +35,7 @@ Interaction Result come in a handful of different flavours:
 > afformentioned result types to branch out your post-execution logic to handle different situations.
 
 
-[AutocompletionResult]: xref:Discord.AutoCompleteResult
+[AutocompletionResult]: xref:Discord.AutocompleteResult
 [ExecuteResult]: xref:Discord.Interactions.ExecuteResult
 [PreconditionGroupResult]: xref:Discord.Interactions.PreconditionGroupResult
 [PreconditionResult]: xref:Discord.Interactions.PreconditionResult

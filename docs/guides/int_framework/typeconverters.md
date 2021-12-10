@@ -26,7 +26,7 @@ By default, TypeConverters for the following types are provided with @Discord.In
 
 ## Creating TypeConverters
 
-Depending on your needs, there are two types of [TypeConverters] you can create:
+Depending on your needs, there are two types of TypeConverters you can create:
 
 - Concrete type
 - Generic type
@@ -41,7 +41,7 @@ Interaction Services determines the most suitable [TypeConverter] for a paramete
 
 1. It searches for a [TypeConverter] that is registered to specifically target that parameter type
 2. It searches for a [TypeConverter] that returns `true` when its `CanConvertTo()` method is invoked for thaty parameter type.
-3. It searches for a generic [TypeConverter<T>] with a matching type constraint. If there are more multiple matches,
+3. It searches for a generic `TypeConverter<T>` with a matching type constraint. If there are more multiple matches,
 the one whose type constraint is the most specialized will be chosen.
 
 > [!NOTE}
@@ -96,8 +96,8 @@ interactionService.AddTypeConverter<string[]>(new StringArrayConverter());
 
 ## Generic TypeConverters
 
-To register a generic [TypeConverter<T>], you need to invoke the `AddGenericTypeConverter()` method of the Interaction Service class.
-You need to pass the type of your [TypeConverter<T>] and a target base type to this method.
+To register a generic `TypeConverter<T>`, you need to invoke the `AddGenericTypeConverter()` method of the Interaction Service class.
+You need to pass the type of your `TypeConverter<T>` and a target base type to this method.
 
 For instance, to register the previously mentioned enum converter the following can be used:
 
@@ -105,14 +105,12 @@ For instance, to register the previously mentioned enum converter the following 
 interactionService.AddGenericTypeConverter<Enum>(typeof(EnumConverter<>));
 ```
 
-Interaction service checks if the target base type satisfies the type constraints of the Generic [TypeConverter<T>] class.
+Interaction service checks if the target base type satisfies the type constraints of the Generic `TypeConverter` class.
 
 > [!NOTE]
 > Dependencies of Generic TypeConverters are also resolved using the Dependency Injection pattern.
 
-[TypeConverters]: xref:Discord.Interactions.TypeConverter
-[TypeConverter]: xref:Discord.Interactions.TypeConverter<T>
-[TypeConverter<T>]: xref:Discord.Interactions.TypeConverter
+[TypeConverter]: xref:Discord.Interactions.TypeConverter
 [InteractionService]: xref:Discord.Interaction.InteractionService
 [IChannel]: xref:Discord.IChannel
 [IRole]: xref:Discord.IRole

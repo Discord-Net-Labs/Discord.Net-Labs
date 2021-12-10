@@ -322,11 +322,11 @@ delegate can be used to create HTTP responses from a deserialized json object st
 [AutocompleteHandlers]: xref:Guides.IntFw.Autocompleters
 [DependencyInjection]: xref:Guides.TextCommands.DI
 
-[GroupAttribute]: xref:Discord.Interaction.GroupAttribute
-[InteractionService]: xref:Discord.Interaction.InteractionService
-[InteractionServiceConfig]: xref:Discord.Interaction.InteractionServiceConfig
-[InteractionModuleBase]: xref:Discord.Interaction.InteractionModuleBase
-[SlashCommandAttribute]: xref:Discord.Interaction.SlashCommandAttribute
+[GroupAttribute]: xref:Discord.Interactions.GroupAttribute
+[InteractionService]: xref:Discord.Interactions.InteractionService
+[InteractionServiceConfig]: xref:Discord.Interactions.InteractionServiceConfig
+[InteractionModuleBase]: xref:Discord.Interactions.InteractionModuleBase
+[SlashCommandAttribute]: xref:Discord.Interactions.SlashCommandAttribute
 [InteractionCreated]: xref:Discord.WebSocket.BaseSocketClient
 [ButtonExecuted]: xref:Discord.WebSocket.BaseSocketClient
 [SelectMenuExecuted]: xref:Discord.WebSocket.BaseSocketClient
@@ -335,16 +335,16 @@ delegate can be used to create HTTP responses from a deserialized json object st
 [MessageCommandExecuted]: xref:Discord.WebSocket.BaseSocketClient
 [DiscordSocketClient]: xref:Discord.WebSocket.DiscordSocketClient
 [DiscordRestClient]: xref:Discord.Rest.DiscordRestClient
-[SocketInteractionContext]: xref:Discord.Interaction.SocketInteractionContext
-[ShardedInteractionContext]: xref:Discord.Interaction.ShardedInteractionContext
-[InteractionContext]: xref:Discord.Interaction.InteractionContext
-[IInteractionContect]: xref:Discord.Interaction.IInteractionContext
-[RestInteractionContext]: xref:Discord.Interaction.RestInteractionContext
-[SummaryAttribute]: xref:Discord.Interaction.SummaryAttribute
-[ChoiceAttribute]: xref:Discord.Interaction.ChoiceAttribute
-[ChannelTypesAttribute]: xref:Discord.Interaction.ChannelTypesAttribute
-[MaxValueAttribute]: xref:Discord.Interaction.MaxValueAttribute
-[MinValueAttribute]: xref:Discord.Interaction.MinValueAttribute
+[SocketInteractionContext]: xref:Discord.Interactions.SocketInteractionContext
+[ShardedInteractionContext]: xref:Discord.Interactions.ShardedInteractionContext
+[InteractionContext]: xref:Discord.Interactions.InteractionContext
+[IInteractionContect]: xref:Discord.Interactions.IInteractionContext
+[RestInteractionContext]: xref:Discord.Interactions.RestInteractionContext
+[SummaryAttribute]: xref:Discord.Interactions.SummaryAttribute
+[ChoiceAttribute]: xref:Discord.Interactions.ChoiceAttribute
+[ChannelTypesAttribute]: xref:Discord.Interactions.ChannelTypesAttribute
+[MaxValueAttribute]: xref:Discord.Interactions.MaxValueAttribute
+[MinValueAttribute]: xref:Discord.Interactions.MinValueAttribute
 
 [IChannel]: xref:Discord.IChannel
 [IRole]: xref:Discord.IRole

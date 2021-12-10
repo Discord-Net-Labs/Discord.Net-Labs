@@ -13,7 +13,7 @@
     - name: String commands
       topicUid: FAQ.Commands.General
     - name: Interaction commands
-      topicUid: FAQ.Commands.Interaction
+      topicUid: FAQ.Commands.Interactions
     - name: Dependency Injection
       topicUid: FAQ.Commands.DI
 - name: Glossary

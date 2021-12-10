@@ -28,7 +28,7 @@ Refer to the [documentation about preconditions]
 ## How do I send the HTTP Response from inside the command modules.
 
 Set the `RestResponseCallback` property of [InteractionServiceConfig] with a delegate for handling HTTP Responses and use
-[RestInteractionModuleBase] to create your command modules. `RespondAsync()` and `DeferAsync()` methods of this module base will use the
+`RestInteractionModuleBase` to create your command modules. `RespondAsync()` and `DeferAsync()` methods of this module base will use the
 `RestResponseCallback` to create interaction responses.
 
 ## Is there a cleaner way of creating parameter choices other than using `[Choice]`?
@@ -48,6 +48,5 @@ It compares the _target base type_ key of the
 
 [TypeConverter]: xref:Discord.Interactions.TypeConverter
 [Interactions FAQ]: xref: FAQ.Basics.Interactions
-[RestInteractionModuleBase]: xref:Discord.Interactions.RestInteractionModuleBase
 [InteractionServiceConfig]: xref:Discord.Interactions.InteractionServiceConfig
 [documentation about preconditions]: xref: Guides.ChatCommands.Preconditions
