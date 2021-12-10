@@ -23,12 +23,12 @@ namespace Discord.Rest
             Optional<API.Image>? icon = args.Icon.IsSpecified ? args.Icon.Value.ToModel() : Optional<API.Image>.Unspecified;
             if (args.Icon.IsSpecified || args.Emoji.IsSpecified)
             {
+                role.Guild.Features.EnsureFeature(GuildFeature.RoleIcons);
+
                 if (args.Icon.IsSpecified && args.Emoji.IsSpecified)
                 {
                     throw new ArgumentException("Emoji and Icon properties cannot be present on a role at the same time.");
                 }
-
-                role.Guild.Features.EnsureFeature(GuildFeature.RoleIcons);
 
                 if (args.Icon.IsSpecified && role.Emoji != null)
                 {
