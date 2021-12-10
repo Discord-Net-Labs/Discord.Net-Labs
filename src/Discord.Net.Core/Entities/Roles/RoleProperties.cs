@@ -53,12 +53,19 @@ namespace Discord
         /// <summary>
         ///     Gets or sets the icon of the role.
         /// </summary>
+        /// <remarks>
+        ///     This value cannot be set at the same time as Emoji, as they are both exclusive.
+        ///     
+        ///     Setting an Icon will override a currently existing Emoji if present.
+        /// </remarks>
         public Optional<Image> Icon { get; set; }
         /// <summary>
         ///     Gets or sets the unicode emoji of the role.
         /// </summary>
         /// <remarks>
-        ///     This value may be ignored if Icon exists.
+        ///     This value cannot be set at the same time as Icon, as they are both exclusive.
+        ///
+        ///     Setting an Emoji will override a currently existing Icon if present.
         /// </remarks>
         public Optional<Emoji> Emoji { get; set; }
         /// <summary>
