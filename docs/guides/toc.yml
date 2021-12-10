@@ -51,7 +51,7 @@
       topicUid: Guides.IntFw.DI
     - name: Post-execution Handling
       topicUid: Guides.IntFw.PostExecution
-- name: Slash command basics
+- name: Slash Command Basics
   items:
     - name: Introduction
       topicUid: Guides.SlashCommands.Intro
@@ -69,13 +69,13 @@
       topicUid: Guides.SlashCommands.Choices
     - name: Slash commands Bulk Overwrites
       topicUid: Guides.SlashCommands.BulkOverwrite
-- name: Context command basics
+- name: Context Command Basics
   items:
     - name: Creating Context Commands
       topicUid: Guides.ContextCommands.Creating
     - name: Receiving Context Commands
       topicUid: Guides.ContextCommands.Reveiving
-- name: Message component basics
+- name: Message Component Basics
   items:
     - name: Introduction
       topicUid: Guides.MessageComponents.Intro

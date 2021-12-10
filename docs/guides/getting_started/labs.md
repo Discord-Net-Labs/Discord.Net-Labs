@@ -9,8 +9,13 @@ Discord.NET Labs is the experimental repository that introduces new features & c
 Are you looking to test or play with new features?
 
 > [!IMPORTANT]
-> Discord.NET Labs is not guaranteed to run stable, and can include bugs.
-> If you still want to use this library, make sure to report any bugs at the Labs repository.
+> It is very ill advised to use Discord.NET Labs in a production environment normally,
+> considering it can include bugs that have not been discovered yet, as features are freshly added.
+> However if approached correctly, will work as a pre-release to Discord.NET.
+> Make sure to report any bugs at the Labs [repository] or on [Discord]
+
+[Discord]: https://discord.gg/dnet
+[repository]: https://github.com/Discord-Net-Labs/Discord.Net-Labs
 
 ## Installation:
 

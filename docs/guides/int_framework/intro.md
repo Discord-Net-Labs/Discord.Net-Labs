@@ -13,8 +13,9 @@ Optionally you can provide the [InteractionService] constructor with a
 
 ```csharp
 ...
-
-var commands = new InteractionService(discord);
+// _client here is DiscordSocketClient.
+// A different approach to passing in a restclient is also possible.
+var _interactionService = new InteractionService(_client.Rest);
 
 ...
 ```
@@ -148,7 +149,7 @@ A valid User Command must have the following structure:
 
 [!code-csharp[User Command](samples/intro/usercommand.cs)]
 
-> [!NOTE]
+> [!WARNING]
 > User commands can only have one parameter and its type must be an implementation of [IUser].
 
 ## Message Commands
@@ -157,7 +158,7 @@ A valid Message Command must have the following structure:
 
 [!code-csharp[Message Command](samples/intro/messagecommand.cs)]
 
-> [!NOTE]
+> [!WARNING]
 > Message commands can only have one parameter and its type must be an implementation of [IMessage].
 
 ## Component Interaction Commands
@@ -174,12 +175,11 @@ And the captured words will be passed on to the command method in the same order
 
 You may use as many wild card characters as you want.
 
-> [!INFO]
+> [!NOTE]
 > If Interaction Service recieves a component interaction with **player:play,rickroll** custom id,
-> `op` will be *play* and
-> `name` will be *rickroll*
+> `op` will be *play* and `name` will be *rickroll*
 
-## Select Menu's
+## Select Menus
 
 Unlike button interactions, select menu interactions also contain the values of the selected menu items.
 In this case, you should structure your method to accept a string array.
@@ -187,8 +187,8 @@ In this case, you should structure your method to accept a string array.
 [!code-csharp[Dropdown](samples/intro/dropdown.cs)]
 
 > [!NOTE]
-> Wild card pattern can also be used to match select menu custom id''s
-> but remember that the array containing the select menu values should be the last parameter.
+> Wildcards may also be used to match a select menu ID,
+> though keep in mind that the array containing the select menu values should be the last parameter.
 
 ## Autocomplete Commands
 
@@ -319,7 +319,7 @@ respond to the Interactions within your command modules you need to perform the 
 delegate can be used to create HTTP responses from a deserialized json object string.
 - Use the interaction endpoints of the module base instead of the interaction object (ie. `RespondAsync()`, `FollowupAsync()`...).
 
-[AutocompleteHandlers]: xref:Guides.IntFw.Autocompletion
+[AutocompleteHandlers]: xref:Guides.IntFw.AutoCompletion
 [DependencyInjection]: xref:Guides.TextCommands.DI
 
 [GroupAttribute]: xref:Discord.Interactions.GroupAttribute
