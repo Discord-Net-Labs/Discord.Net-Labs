@@ -1,3 +1,5 @@
+using System;
+
 namespace Discord
 {
     /// <summary>
@@ -58,7 +60,7 @@ namespace Discord
         ///     
         ///     Setting an Icon will override a currently existing Emoji if present.
         /// </remarks>
-        public Optional<Image> Icon { get; set; }
+        public Optional<Image?> Icon { get; set; }
         /// <summary>
         ///     Gets or sets the unicode emoji of the role.
         /// </summary>

@@ -19,8 +19,6 @@ namespace Discord.Rest
             var args = new RoleProperties();
             func(args);
 
-            Optional<string> emoji = args.Emoji.IsSpecified ? args.Emoji.Value.ToString() : Optional.Create<string>();
-            Optional<API.Image>? icon = args.Icon.IsSpecified ? args.Icon.Value.ToModel() : Optional<API.Image>.Unspecified;
             if (args.Icon.IsSpecified || args.Emoji.IsSpecified)
             {
                 role.Guild.Features.EnsureFeature(GuildFeature.RoleIcons);
@@ -28,16 +26,6 @@ namespace Discord.Rest
                 if (args.Icon.IsSpecified && args.Emoji.IsSpecified)
                 {
                     throw new ArgumentException("Emoji and Icon properties cannot be present on a role at the same time.");
-                }
-
-                if (args.Icon.IsSpecified && role.Emoji != null)
-                {
-                    emoji = null;
-                }
-
-                if (args.Emoji.IsSpecified && !string.IsNullOrEmpty(role.Icon))
-                {
-                    icon = null;
                 }
             }
 
@@ -48,9 +36,20 @@ namespace Discord.Rest
                 Mentionable = args.Mentionable,
                 Name = args.Name,
                 Permissions = args.Permissions.IsSpecified ? args.Permissions.Value.RawValue.ToString() : Optional.Create<string>(),
-                Icon = icon,
-                Emoji = emoji,
+                Icon = args.Icon.IsSpecified ? args.Icon.Value.Value.ToModel() : Optional<API.Image?>.Unspecified,
+                Emoji = args.Emoji.GetValueOrDefault()?.Name ?? Optional<string>.Unspecified
             };
+
+            if (args.Icon.IsSpecified && role.Emoji != null)
+            {
+                apiArgs.Emoji = null;
+            }
+
+            if (args.Emoji.IsSpecified && !string.IsNullOrEmpty(role.Icon))
+            {
+                apiArgs.Icon = null;
+            }
+
             var model = await client.ApiClient.ModifyGuildRoleAsync(role.Guild.Id, role.Id, apiArgs, options).ConfigureAwait(false);
 
             if (args.Position.IsSpecified)
