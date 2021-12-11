@@ -21,7 +21,7 @@ The reaction added event has been changed to have both parameters cacheable. Thi
 
 THe user is typing event has been changed to have both parameters cacheable. This allows you to download the user and channel if they aren't cached instead of them being null.
 
-### Precense
+### Presence
 
 There is a new event called `PresenceUpdated` that is called when a user's presence changes, instead of `GuildMemberUpdated` or `UserUpdated`. If your code relied on these events to get presence data then you need to update it to work with the new event.
 
