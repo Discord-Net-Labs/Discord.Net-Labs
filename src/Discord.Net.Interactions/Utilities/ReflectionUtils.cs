@@ -44,7 +44,7 @@ namespace Discord.Interactions
                 throw new Exception($"Failed to create \"{ownerType.FullName}\".", ex);
             }
         }
-        private static ConstructorInfo GetConstructor (TypeInfo ownerType)
+        internal static ConstructorInfo GetConstructor (TypeInfo ownerType)
         {
             var constructors = ownerType.DeclaredConstructors.Where(x => !x.IsStatic).ToArray();
             if (constructors.Length == 0)
@@ -112,6 +112,31 @@ namespace Discord.Interactions
             var parameters = constructor.GetParameters();
             var properties = GetProperties(typeInfo);
 
+            var lambda = CreateLambdaConstructor(typeInfo);
+
+            return (services) =>
+            {
+                var args = new object[parameters.Length];
+                var props = new object[properties.Length];
+
+                for (int i = 0; i < parameters.Length; i++)
+                    args[i] = GetMember(commandService, services, parameters[i].ParameterType, typeInfo);
+
+                for (int i = 0; i < properties.Length; i++)
+                    props[i] = GetMember(commandService, services, properties[i].PropertyType, typeInfo);
+
+                var instance = lambda(args, props);
+
+                return instance;
+            };
+        }
+
+        internal static Func<object[], object[], T> CreateLambdaConstructor(TypeInfo typeInfo)
+        {
+            var constructor = GetConstructor(typeInfo);
+            var parameters = constructor.GetParameters();
+            var properties = GetProperties(typeInfo);
+
             var argsExp = Expression.Parameter(typeof(object[]), "args");
             var propsExp = Expression.Parameter(typeof(object[]), "props");
 
@@ -135,23 +160,7 @@ namespace Discord.Interactions
                 memberExps[i] = Expression.Bind(properties[i], accessExp);
             }
             var memberInit = Expression.MemberInit(newExp, memberExps);
-            var lambda = Expression.Lambda<Func<object[], object[], T>>(memberInit, argsExp, propsExp).Compile();
-
-            return (services) =>
-            {
-                var args = new object[parameters.Length];
-                var props = new object[properties.Length];
-
-                for (int i = 0; i < parameters.Length; i++)
-                    args[i] = GetMember(commandService, services, parameters[i].ParameterType, typeInfo);
-
-                for (int i = 0; i < properties.Length; i++)
-                    props[i] = GetMember(commandService, services, properties[i].PropertyType, typeInfo);
-
-                var instance = lambda(args, props);
-
-                return instance;
-            };
+            return Expression.Lambda<Func<object[], object[], T>>(memberInit, argsExp, propsExp).Compile();
         }
     }
 }

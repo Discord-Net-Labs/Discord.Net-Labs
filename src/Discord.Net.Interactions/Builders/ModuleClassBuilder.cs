@@ -350,7 +350,6 @@ namespace Discord.Interactions.Builders
             builder.Description = paramInfo.Name;
             builder.IsRequired = !paramInfo.IsOptional;
             builder.DefaultValue = paramInfo.DefaultValue;
-            builder.SetParameterType(paramType, services);
 
             foreach (var attribute in attributes)
             {
@@ -388,14 +387,40 @@ namespace Discord.Interactions.Builders
                     case MinValueAttribute minValue:
                         builder.MinValue = minValue.Value;
                         break;
+                    case ComplexParameterAttribute _:
+                        builder.IsComplexParameter = true;
+                        BuildComplexSlashParameter(builder, paramInfo);
+                        break;
                     default:
                         builder.AddAttributes(attribute);
                         break;
                 }
             }
 
+            builder.SetParameterType(paramType, services);
+
             // Replace pascal casings with '-'
             builder.Name = Regex.Replace(builder.Name, "(?<=[a-z])(?=[A-Z])", "-").ToLower();
+        }
+
+        private static void BuildComplexSlashParameter(SlashCommandParameterBuilder builder, ParameterInfo paramInfo)
+        {
+            var typeInfo = paramInfo.ParameterType.GetTypeInfo();
+
+            var constructor = ReflectionUtils<object>.GetConstructor(typeInfo);
+            var parameters = constructor.GetParameters();
+
+            foreach (var parameter in parameters)
+            {
+                if (parameter.IsDefined(typeof(ComplexParameterAttribute)))
+                    throw new InvalidOperationException("You cannot create nested complex parameters.");
+
+                builder.AddComplexParameterField(fieldBuilder => BuildSlashParameter(fieldBuilder, parameter, null));
+            }
+
+            var ctorDelegate = ReflectionUtils<object>.CreateLambdaConstructor(typeInfo);
+
+            builder.ComplexParameterInitializer = args => ctorDelegate(args, Array.Empty<object>());
         }
 
         private static void BuildParameter (CommandParameterBuilder builder, ParameterInfo paramInfo)
