@@ -55,6 +55,9 @@ namespace Discord.Interactions.Builders
         /// </summary>
         public bool IsComplexParameter { get; internal set; }
 
+        /// <summary>
+        ///     Gets or sets the initializer delegate for this parameter, if <see cref="IsComplexParameter"/> is <see langword="true"/>.
+        /// </summary>
         public ComplexParameterInitializer ComplexParameterInitializer { get; internal set; }
 
         /// <summary>
@@ -192,6 +195,14 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
+        /// <summary>
+        ///     Adds a parameter builders to <see cref="ComplexParameterFields"/>.
+        /// </summary>
+        /// <param name="configure"><see cref="SlashCommandParameterBuilder"/> factory.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">Thrown if the added field has a <see cref="ComplexParameterAttribute"/>.</exception>
         public SlashCommandParameterBuilder AddComplexParameterField(Action<SlashCommandParameterBuilder> configure)
         {
             SlashCommandParameterBuilder builder = new(Command);
@@ -204,6 +215,14 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
+        /// <summary>
+        ///     Adds parameter builders to <see cref="ComplexParameterFields"/>.
+        /// </summary>
+        /// <param name="fields">New parameter builders to be added to <see cref="ComplexParameterFields"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
+        /// <exception cref="InvalidOperationException">Thrown if the added field has a <see cref="ComplexParameterAttribute"/>.</exception>
         public SlashCommandParameterBuilder AddComplexParameterFields(params SlashCommandParameterBuilder[] fields)
         {
             if(fields.Any(x => x.IsComplexParameter))

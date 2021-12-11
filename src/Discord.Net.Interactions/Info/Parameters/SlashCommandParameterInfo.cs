@@ -4,6 +4,13 @@ using System.Linq;
 
 namespace Discord.Interactions
 {
+    /// <summary>
+    ///     Represents a cached argument constructor delegate.
+    /// </summary>
+    /// <param name="args">Method arguments array.</param>
+    /// <returns>
+    ///     Returns the constructed object.
+    /// </returns>
     public delegate object ComplexParameterInitializer(object[] args);
 
     /// <summary>
@@ -67,6 +74,9 @@ namespace Discord.Interactions
         /// </summary>
         public IReadOnlyCollection<ChannelType> ChannelTypes { get; }
 
+        /// <summary>
+        ///     Gets the constructor parameters of this parameter, if <see cref="IsComplexParameter"/> is <see langword="true"/>.
+        /// </summary>
         public IReadOnlyCollection<SlashCommandParameterInfo> ComplexParameterFields { get; }
 
         internal SlashCommandParameterInfo(Builders.SlashCommandParameterBuilder builder, SlashCommandInfo command) : base(builder, command)
