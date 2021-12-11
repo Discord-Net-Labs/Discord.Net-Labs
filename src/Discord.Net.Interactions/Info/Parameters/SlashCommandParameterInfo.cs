@@ -53,6 +53,11 @@ namespace Discord.Interactions
         public bool IsComplexParameter { get; }
 
         /// <summary>
+        ///     Gets or sets whether this type should be treated as a complex parameter.
+        /// </summary>
+        public bool IsComplexParameter { get; }
+
+        /// <summary>
         ///     Gets the Discord option type this parameter represents.
         /// </summary>
         public ApplicationCommandOptionType DiscordOptionType => TypeConverter.GetDiscordType();
