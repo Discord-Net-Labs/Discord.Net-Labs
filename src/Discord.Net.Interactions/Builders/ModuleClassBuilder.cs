@@ -387,9 +387,23 @@ namespace Discord.Interactions.Builders
                     case MinValueAttribute minValue:
                         builder.MinValue = minValue.Value;
                         break;
-                    case ComplexParameterAttribute _:
-                        builder.IsComplexParameter = true;
-                        BuildComplexSlashParameter(builder, paramInfo);
+                    case ComplexParameterAttribute complexParameter:
+                        {
+                            builder.IsComplexParameter = true;
+                            ConstructorInfo ctor = GetComplexParameterConstructor(paramInfo.ParameterType.GetTypeInfo(), complexParameter);
+
+                            foreach (var parameter in ctor.GetParameters())
+                            {
+                                if (parameter.IsDefined(typeof(ComplexParameterAttribute)))
+                                    throw new InvalidOperationException("You cannot create nested complex parameters.");
+
+                                builder.AddComplexParameterField(fieldBuilder => BuildSlashParameter(fieldBuilder, parameter, services));
+                            }
+
+                            var initializer = builder.Command.Module.InteractionService._useCompiledLambda ?
+                                ReflectionUtils<object>.CreateLambdaConstructorInvoker(paramInfo.ParameterType.GetTypeInfo()) : ctor.Invoke;
+                            builder.ComplexParameterInitializer = args => initializer(args);
+                        }
                         break;
                     default:
                         builder.AddAttributes(attribute);
@@ -403,24 +417,40 @@ namespace Discord.Interactions.Builders
             builder.Name = Regex.Replace(builder.Name, "(?<=[a-z])(?=[A-Z])", "-").ToLower();
         }
 
-        private static void BuildComplexSlashParameter(SlashCommandParameterBuilder builder, ParameterInfo paramInfo)
+        private static ConstructorInfo GetComplexParameterConstructor(TypeInfo typeInfo, ComplexParameterAttribute complexParameter)
         {
-            var typeInfo = paramInfo.ParameterType.GetTypeInfo();
+            var ctors = typeInfo.GetConstructors();
 
-            var constructor = ReflectionUtils<object>.GetConstructor(typeInfo);
-            var parameters = constructor.GetParameters();
+            if(ctors.Length == 0)
+                throw new InvalidOperationException($"No constructor found for \"{typeInfo.FullName}\".");
 
-            foreach (var parameter in parameters)
+            if (complexParameter.PrioritizedCtorSignature is not null)
             {
-                if (parameter.IsDefined(typeof(ComplexParameterAttribute)))
-                    throw new InvalidOperationException("You cannot create nested complex parameters.");
+                var ctor = typeInfo.GetConstructor(complexParameter.PrioritizedCtorSignature);
 
-                builder.AddComplexParameterField(fieldBuilder => BuildSlashParameter(fieldBuilder, parameter, null));
+                if (ctor is null)
+                    throw new InvalidOperationException($"No constructor was found with the signature: {string.Join(",", complexParameter.PrioritizedCtorSignature.Select(x => x.Name))}");
+
+                return ctor;
             }
 
-            var ctorDelegate = ReflectionUtils<object>.CreateLambdaConstructor(typeInfo);
+            var prioritizedCtors = ctors.Where(x => x.IsDefined(typeof(ComplexParameterCtorAttribute), true));
 
-            builder.ComplexParameterInitializer = args => ctorDelegate(args, Array.Empty<object>());
+            switch (prioritizedCtors.Count())
+            {
+                case > 1:
+                    throw new InvalidOperationException($"{nameof(ComplexParameterCtorAttribute)} can only be used once in a type.");
+                case 1:
+                    return prioritizedCtors.First();
+            }
+
+            switch (ctors.Length)
+            {
+                case > 1:
+                    throw new InvalidOperationException($"Multiple constructors found for \"{typeInfo.FullName}\".");
+                default:
+                    return ctors.First();
+            }
         }
 
         private static void BuildParameter (CommandParameterBuilder builder, ParameterInfo paramInfo)

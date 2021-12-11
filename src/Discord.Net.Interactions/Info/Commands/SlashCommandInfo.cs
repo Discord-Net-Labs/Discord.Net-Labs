@@ -30,11 +30,14 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public override bool SupportsWildCards => false;
 
+        public IReadOnlyCollection<SlashCommandParameterInfo> FlattenedParameters { get; }
+
         internal SlashCommandInfo (Builders.SlashCommandBuilder builder, ModuleInfo module, InteractionService commandService) : base(builder, module, commandService)
         {
             Description = builder.Description;
             DefaultPermission = builder.DefaultPermission;
             Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
+            FlattenedParameters = Parameters.SelectMany(x => x.IsComplexParameter ? x.ComplexParameterFields : new SlashCommandParameterInfo[] { x }).ToImmutableArray();
         }
 
         /// <inheritdoc/>
