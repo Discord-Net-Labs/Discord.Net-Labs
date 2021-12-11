@@ -81,6 +81,8 @@ namespace Discord.Interactions
             Choices = builder.Choices.ToImmutableArray();
             ChannelTypes = builder.ChannelTypes.ToImmutableArray();
             ComplexParameterFields = builder.ComplexParameterFields.Select(x => x.Build(command)).ToImmutableArray();
+
+            _complexParameterInitializer = builder.ComplexParameterInitializer;
         }
     }
 }
