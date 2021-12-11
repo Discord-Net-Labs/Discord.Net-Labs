@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Discord.Interactions.Builders
 {
@@ -195,12 +196,19 @@ namespace Discord.Interactions.Builders
         {
             SlashCommandParameterBuilder builder = new(Command);
             configure(builder);
+
+            if(builder.IsComplexParameter)
+                throw new InvalidOperationException("You cannot create nested complex parameters.");
+
             _complexParameterFields.Add(builder);
             return this;
         }
 
         public SlashCommandParameterBuilder AddComplexParameterFields(params SlashCommandParameterBuilder[] fields)
         {
+            if(fields.Any(x => x.IsComplexParameter))
+                throw new InvalidOperationException("You cannot create nested complex parameters.");
+
             _complexParameterFields.AddRange(fields);
             return this;
         }
