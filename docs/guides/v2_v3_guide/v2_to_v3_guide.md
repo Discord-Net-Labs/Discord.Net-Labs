@@ -7,9 +7,7 @@ title: V2 -> V3 Guide
 
 V3 is designed to be a more feature complete, more reliable, and more flexible library than any previous version.
 
-- GuildMemberUpdated event (user 1 cached)
-- ReactionAdded event (channel cached)
-- UserIsTyping event (user & channel cached)
+Below are the most notable breaking changes that you would need to update your code to work with V3.
 
 ### GuildMemberUpdated Event
 
@@ -22,6 +20,10 @@ The reaction added event has been changed to have both parameters cacheable. Thi
 ### UserIsTyping Event
 
 THe user is typing event has been changed to have both parameters cacheable. This allows you to download the user and channel if they aren't cached instead of them being null.
+
+### Precense
+
+There is a new event called `PresenceUpdated` that is called when a user's presence changes, instead of `GuildMemberUpdated` or `UserUpdated`. If your code relied on these events to get presence data then you need to update it to work with the new event.
 
 ## Migrating your commands to slash command
 
