@@ -56,7 +56,7 @@ namespace Discord.Interactions
             if (commandInfo.Parameters.Count > SlashCommandBuilder.MaxOptionsCount)
                 throw new InvalidOperationException($"Slash Commands cannot have more than {SlashCommandBuilder.MaxOptionsCount} command parameters");
 
-            props.Options = commandInfo.Parameters.Select(x => x.ToApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified;
+            props.Options = commandInfo.Parameters.SelectMany(x => x.ToApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified;
 
             return props;
         }
