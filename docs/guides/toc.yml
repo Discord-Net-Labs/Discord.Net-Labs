@@ -1,5 +1,7 @@
 - name: Introduction
   topicUid: Guides.Introduction
+- name: V2 to V3 Guide
+  topicUid: Guides.V2V3Guide
 - name: Getting Started
   items:
     - name: Installation
