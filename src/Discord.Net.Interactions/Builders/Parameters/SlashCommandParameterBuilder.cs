@@ -38,6 +38,9 @@ namespace Discord.Interactions.Builders
         /// </summary>
         public IReadOnlyCollection<ChannelType> ChannelTypes => _channelTypes;
 
+        /// <summary>
+        ///     Gets the constructor parameters of this parameter, if <see cref="IsComplexParameter"/> is <see langword="true"/>.
+        /// </summary>
         public IReadOnlyCollection<SlashCommandParameterBuilder> ComplexParameterFields => _complexParameterFields;
 
         /// <summary>
