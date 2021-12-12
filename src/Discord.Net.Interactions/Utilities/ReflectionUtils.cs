@@ -44,7 +44,7 @@ namespace Discord.Interactions
                 throw new Exception($"Failed to create \"{ownerType.FullName}\".", ex);
             }
         }
-        internal static ConstructorInfo GetConstructor (TypeInfo ownerType)
+        private static ConstructorInfo GetConstructor (TypeInfo ownerType)
         {
             var constructors = ownerType.DeclaredConstructors.Where(x => !x.IsStatic).ToArray();
             if (constructors.Length == 0)
