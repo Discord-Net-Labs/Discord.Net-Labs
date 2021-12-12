@@ -13,7 +13,7 @@ namespace Discord.Interactions
             {
                 Name = parameterInfo.Name,
                 Description = parameterInfo.Description,
-                Type = parameterInfo.DiscordOptionType,
+                Type = parameterInfo.DiscordOptionType.Value,
                 IsRequired = parameterInfo.IsRequired,
                 Choices = parameterInfo.Choices?.Select(x => new ApplicationCommandOptionChoiceProperties
                 {

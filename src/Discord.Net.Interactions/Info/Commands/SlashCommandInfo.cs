@@ -39,7 +39,7 @@ namespace Discord.Interactions
             Description = builder.Description;
             DefaultPermission = builder.DefaultPermission;
             Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
-            FlattenedParameters = Parameters.SelectMany(x => x.IsComplexParameter ? x.ComplexParameterFields : new SlashCommandParameterInfo[] { x }).ToImmutableArray();
+            FlattenedParameters = FlattenParameters(Parameters).ToImmutableArray();
 
             _flattenedParameterDictionary = FlattenedParameters?.ToDictionary(x => x.Name, x => x).ToImmutableDictionary();
         }
@@ -149,6 +149,16 @@ namespace Discord.Interactions
                 return $"Slash Command: \"{base.ToString()}\" for {context.User} in {context.Guild}/{context.Channel}";
             else
                 return $"Slash Command: \"{base.ToString()}\" for {context.User} in {context.Channel}";
+        }
+
+        private static IEnumerable<SlashCommandParameterInfo> FlattenParameters(IEnumerable<SlashCommandParameterInfo> parameters)
+        {
+            foreach (var parameter in parameters)
+                if (!parameter.IsComplexParameter)
+                    yield return parameter;
+                else
+                    foreach(var complexParameterField in parameter.ComplexParameterFields)
+                        yield return complexParameterField;
         }
     }
 }

@@ -60,9 +60,9 @@ namespace Discord.Interactions
         public bool IsComplexParameter { get; }
 
         /// <summary>
-        ///     Gets the Discord option type this parameter represents.
+        ///     Gets the Discord option type this parameter represents. If the parameter is not a complex parameter.
         /// </summary>
-        public ApplicationCommandOptionType DiscordOptionType => TypeConverter.GetDiscordType();
+        public ApplicationCommandOptionType? DiscordOptionType => TypeConverter?.GetDiscordType();
 
         /// <summary>
         ///     Gets the parameter choices of this Slash Application Command parameter.
