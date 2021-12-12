@@ -32,6 +32,9 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public override bool SupportsWildCards => false;
 
+        /// <summary>
+        ///     Gets the flattened collection of command parameters and complex parameter fields.
+        /// </summary>
         public IReadOnlyCollection<SlashCommandParameterInfo> FlattenedParameters { get; }
 
         internal SlashCommandInfo (Builders.SlashCommandBuilder builder, ModuleInfo module, InteractionService commandService) : base(builder, module, commandService)
