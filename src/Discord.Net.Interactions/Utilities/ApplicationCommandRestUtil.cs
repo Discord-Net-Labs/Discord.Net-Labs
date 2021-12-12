@@ -7,38 +7,28 @@ namespace Discord.Interactions
     internal static class ApplicationCommandRestUtil
     {
         #region Parameters
-        public static IEnumerable<ApplicationCommandOptionProperties> ToApplicationCommandOptionProps(this SlashCommandParameterInfo parameterInfo)
+        public static ApplicationCommandOptionProperties ToApplicationCommandOptionProps(this SlashCommandParameterInfo parameterInfo)
         {
-            var result = new List<ApplicationCommandOptionProperties>();
-
-            if(parameterInfo.IsComplexParameter)
-                foreach (var field in parameterInfo.ComplexParameterFields)
-                    result.AddRange(field.ToApplicationCommandOptionProps());
-            else
+            var props = new ApplicationCommandOptionProperties
             {
-                var props = new ApplicationCommandOptionProperties
+                Name = parameterInfo.Name,
+                Description = parameterInfo.Description,
+                Type = parameterInfo.DiscordOptionType,
+                IsRequired = parameterInfo.IsRequired,
+                Choices = parameterInfo.Choices?.Select(x => new ApplicationCommandOptionChoiceProperties
                 {
-                    Name = parameterInfo.Name,
-                    Description = parameterInfo.Description,
-                    Type = parameterInfo.DiscordOptionType,
-                    IsRequired = parameterInfo.IsRequired,
-                    Choices = parameterInfo.Choices?.Select(x => new ApplicationCommandOptionChoiceProperties
-                    {
-                        Name = x.Name,
-                        Value = x.Value
-                    })?.ToList(),
-                    ChannelTypes = parameterInfo.ChannelTypes?.ToList(),
-                    IsAutocomplete = parameterInfo.IsAutocomplete,
-                    MaxValue = parameterInfo.MaxValue,
-                    MinValue = parameterInfo.MinValue
-                };
+                    Name = x.Name,
+                    Value = x.Value
+                })?.ToList(),
+                ChannelTypes = parameterInfo.ChannelTypes?.ToList(),
+                IsAutocomplete = parameterInfo.IsAutocomplete,
+                MaxValue = parameterInfo.MaxValue,
+                MinValue = parameterInfo.MinValue
+            };
 
-                parameterInfo.TypeConverter.Write(props, parameterInfo);
+            parameterInfo.TypeConverter.Write(props, parameterInfo);
 
-                result.Add(props);
-            }
-
-            return result;
+            return props;
         }
         #endregion
 
@@ -56,7 +46,7 @@ namespace Discord.Interactions
             if (commandInfo.Parameters.Count > SlashCommandBuilder.MaxOptionsCount)
                 throw new InvalidOperationException($"Slash Commands cannot have more than {SlashCommandBuilder.MaxOptionsCount} command parameters");
 
-            props.Options = commandInfo.Parameters.SelectMany(x => x.ToApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified;
+            props.Options = commandInfo.FlattenedParameters.Select(x => x.ToApplicationCommandOptionProps())?.ToList() ?? Optional<List<ApplicationCommandOptionProperties>>.Unspecified;
 
             return props;
         }
@@ -68,7 +58,7 @@ namespace Discord.Interactions
                 Description = commandInfo.Description,
                 Type = ApplicationCommandOptionType.SubCommand,
                 IsRequired = false,
-                Options = commandInfo.Parameters?.SelectMany(x => x.ToApplicationCommandOptionProps())?.ToList()
+                Options = commandInfo.FlattenedParameters?.Select(x => x.ToApplicationCommandOptionProps())?.ToList()
             };
 
         public static ApplicationCommandProperties ToApplicationCommandProps(this ContextCommandInfo commandInfo)
