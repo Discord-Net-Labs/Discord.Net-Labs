@@ -13,6 +13,8 @@ namespace Discord.Interactions
     /// </summary>
     public class SlashCommandInfo : CommandInfo<SlashCommandParameterInfo>, IApplicationCommandInfo
     {
+        internal IReadOnlyDictionary<string, SlashCommandParameterInfo> _flattenedParameterDictionary { get; }
+
         /// <summary>
         ///     Gets the command description that will be displayed on Discord.
         /// </summary>
@@ -38,6 +40,8 @@ namespace Discord.Interactions
             DefaultPermission = builder.DefaultPermission;
             Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
             FlattenedParameters = Parameters.SelectMany(x => x.IsComplexParameter ? x.ComplexParameterFields : new SlashCommandParameterInfo[] { x }).ToImmutableArray();
+
+            _flattenedParameterDictionary = FlattenedParameters?.ToDictionary(x => x.Name, x => x).ToImmutableDictionary();
         }
 
         /// <inheritdoc/>

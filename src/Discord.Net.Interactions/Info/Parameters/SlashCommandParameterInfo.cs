@@ -90,7 +90,7 @@ namespace Discord.Interactions
             IsAutocomplete = builder.Autocomplete;
             Choices = builder.Choices.ToImmutableArray();
             ChannelTypes = builder.ChannelTypes.ToImmutableArray();
-            ComplexParameterFields = builder.ComplexParameterFields.Select(x => x.Build(command)).ToImmutableArray();
+            ComplexParameterFields = builder.ComplexParameterFields?.Select(x => x.Build(command)).ToImmutableArray();
 
             _complexParameterInitializer = builder.ComplexParameterInitializer;
         }
