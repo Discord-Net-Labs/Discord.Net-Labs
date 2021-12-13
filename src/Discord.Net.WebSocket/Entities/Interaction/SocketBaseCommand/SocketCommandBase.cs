@@ -183,8 +183,9 @@ namespace Discord.WebSocket
                 AllowedMentions = allowedMentions != null ? allowedMentions?.ToModel() : Optional<API.AllowedMentions>.Unspecified,
                 Embeds = embeds.Any() ? embeds.Select(x => x.ToModel()).ToArray() : Optional<API.Embed[]>.Unspecified,
                 IsTTS = isTTS,
-                MessageComponents = components?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified,
+
                 Flags = ephemeral ? MessageFlags.Ephemeral : Optional<MessageFlags>.Unspecified
+                Components = components?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified
             };
 
             lock (_lock)
