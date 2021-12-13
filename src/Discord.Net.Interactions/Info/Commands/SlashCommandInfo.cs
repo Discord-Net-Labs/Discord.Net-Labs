@@ -44,6 +44,10 @@ namespace Discord.Interactions
             Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
             FlattenedParameters = FlattenParameters(Parameters).ToImmutableArray();
 
+            for (var i = 0; i < FlattenedParameters.Count - 1; i++)
+                if (!FlattenedParameters.ElementAt(i).IsRequired && FlattenedParameters.ElementAt(i + 1).IsRequired)
+                    throw new InvalidOperationException("Optional parameters must appear after all required parameters, ComplexParameters with optional parameters must be located at the end.");
+
             _flattenedParameterDictionary = FlattenedParameters?.ToDictionary(x => x.Name, x => x).ToImmutableDictionary();
         }
 
