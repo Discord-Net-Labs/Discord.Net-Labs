@@ -114,7 +114,7 @@ namespace Discord.Net.Queue
                                     }
                                     catch { }
                                 }
-                                throw new HttpException(response.StatusCode, request, error?.Code, error.Message, error.Errors.IsSpecified
+                                throw new HttpException(response.StatusCode, request, error?.Code, error?.Message, (error?.Errors.IsSpecified ?? false)
                                     ? error.Errors.Value.Select(x => new DiscordJsonError(x.Name.GetValueOrDefault("root"), x.Errors.Select(y => new DiscordError(y.Code, y.Message)).ToArray())).ToArray()
                                     : null);
                         }
