@@ -1,12 +1,9 @@
-using Discord.Net.Rest;
 using Discord.Rest;
 using System;
-using System.ComponentModel;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 using DataModel = Discord.API.ApplicationCommandInteractionData;
 using Model = Discord.API.Interaction;
 

@@ -28,6 +28,6 @@ namespace Discord
         /// <summary>
         ///     An interaction sent when a model is submitted.
         /// </summary>
-        Modal = 5,
+        ModalSubmit = 5,
     }
 }

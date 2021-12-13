@@ -12,7 +12,7 @@ namespace Discord
     public class Modal : IMessageComponent
     {
         /// <inheritdoc/>
-        public ComponentType Type => ComponentType.Modal;
+        public ComponentType Type => ComponentType.ModalSubmit;
 
         /// <summary>
         ///     Gets the title of the modal.

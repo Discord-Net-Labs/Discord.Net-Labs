@@ -246,7 +246,7 @@ namespace Discord
         {
             if (_actionRows?.SelectMany(x => x.Components)?.Any(x => x.Type == ComponentType.TextInput) ?? false)
                 throw new ArgumentException("TextInputComponents are not allowed in messages.", nameof(ActionRows));
-            if (_actionRows?.SelectMany(x => x.Components)?.Any(x => x.Type == ComponentType.Modal) ?? false)
+            if (_actionRows?.SelectMany(x => x.Components)?.Any(x => x.Type == ComponentType.ModalSubmit) ?? false)
                 throw new ArgumentException("ModalSubmit components are not allowed in messages.", nameof(ActionRows));
             
             return _actionRows != null
@@ -1180,7 +1180,7 @@ namespace Discord
         private int? _maxLength;
         private int? _minLength;
         private string _placeholder;
-        private string? _value;
+        private string _value;
 
         /// <summary>
         ///     Creates a new instance of a <see cref="TextInputBuilder"/>.
@@ -1217,7 +1217,7 @@ namespace Discord
         ///     Sets the label of the current builder.
         /// </summary>
         /// <param name="label">The value to set.</param>
-        /// <returns>the current builder. </returns>
+        /// <returns>The current builder. </returns>
         public TextInputBuilder WithLabel(string label)
         {
             Label = label;
@@ -1228,7 +1228,7 @@ namespace Discord
         ///     Sets the style of the current builder.
         /// </summary>
         /// <param name="style">The value to set.</param>
-        /// <returns>the current builder. </returns>
+        /// <returns>The current builder. </returns>
         public TextInputBuilder WithStyle(TextInputStyle style)
         {
             Style = style;
@@ -1239,7 +1239,7 @@ namespace Discord
         ///     Sets the custom id of the current builder.
         /// </summary>
         /// <param name="customId">The value to set.</param>
-        /// <returns>the current builder. </returns>
+        /// <returns>The current builder. </returns>
         public TextInputBuilder WithCustomId(string customId)
         {
             CustomId = customId;
@@ -1250,7 +1250,7 @@ namespace Discord
         ///     Sets the placeholder of the current builder.
         /// </summary>
         /// <param name="placeholder">The value to set.</param>
-        /// <returns>the current builder. </returns>
+        /// <returns>The current builder. </returns>
         public TextInputBuilder WithPlaceholder(string placeholder)
         {
             Placeholder = placeholder;
@@ -1261,7 +1261,7 @@ namespace Discord
         ///     Sets the minimum length of the current builder.
         /// </summary>
         /// <param name="placeholder">The value to set.</param>
-        /// <returns>the current builder. </returns>
+        /// <returns>The current builder. </returns>
         public TextInputBuilder WithMinLength(int minLength)
         {
             MinLength = minLength;
@@ -1272,7 +1272,7 @@ namespace Discord
         ///     Sets the maximum length of the current builder.
         /// </summary>
         /// <param name="placeholder">The value to set.</param>
-        /// <returns>the current builder. </returns>
+        /// <returns>The current builder. </returns>
         public TextInputBuilder WithMaxLength(int maxLength)
         {
             MaxLength = maxLength;
@@ -1283,7 +1283,7 @@ namespace Discord
         ///     Sets the required value of the current builder.
         /// </summary>
         /// <param name="required">The value to set.</param>
-        /// <returns>the current builder. </returns>
+        /// <returns>The current builder. </returns>
         public TextInputBuilder WithRequired(bool required)
         {
             Required = required;

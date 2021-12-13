@@ -237,8 +237,6 @@ namespace Discord.API
 
             string json = payload != null ? SerializeJson(payload) : null;
 
-            Console.WriteLine(json);
-
             var request = new JsonRestRequest(RestClient, method, endpoint, json, options);
             return DeserializeJson<TResponse>(await SendInternalAsync(method, endpoint, request).ConfigureAwait(false));
         }

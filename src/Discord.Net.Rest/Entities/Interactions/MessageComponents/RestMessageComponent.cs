@@ -464,7 +464,7 @@ namespace Discord.Rest
         /// <summary>
         /// Responds to the interaction with a modal.
         /// </summary>
-        /// <param name="modal">The modal to respond with</param>
+        /// <param name="modal">The modal to respond with.</param>
         /// <param name="options">The request options for this <see langword="async"/> request.</param>
         /// <returns>A string that contains json to write back to the incoming http request.</returns>
         /// <exception cref="TimeoutException"></exception>
@@ -489,7 +489,7 @@ namespace Discord.Rest
             {
                 if (_hasResponded)
                 {
-                    throw new InvalidOperationException("Cannot respond or defer twice to the same interaction");
+                    throw new InvalidOperationException("Cannot respond or defer twice to the same interaction.");
                 }
             }
 

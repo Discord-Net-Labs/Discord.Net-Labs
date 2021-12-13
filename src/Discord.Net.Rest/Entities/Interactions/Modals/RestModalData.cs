@@ -21,7 +21,7 @@ namespace Discord.Rest
         public IReadOnlyCollection<RestMessageComponentData> Components { get; }
 
         /// <inheritdoc/>
-        public ComponentType Type => ComponentType.Modal;
+        public ComponentType Type => ComponentType.ModalSubmit;
 
         /// <inheritdoc/>
         [Obsolete("Modal interactions do not have values!", true)]

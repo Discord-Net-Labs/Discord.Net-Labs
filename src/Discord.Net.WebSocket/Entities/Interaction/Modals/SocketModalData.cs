@@ -21,7 +21,7 @@ namespace Discord.WebSocket
         public IReadOnlyCollection<SocketMessageComponentData> Components { get; }
 
         /// <inheritdoc/>
-        public ComponentType Type => ComponentType.Modal;
+        public ComponentType Type => ComponentType.ModalSubmit;
 
         /// <inheritdoc/>
         [Obsolete("Modal interactions do not have values!", true)]

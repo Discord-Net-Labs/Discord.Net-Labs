@@ -39,9 +39,9 @@ namespace Discord
         /// <summary>
         ///     Creates a new instance 
         /// </summary>
-        /// <param name="title">the modals title.</param>
-        /// <param name="customId">the modals customId.</param>
-        /// <param name="components">the modals components.</param>
+        /// <param name="title">The modals title.</param>
+        /// <param name="customId">The modals customId.</param>
+        /// <param name="components">The modals components.</param>
         /// <exception cref="ArgumentException">Only TextInputComponents are allowed.</exception>
         public ModalBuilder(string title, string customId, ModalComponentBuilder components = null)
         {
