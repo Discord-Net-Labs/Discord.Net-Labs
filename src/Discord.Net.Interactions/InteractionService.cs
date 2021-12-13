@@ -53,11 +53,18 @@ namespace Discord.Interactions
         public event Func<IAutocompleteHandler, IInteractionContext, IResult, Task> AutocompleteHandlerExecuted { add { _autocompleteHandlerExecutedEvent.Add(value); } remove { _autocompleteHandlerExecutedEvent.Remove(value); } }
         internal readonly AsyncEvent<Func<IAutocompleteHandler, IInteractionContext, IResult, Task>> _autocompleteHandlerExecutedEvent = new();
 
+        /// <summary>
+        ///     Occurs when a Modal command is executed.
+        /// </summary>
+        public event Func<ModalCommandInfo, IInteractionContext, IResult, Task> ModalCommandExecuted { add { _modalCommandExecutedEvent.Add(value); } remove { _modalCommandExecutedEvent.Remove(value); } }
+        internal readonly AsyncEvent<Func<ModalCommandInfo, IInteractionContext, IResult, Task>> _modalCommandExecutedEvent = new();
+
         private readonly ConcurrentDictionary<Type, ModuleInfo> _typedModuleDefs;
         private readonly CommandMap<SlashCommandInfo> _slashCommandMap;
         private readonly ConcurrentDictionary<ApplicationCommandType, CommandMap<ContextCommandInfo>> _contextCommandMaps;
         private readonly CommandMap<ComponentCommandInfo> _componentCommandMap;
         private readonly CommandMap<AutocompleteCommandInfo> _autocompleteCommandMap;
+        private readonly CommandMap<ModalCommandInfo> _modalCommandMap;
         private readonly HashSet<ModuleInfo> _moduleDefs;
         private readonly ConcurrentDictionary<Type, TypeConverter> _typeConverters;
         private readonly ConcurrentDictionary<Type, Type> _genericTypeConverters;
@@ -96,6 +103,8 @@ namespace Discord.Interactions
         ///     Represents all Component Commands loaded within <see cref="InteractionService"/>.
         /// </summary>
         public IReadOnlyCollection<ComponentCommandInfo> ComponentCommands => _moduleDefs.SelectMany(x => x.ComponentCommands).ToList();
+
+        public IReadOnlyCollection<ModalCommandInfo> ModalCommands => _moduleDefs.SelectMany(x => x.ModalCommands).ToList();
 
         /// <summary>
         ///     Initialize a <see cref="InteractionService"/> with provided configurations.
@@ -145,6 +154,7 @@ namespace Discord.Interactions
             _contextCommandMaps = new ConcurrentDictionary<ApplicationCommandType, CommandMap<ContextCommandInfo>>();
             _componentCommandMap = new CommandMap<ComponentCommandInfo>(this, config.InteractionCustomIdDelimiters);
             _autocompleteCommandMap = new CommandMap<AutocompleteCommandInfo>(this);
+            _modalCommandMap = new CommandMap<ModalCommandInfo>(this, config.InteractionCustomIdDelimiters);
 
             _getRestClient = getRestClient;
 
@@ -506,6 +516,9 @@ namespace Discord.Interactions
             foreach (var command in module.AutocompleteCommands)
                 _autocompleteCommandMap.AddCommand(command.GetCommandKeywords(), command);
 
+            foreach (var command in module.ModalCommands)
+                _modalCommandMap.AddCommand(command, command.IgnoreGroupNames);
+
             foreach (var subModule in module.SubModules)
                 LoadModuleInternal(subModule);
         }
@@ -686,6 +699,20 @@ namespace Discord.Interactions
             }
 
             return await commandResult.Command.ExecuteAsync(context, services).ConfigureAwait(false);
+        }
+
+        private async Task<IResult> ExecuteModalCommandAsync(IInteractionContext context, string input, IServiceProvider services)
+        {
+            var result = _componentCommandMap.GetCommand(input);
+
+            if (!result.IsSuccess)
+            {
+                await _cmdLogger.DebugAsync($"Unknown custom interaction id, skipping execution ({input.ToUpper()})");
+
+                await _componentCommandExecutedEvent.InvokeAsync(null, context, result).ConfigureAwait(false);
+                return result;
+            }
+            return await result.Command.ExecuteAsync(context, services, result.RegexCaptureGroups).ConfigureAwait(false);
         }
 
         internal TypeConverter GetTypeConverter (Type type, IServiceProvider services = null)

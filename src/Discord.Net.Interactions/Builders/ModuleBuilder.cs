@@ -16,6 +16,7 @@ namespace Discord.Interactions.Builders
         private readonly List<ContextCommandBuilder> _contextCommands;
         private readonly List<ComponentCommandBuilder> _componentCommands;
         private readonly List<AutocompleteCommandBuilder> _autocompleteCommands;
+        private readonly List<ModalCommandBuilder> _modalCommands;
 
         /// <summary>
         ///     Gets the underlying Interaction Service.
@@ -92,6 +93,8 @@ namespace Discord.Interactions.Builders
         /// </summary>
         public IReadOnlyList<AutocompleteCommandBuilder> AutocompleteCommands => _autocompleteCommands;
 
+        public IReadOnlyList<ModalCommandBuilder> ModalCommands => _modalCommands;
+
         internal TypeInfo TypeInfo { get; set; }
 
         internal ModuleBuilder (InteractionService interactionService, ModuleBuilder parent = null)
@@ -105,6 +108,7 @@ namespace Discord.Interactions.Builders
             _contextCommands = new List<ContextCommandBuilder>();
             _componentCommands = new List<ComponentCommandBuilder>();
             _autocompleteCommands = new List<AutocompleteCommandBuilder>();
+            _modalCommands = new List<ModalCommandBuilder> ();
             _preconditions = new List<PreconditionAttribute>();
         }
 
@@ -241,6 +245,14 @@ namespace Discord.Interactions.Builders
             var command = new AutocompleteCommandBuilder(this);
             configure(command);
             _autocompleteCommands.Add(command);
+            return this;
+        }
+
+        public ModuleBuilder AddModalCommand(Action<ModalCommandBuilder> configure)
+        {
+            var command = new ModalCommandBuilder(this);
+            configure(command);
+            _modalCommands.Add(command);
             return this;
         }
 

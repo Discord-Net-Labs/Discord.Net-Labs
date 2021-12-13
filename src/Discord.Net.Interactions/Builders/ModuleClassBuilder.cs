@@ -298,6 +298,44 @@ namespace Discord.Interactions.Builders
             builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
         }
 
+        private static void BuildModalCommand(ModalCommandBuilder builder, Func<IServiceProvider, IInteractionModuleBase> createInstance, MethodInfo methodInfo,
+            InteractionService commandService, IServiceProvider services)
+        {
+            if (!methodInfo.GetParameters().First().ParameterType.IsAssignableFrom(typeof(IModal)))
+                throw new InvalidOperationException($"A modal commands only parameter must be a type of {nameof(IModal)}");
+
+            var attributes = methodInfo.GetCustomAttributes();
+
+            builder.MethodName = methodInfo.Name;
+
+            foreach (var attribute in attributes)
+            {
+                switch (attribute)
+                {
+                    case ModalInteractionAttribute modal:
+                        {
+                            builder.Name = modal.CustomId;
+                            builder.RunMode = modal.RunMode;
+                            builder.IgnoreGroupNames = modal.IgnoreGroupNames;
+                        }
+                        break;
+                    case PreconditionAttribute precondition:
+                        builder.WithPreconditions(precondition);
+                        break;
+                    default:
+                        builder.WithAttributes(attribute);
+                        break;
+                }
+            }
+
+            var parameters = methodInfo.GetParameters();
+
+            foreach (var parameter in parameters)
+                builder.AddParameter(x => BuildModalParameter(x, parameter));
+
+            builder.Callback = CreateCallback(createInstance, methodInfo, commandService);
+        }
+
         private static ExecuteCallback CreateCallback (Func<IServiceProvider, IInteractionModuleBase> createInstance,
             MethodInfo methodInfo, InteractionService commandService)
         {
@@ -398,7 +436,9 @@ namespace Discord.Interactions.Builders
             builder.Name = Regex.Replace(builder.Name, "(?<=[a-z])(?=[A-Z])", "-").ToLower();
         }
 
-        private static void BuildParameter (CommandParameterBuilder builder, ParameterInfo paramInfo)
+        private static void BuildParameter<TInfo, TBuilder> (ParameterBuilder<TInfo, TBuilder> builder, ParameterInfo paramInfo)
+            where TInfo : class, IParameterInfo
+            where TBuilder : ParameterBuilder<TInfo, TBuilder>
         {
             var attributes = paramInfo.GetCustomAttributes();
             var paramType = paramInfo.ParameterType;
@@ -423,6 +463,17 @@ namespace Discord.Interactions.Builders
                         break;
                 }
             }
+        }
+
+        private static void BuildModalParameter(ModalCommandParameterBuilder builder, ParameterInfo paramInfo)
+        {
+            var interactionService = builder.Command.Module.InteractionService;
+            var typeInfo = paramInfo.ParameterType.GetTypeInfo();
+
+            var ctor = typeInfo.GetConstructors().First();
+
+            builder.ModalParameterInitializer = (args) => (IModal)ctor.Invoke(args);
+            BuildParameter(builder, paramInfo);
         }
         #endregion
 
@@ -464,6 +515,15 @@ namespace Discord.Interactions.Builders
                 !methodInfo.IsStatic &&
                 !methodInfo.IsGenericMethod &&
                 methodInfo.GetParameters().Length == 0;
+        }
+
+        private static bool IsValidModalCommanDefinition(MethodInfo methodInfo)
+        {
+            return methodInfo.IsDefined(typeof(ModalInteractionAttribute)) &&
+                (methodInfo.ReturnType == typeof(Task) || methodInfo.ReturnType == typeof(Task<RuntimeResult>)) &&
+                !methodInfo.IsStatic &&
+                !methodInfo.IsGenericMethod &&
+                methodInfo.GetParameters().Length == 1;
         }
     }
 }
