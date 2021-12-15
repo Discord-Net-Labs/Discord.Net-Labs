@@ -1309,10 +1309,14 @@ namespace Discord.WebSocket
                                             return;
                                         }
 
-                                        if(user == null)
+                                        user = State.GetUser(data.User.Id);
+
+                                        if (user != null)
+                                            user.Update(State, data.User);
+                                        else
                                             user = SocketGlobalUser.Create(this, State, data.User);
 
-                                        await TimedInvokeAsync(_userLeftEvent, nameof(UserLeft), user).ConfigureAwait(false);
+                                        await TimedInvokeAsync(_userLeftEvent, nameof(UserLeft), guild, user).ConfigureAwait(false);
                                     }
                                     else
                                     {
