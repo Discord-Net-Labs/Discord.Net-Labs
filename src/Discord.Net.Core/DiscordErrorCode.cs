@@ -152,6 +152,7 @@ namespace Discord
         #endregion
 
         #region 2FA (60XXX)
+        TheRequestBodyContainsInvalidJSON. = 50109,
         Requires2FA = 60003,
         #endregion
 
