@@ -17,20 +17,20 @@
   "build": {
     "content": [
       {
-        "files": [ "api/**.yml", "api/index.md" ]
+        "files": ["api/**.yml", "api/index.md"]
       },
       {
-        "files": [ "toc.yml", "index.md" ]
+        "files": ["toc.yml", "index.md"]
       },
       {
-        "files": [ "faq/**.md", "faq/**/toc.yml" ]
+        "files": ["faq/**.md", "faq/**/toc.yml"]
       },
       {
-        "files": [ "guides/**.md", "guides/**/toc.yml" ]
+        "files": ["guides/**.md", "guides/**/toc.yml"]
       },
       {
         "src": "../",
-        "files": [ "CHANGELOG.md" ]
+        "files": ["CHANGELOG.md"]
       }
     ],
     "resource": [
@@ -60,7 +60,7 @@
     "overwrite": "_overwrites/**/**.md",
     "globalMetadata": {
       "_appTitle": "Discord.Net-Labs Documentation",
-      "_appFooter": "Discord.Net-Labs (c) 2020-2021 3.4.9",
+      "_appFooter": "Discord.Net-Labs (c) 2020-2021 3.5.0",
       "_enableSearch": true,
       "_appLogoPath": "marketing/logo/SVG/Logomark Standard.svg",
       "_appFaviconPath": "favicon.ico"
