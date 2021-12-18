@@ -19,7 +19,9 @@ namespace Discord
         ///     Gets the RPC origins of the application.
         /// </summary>
         IReadOnlyCollection<string> RPCOrigins { get; }
-
+        /// <summary>
+        ///     Gets the application's public flags.
+        /// </summary>
         ApplicationFlags Flags { get; }
         /// <summary>
         ///     Gets a collection of install parameters for this application.
