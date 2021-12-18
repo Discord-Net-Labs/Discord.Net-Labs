@@ -29,5 +29,10 @@ namespace Discord.API
         [JsonProperty("owner")]
         public Optional<User> Owner { get; set; }
         public Optional<string[]> Tags { get; set; }
+
+        [JsonProperty("terms_of_service_url")]
+        public string TermsOfService { get; set; }
+        [JsonProperty("privacy_policy_url")]
+        public string PrivacyPolicy { get; set; }
     }
 }
