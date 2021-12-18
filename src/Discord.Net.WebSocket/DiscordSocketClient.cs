@@ -1275,13 +1275,13 @@ namespace Discord.WebSocket
                                             var before = user.Clone();
                                             user.Update(State, data);
 
-                                            var cacheableBefore = new Cacheable<SocketGuildUser, RestGuildUser, IGuildUser, ulong>(before, user.Id, true, () => Rest.GetGuildUserAsync(guild.Id, user.Id));
+                                            var cacheableBefore = new Cacheable<SocketGuildUser, ulong>(before, user.Id, true, () => null);
                                             await TimedInvokeAsync(_guildMemberUpdatedEvent, nameof(GuildMemberUpdated), cacheableBefore, user).ConfigureAwait(false);
                                         }
                                         else
                                         {
                                             user = guild.AddOrUpdateUser(data);
-                                            var cacheableBefore = new Cacheable<SocketGuildUser, RestGuildUser, IGuildUser, ulong>(user, user.Id, true, () => Rest.GetGuildUserAsync(guild.Id, user.Id));
+                                            var cacheableBefore = new Cacheable<SocketGuildUser, ulong>(user, user.Id, true, () => null);
                                             await TimedInvokeAsync(_guildMemberUpdatedEvent, nameof(GuildMemberUpdated), cacheableBefore, user).ConfigureAwait(false);
                                         }
                                     }

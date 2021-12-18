@@ -10,12 +10,6 @@ and more flexible library than any previous version.
 
 Below are the most notable breaking changes that you would need to update your code to work with V3.
 
-### GuildMemberUpdated Event
-
-The guild member updated event now passes a `Cacheable<SocketGuildUser, RestGuildUser, IGuildUser, ulong>`
-for the first argument instead of a normal `SocketGuildUser`.
-This new cacheable type allows you to download a `RestGuildUser` if the user isn't cached.
-
 ### ReactionAdded Event
 
 The reaction added event has been changed to have both parameters cacheable.
