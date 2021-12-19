@@ -24,7 +24,7 @@ namespace Discord.Interactions
         /// <param name="types">Type array of the preferred constructor parameters.</param>
         public ComplexParameterAttribute(Type[] types)
         {
-            PrioritizedCtorSignature= types;
+            PrioritizedCtorSignature = types;
         }
     }
 }

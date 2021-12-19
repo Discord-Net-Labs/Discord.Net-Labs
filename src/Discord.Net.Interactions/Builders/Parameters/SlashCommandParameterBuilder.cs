@@ -54,12 +54,12 @@ namespace Discord.Interactions.Builders
         public TypeConverter TypeConverter { get; private set; }
 
         /// <summary>
-        ///     Gets or sets whether this type should be treated as a complex parameter.
+        ///     Gets whether this type should be treated as a complex parameter.
         /// </summary>
         public bool IsComplexParameter { get; internal set; }
 
         /// <summary>
-        ///     Gets or sets the initializer delegate for this parameter, if <see cref="IsComplexParameter"/> is <see langword="true"/>.
+        ///     Gets the initializer delegate for this parameter, if <see cref="IsComplexParameter"/> is <see langword="true"/>.
         /// </summary>
         public ComplexParameterInitializer ComplexParameterInitializer { get; internal set; }
 
@@ -77,7 +77,8 @@ namespace Discord.Interactions.Builders
         /// <param name="command">Parent command of this parameter.</param>
         /// <param name="name">Name of this command.</param>
         /// <param name="type">Type of this parameter.</param>
-        public SlashCommandParameterBuilder(ICommandBuilder command, string name, Type type, ComplexParameterInitializer complexParameterInitializer = null) : base(command, name, type)
+        public SlashCommandParameterBuilder(ICommandBuilder command, string name, Type type, ComplexParameterInitializer complexParameterInitializer = null)
+            : base(command, name, type)
         {
             ComplexParameterInitializer = complexParameterInitializer;
 

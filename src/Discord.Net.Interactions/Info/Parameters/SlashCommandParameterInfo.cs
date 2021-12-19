@@ -55,7 +55,7 @@ namespace Discord.Interactions
         public bool IsAutocomplete { get; }
 
         /// <summary>
-        ///     Gets or sets whether this type should be treated as a complex parameter.
+        ///     Gets whether this type should be treated as a complex parameter.
         /// </summary>
         public bool IsComplexParameter { get; }
 
