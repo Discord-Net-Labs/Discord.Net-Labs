@@ -68,7 +68,7 @@ namespace Discord.Rest
         public RestInteractionContext(DiscordRestClient client, TInteraction interaction, Func<string, Task> interactionResponseCallback)
             : this(client, interaction)
         {
-            InteractionResponseCallback = InteractionResponseCallback;
+            InteractionResponseCallback = interactionResponseCallback;
         }
 
         // IInterationContext
