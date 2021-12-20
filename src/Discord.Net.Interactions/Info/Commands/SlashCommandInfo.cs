@@ -80,8 +80,9 @@ namespace Discord.Interactions
 
                     if(!result.IsSuccess)
                     {
-                        await InvokeModuleEvent(context, result).ConfigureAwait(false);
-                        return result;
+                        var execResult = ExecuteResult.FromError(result);
+                        await InvokeModuleEvent(context, execResult).ConfigureAwait(false);
+                        return execResult;
                     }
 
                     if (result is ParseResult parseResult)
