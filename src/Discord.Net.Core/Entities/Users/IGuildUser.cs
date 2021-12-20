@@ -222,5 +222,22 @@ namespace Discord
         ///     A task that represents the asynchronous role removal operation.
         /// </returns>
         Task RemoveRolesAsync(IEnumerable<IRole> roles, RequestOptions options = null);
+        /// <summary>
+        ///     Adds a timeout based on provided <see cref="TimeSpan"/> to this user in the guild.
+        /// </summary>
+        /// <param name="span">The <see cref="TimeSpan"/> indicating how long a user should be timed out for.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous timeout creation operation.
+        /// </returns>
+        Task AddTimeOutAsync(TimeSpan span, RequestOptions options = null);
+        /// <summary>
+        ///     Removes the current timeout from the user in this guild if one exists.
+        /// </summary>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>
+        ///     A task that represents the asynchronous timeout removal operation.
+        /// </returns>
+        Task RemoveTimeOutAsync(RequestOptions options = null);
     }
 }
