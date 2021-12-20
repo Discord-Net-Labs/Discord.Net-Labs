@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Discord
@@ -73,5 +74,13 @@ namespace Discord
         ///     This user MUST already be in a <see cref="IVoiceChannel"/> for this to work.
         /// </remarks>
         public Optional<ulong> ChannelId { get; set; } // TODO: v3 breaking change, change ChannelId to ulong? to allow for kicking users from voice
+
+        /// <summary>
+        ///     Sets a timestamp how long a user should be timed out for.
+        /// </summary>
+        /// <remarks>
+        ///     <see cref="null"/> or a time in the past to clear a currently existing timeout.
+        /// </remarks>
+        public Optional<DateTimeOffset?> TimeOut { get; set; }
     }
 }

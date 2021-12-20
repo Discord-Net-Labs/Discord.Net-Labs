@@ -86,6 +86,17 @@ namespace Discord
         int Hierarchy { get; }
 
         /// <summary>
+        ///     Gets the date and time that indicates if and for how long a user has been timed out.
+        /// </summary>
+        /// <remarks>
+        ///     <see cref="null"/> or a timestamp in the past if the user is not timed out.
+        /// </remarks>
+        /// <returns>
+        ///     A <see cref="DateTimeOffset"/> indicating how long the user will be timed out for.
+        /// </returns>
+        DateTimeOffset? TimeOutUntil { get; }
+
+        /// <summary>
         ///     Gets the level permissions granted to this user to a given channel.
         /// </summary>
         /// <example>

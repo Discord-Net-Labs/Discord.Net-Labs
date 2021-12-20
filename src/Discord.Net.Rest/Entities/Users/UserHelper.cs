@@ -35,7 +35,8 @@ namespace Discord.Rest
             {
                 Deaf = args.Deaf,
                 Mute = args.Mute,
-                Nickname = args.Nickname
+                Nickname = args.Nickname,
+                TimeOut = args.TimeOut
             };
 
             if (args.Channel.IsSpecified)
@@ -47,6 +48,9 @@ namespace Discord.Rest
                 apiArgs.RoleIds = args.Roles.Value.Select(x => x.Id).ToArray();
             else if (args.RoleIds.IsSpecified)
                 apiArgs.RoleIds = args.RoleIds.Value.ToArray();
+
+            if (args.TimeOut.IsSpecified && args.TimeOut.Value.Value.Offset >= (new TimeSpan(7, 0, 0, 0)))
+                throw new ArgumentOutOfRangeException(nameof(args.TimeOut), "Offset cannot be more than 7 days from the current date.");
 
             /*
              * Ensure that the nick passed in the params of the request is not null.
@@ -83,6 +87,26 @@ namespace Discord.Rest
         {
             foreach (var roleId in roleIds)
                 await client.ApiClient.RemoveRoleAsync(user.Guild.Id, user.Id, roleId, options).ConfigureAwait(false);
+        }
+
+        public static async Task AddTimeOutAsync(IGuildUser user, BaseDiscordClient client, TimeSpan span, RequestOptions options)
+        {
+            var apiArgs = new API.Rest.ModifyGuildMemberParams()
+            {
+                TimeOut = new DateTimeOffset(DateTime.UtcNow, span)
+            };
+            if (span.TotalDays >= 7)
+                throw new ArgumentOutOfRangeException(nameof(apiArgs.TimeOut), "Offset cannot be more than 7 days from the current date.");
+            await client.ApiClient.ModifyGuildMemberAsync(user.Guild.Id, user.Id, apiArgs, options).ConfigureAwait(false);
+        }
+
+        public static async Task RemoveTimeOutAsync(IGuildUser user, BaseDiscordClient client, RequestOptions options)
+        {
+            var apiArgs = new API.Rest.ModifyGuildMemberParams()
+            {
+                TimeOut = null
+            };
+            await client.ApiClient.ModifyGuildMemberAsync(user.Guild.Id, user.Id, apiArgs, options).ConfigureAwait(false);
         }
     }
 }
