@@ -49,8 +49,8 @@ namespace Discord.Rest
             else if (args.RoleIds.IsSpecified)
                 apiArgs.RoleIds = args.RoleIds.Value.ToArray();
 
-            if (args.TimeOut.IsSpecified && args.TimeOut.Value.Value.Offset >= (new TimeSpan(7, 0, 0, 0)))
-                throw new ArgumentOutOfRangeException(nameof(args.TimeOut), "Offset cannot be more than 7 days from the current date.");
+            if (args.TimeOut.IsSpecified && args.TimeOut.Value.Value.Offset >= (new TimeSpan(28, 0, 0, 0)))
+                throw new ArgumentOutOfRangeException(nameof(args.TimeOut), "Offset cannot be more than 28 days from the current date.");
 
             /*
              * Ensure that the nick passed in the params of the request is not null.
@@ -95,8 +95,8 @@ namespace Discord.Rest
             {
                 TimeOut = new DateTimeOffset(DateTime.UtcNow, span)
             };
-            if (span.TotalDays >= 7)
-                throw new ArgumentOutOfRangeException(nameof(apiArgs.TimeOut), "Offset cannot be more than 7 days from the current date.");
+            if (span.TotalDays >= 28)
+                throw new ArgumentOutOfRangeException(nameof(apiArgs.TimeOut), "Offset cannot be more than 28 days from the current date.");
             await client.ApiClient.ModifyGuildMemberAsync(user.Guild.Id, user.Id, apiArgs, options).ConfigureAwait(false);
         }
 
