@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://discord-net-labs.com/" title="Click to visit the documentation!">
+  <a href="https://labs.discordnet.dev/" title="Click to visit the documentation!">
     <img src="https://discord-net-labs.com/marketing/Logo/SVG/Combinationmark%20White%20Border.svg" alt="Logo">
   </a>
     <br />
@@ -22,9 +22,9 @@ This repo is a custom fork of Discord.Net that introduces the newest features of
 
 ----
 
-- 📄 [Documentation](https://discord-net-labs.com)
+- 📄 [Documentation](https://labs.discordnet.dev)
 - 🔗 [Support](https://discord.com/invite/dnet-labs)
-- 📚 [Guides](https://discord-net-labs.com/guides/introduction/intro.html)
+- 📚 [Guides](https://labs.discordnet.dev/guides/introduction/intro.html)
 
 ## Sponsor us! ❤
 - If this library benefits you consider [sponsoring](https://github.com/sponsors/quinchs) the project as it really helps out. *Only sponsor if you're financially stable!*
