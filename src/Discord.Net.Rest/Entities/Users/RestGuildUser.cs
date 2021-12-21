@@ -159,7 +159,7 @@ namespace Discord.Rest
             => RemoveRolesAsync(roles.Select(x => x.Id));
         /// <inheritdoc />
         public Task SetTimeOutAsync(TimeSpan span, RequestOptions options = null)
-            => UserHelper.AddTimeOutAsync(this, Discord, span, options);
+            => UserHelper.SetTimeoutAsync(this, Discord, span, options);
         /// <inheritdoc />
         public Task RemoveTimeOutAsync(RequestOptions options = null)
             => UserHelper.RemoveTimeOutAsync(this, Discord, options);

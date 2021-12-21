@@ -89,7 +89,7 @@ namespace Discord.Rest
                 await client.ApiClient.RemoveRoleAsync(user.Guild.Id, user.Id, roleId, options).ConfigureAwait(false);
         }
 
-        public static async Task AddTimeOutAsync(IGuildUser user, BaseDiscordClient client, TimeSpan span, RequestOptions options)
+        public static async Task SetTimeoutAsync(IGuildUser user, BaseDiscordClient client, TimeSpan span, RequestOptions options)
         {
             if (span.TotalDays >= 28)
                 throw new ArgumentOutOfRangeException(nameof(span), "Offset cannot be more than 28 days from the current date.");
