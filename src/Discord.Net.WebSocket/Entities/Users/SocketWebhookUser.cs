@@ -72,7 +72,7 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         DateTimeOffset? IGuildUser.PremiumSince => null;
         /// <inheritdoc />
-        DateTimeOffset? IGuildUser.TimeOutUntil => null;
+        DateTimeOffset? IGuildUser.TimeoutDuration => null;
         /// <inheritdoc />
         bool? IGuildUser.IsPending => null;
         /// <inheritdoc />
@@ -133,7 +133,7 @@ namespace Discord.WebSocket
             throw new NotSupportedException("Roles are not supported on webhook users.");
         /// <inheritdoc />
         /// <exception cref="NotSupportedException">Timeouts are not supported on webhook users.</exception>
-        Task IGuildUser.AddTimeOutAsync(TimeSpan span, RequestOptions options) =>
+        Task IGuildUser.SetTimeOutAsync(TimeSpan span, RequestOptions options) =>
             throw new NotSupportedException("Timeouts are not supported on webhook users.");
         /// <inheritdoc />
         /// <exception cref="NotSupportedException">Timeouts are not supported on webhook users.</exception>

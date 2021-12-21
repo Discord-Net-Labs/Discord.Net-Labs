@@ -62,7 +62,7 @@ namespace Discord.Rest
         /// <inheritdoc />
         int IGuildUser.Hierarchy => 0;
         /// <inheritdoc />
-        DateTimeOffset? IGuildUser.TimeOutUntil => null;
+        DateTimeOffset? IGuildUser.TimeoutDuration => null;
         /// <inheritdoc />
         GuildPermissions IGuildUser.GuildPermissions => GuildPermissions.Webhook;
 
@@ -100,7 +100,7 @@ namespace Discord.Rest
         Task IGuildUser.RemoveRolesAsync(IEnumerable<IRole> roles, RequestOptions options) =>
             throw new NotSupportedException("Roles are not supported on webhook users.");
         /// <inheritdoc />
-        Task IGuildUser.AddTimeOutAsync(TimeSpan span, RequestOptions options) =>
+        Task IGuildUser.SetTimeOutAsync(TimeSpan span, RequestOptions options) =>
             throw new NotSupportedException("Timeouts are not supported on webhook users.");
         /// <inheritdoc />
         Task IGuildUser.RemoveTimeOutAsync(RequestOptions options) =>

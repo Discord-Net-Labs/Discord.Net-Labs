@@ -94,7 +94,7 @@ namespace Discord
         /// <returns>
         ///     A <see cref="DateTimeOffset"/> indicating how long the user will be timed out for.
         /// </returns>
-        DateTimeOffset? TimeOutUntil { get; }
+        DateTimeOffset? TimeoutDuration { get; }
 
         /// <summary>
         ///     Gets the level permissions granted to this user to a given channel.
@@ -230,7 +230,7 @@ namespace Discord
         /// <returns>
         ///     A task that represents the asynchronous timeout creation operation.
         /// </returns>
-        Task AddTimeOutAsync(TimeSpan span, RequestOptions options = null);
+        Task SetTimeOutAsync(TimeSpan span, RequestOptions options = null);
         /// <summary>
         ///     Removes the current timeout from the user in this guild if one exists.
         /// </summary>

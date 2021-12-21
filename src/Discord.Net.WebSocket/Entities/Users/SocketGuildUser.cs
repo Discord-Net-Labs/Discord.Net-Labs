@@ -20,7 +20,7 @@ namespace Discord.WebSocket
     {
         #region SocketGuildUser
         private long? _premiumSinceTicks;
-        private long? _timeOutUntilTicks;
+        private long? _timeoutDurationTicks;
         private long? _joinedAtTicks;
         private ImmutableArray<ulong> _roleIds;
 
@@ -90,8 +90,8 @@ namespace Discord.WebSocket
         public AudioInStream AudioStream => Guild.GetAudioStream(Id);
         /// <inheritdoc />
         public DateTimeOffset? PremiumSince => DateTimeUtils.FromTicks(_premiumSinceTicks);
-
-        public DateTimeOffset? TimeOutUntil => DateTimeUtils.FromTicks(_timeOutUntilTicks);
+        /// <inheritdoc />
+        public DateTimeOffset? TimeoutDuration => DateTimeUtils.FromTicks(_timeoutDurationTicks);
 
         /// <summary>
         ///     Returns the position of the user within the role hierarchy.
@@ -160,8 +160,8 @@ namespace Discord.WebSocket
                 UpdateRoles(model.Roles.Value);
             if (model.PremiumSince.IsSpecified)
                 _premiumSinceTicks = model.PremiumSince.Value?.UtcTicks;
-            if (model.TimeOutUntil.IsSpecified)
-                _timeOutUntilTicks = model.TimeOutUntil.Value?.UtcTicks;
+            if (model.TimeoutDuration.IsSpecified)
+                _timeoutDurationTicks = model.TimeoutDuration.Value?.UtcTicks;
             if (model.Pending.IsSpecified)
                 IsPending = model.Pending.Value;
         }
@@ -227,7 +227,7 @@ namespace Discord.WebSocket
         public Task RemoveRolesAsync(IEnumerable<IRole> roles, RequestOptions options = null)
             => RemoveRolesAsync(roles.Select(x => x.Id));
         /// <inheritdoc />
-        public Task AddTimeOutAsync(TimeSpan span, RequestOptions options = null)
+        public Task SetTimeOutAsync(TimeSpan span, RequestOptions options = null)
             => UserHelper.AddTimeOutAsync(this, Discord, span, options);
         /// <inheritdoc />
         public Task RemoveTimeOutAsync(RequestOptions options = null)

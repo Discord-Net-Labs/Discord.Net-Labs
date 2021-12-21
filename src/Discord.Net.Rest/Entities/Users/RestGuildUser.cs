@@ -16,7 +16,7 @@ namespace Discord.Rest
     {
         #region RestGuildUser
         private long? _premiumSinceTicks;
-        private long? _timeOutUntilTicks;
+        private long? _timeoutDurationTicks;
         private long? _joinedAtTicks;
         private ImmutableArray<ulong> _roleIds;
 
@@ -48,7 +48,7 @@ namespace Discord.Rest
             }
         }
         /// <inheritdoc />
-        public DateTimeOffset? TimeOutUntil => DateTimeUtils.FromTicks(_timeOutUntilTicks);
+        public DateTimeOffset? TimeoutDuration => DateTimeUtils.FromTicks(_timeoutDurationTicks);
 
         /// <inheritdoc />
         /// <exception cref="InvalidOperationException" accessor="get">Resolving permissions requires the parent guild to be downloaded.</exception>
@@ -95,8 +95,8 @@ namespace Discord.Rest
                 UpdateRoles(model.Roles.Value);
             if (model.PremiumSince.IsSpecified)
                 _premiumSinceTicks = model.PremiumSince.Value?.UtcTicks;
-            if (model.TimeOutUntil.IsSpecified)
-                _timeOutUntilTicks = model.TimeOutUntil.Value?.UtcTicks;
+            if (model.TimeoutDuration.IsSpecified)
+                _timeoutDurationTicks = model.TimeoutDuration.Value?.UtcTicks;
             if (model.Pending.IsSpecified)
                 IsPending = model.Pending.Value;
         }
@@ -158,7 +158,7 @@ namespace Discord.Rest
         public Task RemoveRolesAsync(IEnumerable<IRole> roles, RequestOptions options = null)
             => RemoveRolesAsync(roles.Select(x => x.Id));
         /// <inheritdoc />
-        public Task AddTimeOutAsync(TimeSpan span, RequestOptions options = null)
+        public Task SetTimeOutAsync(TimeSpan span, RequestOptions options = null)
             => UserHelper.AddTimeOutAsync(this, Discord, span, options);
         /// <inheritdoc />
         public Task RemoveTimeOutAsync(RequestOptions options = null)

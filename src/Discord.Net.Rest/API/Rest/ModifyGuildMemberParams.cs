@@ -17,6 +17,6 @@ namespace Discord.API.Rest
         [JsonProperty("channel_id")]
         public Optional<ulong?> ChannelId { get; set; }
         [JsonProperty("communication_disabled_until")]
-        public Optional<DateTimeOffset?> TimeOut { get; set; }
+        public Optional<DateTimeOffset?> TimeoutDuration { get; set; }
     }
 }

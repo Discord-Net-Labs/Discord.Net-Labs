@@ -36,7 +36,7 @@ namespace Discord.Rest
                 Deaf = args.Deaf,
                 Mute = args.Mute,
                 Nickname = args.Nickname,
-                TimeOut = args.TimeOut
+                TimeoutDuration = args.TimeOut
             };
 
             if (args.Channel.IsSpecified)
@@ -93,10 +93,10 @@ namespace Discord.Rest
         {
             var apiArgs = new API.Rest.ModifyGuildMemberParams()
             {
-                TimeOut = new DateTimeOffset(DateTime.UtcNow, span)
+                TimeoutDuration = new DateTimeOffset(DateTime.UtcNow, span)
             };
             if (span.TotalDays >= 28)
-                throw new ArgumentOutOfRangeException(nameof(apiArgs.TimeOut), "Offset cannot be more than 28 days from the current date.");
+                throw new ArgumentOutOfRangeException(nameof(apiArgs.TimeoutDuration), "Offset cannot be more than 28 days from the current date.");
             await client.ApiClient.ModifyGuildMemberAsync(user.Guild.Id, user.Id, apiArgs, options).ConfigureAwait(false);
         }
 
@@ -104,7 +104,7 @@ namespace Discord.Rest
         {
             var apiArgs = new API.Rest.ModifyGuildMemberParams()
             {
-                TimeOut = null
+                TimeoutDuration = null
             };
             await client.ApiClient.ModifyGuildMemberAsync(user.Guild.Id, user.Id, apiArgs, options).ConfigureAwait(false);
         }
