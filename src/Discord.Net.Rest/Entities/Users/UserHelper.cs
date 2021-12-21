@@ -91,12 +91,12 @@ namespace Discord.Rest
 
         public static async Task AddTimeOutAsync(IGuildUser user, BaseDiscordClient client, TimeSpan span, RequestOptions options)
         {
+            if (span.TotalDays >= 28)
+                throw new ArgumentOutOfRangeException(nameof(span), "Offset cannot be more than 28 days from the current date.");
             var apiArgs = new API.Rest.ModifyGuildMemberParams()
             {
                 TimeoutDuration = new DateTimeOffset(DateTime.UtcNow, span)
             };
-            if (span.TotalDays >= 28)
-                throw new ArgumentOutOfRangeException(nameof(apiArgs.TimeoutDuration), "Offset cannot be more than 28 days from the current date.");
             await client.ApiClient.ModifyGuildMemberAsync(user.Guild.Id, user.Id, apiArgs, options).ConfigureAwait(false);
         }
 
