@@ -62,7 +62,7 @@ namespace Discord.Rest
         /// <inheritdoc />
         int IGuildUser.Hierarchy => 0;
         /// <inheritdoc />
-        DateTimeOffset? IGuildUser.TimeoutDuration => null;
+        DateTimeOffset? IGuildUser.TimedOutUntil => null;
         /// <inheritdoc />
         GuildPermissions IGuildUser.GuildPermissions => GuildPermissions.Webhook;
 

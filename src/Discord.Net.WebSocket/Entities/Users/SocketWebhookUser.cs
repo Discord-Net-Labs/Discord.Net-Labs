@@ -72,7 +72,7 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         DateTimeOffset? IGuildUser.PremiumSince => null;
         /// <inheritdoc />
-        DateTimeOffset? IGuildUser.TimeoutDuration => null;
+        DateTimeOffset? IGuildUser.TimedOutUntil => null;
         /// <inheritdoc />
         bool? IGuildUser.IsPending => null;
         /// <inheritdoc />
