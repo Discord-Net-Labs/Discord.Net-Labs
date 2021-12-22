@@ -31,6 +31,10 @@ namespace Discord.Rest
         {
             var args = new GuildUserProperties();
             func(args);
+
+            if (args.TimeOut.IsSpecified && args.TimeOut.Value.Value.Offset > (new TimeSpan(28, 0, 0, 0)))
+                throw new ArgumentOutOfRangeException(nameof(args.TimeOut), "Offset cannot be more than 28 days from the current date.");
+
             var apiArgs = new API.Rest.ModifyGuildMemberParams
             {
                 Deaf = args.Deaf,
@@ -48,9 +52,6 @@ namespace Discord.Rest
                 apiArgs.RoleIds = args.Roles.Value.Select(x => x.Id).ToArray();
             else if (args.RoleIds.IsSpecified)
                 apiArgs.RoleIds = args.RoleIds.Value.ToArray();
-
-            if (args.TimeOut.IsSpecified && args.TimeOut.Value.Value.Offset >= (new TimeSpan(28, 0, 0, 0)))
-                throw new ArgumentOutOfRangeException(nameof(args.TimeOut), "Offset cannot be more than 28 days from the current date.");
 
             /*
              * Ensure that the nick passed in the params of the request is not null.
@@ -91,8 +92,10 @@ namespace Discord.Rest
 
         public static async Task SetTimeoutAsync(IGuildUser user, BaseDiscordClient client, TimeSpan span, RequestOptions options)
         {
-            if (span.TotalDays >= 28)
+            if (span.TotalDays > 28) // As its double, an exact value of 28 can be accepted.
                 throw new ArgumentOutOfRangeException(nameof(span), "Offset cannot be more than 28 days from the current date.");
+            if (span.Ticks <= 0)
+                throw new ArgumentOutOfRangeException(nameof(span), "Offset cannot be 0 or less than 0.");
             var apiArgs = new API.Rest.ModifyGuildMemberParams()
             {
                 TimeoutDuration = new DateTimeOffset(DateTime.UtcNow, span)
