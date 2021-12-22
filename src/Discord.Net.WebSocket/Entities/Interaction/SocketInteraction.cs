@@ -142,7 +142,6 @@ namespace Discord.WebSocket
         public abstract Task RespondAsync(string text = null, Embed[] embeds = null, bool isTTS = false,
             bool ephemeral = false, AllowedMentions allowedMentions = null, MessageComponent components = null, Embed embed = null, RequestOptions options = null);
 
-#if NETCOREAPP3_0_OR_GREATER != true
         /// <summary>
         ///     Responds to this interaction with a file attachment.
         /// </summary>
@@ -211,7 +210,6 @@ namespace Discord.WebSocket
         /// </returns>
         public Task RespondWithFileAsync(FileAttachment attachment, string text, Embed[] embeds, bool isTTS, bool ephemeral, AllowedMentions allowedMentions, MessageComponent components, Embed embed, RequestOptions options)
             => RespondWithFilesAsync(new FileAttachment[] { attachment }, text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options);
-#endif
 
         /// <summary>
         ///     Responds to this interaction with a collection of file attachments.
@@ -249,7 +247,6 @@ namespace Discord.WebSocket
         public abstract Task<RestFollowupMessage> FollowupAsync(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false,
              AllowedMentions allowedMentions = null, MessageComponent components = null, Embed embed = null, RequestOptions options = null);
 
-#if NETCOREAPP3_0_OR_GREATER != true
         /// <summary>
         ///     Sends a followup message for this interaction.
         /// </summary>
@@ -319,7 +316,6 @@ namespace Discord.WebSocket
         public Task<RestFollowupMessage> FollowupWithFileAsync(FileAttachment attachment, string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false,
             AllowedMentions allowedMentions = null, MessageComponent components = null, Embed embed = null, RequestOptions options = null)
             => FollowupWithFilesAsync(new FileAttachment[] { attachment }, text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options);
-#endif
 
         /// <summary>
         ///     Sends a followup message for this interaction.

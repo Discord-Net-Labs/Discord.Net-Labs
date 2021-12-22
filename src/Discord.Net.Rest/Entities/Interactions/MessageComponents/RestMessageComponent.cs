@@ -26,7 +26,7 @@ namespace Discord.Rest
         public RestUserMessage Message { get; private set; }
 
         private object _lock = new object();
-        internal override bool _hasResponded { get; set; } = false;
+        public override bool HasResponded { get; internal set; } = false;
 
         internal RestMessageComponent(BaseDiscordClient client, Model model)
             : base(client, model.Id)
@@ -128,7 +128,7 @@ namespace Discord.Rest
 
             lock (_lock)
             {
-                if (_hasResponded)
+                if (HasResponded)
                 {
                     throw new InvalidOperationException("Cannot respond, update, or defer twice to the same interaction");
                 }
@@ -136,7 +136,7 @@ namespace Discord.Rest
 
             lock (_lock)
             {
-                _hasResponded = true;
+                HasResponded = true;
             }
 
             return SerializePayload(response);
@@ -223,7 +223,7 @@ namespace Discord.Rest
 
             lock (_lock)
             {
-                if (_hasResponded)
+                if (HasResponded)
                 {
                     throw new InvalidOperationException("Cannot respond, update, or defer twice to the same interaction");
                 }
@@ -231,7 +231,7 @@ namespace Discord.Rest
 
             lock (_lock)
             {
-                _hasResponded = true;
+                HasResponded = true;
             }
 
             return SerializePayload(response);
@@ -275,7 +275,7 @@ namespace Discord.Rest
         }
 
         /// <inheritdoc/>
-        public override Task<RestFollowupMessage> FollowupWithFileAsync(
+        public override async Task<RestFollowupMessage> FollowupWithFileAsync(
             Stream fileStream,
             string fileName,
             string text = null,
@@ -290,18 +290,15 @@ namespace Discord.Rest
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
-            embeds ??= Array.Empty<Embed>();
-            if (embed != null)
-                embeds = new[] { embed }.Concat(embeds).ToArray();
-
             Preconditions.NotNull(fileStream, nameof(fileStream), "File Stream must have data");
             Preconditions.NotNullOrEmpty(fileName, nameof(fileName), "File Name must not be empty or null");
 
-            return FollowupWithFileAsync(new FileAttachment(fileStream, fileName), text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options);
+            using (var file = new FileAttachment(fileStream, fileName))
+                return await FollowupWithFileAsync(file, text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public override Task<RestFollowupMessage> FollowupWithFileAsync(
+        public override async Task<RestFollowupMessage> FollowupWithFileAsync(
             string filePath,
             string fileName = null,
             string text = null,
@@ -313,12 +310,12 @@ namespace Discord.Rest
             Embed embed = null,
             RequestOptions options = null)
         {
-            Preconditions.NotNullOrEmpty(filePath, nameof(filePath), "Path must exist");
+            Preconditions.NotNullOrEmpty(filePath, nameof(filePath), "Path must not be null");
 
             fileName ??= Path.GetFileName(filePath);
             Preconditions.NotNullOrEmpty(fileName, nameof(fileName), "File Name must not be empty or null");
-
-            return FollowupWithFileAsync(new FileAttachment(File.OpenRead(filePath), fileName), text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options);
+            using (var file = new FileAttachment(File.OpenRead(filePath), fileName))
+                return await FollowupWithFileAsync(file, text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -410,7 +407,7 @@ namespace Discord.Rest
 
             lock (_lock)
             {
-                if (_hasResponded)
+                if (HasResponded)
                 {
                     throw new InvalidOperationException("Cannot respond or defer twice to the same interaction");
                 }
@@ -418,7 +415,7 @@ namespace Discord.Rest
 
             lock (_lock)
             {
-                _hasResponded = true;
+                HasResponded = true;
             }
 
             return SerializePayload(response);
@@ -447,7 +444,7 @@ namespace Discord.Rest
 
             lock (_lock)
             {
-                if (_hasResponded)
+                if (HasResponded)
                 {
                     throw new InvalidOperationException("Cannot respond or defer twice to the same interaction");
                 }
@@ -455,7 +452,7 @@ namespace Discord.Rest
 
             lock (_lock)
             {
-                _hasResponded = true;
+                HasResponded = true;
             }
 
             return SerializePayload(response);
