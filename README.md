@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://labs.discordnet.dev/" title="Click to visit the documentation!">
-    <img src="https://discord-net-labs.com/marketing/Logo/SVG/Combinationmark%20White%20Border.svg" alt="Logo">
+    <img src="https://raw.githubusercontent.com/Discord-Net-Labs/Discord.Net-Labs/release/3.x/docs/marketing/logo/SVG/Combinationmark%20White%20Border.svg" alt="Logo">
   </a>
     <br />
     <br />
