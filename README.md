@@ -39,15 +39,6 @@ Nothing here is guaranteed to work but you are more than welcome to submit bugs 
   * ❌ Reason: The default package depends on Discord.NET instead of labs.
   * ✔ Fix: [InteractivityAddon.Labs](https://www.nuget.org/packages/Discord.InteractivityAddon.Labs), which implements some of the features added in Discord.Net-Labs.
 
-- [Victoria](https://github.com/Yucked/Victoria)
-  * ❌ Reason: Victoria is built around Discord.NET and is not supported by labs.
-  * ✔ Fix: A custom build based on Discord.NET-labs: 
-```xml
-<PropertyGroup>
-  <RestoreAdditionalProjectSources>https://www.myget.org/F/yucked/api/v3/index.json</RestoreAdditionalProjectSources>
-</PropertyGroup>
-```
-
 ## How to use
 
 Setting up labs in your project is really simple, here's how to do it:
