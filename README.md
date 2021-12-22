@@ -13,18 +13,22 @@
   <a href="https://dev.azure.com/Discord-Net-Labs/Discord-Net-Labs/_build/latest?definitionId=1&amp;branchName=release%2F3.x">
     <img src="https://dev.azure.com/Discord-Net-Labs/Discord-Net-Labs/_apis/build/status/Discord-Net-Labs.Discord.Net-Labs?branchName=release%2F3.x" alt="Build Status">
   </a>
-  <a href="https://discord.gg/dvSfUTet3K">
+  <a href="https://discord.com/invite/dnet">
     <img src="https://discord.com/api/guilds/848176216011046962/widget.png" alt="Discord">
   </a>
 </p>
 
-This repo is a custom fork of Discord.Net that introduces the newest features of discord for testing and experimenting. Nothing here is guaranteed to work but you are more than welcome to submit bugs in the issues tabs
+## What is labs?
+
+Discord.NET Labs is an experimental branch of [Discord.NET](https://github.com/discord-net/Discord.Net) that introduces the newest features of discord for testing and experimenting.
+Nothing here is guaranteed to work but you are more than welcome to submit bugs in the issues tabs
 
 ----
 
+- 📢 [Main repository](https://github.com/discord-net/Discord.Net)
 - 📄 [Documentation](https://labs.discordnet.dev)
-- 🔗 [Support](https://discord.com/invite/dnet-labs)
-- 📚 [Guides](https://labs.discordnet.dev/guides/introduction/intro.html)
+- 🔗 [Support](https://discord.com/invite/dnet)
+- 📚 [Guides](https://discord-net-labs.com/guides/introduction/intro.html)
 
 ## Sponsor us! ❤
 - If this library benefits you consider [sponsoring](https://github.com/sponsors/quinchs) the project as it really helps out. *Only sponsor if you're financially stable!*
@@ -45,10 +49,13 @@ This repo is a custom fork of Discord.Net that introduces the newest features of
 ```
 
 ## How to use
+
 Setting up labs in your project is really simple, here's how to do it:
 1) Remove Discord.Net from your project
 2) Add Discord.Net Labs nuget to your project
 3) That's all!
+
+> Additional installation info can be found [here](https://labs.discordnet.dev/guides/getting_started/labs.html).
 
 ## Branches
 
@@ -59,4 +66,4 @@ This branch is kept up to date with dnets dev branch. we pull of it to ensure th
 This branch is what will be pushed to nuget, sometimes its not up to date as we wait for other features to be finished.
 
 ### feature/xyz
-These branches are features for new things, you are more than welcome to clone them and give feedback in the discord server or issues tab.
+These branches are features for new things, you are more than welcome to clone them and give feedback in the [discord server](https://discord.com/invite/dnet) or issues tab.
