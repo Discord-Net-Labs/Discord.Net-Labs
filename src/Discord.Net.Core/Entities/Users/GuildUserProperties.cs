@@ -81,6 +81,6 @@ namespace Discord
         /// <remarks>
         ///     <see cref="null"/> or a time in the past to clear a currently existing timeout.
         /// </remarks>
-        public Optional<DateTimeOffset?> TimeOut { get; set; }
+        public Optional<DateTimeOffset?> TimedOutUntil { get; set; }
     }
 }

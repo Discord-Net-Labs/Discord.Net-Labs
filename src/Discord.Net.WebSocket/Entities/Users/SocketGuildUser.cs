@@ -20,7 +20,7 @@ namespace Discord.WebSocket
     {
         #region SocketGuildUser
         private long? _premiumSinceTicks;
-        private long? _timeoutDurationTicks;
+        private long? _timedOutTicks;
         private long? _joinedAtTicks;
         private ImmutableArray<ulong> _roleIds;
 
@@ -91,7 +91,16 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public DateTimeOffset? PremiumSince => DateTimeUtils.FromTicks(_premiumSinceTicks);
         /// <inheritdoc />
-        public DateTimeOffset? TimeoutDuration => DateTimeUtils.FromTicks(_timeoutDurationTicks);
+        public DateTimeOffset? TimedOutUntil
+        {
+            get
+            {
+                if (!_timedOutTicks.HasValue || _timedOutTicks.Value < 0)
+                    return null;
+                else
+                    return DateTimeUtils.FromTicks(_timedOutTicks);
+            }
+        }
 
         /// <summary>
         ///     Returns the position of the user within the role hierarchy.
@@ -160,8 +169,8 @@ namespace Discord.WebSocket
                 UpdateRoles(model.Roles.Value);
             if (model.PremiumSince.IsSpecified)
                 _premiumSinceTicks = model.PremiumSince.Value?.UtcTicks;
-            if (model.TimeoutDuration.IsSpecified)
-                _timeoutDurationTicks = model.TimeoutDuration.Value?.UtcTicks;
+            if (model.TimedOutUntil.IsSpecified)
+                _timedOutTicks = model.TimedOutUntil.Value?.UtcTicks;
             if (model.Pending.IsSpecified)
                 IsPending = model.Pending.Value;
         }

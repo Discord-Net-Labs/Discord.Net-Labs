@@ -40,8 +40,8 @@ namespace Discord.WebSocket
             => GuildUser.PremiumSince;
 
         /// <inheritdoc/>
-        public DateTimeOffset? TimeoutDuration
-            => GuildUser.TimeoutDuration;
+        public DateTimeOffset? TimedOutUntil
+            => GuildUser.TimedOutUntil;
 
         /// <inheritdoc/>
         public bool? IsPending

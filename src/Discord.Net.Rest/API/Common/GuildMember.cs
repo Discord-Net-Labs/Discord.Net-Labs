@@ -24,6 +24,6 @@ namespace Discord.API
         [JsonProperty("premium_since")]
         public Optional<DateTimeOffset?> PremiumSince { get; set; }
         [JsonProperty("communication_disabled_until")]
-        public Optional<DateTimeOffset?> TimeoutDuration { get; set; }
+        public Optional<DateTimeOffset?> TimedOutUntil { get; set; }
     }
 }

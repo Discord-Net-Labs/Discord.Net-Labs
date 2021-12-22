@@ -32,15 +32,15 @@ namespace Discord.Rest
             var args = new GuildUserProperties();
             func(args);
 
-            if (args.TimeOut.IsSpecified && args.TimeOut.Value.Value.Offset > (new TimeSpan(28, 0, 0, 0)))
-                throw new ArgumentOutOfRangeException(nameof(args.TimeOut), "Offset cannot be more than 28 days from the current date.");
+            if (args.TimedOutUntil.IsSpecified && args.TimedOutUntil.Value.Value.Offset > (new TimeSpan(28, 0, 0, 0)))
+                throw new ArgumentOutOfRangeException(nameof(args.TimedOutUntil), "Offset cannot be more than 28 days from the current date.");
 
             var apiArgs = new API.Rest.ModifyGuildMemberParams
             {
                 Deaf = args.Deaf,
                 Mute = args.Mute,
                 Nickname = args.Nickname,
-                TimeoutDuration = args.TimeOut
+                TimedOutUntil = args.TimedOutUntil
             };
 
             if (args.Channel.IsSpecified)
@@ -95,10 +95,10 @@ namespace Discord.Rest
             if (span.TotalDays > 28) // As its double, an exact value of 28 can be accepted.
                 throw new ArgumentOutOfRangeException(nameof(span), "Offset cannot be more than 28 days from the current date.");
             if (span.Ticks <= 0)
-                throw new ArgumentOutOfRangeException(nameof(span), "Offset cannot be 0 or less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(span), "Offset cannot hold no value or have a negative value.");
             var apiArgs = new API.Rest.ModifyGuildMemberParams()
             {
-                TimeoutDuration = new DateTimeOffset(DateTime.UtcNow, span)
+                TimedOutUntil = new DateTimeOffset(DateTime.UtcNow, span)
             };
             await client.ApiClient.ModifyGuildMemberAsync(user.Guild.Id, user.Id, apiArgs, options).ConfigureAwait(false);
         }
@@ -107,7 +107,7 @@ namespace Discord.Rest
         {
             var apiArgs = new API.Rest.ModifyGuildMemberParams()
             {
-                TimeoutDuration = null
+                TimedOutUntil = null
             };
             await client.ApiClient.ModifyGuildMemberAsync(user.Guild.Id, user.Id, apiArgs, options).ConfigureAwait(false);
         }
