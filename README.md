@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://discord-net-labs.com/" title="Click to visit the documentation!">
+  <a href="https://labs.discordnet.dev/" title="Click to visit the documentation!">
     <img src="https://discord-net-labs.com/marketing/Logo/SVG/Combinationmark%20White%20Border.svg" alt="Logo">
   </a>
     <br />
