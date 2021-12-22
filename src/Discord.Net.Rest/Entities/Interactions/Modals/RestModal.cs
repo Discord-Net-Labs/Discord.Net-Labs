@@ -393,7 +393,6 @@ namespace Discord.Rest
         }
 
         /// <inheritdoc/>
-        [Obsolete("Modal interactions cannot have modal responces!", true)]
         public override string RespondWithModal(Modal modal, RequestOptions requestOptions = null)
             => throw new NotSupportedException("Modal interactions cannot have modal responces!");
 
