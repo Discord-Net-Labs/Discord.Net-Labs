@@ -484,7 +484,7 @@ namespace Discord.Rest
 
             lock (_lock)
             {
-                if (_hasResponded)
+                if (HasResponded)
                 {
                     throw new InvalidOperationException("Cannot respond or defer twice to the same interaction.");
                 }
@@ -492,7 +492,7 @@ namespace Discord.Rest
 
             lock (_lock)
             {
-                _hasResponded = true;
+                HasResponded = true;
             }
 
             return SerializePayload(response);
