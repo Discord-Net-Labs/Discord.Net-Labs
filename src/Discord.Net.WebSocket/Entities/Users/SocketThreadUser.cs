@@ -40,6 +40,10 @@ namespace Discord.WebSocket
             => GuildUser.PremiumSince;
 
         /// <inheritdoc/>
+        public DateTimeOffset? TimedOutUntil
+            => GuildUser.TimedOutUntil;
+
+        /// <inheritdoc/>
         public bool? IsPending
             => GuildUser.IsPending;
         /// <inheritdoc />
@@ -181,6 +185,12 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         public Task RemoveRolesAsync(IEnumerable<IRole> roles, RequestOptions options = null) => GuildUser.RemoveRolesAsync(roles, options);
+
+        /// <inheritdoc/>
+        public Task SetTimeOutAsync(TimeSpan span, RequestOptions options = null) => GuildUser.SetTimeOutAsync(span, options);
+
+        /// <inheritdoc/>
+        public Task RemoveTimeOutAsync(RequestOptions options = null) => GuildUser.RemoveTimeOutAsync(options);
 
         /// <inheritdoc/>
         GuildPermissions IGuildUser.GuildPermissions => GuildUser.GuildPermissions;
