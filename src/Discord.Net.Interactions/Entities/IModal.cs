@@ -8,5 +8,6 @@ namespace Discord.Interactions
 {
     public interface IModal
     {
+        
     }
 }
