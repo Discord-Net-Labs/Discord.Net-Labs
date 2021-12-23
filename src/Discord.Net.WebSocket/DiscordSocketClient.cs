@@ -519,7 +519,7 @@ namespace Discord.WebSocket
             if(model == null)
                 return null;
 
-            
+
             if (model.GuildId.IsSpecified)
             {
                 var guild = State.GetGuild(model.GuildId.Value);
@@ -1309,7 +1309,7 @@ namespace Discord.WebSocket
                                             return;
                                         }
 
-                                        user = State.GetUser(data.User.Id);
+                                        user ??= State.GetUser(data.User.Id);
 
                                         if (user != null)
                                             user.Update(State, data.User);
@@ -2100,7 +2100,7 @@ namespace Discord.WebSocket
                                             {
                                                 await TimedInvokeAsync(_speakerRemoved, nameof(SpeakerRemoved), stage, guildUser);
                                             }
-                                        }    
+                                        }
                                     }
 
                                     await TimedInvokeAsync(_userVoiceStateUpdatedEvent, nameof(UserVoiceStateUpdated), user, before, after).ConfigureAwait(false);
@@ -2491,7 +2491,7 @@ namespace Discord.WebSocket
                                 }
 
                                 break;
-                            case "THREAD_MEMBERS_UPDATE": 
+                            case "THREAD_MEMBERS_UPDATE":
                                 {
                                     await _gatewayLogger.DebugAsync("Received Dispatch (THREAD_MEMBERS_UPDATE)").ConfigureAwait(false);
 
