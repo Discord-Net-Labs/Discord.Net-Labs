@@ -12,24 +12,24 @@ body:
       description: Please refer to our [FAQs](https://labs.discordnet.dev/faq), [Documentation](https://labs.discordnet.dev/api/index.html), 
                     and [Migration Guide](https://labs.discordnet.dev/guides/v2_v3_guide/v2_to_v3_guide.html) before reporting issues.
       options:
-      - label: "I double checked the docs and couldn't find amy useful information."
+      - label: "I double checked the docs and couldn't find any useful information."
         required: true
   - type: checkboxes
     attributes:
       label: Verify Issue Source
       description: If your issue is related to an exception make sure the error was thrown by Discord.Net, and not your code or another library. 
-                  If you get an `HttpException` with the error code `401`, than the error is caused by your bots permissions, not dnet.
+                  If you get an `HttpException` with the error code `401`, then the error is caused by your bot's permissions, not dnet.
       options:
       - label: I verified the issue was caused by Discord.Net.
         required: true
   - type: checkboxes
     attributes:
       label: Check your intents
-      description: If your issue is related to not recieving expected events you may have setup your gateway intents incorectly. 
-                    Newer versions of Discord.Net use a more modern versions of Discords API that requires you tell it what events
-                    you want to recieve. Discord.Net defaults to all non-privleged intents, but if your bot requires privleged intents 
+      description: If your issue is related to not receiving expected events, you may have setup your gateway intents incorrectly. 
+                    Newer versions of Discord.Net use a more modern version of Discord's API that requires you tell it what events
+                    you want to receive. Discord.Net defaults to all non-privleged intents, but if your bot requires privileged intents 
                     you need specify them in your clients config. You can see what intents you need for your events 
-                    [here](https://discord.com/developers/docs/topics/gateway#list-of-intents)
+                    [here](https://discord.com/developers/docs/topics/gateway#list-of-intents).
       options:
       - label: I double checked that I have the required intents.
         required: true
@@ -37,8 +37,8 @@ body:
     id: description
     attributes: 
       label: Description
-      description: A breif explination of the bug.
-      placeholder: When I start a DiscordSocketClient without stopping it the gatewat thread gets blocked.
+      description: A brief explination of the bug.
+      placeholder: When I start a DiscordSocketClient without stopping it, the gateway thread gets blocked.
     validations:
       required: true
   - type: input
@@ -61,7 +61,7 @@ body:
     id: logs
     attributes: 
       label: Logs
-      description: Put applicable logs and/or a stacktrace here.
+      description: Add applicable logs and/or a stacktrace here.
     validations:
       required: true
   - type: textarea
