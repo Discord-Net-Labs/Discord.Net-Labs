@@ -28,7 +28,7 @@ Nothing here is guaranteed to work but you are more than welcome to submit bugs 
 - 📢 [Main repository](https://github.com/discord-net/Discord.Net)
 - 📄 [Documentation](https://labs.discordnet.dev)
 - 🔗 [Support](https://discord.com/invite/dnet)
-- 📚 [Guides](https://discord-net-labs.com/guides/introduction/intro.html)
+- 📚 [Guides](https://labs.discordnet.dev/guides/introduction/intro.html)
 
 ## Sponsor us! ❤
 - If this library benefits you consider [sponsoring](https://github.com/sponsors/quinchs) the project as it really helps out. *Only sponsor if you're financially stable!*
