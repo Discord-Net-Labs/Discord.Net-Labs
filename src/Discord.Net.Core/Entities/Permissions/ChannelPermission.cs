@@ -84,16 +84,18 @@ namespace Discord
         ///     Allows for using voice-activity-detection in a voice channel.
         /// </summary>
         UseVAD         		= 0x00_02_00_00_00,
-
         /// <summary>
         ///     Allows for using priority speaker in a voice channel.
         /// </summary>
         PrioritySpeaker     = 0x00_00_00_01_00,
-
         /// <summary>
         ///     Allows video streaming in a voice channel.
         /// </summary>
         Stream              = 0x00_00_00_02_00,
+        /// <summary>
+        ///     Allows for requesting to speak in stage channels. (This permission is under active development and may be changed or removed.)
+        /// </summary>
+        RequestToSpeak = 0x01_00_00_00_00,
 
         // More General
         /// <summary>
@@ -104,27 +106,18 @@ namespace Discord
         ///     Allows management and editing of webhooks.
         /// </summary>
         ManageWebhooks		= 0x00_20_00_00_00,
-
         /// <summary>
         ///     Allows management and editing of emojis.
         /// </summary>
         ManageEmojis        = 0x00_40_00_00_00,
-
         /// <summary>
         ///     Allows members to use slash commands in text channels.
         /// </summary>
         UseApplicationCommands = 0x00_80_00_00_00,
-
-        /// <summary>
-        ///     Allows for requesting to speak in stage channels. (This permission is under active development and may be changed or removed.)
-        /// </summary>
-        RequestToSpeak       = 0x01_00_00_00_00,
-
         /// <summary>
         ///     Allows for deleting and archiving threads, and viewing all private threads
         /// </summary>
         ManageThreads       = 0x04_00_00_00_00,
-
         /// <summary>
         ///     Allows for creating public threads.
         /// </summary>
@@ -144,7 +137,6 @@ namespace Discord
         /// <summary>
         ///     Allows for launching activities (applications with the EMBEDDED flag) in a voice channel.
         /// </summary>
-        StartEmbeddedActivities = 0x80_00_00_00_00
-
+        StartEmbeddedActivities = 0x80_00_00_00_00,
     }
 }
