@@ -1104,7 +1104,7 @@ namespace Discord
         public string Placeholder
         {
             get => _placeholder;
-            set => _placeholder = value.Length <= 100
+            set => _placeholder = (value?.Length ?? 0) <= 100
                 ? value
                 : throw new ArgumentException("Placeholder cannot have more than 100 characters.");
         }

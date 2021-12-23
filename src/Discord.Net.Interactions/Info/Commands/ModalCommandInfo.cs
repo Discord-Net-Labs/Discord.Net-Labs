@@ -23,7 +23,7 @@ namespace Discord.Interactions
         /// <inheritdoc/>
         public override Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services)
         {
-
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
