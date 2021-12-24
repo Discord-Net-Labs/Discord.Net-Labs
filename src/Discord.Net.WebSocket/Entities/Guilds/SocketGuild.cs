@@ -199,6 +199,9 @@ namespace Discord.WebSocket
                 };
             }
         }
+        /// <inheritdoc/>
+        public ulong MaxUploadLimit
+            => GuildHelper.GetUploadLimit(this);
         /// <summary>
         ///     Gets the widget channel (i.e. the channel set in the guild's widget settings) in this guild.
         /// </summary>
