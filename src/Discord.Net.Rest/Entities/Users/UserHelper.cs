@@ -98,7 +98,7 @@ namespace Discord.Rest
                 throw new ArgumentOutOfRangeException(nameof(span), "Offset cannot hold no value or have a negative value.");
             var apiArgs = new API.Rest.ModifyGuildMemberParams()
             {
-                TimedOutUntil = new DateTimeOffset(DateTime.UtcNow, span)
+                TimedOutUntil = DateTimeOffset.UtcNow.Add(span)
             };
             await client.ApiClient.ModifyGuildMemberAsync(user.Guild.Id, user.Id, apiArgs, options).ConfigureAwait(false);
         }
