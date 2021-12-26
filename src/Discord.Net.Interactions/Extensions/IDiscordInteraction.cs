@@ -10,14 +10,13 @@ namespace Discord.Interactions
         public static async Task RespondWithModalAsync(this IDiscordInteraction interaction, IModal modal,
             RequestOptions options = null) 
         {
-            Type t = modal.GetType();
-            var modalAttribute = t.GetCustomAttribute<ModalInteractionAttribute>();
-
             var builder = new ModalBuilder()
-                .WithCustomId(modalAttribute?.CustomId ?? t.FullName)
-                .WithTitle(modalAttribute?.Title ?? t.Name);
+                .WithCustomId(modal.CustomId)
+                .WithTitle(modal.Title);
 
-            t.GetProperties()
+            modal
+                .GetType()
+                .GetProperties()
                 .Where(x => x.PropertyType == typeof(string))
                 .Select(x => x.GetCustomAttribute<ModalTextInputAttribute>())
                 .Where(x => x != null)
