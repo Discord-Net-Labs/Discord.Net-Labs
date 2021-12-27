@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Discord.Interactions
 {
@@ -21,9 +22,43 @@ namespace Discord.Interactions
         }
 
         /// <inheritdoc/>
-        public override Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services)
+        public override async Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services)
+            => await ExecuteAsync(context, services, null).ConfigureAwait(false);
+
+        /// <summary>
+        ///     Execute this command using dependency injection.
+        /// </summary>
+        /// <param name="context">Context that will be injected to the <see cref="InteractionModuleBase{T}"/>.</param>
+        /// <param name="services">Services that will be used while initializing the <see cref="InteractionModuleBase{T}"/>.</param>
+        /// <param name="additionalArgs">Provide additional string parameters to the method along with the auto generated parameters.</param>
+        /// <returns>
+        ///     A task representing the asynchronous command execution process.
+        /// </returns>
+        
+        public async Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services, params string[] additionalArgs)
         {
-            throw new NotImplementedException();
+            if (context.Interaction is not IModalInteraction interaction)
+                return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Modal Interaction.");
+                
+            var modalType = Parameters.First().ParameterType;
+            
+            var modal = (IModal)Activator.CreateInstance(modalType);
+            var modalProperties = modalType.GetProperties().Where(x => x.CanWrite && x.GetCustomAttribute<ModalTextInputAttribute>() != null);
+
+            foreach (var component in interaction.Data.Components)
+            {
+                modalProperties
+                    .Where(x => x.GetCustomAttribute<ModalTextInputAttribute>().CustomId == component.CustomId && x.PropertyType == typeof(string))
+                    .First()
+                    .SetValue(modal, component.Value);
+            }
+
+            List<object> args = new() { modal };
+            
+            if (additionalArgs is not null)
+                args.AddRange(additionalArgs);
+
+            return await RunAsync(context, args.ToArray(), services);
         }
 
         /// <inheritdoc/>

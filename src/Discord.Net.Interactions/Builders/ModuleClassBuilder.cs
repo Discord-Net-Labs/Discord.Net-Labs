@@ -103,6 +103,7 @@ namespace Discord.Interactions.Builders
             var validContextCommands = methods.Where(IsValidContextCommandDefinition);
             var validInteractions = methods.Where(IsValidComponentCommandDefinition);
             var validAutocompleteCommands = methods.Where(IsValidAutocompleteCommandDefinition);
+            var validModalCommands = methods.Where(IsValidModalCommanDefinition);
 
             Func<IServiceProvider, IInteractionModuleBase> createInstance = commandService._useCompiledLambda ?
                 ReflectionUtils<IInteractionModuleBase>.CreateLambdaBuilder(typeInfo, commandService) : ReflectionUtils<IInteractionModuleBase>.CreateBuilder(typeInfo, commandService);
@@ -118,6 +119,8 @@ namespace Discord.Interactions.Builders
 
             foreach(var method in validAutocompleteCommands)
                 builder.AddAutocompleteCommand(x => BuildAutocompleteCommand(x, createInstance, method, commandService, services));
+            foreach(var method in validModalCommands)
+                builder.AddModalCommand(x => BuildModalCommand(x, createInstance, method, commandService, services));
         }
 
         private static void BuildSubModules (ModuleBuilder parent, IEnumerable<TypeInfo> subModules, IList<TypeInfo> builtTypes, InteractionService commandService,
@@ -301,7 +304,7 @@ namespace Discord.Interactions.Builders
         private static void BuildModalCommand(ModalCommandBuilder builder, Func<IServiceProvider, IInteractionModuleBase> createInstance, MethodInfo methodInfo,
             InteractionService commandService, IServiceProvider services)
         {
-            if (!methodInfo.GetParameters().First().ParameterType.IsAssignableFrom(typeof(IModal)))
+            if (!methodInfo.GetParameters().First().ParameterType.GetInterfaces().Contains(typeof(IModal)))
                 throw new InvalidOperationException($"A modal commands only parameter must be a type of {nameof(IModal)}");
 
             var attributes = methodInfo.GetCustomAttributes();

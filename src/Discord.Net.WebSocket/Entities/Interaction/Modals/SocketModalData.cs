@@ -10,27 +10,17 @@ namespace Discord.WebSocket
     /// <summary>
     ///     Represents data sent from a <see cref="InteractionType.ModalSubmit"/>.
     /// </summary>
-    public class SocketModalData : IComponentInteractionData
+    public class SocketModalData : IDiscordInteractionData, IModalInteractionData
     {
-        /// <inheritdoc/>
+        /// <summary>
+        ///     Gets the <see cref="Modal"/>'s Custom Id.
+        /// </summary>
         public string CustomId { get; }
 
         /// <summary>
-        ///     Represents the <see cref="Modal"/>s components submitted by the user.
+        ///     Gets the <see cref="Modal"/>s components submitted by the user.
         /// </summary>
         public IReadOnlyCollection<SocketMessageComponentData> Components { get; }
-
-        /// <inheritdoc/>
-        public ComponentType Type => ComponentType.ModalSubmit;
-
-        /// <inheritdoc/>
-        [Obsolete("Modal interactions do not have values!", true)]
-        public IReadOnlyCollection<string> Values
-            => throw new NotSupportedException("Modal interactions do not have values!");
-
-        [Obsolete("Modal interactions do not have value!", true)]
-        public string Value
-            => throw new NotSupportedException("Modal interactions do not have value!");
 
         internal SocketModalData(Model model)
         {
@@ -39,7 +29,8 @@ namespace Discord.WebSocket
                 .SelectMany(x => x.Components)
                 .Select(x => new SocketMessageComponentData(x))
                 .ToArray();
-                
         }
+
+        IReadOnlyCollection<IComponentInteractionData> IModalInteractionData.Components => Components;
     }
 }

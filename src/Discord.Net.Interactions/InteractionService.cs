@@ -611,7 +611,7 @@ namespace Discord.Interactions
         public async Task<IResult> ExecuteCommandAsync (IInteractionContext context, IServiceProvider services)
         {
             var interaction = context.Interaction;
-
+            
             return interaction switch
             {
                 ISlashCommandInteraction slashCommand => await ExecuteSlashCommandAsync(context, slashCommand, services).ConfigureAwait(false),
@@ -619,6 +619,7 @@ namespace Discord.Interactions
                 IUserCommandInteraction userCommand => await ExecuteContextCommandAsync(context, userCommand.Data.Name, ApplicationCommandType.User, services).ConfigureAwait(false),
                 IMessageCommandInteraction messageCommand => await ExecuteContextCommandAsync(context, messageCommand.Data.Name, ApplicationCommandType.Message, services).ConfigureAwait(false),
                 IAutocompleteInteraction autocomplete => await ExecuteAutocompleteAsync(context, autocomplete, services).ConfigureAwait(false),
+                IModalInteraction modalCommand => await ExecuteModalCommandAsync(context, modalCommand.Data.CustomId, services).ConfigureAwait(false),
                 _ => throw new InvalidOperationException($"{interaction.Type} interaction type cannot be executed by the Interaction service"),
             };
         }
@@ -704,7 +705,7 @@ namespace Discord.Interactions
 
         private async Task<IResult> ExecuteModalCommandAsync(IInteractionContext context, string input, IServiceProvider services)
         {
-            var result = _componentCommandMap.GetCommand(input);
+            var result = _modalCommandMap.GetCommand(input);
 
             if (!result.IsSuccess)
             {

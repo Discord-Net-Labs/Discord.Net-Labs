@@ -17,11 +17,6 @@ namespace Discord.Interactions
         ///     Gets the string to compare the Modal CustomIDs with.
         /// </summary>
         public string CustomId { get; }
-
-        /// <summary>
-        ///     Gets the title of the modal.
-        /// </summary>
-        public string Title { get; }
         
         /// <summary>
         ///     Gets <see langword="true"/> if <see cref="GroupAttribute"/>s will be ignored while creating this command and this method will be treated as a top level command.
@@ -39,10 +34,9 @@ namespace Discord.Interactions
         /// <param name="customId">String to compare the modal CustomIDs with.</param>
         /// <param name="ignoreGroupNames">If <see langword="true"/> <see cref="GroupAttribute"/>s will be ignored while creating this command and this method will be treated as a top level command.</param>
         /// <param name="runMode">Set the run mode of the command.</param>
-        public ModalInteractionAttribute(string customId, string title, bool ignoreGroupNames = false, RunMode runMode = RunMode.Default)
+        public ModalInteractionAttribute(string customId, bool ignoreGroupNames = false, RunMode runMode = RunMode.Default)
         {
             CustomId = customId;
-            Title = title;
             IgnoreGroupNames = ignoreGroupNames;
             RunMode = runMode;
         }

@@ -14,8 +14,12 @@ namespace Discord.WebSocket
     /// <summary>
     ///     Represents a user submitted <see cref="Discord.Modal"/> received via GateWay.
     /// </summary>
-    public class SocketModal : SocketInteraction, IDiscordInteraction
+    public class SocketModal : SocketInteraction, IDiscordInteraction, IModalInteraction
     {
+        /// <summary>
+        ///     The data for this <see cref="Modal"/> interaction.
+        /// </summary>
+        /// <value></value>
         public new SocketModalData Data { get; set; }
 
         internal SocketModal(DiscordSocketClient client, ModelBase model, ISocketMessageChannel channel)
@@ -291,5 +295,7 @@ namespace Discord.WebSocket
         /// <inheritdoc/>
         public override Task RespondWithModalAsync(Modal modal, RequestOptions options)
             => throw new NotSupportedException("You cannot respond to a modal with a modal!");
+            
+        IModalInteractionData IModalInteraction.Data => Data;
     }
 }

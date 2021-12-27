@@ -101,7 +101,6 @@ namespace Discord.WebSocket
             => throw new NotSupportedException("Autocomplete interactions don't support this method!");
 
         /// <inheritdoc/>
-        [Obsolete("Autocomplete interactions cannot have normal responses!", true)]
         public override Task RespondWithModalAsync(Modal modal, RequestOptions requestOptions = null)
             => throw new NotSupportedException("Autocomplete interactions cannot have normal responces!");
 

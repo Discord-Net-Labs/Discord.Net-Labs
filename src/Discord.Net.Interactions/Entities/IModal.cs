@@ -9,12 +9,12 @@ namespace Discord.Interactions
     public interface IModal
     {
         /// <summary>
-        ///     Gets the modals custom id.
+        ///     Gets the modal's custom id.
         /// </summary>
         string CustomId { get; }
         
         /// <summary>
-        ///     Gets the modals title.
+        ///     Gets the modal's title.
         /// </summary>
         string Title { get; }
     }
