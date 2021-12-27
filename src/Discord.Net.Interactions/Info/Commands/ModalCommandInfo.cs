@@ -14,6 +14,16 @@ namespace Discord.Interactions
     /// </summary>
     public class ModalCommandInfo : CommandInfo<ModalCommandParameterInfo>
     {
+        /// <summary>
+        ///     Gets the type of <see cref="IModal"/> this command uses.
+        /// </summary>
+        public Type ModalType { get; }
+
+        /// <summary>
+        ///     Gets a dictionary of the text input components in the modal, with the component's custom id as the key.
+        /// </summary>
+        public Dictionary<string, PropertyInfo> TextInputComponents { get; }
+        
         /// <inheritdoc/>
         public override bool SupportsWildCards => true;
 
@@ -23,6 +33,10 @@ namespace Discord.Interactions
         internal ModalCommandInfo(Builders.ModalCommandBuilder builder, ModuleInfo module, InteractionService commandService) : base(builder, module, commandService)
         {
             Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
+            ModalType = Parameters.First().ParameterType;
+            TextInputComponents = ModalType.GetProperties()
+                .Where(x => x.GetCustomAttribute<ModalTextInputAttribute>() != null)
+                .ToDictionary(x => x.GetCustomAttribute<ModalTextInputAttribute>().CustomId, x => x);
         }
 
         /// <inheritdoc/>
@@ -43,20 +57,19 @@ namespace Discord.Interactions
         {
             if (context.Interaction is not IModalInteraction interaction)
                 return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Modal Interaction.");
-                
-            var modalType = Parameters.First().ParameterType;
+
+            var modal = ModalType.GetConstructor(Array.Empty<Type>()).Invoke(null);
             
-            var modal = (IModal)Activator.CreateInstance(modalType);
-            var modalProperties = modalType.GetProperties().Where(x => x.CanWrite && x.GetCustomAttribute<ModalTextInputAttribute>() != null);
-
-            foreach (var component in interaction.Data.Components)
+            foreach(var component in interaction.Data.Components)
             {
-                modalProperties
-                    .Where(x => x.GetCustomAttribute<ModalTextInputAttribute>().CustomId == component.CustomId && x.PropertyType == typeof(string))
-                    .First()
-                    .SetValue(modal, component.Value);
+                switch (component.Type)
+                {
+                    case ComponentType.TextInput:
+                        TextInputComponents.GetValueOrDefault(component.CustomId).SetValue(modal, component.Value);
+                        break;
+                };
             }
-
+            
             List<object> args = new() { modal };
             
             if (additionalArgs is not null)
