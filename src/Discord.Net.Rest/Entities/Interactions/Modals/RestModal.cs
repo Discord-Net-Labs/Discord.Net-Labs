@@ -14,7 +14,7 @@ namespace Discord.Rest
     /// <summary>
     ///     Represents a user submitted <see cref="Modal"/>.
     /// </summary>
-    public class RestModal : RestInteraction, IDiscordInteraction
+    public class RestModal : RestInteraction, IDiscordInteraction, IModalInteraction
     {
         internal RestModal(DiscordRestClient client, ModelBase model)
              : base(client, model.Id)
@@ -397,5 +397,7 @@ namespace Discord.Rest
             => throw new NotSupportedException("Modal interactions cannot have modal responces!");
 
         public new RestModalData Data { get; set; }
+
+        IModalInteractionData IModalInteraction.Data => Data;
     }
 }

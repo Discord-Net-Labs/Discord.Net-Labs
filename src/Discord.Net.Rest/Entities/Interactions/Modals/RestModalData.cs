@@ -10,7 +10,7 @@ namespace Discord.Rest
     /// <summary>
     ///     Represents data sent from a <see cref="InteractionType.ModalSubmit"/>.
     /// </summary>
-    public class RestModalData : IComponentInteractionData
+    public class RestModalData : IComponentInteractionData, IModalInteractionData
     {
         /// <inheritdoc/>
         public string CustomId { get; }
@@ -31,6 +31,8 @@ namespace Discord.Rest
         [Obsolete("Modal interactions do not have value!", true)]
         public string Value
             => throw new NotSupportedException("Modal interactions do not have value!");
+
+        IReadOnlyCollection<IComponentInteractionData> IModalInteractionData.Components => Components;
 
         internal RestModalData(Model model)
         {
