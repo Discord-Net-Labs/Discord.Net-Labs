@@ -74,7 +74,7 @@ namespace Discord.Interactions
         internal readonly LogManager _logManager;
         internal readonly Func<DiscordRestClient> _getRestClient;
 
-        internal readonly bool _throwOnError, _useCompiledLambda, _enableAutocompleteHandlers;
+        internal readonly bool _throwOnError, _useCompiledLambda, _enableAutocompleteHandlers, _autoServiceScopes;
         internal readonly string _wildCardExp;
         internal readonly RunMode _runMode;
         internal readonly RestResponseCallback _restResponseCallback;
@@ -169,6 +169,7 @@ namespace Discord.Interactions
             _wildCardExp = config.WildCardExpression;
             _useCompiledLambda = config.UseCompiledLambda;
             _enableAutocompleteHandlers = config.EnableAutocompleteHandlers;
+            _autoServiceScopes = config.AutoServiceScopes;
             _restResponseCallback = config.RestResponseCallback;
 
             _genericTypeConverters = new ConcurrentDictionary<Type, Type>
@@ -684,9 +685,7 @@ namespace Discord.Interactions
 
                 if(autocompleteHandlerResult.IsSuccess)
                 {
-                    var parameter = autocompleteHandlerResult.Command.Parameters.FirstOrDefault(x => string.Equals(x.Name, interaction.Data.Current.Name, StringComparison.Ordinal));
-
-                    if(parameter?.AutocompleteHandler is not null)
+                    if (autocompleteHandlerResult.Command._flattenedParameterDictionary.TryGetValue(interaction.Data.Current.Name, out var parameter) && parameter?.AutocompleteHandler is not null)
                         return await parameter.AutocompleteHandler.ExecuteAsync(context, interaction, parameter, services).ConfigureAwait(false);
                 }
             }
