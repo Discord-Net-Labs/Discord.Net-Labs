@@ -1185,13 +1185,13 @@ namespace Discord
         /// <summary>
         ///     Creates a new instance of a <see cref="TextInputBuilder"/>.
         /// </summary>
-        /// <param name="label">The components label.</param>
-        /// <param name="style">The components style.</param>
-        /// <param name="customId">The components custom id.</param>
-        /// <param name="placeholder">The components placeholder.</param>
-        /// <param name="minLength">The components minimum length.</param>
-        /// <param name="maxLength">The components maximum length.</param>
-        /// <param name="required">The components required value.</param>
+        /// <param name="label">The text input's label.</param>
+        /// <param name="style">The text input's style.</param>
+        /// <param name="customId">The text input's custom id.</param>
+        /// <param name="placeholder">The text input's placeholder.</param>
+        /// <param name="minLength">The text input's minimum length.</param>
+        /// <param name="maxLength">The text input's maximum length.</param>
+        /// <param name="required">The text input's required value.</param>
         public TextInputBuilder (string label, string customId, TextInputStyle style = TextInputStyle.Short, string placeholder = null,
             int? minLength = null, int? maxLength = null, bool? required = null, string value = null)
         {

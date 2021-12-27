@@ -9,17 +9,17 @@ namespace Discord
     public class ModalBuilder
     {
         /// <summary>
-        ///     Gets or sets the components in the model.
+        ///     Gets or sets the components of the current model.
         /// </summary>
         public ModalComponentBuilder Components { get; set; } = new();
 
         /// <summary>
-        ///     Gets or sets the models title.
+        ///     Gets or sets the title of the current modal.
         /// </summary>
         public string Title { get; set; }
 
         /// <summary>
-        ///     Gets or sets the models custom id.
+        ///     Gets or sets the custom id of the current modal..
         /// </summary>
         public string CustomId
         {
@@ -37,7 +37,7 @@ namespace Discord
         public ModalBuilder() { }
 
         /// <summary>
-        ///     Creates a new instance 
+        ///     Creates a new instance of a <see cref="ModalBuilder"/>
         /// </summary>
         /// <param name="title">The modals title.</param>
         /// <param name="customId">The modals customId.</param>
@@ -51,7 +51,7 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Sets the current builders title.
+        ///     Sets the title title of the current modal.
         /// </summary>
         /// <param name="title">The value to set the title to.</param>
         /// <returns>The current builder.</returns>
@@ -60,9 +60,9 @@ namespace Discord
             Title = title;
             return this;
         }
-        
+
         /// <summary>
-        ///     Sets the current builders custom id.
+        ///     Sets the custom id of the current modal.
         /// </summary>
         /// <param name="title">The value to set the custom id to.</param>
         /// <returns>The current builder.</returns>
@@ -98,7 +98,7 @@ namespace Discord
             => AddTextInput(new(label, customId, style, placeholder, minLength, maxLength, required, value));
 
         /// <summary>
-        ///     Adds components to the current builder.
+        ///     Adds multiple components to the current builder.
         /// </summary>
         /// <param name="components">The components to add.</param>
         /// <returns>The current builder</returns>
@@ -210,12 +210,12 @@ namespace Discord
             => WithTextInput(new(label, customId, style, placeholder, minLength, maxLength, required, value), row);
 
         /// <summary>
-        ///     Adds a <see cref="ButtonBuilder"/> to the <see cref="ComponentBuilder"/> at the specific row.
+        ///     Adds a <see cref="TextInputBuilder"/> to the <see cref="ModalComponentBuilder"/> at the specific row.
         ///     If the row cannot accept the component then it will add it to a row that can.
         /// </summary>
-        /// <param name="text">The button to add.</param>
-        /// <param name="row">The row to add the button.</param>
-        /// <exception cref="InvalidOperationException">There is no more row to add a menu.</exception>
+        /// <param name="text">The <see cref="TextInputBuilder"> to add.</param>
+        /// <param name="row">The row to add the text input.</param>
+        /// <exception cref="InvalidOperationException">There are no more rows to add a text input to.</exception>
         /// <exception cref="ArgumentException"><paramref name="row"/> must be less than <see cref="MaxActionRowCount"/>.</exception>
         /// <returns>The current builder.</returns>
         public ModalComponentBuilder WithTextInput(TextInputBuilder text, int row = 0)
@@ -251,7 +251,7 @@ namespace Discord
                     else if (row < MaxActionRowCount)
                         WithTextInput(text, row + 1);
                     else
-                        throw new InvalidOperationException($"There is no more row to add a {nameof(text)}");
+                        throw new InvalidOperationException($"There are no more rows to add {nameof(text)} to.");
                 }
             }
 
@@ -263,6 +263,6 @@ namespace Discord
         /// </summary>
         /// <returns>A <see cref="ModalComponent"/> representing the builder.</returns>
         public ModalComponent Build()
-            => new ModalComponent(ActionRows.Select(x => x.Build()).ToList());
+            => new (ActionRows.Select(x => x.Build()).ToList());
     }
 }

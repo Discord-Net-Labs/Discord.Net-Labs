@@ -93,6 +93,9 @@ namespace Discord.Interactions.Builders
         /// </summary>
         public IReadOnlyList<AutocompleteCommandBuilder> AutocompleteCommands => _autocompleteCommands;
 
+        /// <summary>
+        ///     Gets a collection of the Modal Commands of this module.
+        /// </summary>
         public IReadOnlyList<ModalCommandBuilder> ModalCommands => _modalCommands;
 
         internal TypeInfo TypeInfo { get; set; }
@@ -156,7 +159,7 @@ namespace Discord.Interactions.Builders
         /// <returns>
         ///     The builder instance.
         /// </returns>
-        public ModuleBuilder WithDefaultPermision (bool permission)
+        public ModuleBuilder WithDefaultPermission (bool permission)
         {
             DefaultPermission = permission;
             return this;
@@ -248,6 +251,13 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
+        /// <summary>
+        ///     Adds a modal command builder to <see cref="ModalCommands"/>.
+        /// </summary>
+        /// <param name="configure"><see cref="ModalCommands"/> factory.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
         public ModuleBuilder AddModalCommand(Action<ModalCommandBuilder> configure)
         {
             var command = new ModalCommandBuilder(this);

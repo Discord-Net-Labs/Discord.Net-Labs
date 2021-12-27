@@ -8,7 +8,7 @@ namespace Discord
     public interface IComponentInteractionData : IDiscordInteractionData
     {
         /// <summary>
-        ///     Gets the components Custom Id that was clicked.
+        ///     Gets the component's Custom Id that was clicked.
         /// </summary>
         string CustomId { get; }
 

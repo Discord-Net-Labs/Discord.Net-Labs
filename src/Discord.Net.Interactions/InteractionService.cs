@@ -104,6 +104,9 @@ namespace Discord.Interactions
         /// </summary>
         public IReadOnlyCollection<ComponentCommandInfo> ComponentCommands => _moduleDefs.SelectMany(x => x.ComponentCommands).ToList();
 
+        /// <summary>
+        ///     Represents all Modal Commands loaded within <see cref="InteractionService"/>.
+        /// </summary>
         public IReadOnlyCollection<ModalCommandInfo> ModalCommands => _moduleDefs.SelectMany(x => x.ModalCommands).ToList();
 
         /// <summary>

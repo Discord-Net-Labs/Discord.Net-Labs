@@ -22,12 +22,12 @@ namespace Discord
         public string Placeholder { get; }
 
         /// <summary>
-        ///     Gets the minimum lenght of the inputed text.
+        ///     Gets the minimum length of the inputted text.
         /// </summary>
         public int? MinLength { get; }
 
         /// <summary>
-        ///     Gets the maximum length of the inputed text.
+        ///     Gets the maximum length of the inputted text.
         /// </summary>
         public int? MaxLength { get; }
 
@@ -42,7 +42,7 @@ namespace Discord
         public bool? Required { get; }
 
         /// <summary>
-        ///     Gets the default value of the component
+        ///     Gets the default value of the component.
         /// </summary>
         public string Value { get; }
 

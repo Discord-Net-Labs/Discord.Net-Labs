@@ -13,7 +13,7 @@ namespace Discord
         string CustomId { get; }
 
         /// <summary>
-        ///     Gets the <see cref="Modal"/>s components submitted by the user.
+        ///     Gets the <see cref="Modal"/> components submitted by the user.
         /// </summary>
         IReadOnlyCollection<IComponentInteractionData> Components { get; }
     }

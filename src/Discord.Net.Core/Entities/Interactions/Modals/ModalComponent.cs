@@ -8,7 +8,7 @@ namespace Discord
     public class ModalComponent
     {
         /// <summary>
-        ///     Gets the components to be used in a message.
+        ///     Gets the components to be used in a modal.
         /// </summary>
         public IReadOnlyCollection<ActionRowComponent> Components { get; }
 

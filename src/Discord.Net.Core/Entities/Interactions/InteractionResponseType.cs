@@ -44,7 +44,7 @@ namespace Discord
         ApplicationCommandAutocompleteResult = 8,
 
         /// <summary>
-        ///     Respond by showing the user a model.
+        ///     Respond by showing the user a modal.
         /// </summary>
         Modal = 9,
     }

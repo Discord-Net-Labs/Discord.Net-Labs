@@ -11,7 +11,7 @@ namespace Discord.Interactions
     ///     CustomID supports a Wild Card pattern where you can use the <see cref="InteractionServiceConfig.WildCardExpression"/> to match a set of CustomIDs.
     /// </remarks>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
-    public class ModalInteractionAttribute : Attribute
+    public sealed class ModalInteractionAttribute : Attribute
     {
         /// <summary>
         ///     Gets the string to compare the Modal CustomIDs with.

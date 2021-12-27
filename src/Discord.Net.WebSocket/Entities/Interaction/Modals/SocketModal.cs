@@ -39,6 +39,7 @@ namespace Discord.WebSocket
             return entity;
         }
 
+        /// <inheritdoc/>
         public override bool HasResponded { get; internal set; }
         private object _lock = new object();
 

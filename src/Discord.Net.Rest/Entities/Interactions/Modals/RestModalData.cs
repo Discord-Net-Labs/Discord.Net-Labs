@@ -8,7 +8,7 @@ using DataModel = Discord.API.MessageComponentInteractionData;
 namespace Discord.Rest
 {
     /// <summary>
-    ///     Represents data sent from a <see cref="InteractionType.ModalSubmit"/>.
+    ///     Represents data sent from a <see cref="InteractionType.ModalSubmit"/> Interaction.
     /// </summary>
     public class RestModalData : IComponentInteractionData, IModalInteractionData
     {
@@ -24,11 +24,10 @@ namespace Discord.Rest
         public ComponentType Type => ComponentType.ModalSubmit;
 
         /// <inheritdoc/>
-        [Obsolete("Modal interactions do not have values!", true)]
         public IReadOnlyCollection<string> Values
             => throw new NotSupportedException("Modal interactions do not have values!");
-
-        [Obsolete("Modal interactions do not have value!", true)]
+        
+        /// <inheritdoc/>
         public string Value
             => throw new NotSupportedException("Modal interactions do not have value!");
 
@@ -41,7 +40,6 @@ namespace Discord.Rest
                 .SelectMany(x => x.Components)
                 .Select(x => new RestMessageComponentData(x))
                 .ToArray();
-                
         }
     }
 }

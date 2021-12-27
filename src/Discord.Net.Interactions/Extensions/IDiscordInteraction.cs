@@ -7,8 +7,14 @@ namespace Discord.Interactions
 {
     public static class IDiscordInteractionExtentions
     {
-        public static async Task RespondWithModalAsync(this IDiscordInteraction interaction, IModal modal,
-            RequestOptions options = null) 
+        /// <summary>
+        ///     Respond to an interaction with a <see cref="IModal"/>.
+        /// </summary>
+        /// <param name="interaction">The interaction to respond to.</param>
+        /// <param name="modal">The modal to respond with.</param>
+        /// <param name="options">The request options for this <see langword="async"/> request.</param>
+        /// <returns>A task that represents the asynchronous operation of responding to the interaction.</returns>
+        public static async Task RespondWithModalAsync(this IDiscordInteraction interaction, IModal modal, RequestOptions options = null) 
         {
             var builder = new ModalBuilder()
                 .WithCustomId(modal.CustomId)

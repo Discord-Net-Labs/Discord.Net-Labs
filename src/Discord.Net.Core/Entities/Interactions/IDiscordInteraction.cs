@@ -316,7 +316,7 @@ namespace Discord
         /// </summary>
         /// <param name="modal">The modal to respond with.</param>
         /// <param name="options">The request options for this <see langword="async"/> request.</param>
-        /// <returns>A task that represents the asynchronous operation of acknowledging the interaction.</returns>
+        /// <returns>A task that represents the asynchronous operation of responding to the interaction.</returns>
         Task RespondWithModalAsync(Modal modal, RequestOptions options = null);
     }
 }

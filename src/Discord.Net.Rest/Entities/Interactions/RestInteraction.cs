@@ -150,7 +150,7 @@ namespace Discord.Rest
 
         /// <inheritdoc/>
         public abstract string Defer(bool ephemeral = false, RequestOptions options = null);
-        
+
         /// <summary>
         ///     Gets the original response for this interaction.
         /// </summary>

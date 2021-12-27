@@ -2,6 +2,9 @@ using Discord.Interactions.Builders;
 
 namespace Discord.Interactions
 {
+    /// <summary>
+    ///     Represents the base parameter info class for <see cref="InteractionService"/> modals.
+    /// </summary>
     public class ModalCommandParameterInfo : CommandParameterInfo
     {
         internal ModalParameterInitializer _modalParameterInitializer { get; }

@@ -8,6 +8,10 @@ using System.Reflection;
 
 namespace Discord.Interactions
 {
+
+    /// <summary>
+    ///     Represents the info class of an attribute based method for handling Modal Interaction events.
+    /// </summary>
     public class ModalCommandInfo : CommandInfo<ModalCommandParameterInfo>
     {
         /// <inheritdoc/>
