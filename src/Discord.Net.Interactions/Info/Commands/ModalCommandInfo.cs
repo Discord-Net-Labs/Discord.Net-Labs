@@ -24,6 +24,11 @@ namespace Discord.Interactions
         /// </summary>
         public Dictionary<string, PropertyInfo> TextInputComponents { get; }
         
+        /// <summary>
+        ///     Gets the pre-compiled lambda used for constructing the modal.
+        /// </summary>
+        public Func<object[], object> ModalInitializer { get; }
+        
         /// <inheritdoc/>
         public override bool SupportsWildCards => true;
 
@@ -37,6 +42,7 @@ namespace Discord.Interactions
             TextInputComponents = ModalType.GetProperties()
                 .Where(x => x.GetCustomAttribute<ModalTextInputAttribute>() != null)
                 .ToDictionary(x => x.GetCustomAttribute<ModalTextInputAttribute>().CustomId, x => x);
+            ModalInitializer = ReflectionUtils<object>.CreateLambdaConstructorInvoker(ModalType.GetTypeInfo());
         }
 
         /// <inheritdoc/>
@@ -52,15 +58,14 @@ namespace Discord.Interactions
         /// <returns>
         ///     A task representing the asynchronous command execution process.
         /// </returns>
-        
         public async Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services, params string[] additionalArgs)
         {
             if (context.Interaction is not IModalInteraction interaction)
                 return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Modal Interaction.");
 
-            var modal = ModalType.GetConstructor(Array.Empty<Type>()).Invoke(null);
-            
-            foreach(var component in interaction.Data.Components)
+            var modal = ModalInitializer(Array.Empty<object>());
+
+            foreach (var component in interaction.Data.Components)
             {
                 switch (component.Type)
                 {
