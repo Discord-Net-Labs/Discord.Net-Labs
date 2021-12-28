@@ -10,8 +10,8 @@ public enum Animal
 {
     Cat,
     Dog,
-    // You can also use the DisplayAttribute to change how they appear in the choice menu.
-    [Display(Name = "Guinea pig")]
+    // You can also use the ChoiceDisplay attribute to change how they appear in the choice menu.
+    [ChoiceDisplay("Guinea pig")]
     GuineaPig
 }
 

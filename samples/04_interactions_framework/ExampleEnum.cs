@@ -1,3 +1,4 @@
+using Discord.Interactions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,7 +14,7 @@ namespace _04_interactions_framework
         Second,
         Third,
         Fourth,
-        [Display(Name = "Twenty First")]
+        [ChoiceDisplay("Twenty First")]
         TwentyFirst
     }
 }
