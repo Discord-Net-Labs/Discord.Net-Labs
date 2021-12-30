@@ -150,11 +150,10 @@ namespace Discord
         ServerLocaleUnavailable = 50095,
         ServerRequiresMonetization = 50097,
         ServerRequiresBoosts = 50101,
-
+        RequestBodyContainsInvalidJSON = 50109,
         #endregion
 
         #region 2FA (60XXX)
-        RequestBodyContainsInvalidJSON = 50109,
         Requires2FA = 60003,
         #endregion
 

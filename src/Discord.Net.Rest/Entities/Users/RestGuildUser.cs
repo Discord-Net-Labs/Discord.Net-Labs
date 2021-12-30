@@ -47,6 +47,7 @@ namespace Discord.Rest
                 return orderedRoles.Where(x => RoleIds.Contains(x.Id)).Max(x => x.Position);
             }
         }
+
         /// <inheritdoc />
         public DateTimeOffset? TimedOutUntil
         {

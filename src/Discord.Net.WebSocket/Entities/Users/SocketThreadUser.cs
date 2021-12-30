@@ -141,16 +141,6 @@ namespace Discord.WebSocket
         internal void Update(Model model)
         {
             ThreadJoinedAt = model.JoinTimestamp;
-
-            if (model.Presence.IsSpecified)
-            {
-                GuildUser.Update(Discord.State, model.Presence.Value, true);
-            }
-
-            if (model.Member.IsSpecified)
-            {
-                GuildUser.Update(Discord.State, model.Member.Value);
-            }
         }
 
         /// <inheritdoc/>
@@ -185,13 +175,11 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         public Task RemoveRolesAsync(IEnumerable<IRole> roles, RequestOptions options = null) => GuildUser.RemoveRolesAsync(roles, options);
-
         /// <inheritdoc/>
         public Task SetTimeOutAsync(TimeSpan span, RequestOptions options = null) => GuildUser.SetTimeOutAsync(span, options);
 
         /// <inheritdoc/>
         public Task RemoveTimeOutAsync(RequestOptions options = null) => GuildUser.RemoveTimeOutAsync(options);
-
         /// <inheritdoc/>
         GuildPermissions IGuildUser.GuildPermissions => GuildUser.GuildPermissions;
 

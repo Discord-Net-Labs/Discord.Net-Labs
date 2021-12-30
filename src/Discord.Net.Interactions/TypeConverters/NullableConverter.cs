@@ -11,7 +11,7 @@ namespace Discord.Interactions
         {
             var type = Nullable.GetUnderlyingType(typeof(T));
 
-            if(type is null)
+            if (type is null)
                 throw new ArgumentException($"No type {nameof(TypeConverter)} is defined for this {type.FullName}", "type");
 
             _typeConverter = interactionService.GetTypeConverter(type, services);
