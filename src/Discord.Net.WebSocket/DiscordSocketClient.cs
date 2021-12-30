@@ -1275,13 +1275,13 @@ namespace Discord.WebSocket
                                             var before = user.Clone();
                                             user.Update(State, data);
 
-                                            var cacheableBefore = new Cacheable<SocketGuildUser, ulong>(before, user.Id, true, () => Task.FromResult((SocketGuildUser)null));
+                                            var cacheableBefore = new Cacheable<SocketGuildUser, ulong>(before, user.Id, true, () => null);
                                             await TimedInvokeAsync(_guildMemberUpdatedEvent, nameof(GuildMemberUpdated), cacheableBefore, user).ConfigureAwait(false);
                                         }
                                         else
                                         {
                                             user = guild.AddOrUpdateUser(data);
-                                            var cacheableBefore = new Cacheable<SocketGuildUser, ulong>(null, user.Id, false, () => Task.FromResult((SocketGuildUser)null));
+                                            var cacheableBefore = new Cacheable<SocketGuildUser, ulong>(user, user.Id, true, () => null);
                                             await TimedInvokeAsync(_guildMemberUpdatedEvent, nameof(GuildMemberUpdated), cacheableBefore, user).ConfigureAwait(false);
                                         }
                                     }
@@ -1300,7 +1300,7 @@ namespace Discord.WebSocket
                                     var guild = State.GetGuild(data.GuildId);
                                     if (guild != null)
                                     {
-                                        var user = guild.RemoveUser(data.User.Id);
+                                        SocketUser user = guild.RemoveUser(data.User.Id);
                                         guild.MemberCount--;
 
                                         if (!guild.IsSynced)
@@ -1309,16 +1309,14 @@ namespace Discord.WebSocket
                                             return;
                                         }
 
+                                        user ??= State.GetUser(data.User.Id);
+
                                         if (user != null)
-                                            await TimedInvokeAsync(_userLeftEvent, nameof(UserLeft), user).ConfigureAwait(false);
+                                            user.Update(State, data.User);
                                         else
-                                        {
-                                            if (!guild.HasAllMembers)
-                                                await IncompleteGuildUserAsync(type, data.User.Id, data.GuildId).ConfigureAwait(false);
-                                            else
-                                                await UnknownGuildUserAsync(type, data.User.Id, data.GuildId).ConfigureAwait(false);
-                                            return;
-                                        }
+                                            user = State.GetOrAddUser(data.User.Id, (x) => SocketGlobalUser.Create(this, State, data.User));
+
+                                        await TimedInvokeAsync(_userLeftEvent, nameof(UserLeft), guild, user).ConfigureAwait(false);
                                     }
                                     else
                                     {
@@ -1954,7 +1952,7 @@ namespace Discord.WebSocket
                                         }
                                     }
 
-                                    var before = user.Presence.Clone();
+                                    var before = user.Presence?.Clone();
                                     user.Update(State, data.User);
                                     user.Update(data);
                                     await TimedInvokeAsync(_presenceUpdated, nameof(PresenceUpdated), user, before, user.Presence).ConfigureAwait(false);
@@ -2531,16 +2529,14 @@ namespace Discord.WebSocket
                                         {
                                             SocketGuildUser guildMember;
 
-                                            if (threadMember.Member.IsSpecified)
+                                            guildMember = guild.GetUser(threadMember.UserId.Value);
+
+                                            if(guildMember == null)
                                             {
-                                                guildMember = guild.AddOrUpdateUser(threadMember.Member.Value);
+                                                await UnknownGuildUserAsync("THREAD_MEMBERS_UPDATE", threadMember.UserId.Value, guild.Id);
                                             }
                                             else
-                                            {
-                                                guildMember = guild.GetUser(threadMember.UserId.Value);
-                                            }
-
-                                            newThreadMembers.Add(thread.AddOrUpdateThreadMember(threadMember, guildMember));
+                                                newThreadMembers.Add(thread.AddOrUpdateThreadMember(threadMember, guildMember));
                                         }
 
                                         if (newThreadMembers.Any())
@@ -2627,7 +2623,7 @@ namespace Discord.WebSocket
 
                                     var newEvent = guild.AddOrUpdateEvent(data);
 
-                                    await TimedInvokeAsync(_guildScheduledEventCancelled, nameof(GuildScheduledEventCreated), newEvent).ConfigureAwait(false);
+                                    await TimedInvokeAsync(_guildScheduledEventCreated, nameof(GuildScheduledEventCreated), newEvent).ConfigureAwait(false);
                                 }
                                 break;
                             case "GUILD_SCHEDULED_EVENT_UPDATE":
@@ -2644,7 +2640,7 @@ namespace Discord.WebSocket
                                         return;
                                     }
 
-                                    var before = guild.GetEvent(data.Id);
+                                    var before = guild.GetEvent(data.Id)?.Clone();
 
                                     var beforeCacheable = new Cacheable<SocketGuildEvent, ulong>(before, data.Id, before != null, () => Task.FromResult((SocketGuildEvent)null));
 

@@ -1,15 +1,15 @@
 using System;
 using System.Threading.Tasks;
-using Model = Discord.API.Message;
+using MessageModel = Discord.API.Message;
 
 namespace Discord.Rest
 {
     /// <summary>
-    ///     Represents the initial REST-based response to a slash command.
+    ///     Represents the initial REST-based response to an interaction.
     /// </summary>
     public class RestInteractionMessage : RestUserMessage
     {
-        // Token used to delete/modify this followup message
+        public InteractionResponseType ResponseType { get; private set; }
         internal string Token { get; }
 
         internal RestInteractionMessage(BaseDiscordClient discord, ulong id, IUser author, string token, IMessageChannel channel)
@@ -18,14 +18,14 @@ namespace Discord.Rest
             Token = token;
         }
 
-        internal static RestInteractionMessage Create(BaseDiscordClient discord, Model model, string token, IMessageChannel channel)
+        internal static RestInteractionMessage Create(BaseDiscordClient discord, MessageModel model, string token, IMessageChannel channel)
         {
             var entity = new RestInteractionMessage(discord, model.Id, model.Author.IsSpecified ? RestUser.Create(discord, model.Author.Value) : discord.CurrentUser, token, channel);
             entity.Update(model);
             return entity;
         }
 
-        internal new void Update(Model model)
+        internal new void Update(MessageModel model)
         {
             base.Update(model);
         }

@@ -21,6 +21,8 @@ namespace Discord.WebSocket
         public int Bitrate { get; private set; }
         /// <inheritdoc />
         public int? UserLimit { get; private set; }
+        /// <inheritdoc/>
+        public string RTCRegion { get; private set; }
 
         /// <inheritdoc />
         public ulong? CategoryId { get; private set; }
@@ -66,6 +68,7 @@ namespace Discord.WebSocket
             CategoryId = model.CategoryId;
             Bitrate = model.Bitrate.Value;
             UserLimit = model.UserLimit.Value != 0 ? model.UserLimit.Value : (int?)null;
+            RTCRegion = model.RTCRegion.GetValueOrDefault(null);
         }
 
         /// <inheritdoc />
@@ -81,6 +84,12 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public async Task DisconnectAsync()
             => await Guild.DisconnectAudioAsync();
+
+        /// <inheritdoc />
+        public async Task ModifyAsync(Action<AudioChannelProperties> func, RequestOptions options = null)
+        {
+            await Guild.ModifyAudioAsync(Id, func, options).ConfigureAwait(false);
+        }
 
         /// <inheritdoc />
         public override SocketGuildUser GetUser(ulong id)
