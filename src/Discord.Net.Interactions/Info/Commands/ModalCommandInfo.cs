@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
-
+using Discord;
 namespace Discord.Interactions
 {
     /// <summary>
@@ -71,11 +71,28 @@ namespace Discord.Interactions
             if (context.Interaction is not IModalInteraction interaction)
                 return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Modal Interaction.");
 
+            var modal = GetModal(interaction.Data.Components);
+
+            List<object> args = new() { modal };
+            
+            if (additionalArgs is not null)
+                args.AddRange(additionalArgs);
+
+            return await RunAsync(context, args.ToArray(), services);
+        }
+
+        /// <summary>
+        ///     Creates an <see cref="IModal"/> and fills it with provided message components.
+        /// </summary>
+        /// <param name="components"Components that will be injected into the modal.></param>
+        /// <returns>A <see cref="IModal"/> filled with the provided components.</returns>
+        public IModal GetModal(IEnumerable<IComponentInteractionData> components)
+        {
             var modal = CommandService._useCompiledLambda
                 ? (IModal)ModalInitializer.Invoke(Array.Empty<object>())
                 : (IModal)ModalCtor.Invoke(null);
-                
-            foreach (var component in interaction.Data.Components)
+
+            foreach (var component in components)
             {
                 switch (component.Type)
                 {
@@ -84,13 +101,8 @@ namespace Discord.Interactions
                         break;
                 };
             }
-            
-            List<object> args = new() { modal };
-            
-            if (additionalArgs is not null)
-                args.AddRange(additionalArgs);
 
-            return await RunAsync(context, args.ToArray(), services);
+            return modal;
         }
 
         /// <inheritdoc/>
