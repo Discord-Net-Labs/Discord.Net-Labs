@@ -8,7 +8,6 @@ using System.Reflection;
 
 namespace Discord.Interactions
 {
-
     /// <summary>
     ///     Represents the info class of an attribute based method for handling Modal Interaction events.
     /// </summary>
@@ -23,12 +22,17 @@ namespace Discord.Interactions
         ///     Gets a dictionary of the text input components in the modal, with the component's custom id as the key.
         /// </summary>
         public Dictionary<string, PropertyInfo> TextInputComponents { get; }
-        
-        /// <summary>
-        ///     Gets the pre-compiled lambda used for constructing the modal.
-        /// </summary>
-        public Func<object[], object> ModalInitializer { get; }
-        
+
+        /// <remarks>
+        ///     This is only initialized when <see cref="InteractionService._useCompiledLambda"/> is <see langword="true"/>
+        /// </remarks>
+        private Func<object[], object> ModalInitializer { get; }
+
+        /// <remarks>
+        ///     This is only initialized when <see cref="InteractionService._useCompiledLambda"/> is <see langword="false"/>
+        /// </remarks>
+        private ConstructorInfo ModalCtor { get; }
+
         /// <inheritdoc/>
         public override bool SupportsWildCards => true;
 
@@ -42,7 +46,11 @@ namespace Discord.Interactions
             TextInputComponents = ModalType.GetProperties()
                 .Where(x => x.GetCustomAttribute<ModalTextInputAttribute>() != null)
                 .ToDictionary(x => x.GetCustomAttribute<ModalTextInputAttribute>().CustomId, x => x);
-            ModalInitializer = ReflectionUtils<object>.CreateLambdaConstructorInvoker(ModalType.GetTypeInfo());
+                
+            if (commandService._useCompiledLambda)
+                ModalInitializer = ReflectionUtils<object>.CreateLambdaConstructorInvoker(ModalType.GetTypeInfo());
+            else
+                ModalCtor = ModalType.GetConstructor(Array.Empty<Type>());
         }
 
         /// <inheritdoc/>
@@ -63,8 +71,10 @@ namespace Discord.Interactions
             if (context.Interaction is not IModalInteraction interaction)
                 return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Modal Interaction.");
 
-            var modal = ModalInitializer(Array.Empty<object>());
-
+            var modal = CommandService._useCompiledLambda
+                ? (IModal)ModalInitializer.Invoke(Array.Empty<object>())
+                : (IModal)ModalCtor.Invoke(null);
+                
             foreach (var component in interaction.Data.Components)
             {
                 switch (component.Type)
