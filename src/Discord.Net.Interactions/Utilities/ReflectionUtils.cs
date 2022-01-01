@@ -104,9 +104,37 @@ namespace Discord.Interactions
         }
 
         /// <summary>
-        /// Create a type initializer using compiled lambda expressions
+        ///     Create a DI object factory
         /// </summary>
         internal static Func<IServiceProvider, T> CreateLambdaBuilder (TypeInfo typeInfo, InteractionService commandService)
+        {
+            var constructor = GetConstructor(typeInfo);
+            var parameters = constructor.GetParameters();
+            var properties = GetProperties(typeInfo);
+
+            var lambda = CreateLambdaMemberInitializer(typeInfo);
+
+            return (services) =>
+            {
+                var args = new object[parameters.Length];
+                var props = new object[properties.Length];
+
+                for (int i = 0; i < parameters.Length; i++)
+                    args[i] = GetMember(commandService, services, parameters[i].ParameterType, typeInfo);
+
+                for (int i = 0; i < properties.Length; i++)
+                    props[i] = GetMember(commandService, services, properties[i].PropertyType, typeInfo);
+
+                var instance = lambda(args, props);
+
+                return instance;
+            };
+        }
+
+        /// <summary>
+        ///     Create Lambda Member Initializer factory
+        /// </summary>
+        internal static Func<object[], object[], T> CreateLambdaMemberInitializer(TypeInfo typeInfo)
         {
             var constructor = GetConstructor(typeInfo);
             var parameters = constructor.GetParameters();
@@ -137,21 +165,7 @@ namespace Discord.Interactions
             var memberInit = Expression.MemberInit(newExp, memberExps);
             var lambda = Expression.Lambda<Func<object[], object[], T>>(memberInit, argsExp, propsExp).Compile();
 
-            return (services) =>
-            {
-                var args = new object[parameters.Length];
-                var props = new object[properties.Length];
-
-                for (int i = 0; i < parameters.Length; i++)
-                    args[i] = GetMember(commandService, services, parameters[i].ParameterType, typeInfo);
-
-                for (int i = 0; i < properties.Length; i++)
-                    props[i] = GetMember(commandService, services, properties[i].PropertyType, typeInfo);
-
-                var instance = lambda(args, props);
-
-                return instance;
-            };
+            return lambda;
         }
     }
 }
