@@ -104,7 +104,6 @@ namespace Discord
         public bool StartEmbeddedActivities => Permissions.GetValue(RawValue, GuildPermission.StartEmbeddedActivities);
         /// <summary> If <c>true</c>, a user can timeout other users in this guild.</summary>
         public bool ModerateMembers => Permissions.GetValue(RawValue, GuildPermission.ModerateMembers);
-
         /// <summary> Creates a new <see cref="GuildPermissions"/> with the provided packed value. </summary>
         public GuildPermissions(ulong rawValue) { RawValue = rawValue; }
 

@@ -241,7 +241,6 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public Task RemoveTimeOutAsync(RequestOptions options = null)
             => UserHelper.RemoveTimeOutAsync(this, Discord, options);
-
         /// <inheritdoc />
         public ChannelPermissions GetPermissions(IGuildChannel channel)
             => new ChannelPermissions(Permissions.ResolveChannel(Guild, this, channel, GuildPermissions.RawValue));

@@ -13,8 +13,6 @@ namespace Discord.Rest
     /// </summary>
     public class RestPingInteraction : RestInteraction, IDiscordInteraction
     {
-        public override bool HasResponded { get => throw new NotImplementedException(); internal set => throw new NotImplementedException(); }
-
         internal RestPingInteraction(BaseDiscordClient client, ulong id)
             : base(client, id)
         {

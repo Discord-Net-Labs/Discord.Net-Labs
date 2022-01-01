@@ -34,16 +34,6 @@ namespace Discord.Rest
 
         /// <inheritdoc/>
         public DateTimeOffset CreatedAt { get; private set; }
-        
-        /// <summary>
-        ///     Gets whether or not this interaction has been responded to.
-        /// </summary>
-        /// <remarks>
-        ///     This property is locally set -- if you're running multiple bots
-        ///     off the same token then this property won't be in sync with them.
-        /// </remarks>
-
-        public abstract bool HasResponded { get; internal set; }
 
         /// <summary>
         ///     <see langword="true"/> if the token is valid for replying to, otherwise <see langword="false"/>.
@@ -60,6 +50,9 @@ namespace Discord.Rest
         ///     Gets the guild this interaction was executed in.
         /// </summary>
         public RestGuild Guild { get; private set; }
+
+        /// <inheritdoc/>
+        public bool HasResponded { get; protected set; }
 
         internal RestInteraction(BaseDiscordClient discord, ulong id)
             : base(discord, id)
@@ -150,7 +143,6 @@ namespace Discord.Rest
 
         /// <inheritdoc/>
         public abstract string Defer(bool ephemeral = false, RequestOptions options = null);
-
         /// <summary>
         ///     Gets the original response for this interaction.
         /// </summary>

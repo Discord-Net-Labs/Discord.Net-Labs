@@ -519,7 +519,7 @@ namespace Discord.WebSocket
             if(model == null)
                 return null;
 
-
+            
             if (model.GuildId.IsSpecified)
             {
                 var guild = State.GetGuild(model.GuildId.Value);
@@ -1314,7 +1314,7 @@ namespace Discord.WebSocket
                                         if (user != null)
                                             user.Update(State, data.User);
                                         else
-                                            user = SocketGlobalUser.Create(this, State, data.User);
+                                            user = State.GetOrAddUser(data.User.Id, (x) => SocketGlobalUser.Create(this, State, data.User));
 
                                         await TimedInvokeAsync(_userLeftEvent, nameof(UserLeft), guild, user).ConfigureAwait(false);
                                     }
@@ -2100,7 +2100,7 @@ namespace Discord.WebSocket
                                             {
                                                 await TimedInvokeAsync(_speakerRemoved, nameof(SpeakerRemoved), stage, guildUser);
                                             }
-                                        }
+                                        }    
                                     }
 
                                     await TimedInvokeAsync(_userVoiceStateUpdatedEvent, nameof(UserVoiceStateUpdated), user, before, after).ConfigureAwait(false);
@@ -2494,7 +2494,7 @@ namespace Discord.WebSocket
                                 }
 
                                 break;
-                            case "THREAD_MEMBERS_UPDATE":
+                            case "THREAD_MEMBERS_UPDATE": 
                                 {
                                     await _gatewayLogger.DebugAsync("Received Dispatch (THREAD_MEMBERS_UPDATE)").ConfigureAwait(false);
 
@@ -2532,16 +2532,14 @@ namespace Discord.WebSocket
                                         {
                                             SocketGuildUser guildMember;
 
-                                            if (threadMember.Member.IsSpecified)
+                                            guildMember = guild.GetUser(threadMember.UserId.Value);
+
+                                            if(guildMember == null)
                                             {
-                                                guildMember = guild.AddOrUpdateUser(threadMember.Member.Value);
+                                                await UnknownGuildUserAsync("THREAD_MEMBERS_UPDATE", threadMember.UserId.Value, guild.Id);
                                             }
                                             else
-                                            {
-                                                guildMember = guild.GetUser(threadMember.UserId.Value);
-                                            }
-
-                                            newThreadMembers.Add(thread.AddOrUpdateThreadMember(threadMember, guildMember));
+                                                newThreadMembers.Add(thread.AddOrUpdateThreadMember(threadMember, guildMember));
                                         }
 
                                         if (newThreadMembers.Any())

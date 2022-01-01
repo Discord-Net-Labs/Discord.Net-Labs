@@ -372,11 +372,11 @@ namespace Discord.Rest
                 Preconditions.NotNullOrEmpty(attachment.FileName, nameof(attachment.FileName), "File Name must not be empty or null");
             }
 
-            if(channel is ITextChannel guildTextChannel)
+            if (channel is ITextChannel guildTextChannel)
             {
                 var contentSize = (ulong)attachments.Sum(x => x.Stream.Length);
 
-                if(contentSize > guildTextChannel.Guild.MaxUploadLimit)
+                if (contentSize > guildTextChannel.Guild.MaxUploadLimit)
                 {
                     throw new ArgumentOutOfRangeException(nameof(attachments), $"Collective file size exceeds the max file size of {guildTextChannel.Guild.MaxUploadLimit} bytes in that guild!");
                 }

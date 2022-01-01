@@ -73,7 +73,7 @@ namespace Discord
         /// <remarks>
         ///     This user MUST already be in a <see cref="IVoiceChannel"/> for this to work.
         /// </remarks>
-        public Optional<ulong> ChannelId { get; set; } // TODO: v3 breaking change, change ChannelId to ulong? to allow for kicking users from voice
+        public Optional<ulong?> ChannelId { get; set; }
 
         /// <summary>
         ///     Sets a timestamp how long a user should be timed out for.

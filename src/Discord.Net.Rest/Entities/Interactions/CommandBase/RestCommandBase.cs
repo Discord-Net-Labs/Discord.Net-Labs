@@ -32,9 +32,6 @@ namespace Discord.Rest
         /// </summary>
         internal new RestCommandBaseData Data { get; private set; }
 
-
-        public override bool HasResponded { get; internal set; }
-
         private object _lock = new object();
 
         internal RestCommandBase(DiscordRestClient client, Model model)
@@ -130,19 +127,11 @@ namespace Discord.Rest
                 {
                     throw new InvalidOperationException("Cannot respond twice to the same interaction");
                 }
+
+                HasResponded = true;
             }
 
-            try
-            {
-                return SerializePayload(response);
-            }
-            finally
-            {
-                lock (_lock)
-                {
-                    HasResponded = true;
-                }
-            }
+            return SerializePayload(response);
         }
 
         /// <inheritdoc/>
@@ -201,7 +190,7 @@ namespace Discord.Rest
             Preconditions.NotNull(fileStream, nameof(fileStream), "File Stream must have data");
             Preconditions.NotNullOrEmpty(fileName, nameof(fileName), "File Name must not be empty or null");
 
-            using (var file = new FileAttachment(fileStream, fileName))
+            using(var file = new FileAttachment(fileStream, fileName))
                 return await FollowupWithFileAsync(file, text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options).ConfigureAwait(false);
         }
 
@@ -222,6 +211,7 @@ namespace Discord.Rest
 
             fileName ??= Path.GetFileName(filePath);
             Preconditions.NotNullOrEmpty(fileName, nameof(fileName), "File Name must not be empty or null");
+
             using (var file = new FileAttachment(File.OpenRead(filePath), fileName))
                 return await FollowupWithFileAsync(file, text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options).ConfigureAwait(false);
         }
@@ -320,10 +310,7 @@ namespace Discord.Rest
                 {
                     throw new InvalidOperationException("Cannot respond or defer twice to the same interaction");
                 }
-            }
 
-            lock (_lock)
-            {
                 HasResponded = true;
             }
 

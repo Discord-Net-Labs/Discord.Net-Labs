@@ -353,10 +353,12 @@ namespace Discord
         ///     <see langword="true"/> if the boost progress bar is enabled; otherwise <see langword="false"/>.
         /// </returns>
         bool IsBoostProgressBarEnabled { get; }
+
         /// <summary>
         ///     Gets the upload limit in bytes for this guild. This number is dependent on the guild's boost status.
         /// </summary>
         ulong MaxUploadLimit { get; }
+
         /// <summary>
         ///     Modifies this guild.
         /// </summary>
