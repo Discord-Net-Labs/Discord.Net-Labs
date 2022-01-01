@@ -36,6 +36,9 @@ namespace Discord.Interactions
         /// <summary>
         ///     Gets or sets the option to use compiled lambda expressions to create module instances and execute commands. This method improves performance at the cost of memory.
         /// </summary>
+        /// <remarks>
+        ///     For performance reasons, if you frequently use <see cref="Modal"/>s with the service, it is highly recommended that you enable compiled lambdas.
+        /// </remarks>
         public bool UseCompiledLambda { get; set; } = false;
 
         /// <summary>

@@ -21,15 +21,12 @@ namespace Discord.Interactions
         /// <summary>
         ///     Gets a dictionary of the text input components in the modal, with the component's custom id as the key.
         /// </summary>
-        public Dictionary<string, PropertyInfo> TextInputComponents { get; }
+        public Dictionary<string, Delegate> TextInputComponents { get; }
 
-        /// <remarks>
-        ///     This is only initialized when <see cref="InteractionService._useCompiledLambda"/> is <see langword="true"/>
-        /// </remarks>
         private Func<object[], object> ModalInitializer { get; }
 
         /// <remarks>
-        ///     This is only initialized when <see cref="InteractionService._useCompiledLambda"/> is <see langword="false"/>
+        ///     This is only initialized when <see cref="InteractionService._useCompiledLambda"/> is <see langword="false"/>.
         /// </remarks>
         private ConstructorInfo ModalCtor { get; }
 
@@ -43,14 +40,18 @@ namespace Discord.Interactions
         {
             Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
             ModalType = Parameters.First().ParameterType;
+
             TextInputComponents = ModalType.GetProperties()
                 .Where(x => x.GetCustomAttribute<ModalTextInputAttribute>() != null)
-                .ToDictionary(x => x.GetCustomAttribute<ModalTextInputAttribute>().CustomId, x => x);
-                
-            if (commandService._useCompiledLambda)
-                ModalInitializer = ReflectionUtils<object>.CreateLambdaConstructorInvoker(ModalType.GetTypeInfo());
-            else
-                ModalCtor = ModalType.GetConstructor(Array.Empty<Type>());
+                .ToDictionary(x => x.GetCustomAttribute<ModalTextInputAttribute>().CustomId, property => commandService._useCompiledLambda
+                       ? ReflectionUtils<IModal>.CreateLambdaPropertySetter(ModalType, property)
+                       : delegate (object obj, string val) { property.SetValue(obj, val); });
+
+            if (!commandService._useCompiledLambda) ModalCtor = ModalType.GetConstructor(Array.Empty<Type>());
+
+            ModalInitializer = commandService._useCompiledLambda
+                ? ReflectionUtils<object>.CreateLambdaConstructorInvoker(ModalType.GetTypeInfo())
+                : x => ModalCtor.Invoke(x);
         }
 
         /// <inheritdoc/>
@@ -88,16 +89,14 @@ namespace Discord.Interactions
         /// <returns>A <see cref="IModal"/> filled with the provided components.</returns>
         public IModal GetModal(IEnumerable<IComponentInteractionData> components)
         {
-            var modal = CommandService._useCompiledLambda
-                ? (IModal)ModalInitializer.Invoke(Array.Empty<object>())
-                : (IModal)ModalCtor.Invoke(null);
+            var modal = (IModal)ModalInitializer(null);
 
             foreach (var component in components)
             {
                 switch (component.Type)
                 {
                     case ComponentType.TextInput:
-                        TextInputComponents.GetValueOrDefault(component.CustomId).SetValue(modal, component.Value);
+                        TextInputComponents.GetValueOrDefault(component.CustomId).DynamicInvoke(modal, component.Value);
                         break;
                 };
             }
