@@ -6,10 +6,10 @@ title: Slash Command Bulk Overwrites
 If you have too many global commands then you might want to consider using the bulk overwrite function.
 
 ```cs
-public async Task Client_Ready() 
+public async Task Client_Ready()
 {
     List<ApplicationCommandProperties> applicationCommandProperties = new();
-    try 
+    try
     {
         // Simple help slash command.
         SlashCommandBuilder globalCommandHelp = new SlashCommandBuilder();
@@ -30,10 +30,11 @@ public async Task Client_Ready()
         applicationCommandProperties.Add(globalCommandAddFamily.Build());
 
         await _client.BulkOverwriteGlobalApplicationCommandsAsync(applicationCommandProperties.ToArray());
-    } 
-    catch (ApplicationCommandException exception) 
+    }
+    catch (HttpException exception)
     {
-        var json = JsonConvert.SerializeObject(exception.Error, Formatting.Indented);
+        // Turns the error object into json making it easier to read in the console.
+        var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
         Console.WriteLine(json);
     }
 }
