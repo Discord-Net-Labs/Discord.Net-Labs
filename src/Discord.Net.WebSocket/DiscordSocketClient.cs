@@ -1277,6 +1277,15 @@ namespace Discord.WebSocket
 
                                             var cacheableBefore = new Cacheable<SocketGuildUser, ulong>(before, user.Id, true, () => null);
                                             await TimedInvokeAsync(_guildMemberUpdatedEvent, nameof(GuildMemberUpdated), cacheableBefore, user).ConfigureAwait(false);
+                                            
+                                            if(before.TimedOutUntil.HasValue && !user.TimedOutUntil.HasValue)
+                                            {
+                                                await TimedInvokeAsync(_timeoutRemovedEvent, nameof(TimeoutRemoved), user).ConfigureAwait(false);
+                                            }
+                                            else if(!before.TimedOutUntil.HasValue && user.TimedOutUntil.HasValue)
+                                            {
+                                                await TimedInvokeAsync(_timeoutAddedEvent, nameof(TimeoutAdded), user, user.TimedOutUntil.Value - DateTimeOffset.UtcNow).ConfigureAwait(false);
+                                            }
                                         }
                                         else
                                         {

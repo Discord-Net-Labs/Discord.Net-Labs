@@ -458,6 +458,20 @@ namespace Discord.WebSocket
             remove { _guildMemberUpdatedEvent.Remove(value); }
         }
         internal readonly AsyncEvent<Func<Cacheable<SocketGuildUser, ulong>, SocketGuildUser, Task>> _guildMemberUpdatedEvent = new AsyncEvent<Func<Cacheable<SocketGuildUser, ulong>, SocketGuildUser, Task>>();
+        /// <summary> Fired when a user is timedout. </summary>
+        public event Func<SocketGuildUser, TimeSpan, Task> TimeoutAdded
+        {
+            add { _timeoutAddedEvent.Add(value); }
+            remove { _timeoutAddedEvent.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketGuildUser, TimeSpan, Task>> _timeoutAddedEvent = new AsyncEvent<Func<SocketGuildUser, TimeSpan, Task>>();
+        /// <summary> Fired when a users timeout expires. </summary>
+        public event Func<SocketGuildUser, TimeSpan, Task> TimeoutRemoved
+        {
+            add { _timeoutRemovedEvent.Add(value); }
+            remove { _timeoutRemovedEvent.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketGuildUser, TimeSpan, Task>> _timeoutRemovedEvent = new AsyncEvent<Func<SocketGuildUser, TimeSpan, Task>>();
         /// <summary> Fired when a user joins, leaves, or moves voice channels. </summary>
         public event Func<SocketUser, SocketVoiceState, SocketVoiceState, Task> UserVoiceStateUpdated
         {
