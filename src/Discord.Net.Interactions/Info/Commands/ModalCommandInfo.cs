@@ -21,14 +21,7 @@ namespace Discord.Interactions
         /// <summary>
         ///     Gets a dictionary of the text input components in the modal, with the component's custom id as the key.
         /// </summary>
-        public Dictionary<string, Delegate> TextInputComponents { get; }
-
-        private Func<object[], object> ModalInitializer { get; }
-
-        /// <remarks>
-        ///     This is only initialized when <see cref="InteractionService._useCompiledLambda"/> is <see langword="false"/>.
-        /// </remarks>
-        private ConstructorInfo ModalCtor { get; }
+        public Dictionary<string, Action<IModal, object>> TextInputComponents { get; }
 
         /// <inheritdoc/>
         public override bool SupportsWildCards => true;
@@ -40,18 +33,6 @@ namespace Discord.Interactions
         {
             Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
             ModalType = Parameters.First().ParameterType;
-
-            TextInputComponents = ModalType.GetProperties()
-                .Where(x => x.GetCustomAttribute<ModalTextInputAttribute>() != null)
-                .ToDictionary(x => x.GetCustomAttribute<ModalTextInputAttribute>().CustomId, property => commandService._useCompiledLambda
-                       ? ReflectionUtils<IModal>.CreateLambdaPropertySetter(ModalType, property)
-                       : delegate (object obj, string val) { property.SetValue(obj, val); });
-
-            if (!commandService._useCompiledLambda) ModalCtor = ModalType.GetConstructor(Array.Empty<Type>());
-
-            ModalInitializer = commandService._useCompiledLambda
-                ? ReflectionUtils<object>.CreateLambdaConstructorInvoker(ModalType.GetTypeInfo())
-                : x => ModalCtor.Invoke(x);
         }
 
         /// <inheritdoc/>
@@ -74,10 +55,12 @@ namespace Discord.Interactions
 
             var modal = GetModal(interaction.Data.Components);
 
-            List<object> args = new() { modal };
-            
+            var args = new List<object>();
+
             if (additionalArgs is not null)
                 args.AddRange(additionalArgs);
+
+            args.Add(modal);
 
             return await RunAsync(context, args.ToArray(), services);
         }
@@ -89,14 +72,14 @@ namespace Discord.Interactions
         /// <returns>A <see cref="IModal"/> filled with the provided components.</returns>
         public IModal GetModal(IEnumerable<IComponentInteractionData> components)
         {
-            var modal = (IModal)ModalInitializer(null);
+            var modal = Parameters.First()._modalParameterInitializer(Array.Empty<object>());
 
             foreach (var component in components)
             {
                 switch (component.Type)
                 {
                     case ComponentType.TextInput:
-                        TextInputComponents.GetValueOrDefault(component.CustomId).DynamicInvoke(modal, component.Value);
+                        TextInputComponents.GetValueOrDefault(component.CustomId)(modal, component.Value);
                         break;
                 };
             }

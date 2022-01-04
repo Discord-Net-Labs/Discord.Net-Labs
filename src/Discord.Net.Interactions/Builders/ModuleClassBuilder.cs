@@ -304,7 +304,9 @@ namespace Discord.Interactions.Builders
         private static void BuildModalCommand(ModalCommandBuilder builder, Func<IServiceProvider, IInteractionModuleBase> createInstance, MethodInfo methodInfo,
             InteractionService commandService, IServiceProvider services)
         {
-            if (!methodInfo.GetParameters().First().ParameterType.GetInterfaces().Contains(typeof(IModal)))
+            var parameters = methodInfo.GetParameters();
+
+            if (parameters.Length != 1 || !typeof(IModal).IsAssignableFrom(parameters.First().ParameterType))
                 throw new InvalidOperationException($"A modal commands only parameter must be a type of {nameof(IModal)}");
 
             var attributes = methodInfo.GetCustomAttributes();
@@ -330,8 +332,6 @@ namespace Discord.Interactions.Builders
                         break;
                 }
             }
-
-            var parameters = methodInfo.GetParameters();
 
             foreach (var parameter in parameters)
                 builder.AddParameter(x => BuildModalParameter(x, parameter));
@@ -494,10 +494,19 @@ namespace Discord.Interactions.Builders
             var interactionService = builder.Command.Module.InteractionService;
             var typeInfo = paramInfo.ParameterType.GetTypeInfo();
 
-            var ctor = typeInfo.GetConstructors().First();
+            var textInputs = BuildModalInputs(typeInfo.GetProperties().Where(x => x.IsDefined(typeof(ModalTextInputAttribute))));
+            builder.AddTextInputComponents(textInputs);
+                
+            var initializer = interactionService._useCompiledLambda ? ReflectionUtils<object>.CreateLambdaConstructorInvoker(typeInfo) : typeInfo.GetConstructor(Type.EmptyTypes).Invoke;
+            builder.ModalParameterInitializer = (args) => (IModal)initializer(args);
 
-            builder.ModalParameterInitializer = (args) => (IModal)ctor.Invoke(args);
             BuildParameter(builder, paramInfo);
+
+            IDictionary<string, Action<IModal, object>> BuildModalInputs(IEnumerable<PropertyInfo> properties)
+            {
+                return properties.ToDictionary(x => x.GetCustomAttribute<ModalTextInputAttribute>().CustomId,
+                    x => interactionService._useCompiledLambda ? ReflectionUtils<IModal>.CreateLambdaPropertySetter(x) : (instance, value) => x.SetValue(instance, value));
+            }
         }
         #endregion
 

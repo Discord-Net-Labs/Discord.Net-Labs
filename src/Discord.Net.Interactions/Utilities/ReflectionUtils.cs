@@ -53,15 +53,6 @@ namespace Discord.Interactions
                 throw new InvalidOperationException($"Multiple constructors found for \"{ownerType.FullName}\".");
             return constructors[0];
         }
-        private static ConstructorInfo GetConstructor (TypeInfo ownerType, Type[] constructorParams)
-        {
-            var constructors = ownerType.DeclaredConstructors.Where(x => !x.IsStatic && x.GetParameters().Select(x => x.GetType()).SequenceEqual(constructorParams));
-            if (!constructors.Any())
-                throw new InvalidOperationException($"No matching constructor found for \"{ownerType.FullName}\".");
-            else if (constructors.Count() > 1)
-                throw new InvalidOperationException($"Multiple matching constructors found for \"{ownerType.FullName}\".");
-            return constructors.First();
-        }
         private static PropertyInfo[] GetProperties (TypeInfo ownerType)
         {
             var result = new List<PropertyInfo>();
@@ -187,15 +178,15 @@ namespace Discord.Interactions
         /// <summary>
         ///     Create a compiled lambda property setter.
         /// </summary>
-        internal static Delegate CreateLambdaPropertySetter(Type parentType, PropertyInfo propertyInfo)
+        internal static Action<T, object> CreateLambdaPropertySetter(PropertyInfo propertyInfo)
         {
-            var targetExp = Expression.Parameter(parentType, parentType.Name);
-            var valueExp = Expression.Parameter(propertyInfo.PropertyType, propertyInfo.Name);
+            var instanceParam = Expression.Parameter(typeof(T), "instance");
+            var valueParam = Expression.Parameter(typeof(object), "value");
 
-            var propertyExp = Expression.Property(targetExp, propertyInfo);
-            var assignExp = Expression.Assign(propertyExp, valueExp);
+            var prop = Expression.Property(instanceParam, propertyInfo);
+            var assign = Expression.Assign(prop, Expression.Convert(valueParam, propertyInfo.PropertyType));
 
-            return Expression.Lambda(assignExp, targetExp, valueExp).Compile();
+            return Expression.Lambda<Action<T, object>>(assign, instanceParam, valueParam).Compile();
         }
     }
 }
