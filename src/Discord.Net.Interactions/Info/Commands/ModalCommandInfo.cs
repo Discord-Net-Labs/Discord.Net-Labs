@@ -68,7 +68,7 @@ namespace Discord.Interactions
         /// <summary>
         ///     Creates an <see cref="IModal"/> and fills it with provided message components.
         /// </summary>
-        /// <param name="components"Components that will be injected into the modal.></param>
+        /// <param name="components">Components that will be injected into the modal.</param>
         /// <returns>A <see cref="IModal"/> filled with the provided components.</returns>
         public IModal GetModal(IEnumerable<IComponentInteractionData> components)
         {
