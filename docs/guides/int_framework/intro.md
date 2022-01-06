@@ -198,6 +198,18 @@ Autocomplete commands must be parameterless methods. A valid Autocomplete comman
 
 Alternatively, you can use the [AutocompleteHandlers] to simplify this workflow.
 
+## Modals
+
+Modal commands fist paremeter must be an implimentation of `IModal`.
+An Modal implimentation would look like:
+
+[!code-csharp[Modal Command](samples/intro/modal.cs)]
+
+> [!NOTE]
+> If you are using Modals in the interaction service it is **highly 
+> recommended** that you enable `PreCompiledLambdas` in your config
+> to prevent performance issues. 
+
 ## Interaction Context
 
 Every command module provides its commands with an execution context.
