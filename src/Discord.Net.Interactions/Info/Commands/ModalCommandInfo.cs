@@ -93,12 +93,19 @@ namespace Discord.Interactions
 
             foreach (var component in components)
             {
-                switch (component.Type)
+                try
                 {
-                    case ComponentType.TextInput:
-                        TextInputComponents.GetValueOrDefault(component.CustomId).DynamicInvoke(modal, component.Value);
-                        break;
-                };
+                    switch (component.Type)
+                    {
+                        case ComponentType.TextInput:
+                            TextInputComponents[component.CustomId].DynamicInvoke(modal, component.Value);
+                            break;
+                    };
+                }
+                catch when (!CommandService._throwOnUnknownModalComponent)
+                {
+                    CommandService._logManager.DebugAsync("App Commands", $"No valid property for the {component.Type} \"{component.CustomId}\" was found in the modal \"{ModalType.FullName}\".");
+                }
             }
 
             return modal;

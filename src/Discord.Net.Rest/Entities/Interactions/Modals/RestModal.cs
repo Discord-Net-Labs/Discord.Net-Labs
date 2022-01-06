@@ -32,9 +32,6 @@ namespace Discord.Rest
             await entity.UpdateAsync(client, model);
             return entity;
         }
-
-        /// <inheritdoc/>
-        public override bool HasResponded { get; internal set; }
         private object _lock = new object();
 
         /// <summary>
