@@ -1,7 +1,4 @@
 using System.Threading.Tasks;
-using System.Linq;
-using System;
-using System.Reflection;
 
 namespace Discord.Interactions
 {
@@ -14,21 +11,17 @@ namespace Discord.Interactions
         /// <param name="modal">The modal to respond with.</param>
         /// <param name="options">The request options for this <see langword="async"/> request.</param>
         /// <returns>A task that represents the asynchronous operation of responding to the interaction.</returns>
-        public static async Task RespondWithModalAsync(this IDiscordInteraction interaction, IModal modal, RequestOptions options = null) 
+        public static async Task RespondWithModalAsync<T>(this IDiscordInteraction interaction, InteractionService interactionService, RequestOptions options = null)
+            where T : class, IModal
         {
-            var builder = new ModalBuilder()
-                .WithCustomId(modal.CustomId)
-                .WithTitle(modal.Title);
+            var modalInfo = interactionService.GetModalInfo(typeof(T));
 
-            modal
-                .GetType()
-                .GetProperties()
-                .Where(x => x.PropertyType == typeof(string))
-                .Select(x => x.GetCustomAttribute<ModalTextInputAttribute>())
-                .Where(x => x != null)
-                .ToList()
-                .ForEach(input => builder.AddTextInput(input.Label, input.CustomId, input.Style, input.Placeholder,
-                    input.MinLength, input.MaxLength, input.Required, input.Value));
+            var builder = new ModalBuilder()
+                .WithCustomId(modalInfo.CustomId)
+                .WithTitle(modalInfo.Title);
+
+            foreach (var textInput in modalInfo.TextComponents)
+                builder.AddTextInput(textInput.Label, textInput.CustomId, textInput.Style, textInput.Placeholder, textInput.MinLength, textInput.MaxLength, textInput.IsRequired, textInput.DefaultValue);
 
             await interaction.RespondWithModalAsync(builder.Build(), options);
         }

@@ -112,30 +112,7 @@ namespace Discord.Interactions
             var parameters = constructor.GetParameters();
             var properties = GetProperties(typeInfo);
 
-            var argsExp = Expression.Parameter(typeof(object[]), "args");
-            var propsExp = Expression.Parameter(typeof(object[]), "props");
-
-            var parameterExps = new Expression[parameters.Length];
-
-            for (var i = 0; i < parameters.Length; i++)
-            {
-                var indexExp = Expression.Constant(i);
-                var accessExp = Expression.ArrayIndex(argsExp, indexExp);
-                parameterExps[i] = Expression.Convert(accessExp, parameters[i].ParameterType);
-            }
-
-            var newExp = Expression.New(constructor, parameterExps);
-
-            var memberExps = new MemberAssignment[properties.Length];
-
-            for (var i = 0; i < properties.Length; i++)
-            {
-                var indexEx = Expression.Constant(i);
-                var accessExp = Expression.Convert(Expression.ArrayIndex(propsExp, indexEx), properties[i].PropertyType);
-                memberExps[i] = Expression.Bind(properties[i], accessExp);
-            }
-            var memberInit = Expression.MemberInit(newExp, memberExps);
-            var lambda = Expression.Lambda<Func<object[], object[], T>>(memberInit, argsExp, propsExp).Compile();
+            var lambda = CreateLambdaMemberInit(typeInfo, constructor);
 
             return (services) =>
             {
@@ -187,6 +164,46 @@ namespace Discord.Interactions
             var assign = Expression.Assign(prop, Expression.Convert(valueParam, propertyInfo.PropertyType));
 
             return Expression.Lambda<Action<T, object>>(assign, instanceParam, valueParam).Compile();
+        }
+
+        internal static Func<object[], object[], T> CreateLambdaMemberInit(TypeInfo typeInfo, ConstructorInfo constructor, Predicate<PropertyInfo> propertySelect = null)
+        {
+            propertySelect ??= x => true;
+
+            var parameters = constructor.GetParameters();
+            var properties = GetProperties(typeInfo).Where(x => propertySelect(x)).ToArray();
+
+            var argsExp = Expression.Parameter(typeof(object[]), "args");
+            var propsExp = Expression.Parameter(typeof(object[]), "props");
+
+            var parameterExps = new Expression[parameters.Length];
+
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                var indexExp = Expression.Constant(i);
+                var accessExp = Expression.ArrayIndex(argsExp, indexExp);
+                parameterExps[i] = Expression.Convert(accessExp, parameters[i].ParameterType);
+            }
+
+            var newExp = Expression.New(constructor, parameterExps);
+
+            var memberExps = new MemberAssignment[properties.Length];
+
+            for (var i = 0; i < properties.Length; i++)
+            {
+                var indexEx = Expression.Constant(i);
+                var accessExp = Expression.Convert(Expression.ArrayIndex(propsExp, indexEx), properties[i].PropertyType);
+                memberExps[i] = Expression.Bind(properties[i], accessExp);
+            }
+            var memberInit = Expression.MemberInit(newExp, memberExps);
+            var lambda = Expression.Lambda<Func<object[], object[], T>>(memberInit, argsExp, propsExp).Compile();
+
+            return (args, props) =>
+            {
+                var instance = lambda(args, props);
+
+                return instance;
+            };
         }
     }
 }

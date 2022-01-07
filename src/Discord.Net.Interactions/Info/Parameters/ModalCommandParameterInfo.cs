@@ -1,7 +1,4 @@
 using Discord.Interactions.Builders;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 
 namespace Discord.Interactions
 {
@@ -10,18 +7,16 @@ namespace Discord.Interactions
     /// </summary>
     public class ModalCommandParameterInfo : CommandParameterInfo
     {
-        internal ModalParameterInitializer _modalParameterInitializer { get; }
+        public ModalInfo Modal { get; private set; }
 
-        public IReadOnlyDictionary<string, Action<IModal, object>> TextInputComponents { get; }
+        public bool IsModalParameter => Modal is not null;
 
         /// <inheritdoc/>
         public new ModalCommandInfo Command => base.Command as ModalCommandInfo;
 
         internal ModalCommandParameterInfo(ModalCommandParameterBuilder builder, ICommandInfo command) : base(builder, command)
         {
-            _modalParameterInitializer = builder.ModalParameterInitializer;
-
-            TextInputComponents = builder.TextInputComponents.ToImmutableDictionary();
+            Modal = builder.Modal;
         }
     }
 

@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.Interactions.Builders
 {
@@ -12,43 +8,22 @@ namespace Discord.Interactions.Builders
     /// </summary>
     public class ModalCommandParameterBuilder : ParameterBuilder<ModalCommandParameterInfo, ModalCommandParameterBuilder>
     {
-        private readonly Dictionary<string, Action<IModal, object>> _textInputComponents = new();
-
-        public IReadOnlyDictionary<string, Action<IModal, object>> TextInputComponents { get; }
-
-        /// <summary>
-        ///     Gets the parameters initializer.
-        /// </summary>
-        public ModalParameterInitializer ModalParameterInitializer { get; internal set; }
-
         protected override ModalCommandParameterBuilder Instance => this;
+
+        public ModalInfo Modal { get; private set; }
+
+        public bool IsModalParameter => Modal is not null;
 
         internal ModalCommandParameterBuilder(ICommandBuilder command) : base(command) { }
 
-        /// <summary>
-        ///     Creates a new <see cref="ModalCommandParameterBuilder"/>.
-        /// </summary>
-        /// <param name="command">Parent command of this parameter.</param>
-        /// <param name="name">Name of this command.</param>
-        /// <param name="type">Type of this parameter.</param>
-        /// <param name="modalParameterInitializer">the initializer of this parameter.</param>
-        public ModalCommandParameterBuilder(ICommandBuilder command, string name, Type type, ModalParameterInitializer modalParameterInitializer) : base(command, name, type)
-        {
-            ModalParameterInitializer = modalParameterInitializer;
-        }
+        public ModalCommandParameterBuilder(ICommandBuilder command, string name, Type type) : base(command, name, type) { }
 
-        public ModalCommandParameterBuilder AddTextInputComponent(string label, Action<IModal, object> propertySetter)
+        public override ModalCommandParameterBuilder SetParameterType(Type type)
         {
-            _textInputComponents[label] = propertySetter;
-            return this;
-        }
+            if (typeof(IModal).IsAssignableFrom(type))
+                Modal = Command.Module.InteractionService.GetModalInfo(type);
 
-        public ModalCommandParameterBuilder AddTextInputComponents(IDictionary<string, Action<IModal, object>> components)
-        {
-            foreach(var component in components)
-                _textInputComponents[component.Key] = component.Value;
-
-            return this;
+            return base.SetParameterType(type);
         }
 
         internal override ModalCommandParameterInfo Build(ICommandInfo command) =>
