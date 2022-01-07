@@ -14,14 +14,12 @@ namespace Discord.Interactions
         internal readonly ModalInitializer _initializer;
 
         public InteractionService InteractionService { get; }
-        public string CustomId { get; }
         public string Title { get; }
         public IReadOnlyCollection<TextInputComponentInfo> TextComponents { get; }
 
         internal ModalInfo(Builders.ModalBuilder builder)
         {
             InteractionService = builder.InteractionService;
-            CustomId = builder.CustomId;
             Title = builder.Title;
             TextComponents = builder.TextComponents.Select(x => x.Build(this)).ToImmutableArray();
 

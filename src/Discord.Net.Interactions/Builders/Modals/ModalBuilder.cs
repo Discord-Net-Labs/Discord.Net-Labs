@@ -5,11 +5,10 @@ namespace Discord.Interactions.Builders
 {
     public class ModalBuilder
     {
-        private readonly List<TextInputComponentBuilder> _textComponents;
+        private readonly List<TextInputComponentBuilder> _textComponents = new();
 
         public InteractionService InteractionService { get; }
         public ModalInitializer ModalInitializer { get; internal set; }
-        public string CustomId { get; set; }
         public string Title { get; set; }
         public IReadOnlyCollection<TextInputComponentBuilder> TextComponents => _textComponents;
 
@@ -21,12 +20,6 @@ namespace Discord.Interactions.Builders
         public ModalBuilder(InteractionService interactionService, ModalInitializer modalInitializer) : this(interactionService)
         {
             ModalInitializer = modalInitializer;
-        }
-
-        public ModalBuilder WithCustomId(string customId)
-        {
-            CustomId = customId;
-            return this;
         }
 
         public ModalBuilder WithTitle(string title)

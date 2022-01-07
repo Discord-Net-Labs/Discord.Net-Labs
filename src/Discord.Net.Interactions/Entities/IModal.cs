@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Discord.Interactions
 {
     /// <summary>
@@ -11,11 +5,6 @@ namespace Discord.Interactions
     /// </summary>
     public interface IModal
     {
-        /// <summary>
-        ///     Gets the modal's custom id.
-        /// </summary>
-        string CustomId { get; }
-        
         /// <summary>
         ///     Gets the modal's title.
         /// </summary>

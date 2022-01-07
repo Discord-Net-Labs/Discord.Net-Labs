@@ -795,6 +795,18 @@ namespace Discord.Interactions
             _genericTypeConverters[targetType] = converterType;
         }
 
+        public ModalInfo AddModalInfo<T>() where T : class, IModal
+        {
+            var type = typeof(T);
+
+            if (_modalInfos.ContainsKey(type))
+                throw new InvalidOperationException($"Modal type {type.FullName} already exists.");
+
+            var modalInfo = ModuleClassBuilder.BuildModalInfo(type, this);
+            _modalInfos[type] = modalInfo;
+            return modalInfo;
+        }
+
         internal ModalInfo GetModalInfo(Type modalType)
         {
             if (!typeof(IModal).IsAssignableFrom(modalType))

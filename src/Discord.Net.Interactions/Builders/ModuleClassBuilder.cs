@@ -309,7 +309,7 @@ namespace Discord.Interactions.Builders
             if (parameters.Count(x => typeof(IModal).IsAssignableFrom(x.ParameterType)) > 1)
                 throw new InvalidOperationException($"A modal command can only have one {nameof(IModal)} parameter.");
 
-            if (parameters.All(x => x.ParameterType == typeof(string) || typeof(IModal).IsAssignableFrom(x.ParameterType)))
+            if (!parameters.All(x => x.ParameterType == typeof(string) || typeof(IModal).IsAssignableFrom(x.ParameterType)))
                 throw new InvalidOperationException($"All parameters of a modal command must be either a string or an implemetation of {nameof(IModal)}");
 
             var attributes = methodInfo.GetCustomAttributes();
@@ -499,10 +499,12 @@ namespace Discord.Interactions.Builders
             if (!typeof(IModal).IsAssignableFrom(modalType))
                 throw new InvalidOperationException($"{modalType.FullName} isn't an implementation of {typeof(IModal).FullName}");
 
+            var instance = modalType.GetConstructor(Type.EmptyTypes).Invoke(Array.Empty<object>()) as IModal;
+
             var builder = new ModalBuilder(commandService);
+            builder.Title = instance.Title;
 
             var publicProps = modalType.GetProperties().Where(x => x.SetMethod?.IsPublic == true && x.SetMethod?.IsStatic == false);
-
             var textInputs = publicProps.Where(x => x.IsDefined(typeof(ModalTextInputAttribute)));
 
             foreach (var textInput in textInputs)
