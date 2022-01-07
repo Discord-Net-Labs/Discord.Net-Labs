@@ -27,7 +27,7 @@ namespace Discord.Interactions.Builders
         /// <summary>
         ///     Gets or sets the default value of the text input.
         /// </summary>
-        public string DefaultValue { get; set; }
+        public string Value { get; set; }
 
         public TextInputComponentBuilder(ModalBuilder modal) : base(modal) { }
 
@@ -55,9 +55,9 @@ namespace Discord.Interactions.Builders
             return this;
         }
 
-        public TextInputComponentBuilder SetDefaultValue(string value)
+        public TextInputComponentBuilder SetValue(string value)
         {
-            DefaultValue = value;
+            Value = value;
             return this;
         }
 

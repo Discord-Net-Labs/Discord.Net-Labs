@@ -11,6 +11,7 @@ namespace Discord.Interactions.Builders
         public bool IsRequired { get; }
         public ComponentType ComponentType { get; }
         public Type Type { get; }
+        public object DefaultValue { get; }
         public IReadOnlyCollection<Attribute> Attributes { get; }
 
         public IInputComponentBuilder WithCustomId(string customId);
@@ -20,6 +21,8 @@ namespace Discord.Interactions.Builders
         public IInputComponentBuilder SetIsRequired(bool isRequired);
 
         public IInputComponentBuilder WithType(Type type);
+
+        public IInputComponentBuilder SetDefaultValue(object value);
 
         public IInputComponentBuilder WithAttributes(params Attribute[] attributes);
     }

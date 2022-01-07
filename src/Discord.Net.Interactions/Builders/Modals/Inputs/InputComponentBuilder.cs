@@ -16,6 +16,7 @@ namespace Discord.Interactions.Builders
         public bool IsRequired { get; set; }
         public ComponentType ComponentType { get; internal set; }
         public Type Type { get; private set; }
+        public object DefaultValue { get; set; }
         public IReadOnlyCollection<Attribute> Attributes => _attributes;
 
         public InputComponentBuilder(ModalBuilder modal)
@@ -54,6 +55,12 @@ namespace Discord.Interactions.Builders
             return Instance;
         }
 
+        public TBuilder SetDefaultValue(object value)
+        {
+            DefaultValue = value;
+            return Instance;
+        }
+
         public TBuilder WithAttributes(params Attribute[] attributes)
         {
             _attributes.AddRange(attributes);
@@ -66,6 +73,7 @@ namespace Discord.Interactions.Builders
         IInputComponentBuilder IInputComponentBuilder.WithCustomId(string customId) => WithCustomId(customId);
         IInputComponentBuilder IInputComponentBuilder.WithLabel(string label) => WithCustomId(label);
         IInputComponentBuilder IInputComponentBuilder.WithType(Type type) => WithType(type);
+        IInputComponentBuilder IInputComponentBuilder.SetDefaultValue(object value) => SetDefaultValue(value);
         IInputComponentBuilder IInputComponentBuilder.WithAttributes(params Attribute[] attributes) => WithAttributes(attributes);
         IInputComponentBuilder IInputComponentBuilder.SetIsRequired(bool isRequired) => SetIsRequired(isRequired);
     }

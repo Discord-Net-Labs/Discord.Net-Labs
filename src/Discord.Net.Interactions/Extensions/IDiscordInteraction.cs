@@ -21,7 +21,7 @@ namespace Discord.Interactions
                 .WithTitle(modalInfo.Title);
 
             foreach (var textInput in modalInfo.TextComponents)
-                builder.AddTextInput(textInput.Label, textInput.CustomId, textInput.Style, textInput.Placeholder, textInput.MinLength, textInput.MaxLength, textInput.IsRequired, textInput.DefaultValue);
+                builder.AddTextInput(textInput.Label, textInput.CustomId, textInput.Style, textInput.Placeholder, textInput.MinLength, textInput.MaxLength, textInput.IsRequired, textInput.Value);
 
             await interaction.RespondWithModalAsync(builder.Build(), options);
         }

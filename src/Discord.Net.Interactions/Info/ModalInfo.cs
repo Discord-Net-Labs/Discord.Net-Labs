@@ -40,7 +40,7 @@ namespace Discord.Interactions
                 if (component is null)
                 {
                     if (!input.Value.IsRequired)
-                        args[i] = Type.Missing;
+                        args[i] = input.Value.DefaultValue;
                     else
                         throw new InvalidOperationException($"Modal interaction is missing the required field: {input.Key}");
                 }

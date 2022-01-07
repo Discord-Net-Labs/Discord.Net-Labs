@@ -12,6 +12,7 @@ namespace Discord.Interactions
         public bool IsRequired { get; }
         public ComponentType ComponentType { get; }
         public Type Type { get; }
+        public object DefaultValue { get; }
         public IReadOnlyCollection<Attribute> Attributes { get; }
 
         protected InputComponentInfo(Builders.IInputComponentBuilder builder, ModalInfo modal)
@@ -22,6 +23,7 @@ namespace Discord.Interactions
             IsRequired = builder.IsRequired;
             ComponentType = builder.ComponentType;
             Type = builder.Type;
+            DefaultValue = builder.DefaultValue;
             Attributes = builder.Attributes.ToImmutableArray();
         }
     }

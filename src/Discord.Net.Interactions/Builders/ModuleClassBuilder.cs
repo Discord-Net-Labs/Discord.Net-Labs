@@ -508,7 +508,11 @@ namespace Discord.Interactions.Builders
             var textInputs = publicProps.Where(x => x.IsDefined(typeof(ModalTextInputAttribute)));
 
             foreach (var textInput in textInputs)
-                builder.AddTextComponent(x => BuildTextInputs(x, textInput));
+                builder.AddTextComponent(x =>
+                {
+                    x.DefaultValue = textInput.GetValue(instance);
+                    BuildTextInputs(x, textInput);
+                });
 
             var memberInit = ReflectionUtils<IModal>.CreateLambdaMemberInit(modalType.GetTypeInfo(), modalType.GetConstructor(Type.EmptyTypes), x => x.IsDefined(typeof(ModalInputAttribute)));
             builder.ModalInitializer = (args) => memberInit(Array.Empty<object>(), args);
@@ -533,7 +537,7 @@ namespace Discord.Interactions.Builders
                         builder.Placeholder = textInput.Placeholder;
                         builder.MaxLength = textInput.MaxLength;
                         builder.MinLength = textInput.MinLength;
-                        builder.DefaultValue = textInput.Value;
+                        builder.Value = textInput.Value;
                         builder.IsRequired = textInput.Required;
                         break;
                     default:

@@ -25,7 +25,7 @@ namespace Discord.Interactions
         /// <summary>
         ///     Gets or sets the default value of the text input.
         /// </summary>
-        public string DefaultValue { get; }
+        public string Value { get; }
 
         internal TextInputComponentInfo(Builders.TextInputComponentBuilder builder, ModalInfo modal) : base(builder, modal)
         {
@@ -33,7 +33,7 @@ namespace Discord.Interactions
             Placeholder = builder.Placeholder;
             MinLength = builder.MinLength;
             MaxLength = builder.MaxLength;
-            DefaultValue = builder.DefaultValue;
+            Value = builder.Value;
         }
     }
 }
