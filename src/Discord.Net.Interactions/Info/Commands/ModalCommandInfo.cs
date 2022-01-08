@@ -11,7 +11,7 @@ namespace Discord.Interactions
     public class ModalCommandInfo : CommandInfo<ModalCommandParameterInfo>
     {
         /// <summary>
-        ///     Gets the type of <see cref="IModal"/> this command uses.
+        ///     Gets the <see cref="ModalInfo"/> class for this commands <see cref="IModal"/> parameter.
         /// </summary>
         public ModalInfo Modal { get; }
 

@@ -796,6 +796,14 @@ namespace Discord.Interactions
             _genericTypeConverters[targetType] = converterType;
         }
 
+        /// <summary>
+        ///     Loads and caches an <see cref="ModalInfo"/> for the provided <see cref="IModal"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of <see cref="IModal"/> to be loaded.</typeparam>
+        /// <returns>
+        ///     The built <see cref="ModalInfo"/> instance.
+        /// </returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public ModalInfo AddModalInfo<T>() where T : class, IModal
         {
             var type = typeof(T);
@@ -804,14 +812,6 @@ namespace Discord.Interactions
                 throw new InvalidOperationException($"Modal type {type.FullName} already exists.");
 
             return ModalUtils.GetOrAdd(type);
-        }
-
-        internal ModalInfo GetModalInfo(Type modalType)
-        {
-            if (!typeof(IModal).IsAssignableFrom(modalType))
-                throw new InvalidOperationException($"{modalType.FullName} isn't an implementation of {typeof(IModal).FullName}");
-
-            return ModalUtils.GetOrAdd(modalType);
         }
 
         internal IAutocompleteHandler GetAutocompleteHandler(Type autocompleteHandlerType, IServiceProvider services = null)

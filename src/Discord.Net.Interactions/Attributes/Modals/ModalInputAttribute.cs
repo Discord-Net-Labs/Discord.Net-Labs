@@ -10,6 +10,9 @@ namespace Discord.Interactions
         /// </summary>
         public string CustomId { get; }
 
+        /// <summary>
+        ///     Gets the type of the component.
+        /// </summary>
         public abstract ComponentType ComponentType { get; }
 
         /// <summary>
@@ -18,7 +21,7 @@ namespace Discord.Interactions
         public string Label { get; }
 
         /// <summary>
-        ///     Gets whether the user is required to input text.
+        ///     Gets whether the user is required to input a value.
         /// </summary>
         public bool Required { get; }
 
