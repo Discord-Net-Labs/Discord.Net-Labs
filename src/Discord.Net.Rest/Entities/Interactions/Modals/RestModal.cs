@@ -32,7 +32,7 @@ namespace Discord.Rest
             await entity.UpdateAsync(client, model);
             return entity;
         }
-
+        
         private object _lock = new object();
 
         /// <summary>
