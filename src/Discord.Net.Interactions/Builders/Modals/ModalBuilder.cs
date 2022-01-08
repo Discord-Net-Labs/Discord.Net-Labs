@@ -5,19 +5,18 @@ namespace Discord.Interactions.Builders
 {
     public class ModalBuilder
     {
-        private readonly List<TextInputComponentBuilder> _textComponents = new();
+        private readonly List<TextInputComponentBuilder> _textComponents;
 
-        public InteractionService InteractionService { get; }
         public ModalInitializer ModalInitializer { get; internal set; }
         public string Title { get; set; }
         public IReadOnlyCollection<TextInputComponentBuilder> TextComponents => _textComponents;
 
-        internal ModalBuilder(InteractionService interactionService)
+        internal ModalBuilder()
         {
-            InteractionService = interactionService;
+            _textComponents = new();
         }
 
-        public ModalBuilder(InteractionService interactionService, ModalInitializer modalInitializer) : this(interactionService)
+        public ModalBuilder(ModalInitializer modalInitializer) : this()
         {
             ModalInitializer = modalInitializer;
         }

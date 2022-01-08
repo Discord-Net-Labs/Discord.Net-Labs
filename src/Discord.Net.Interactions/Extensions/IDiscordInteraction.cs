@@ -11,10 +11,10 @@ namespace Discord.Interactions
         /// <param name="modal">The modal to respond with.</param>
         /// <param name="options">The request options for this <see langword="async"/> request.</param>
         /// <returns>A task that represents the asynchronous operation of responding to the interaction.</returns>
-        public static async Task RespondWithModalAsync<T>(this IDiscordInteraction interaction, InteractionService interactionService, string customId, RequestOptions options = null)
+        public static async Task RespondWithModalAsync<T>(this IDiscordInteraction interaction, string customId, RequestOptions options = null)
             where T : class, IModal
         {
-            var modalInfo = interactionService.GetModalInfo(typeof(T));
+            var modalInfo = ModalUtils.GetOrAdd(typeof(T));
 
             var builder = new ModalBuilder()
                 .WithCustomId(customId)

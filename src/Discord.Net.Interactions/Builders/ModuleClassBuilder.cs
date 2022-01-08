@@ -119,6 +119,7 @@ namespace Discord.Interactions.Builders
 
             foreach(var method in validAutocompleteCommands)
                 builder.AddAutocompleteCommand(x => BuildAutocompleteCommand(x, createInstance, method, commandService, services));
+
             foreach(var method in validModalCommands)
                 builder.AddModalCommand(x => BuildModalCommand(x, createInstance, method, commandService, services));
         }
@@ -494,14 +495,14 @@ namespace Discord.Interactions.Builders
         #endregion
 
         #region Modals
-        public static ModalInfo BuildModalInfo(Type modalType, InteractionService commandService)
+        public static ModalInfo BuildModalInfo(Type modalType)
         {
             if (!typeof(IModal).IsAssignableFrom(modalType))
                 throw new InvalidOperationException($"{modalType.FullName} isn't an implementation of {typeof(IModal).FullName}");
 
             var instance = modalType.GetConstructor(Type.EmptyTypes).Invoke(Array.Empty<object>()) as IModal;
 
-            var builder = new ModalBuilder(commandService);
+            var builder = new ModalBuilder();
             builder.Title = instance.Title;
 
             var publicProps = modalType.GetProperties().Where(x => x.SetMethod?.IsPublic == true && x.SetMethod?.IsStatic == false);

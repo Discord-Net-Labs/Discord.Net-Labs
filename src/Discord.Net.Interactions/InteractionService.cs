@@ -802,9 +802,7 @@ namespace Discord.Interactions
             if (_modalInfos.ContainsKey(type))
                 throw new InvalidOperationException($"Modal type {type.FullName} already exists.");
 
-            var modalInfo = ModuleClassBuilder.BuildModalInfo(type, this);
-            _modalInfos[type] = modalInfo;
-            return modalInfo;
+            return ModalUtils.GetOrAdd(type);
         }
 
         internal ModalInfo GetModalInfo(Type modalType)
@@ -812,7 +810,7 @@ namespace Discord.Interactions
             if (!typeof(IModal).IsAssignableFrom(modalType))
                 throw new InvalidOperationException($"{modalType.FullName} isn't an implementation of {typeof(IModal).FullName}");
 
-            return _modalInfos.GetOrAdd(modalType, ModuleClassBuilder.BuildModalInfo(modalType, this));
+            return ModalUtils.GetOrAdd(modalType);
         }
 
         internal IAutocompleteHandler GetAutocompleteHandler(Type autocompleteHandlerType, IServiceProvider services = null)
