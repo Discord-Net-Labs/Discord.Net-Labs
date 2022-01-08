@@ -59,6 +59,11 @@ namespace Discord.Interactions
         ///     Gets or sets delegate to be used by the <see cref="InteractionService"/> when responding to a Rest based interaction.
         /// </summary>
         public RestResponseCallback RestResponseCallback { get; set; } = (ctx, str) => Task.CompletedTask;
+
+        /// <summary>
+        ///     Gets or sets whether an exception should be thrown when a component does not belong to a field in a modals class.
+        /// </summary>
+        public bool ThrowOnUnknownModalComponent { get; set; } = false;
     }
 
     /// <summary>

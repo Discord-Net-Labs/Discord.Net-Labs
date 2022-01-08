@@ -75,7 +75,7 @@ namespace Discord.Interactions
         internal readonly LogManager _logManager;
         internal readonly Func<DiscordRestClient> _getRestClient;
 
-        internal readonly bool _throwOnError, _useCompiledLambda, _enableAutocompleteHandlers, _autoServiceScopes;
+        internal readonly bool _throwOnError, _useCompiledLambda, _enableAutocompleteHandlers, _autoServiceScopes, _throwOnUnknownModalComponent;
         internal readonly string _wildCardExp;
         internal readonly RunMode _runMode;
         internal readonly RestResponseCallback _restResponseCallback;
@@ -169,6 +169,7 @@ namespace Discord.Interactions
             _throwOnError = config.ThrowOnError;
             _wildCardExp = config.WildCardExpression;
             _useCompiledLambda = config.UseCompiledLambda;
+            _throwOnUnknownModalComponent = config.ThrowOnUnknownModalComponent;
             _enableAutocompleteHandlers = config.EnableAutocompleteHandlers;
             _autoServiceScopes = config.AutoServiceScopes;
             _restResponseCallback = config.RestResponseCallback;
