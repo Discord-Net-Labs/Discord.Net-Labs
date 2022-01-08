@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 
 namespace Discord.Interactions
 {
-    public static class ModalUtils
+    internal static class ModalUtils
     {
         private static ConcurrentDictionary<Type, ModalInfo> _modalInfos = new();
 
