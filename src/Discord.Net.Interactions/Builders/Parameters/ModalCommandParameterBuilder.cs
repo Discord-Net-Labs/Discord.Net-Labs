@@ -21,7 +21,7 @@ namespace Discord.Interactions.Builders
         public override ModalCommandParameterBuilder SetParameterType(Type type)
         {
             if (typeof(IModal).IsAssignableFrom(type))
-                Modal = Command.Module.InteractionService.GetModalInfo(type);
+                Modal = ModalUtils.GetOrAdd(type);
 
             return base.SetParameterType(type);
         }
