@@ -27,6 +27,7 @@ public async Task Client_Ready()
         SlashCommandBuilder globalCommandAddFamily = new SlashCommandBuilder();
         globalCommandAddFamily.WithName("add-family");
         globalCommandAddFamily.WithDescription("Add a family");
+        globalCommandAddFamily.AddOptions(slashCommandOptionBuilder);
         applicationCommandProperties.Add(globalCommandAddFamily.Build());
 
         await _client.BulkOverwriteGlobalApplicationCommandsAsync(applicationCommandProperties.ToArray());
