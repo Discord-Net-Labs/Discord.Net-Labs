@@ -50,6 +50,16 @@ namespace Discord
         IUser User { get; }
 
         /// <summary>
+        /// The selected language of the invoking user
+        /// </summary>
+        string UserLocale { get; }
+
+        /// <summary>
+        /// the guild's preferred locale, if invoked in a guild
+        /// </summary>
+        string GuildLocale { get; }
+
+        /// <summary>
         ///     Responds to an Interaction with type <see cref="InteractionResponseType.ChannelMessageWithSource"/>.
         /// </summary>
         /// <param name="text">The text of the message to be sent.</param>
