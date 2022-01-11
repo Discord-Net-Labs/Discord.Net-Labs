@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Discord.Interactions
 {
-    internal class NullableConverter<T> : TypeConverter
+    internal class NullableConverter<T> : TypeConverter<T>
     {
         private readonly TypeConverter _typeConverter;
 
@@ -11,14 +11,11 @@ namespace Discord.Interactions
         {
             var type = Nullable.GetUnderlyingType(typeof(T));
 
-            if(type is null)
+            if (type is null)
                 throw new ArgumentException($"No type {nameof(TypeConverter)} is defined for this {type.FullName}", "type");
 
             _typeConverter = interactionService.GetTypeConverter(type, services);
         }
-
-        public override bool CanConvertTo(Type type)
-            => Nullable.GetUnderlyingType(type) != null;
 
         public override ApplicationCommandOptionType GetDiscordType()
             => _typeConverter.GetDiscordType();

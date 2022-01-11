@@ -202,12 +202,7 @@ namespace Discord.WebSocket
             HasResponded = true;
         }
 
-        /// <summary>
-        ///     Updates the message which this component resides in with the type <see cref="InteractionResponseType.UpdateMessage"/>
-        /// </summary>
-        /// <param name="func">A delegate containing the properties to modify the message with.</param>
-        /// <param name="options">The request options for this <see langword="async"/> request.</param>
-        /// <returns>A task that represents the asynchronous operation of updating the message.</returns>
+        /// <inheritdoc/>
         public async Task UpdateAsync(Action<MessageProperties> func, RequestOptions options = null)
         {
             var args = new MessageProperties();
@@ -411,11 +406,7 @@ namespace Discord.WebSocket
             }
 
             await Discord.Rest.ApiClient.CreateInteractionResponseAsync(response, Id, Token, options).ConfigureAwait(false);
-
-            lock (_lock)
-            {
-                HasResponded = true;
-            }
+            HasResponded = true;
         }
 
         /// <inheritdoc/>
@@ -439,11 +430,7 @@ namespace Discord.WebSocket
             }
 
             await Discord.Rest.ApiClient.CreateInteractionResponseAsync(response, Id, Token, options).ConfigureAwait(false);
-
-            lock (_lock)
-            {
-                HasResponded = true;
-            }
+            HasResponded = true;
         }
 
         //IComponentInteraction

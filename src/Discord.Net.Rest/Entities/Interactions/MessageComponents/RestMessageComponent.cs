@@ -26,7 +26,6 @@ namespace Discord.Rest
         public RestUserMessage Message { get; private set; }
 
         private object _lock = new object();
-        public override bool HasResponded { get; internal set; } = false;
 
         internal RestMessageComponent(BaseDiscordClient client, Model model)
             : base(client, model.Id)
@@ -132,10 +131,7 @@ namespace Discord.Rest
                 {
                     throw new InvalidOperationException("Cannot respond, update, or defer twice to the same interaction");
                 }
-            }
 
-            lock (_lock)
-            {
                 HasResponded = true;
             }
 
@@ -227,10 +223,7 @@ namespace Discord.Rest
                 {
                     throw new InvalidOperationException("Cannot respond, update, or defer twice to the same interaction");
                 }
-            }
 
-            lock (_lock)
-            {
                 HasResponded = true;
             }
 
@@ -293,7 +286,7 @@ namespace Discord.Rest
             Preconditions.NotNull(fileStream, nameof(fileStream), "File Stream must have data");
             Preconditions.NotNullOrEmpty(fileName, nameof(fileName), "File Name must not be empty or null");
 
-            using (var file = new FileAttachment(fileStream, fileName))
+            using(var file = new FileAttachment(fileStream, fileName))
                 return await FollowupWithFileAsync(file, text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options).ConfigureAwait(false);
         }
 
@@ -310,11 +303,12 @@ namespace Discord.Rest
             Embed embed = null,
             RequestOptions options = null)
         {
-            Preconditions.NotNullOrEmpty(filePath, nameof(filePath), "Path must not be null");
+            Preconditions.NotNullOrEmpty(filePath, nameof(filePath), "Path must exist");
 
             fileName ??= Path.GetFileName(filePath);
             Preconditions.NotNullOrEmpty(fileName, nameof(fileName), "File Name must not be empty or null");
-            using (var file = new FileAttachment(File.OpenRead(filePath), fileName))
+
+            using(var file = new FileAttachment(File.OpenRead(filePath), fileName))
                 return await FollowupWithFileAsync(file, text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options).ConfigureAwait(false);
         }
 
@@ -411,10 +405,7 @@ namespace Discord.Rest
                 {
                     throw new InvalidOperationException("Cannot respond or defer twice to the same interaction");
                 }
-            }
 
-            lock (_lock)
-            {
                 HasResponded = true;
             }
 
@@ -448,10 +439,7 @@ namespace Discord.Rest
                 {
                     throw new InvalidOperationException("Cannot respond or defer twice to the same interaction");
                 }
-            }
 
-            lock (_lock)
-            {
                 HasResponded = true;
             }
 
@@ -464,5 +452,9 @@ namespace Discord.Rest
 
         /// <inheritdoc/>
         IUserMessage IComponentInteraction.Message => Message;
+
+        /// <inheritdoc />
+        Task IComponentInteraction.UpdateAsync(Action<MessageProperties> func, RequestOptions options)
+            => Task.FromResult(Update(func, options));
     }
 }

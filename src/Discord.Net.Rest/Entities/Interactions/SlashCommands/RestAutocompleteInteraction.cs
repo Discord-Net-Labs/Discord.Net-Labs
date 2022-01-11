@@ -19,7 +19,6 @@ namespace Discord.Rest
         /// </summary>
         public new RestAutocompleteInteractionData Data { get; }
 
-        public override bool HasResponded { get; internal set; }
         private object _lock = new object();
 
         internal RestAutocompleteInteraction(DiscordRestClient client, Model model)
@@ -65,10 +64,7 @@ namespace Discord.Rest
                 {
                     throw new InvalidOperationException("Cannot respond twice to the same interaction");
                 }
-            }
 
-            lock (_lock)
-            {
                 HasResponded = true;
             }
 

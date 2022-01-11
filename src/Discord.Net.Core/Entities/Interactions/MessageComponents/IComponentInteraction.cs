@@ -1,3 +1,6 @@
+using System;
+using System.Threading.Tasks;
+
 namespace Discord
 {
     /// <summary>
@@ -14,5 +17,13 @@ namespace Discord
         ///     Gets the message that contained the trigger for this interaction.
         /// </summary>
         IUserMessage Message { get; }
+
+        /// <summary>
+        ///     Updates the message which this component resides in with the type <see cref="InteractionResponseType.UpdateMessage"/>
+        /// </summary>
+        /// <param name="func">A delegate containing the properties to modify the message with.</param>
+        /// <param name="options">The request options for this <see langword="async"/> request.</param>
+        /// <returns>A task that represents the asynchronous operation of updating the message.</returns>
+        Task UpdateAsync(Action<MessageProperties> func, RequestOptions options = null);
     }
 }

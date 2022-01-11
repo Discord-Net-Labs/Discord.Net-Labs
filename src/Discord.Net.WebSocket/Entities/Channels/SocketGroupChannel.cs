@@ -30,6 +30,9 @@ namespace Discord.WebSocket
         /// <inheritdoc />
         public string Name { get; private set; }
 
+        /// <inheritdoc/>
+        public string RTCRegion { get; private set; }
+
         /// <inheritdoc />
         public IReadOnlyCollection<SocketMessage> CachedMessages => _messages?.Messages ?? ImmutableArray.Create<SocketMessage>();
 
@@ -67,6 +70,8 @@ namespace Discord.WebSocket
 
             if (model.Recipients.IsSpecified)
                 UpdateUsers(state, model.Recipients.Value);
+
+            RTCRegion = model.RTCRegion.GetValueOrDefault(null);
         }
         private void UpdateUsers(ClientState state, UserModel[] models)
         {
@@ -344,6 +349,7 @@ namespace Discord.WebSocket
         /// <exception cref="NotSupportedException">Connecting to a group channel is not supported.</exception>
         Task<IAudioClient> IAudioChannel.ConnectAsync(bool selfDeaf, bool selfMute, bool external) { throw new NotSupportedException(); }
         Task IAudioChannel.DisconnectAsync() { throw new NotSupportedException(); }
+        Task IAudioChannel.ModifyAsync(Action<AudioChannelProperties> func, RequestOptions options) { throw new NotSupportedException(); }
         #endregion
 
         #region IChannel        
