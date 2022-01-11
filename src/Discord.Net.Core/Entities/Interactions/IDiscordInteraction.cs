@@ -50,15 +50,15 @@ namespace Discord
         IUser User { get; }
 
         /// <summary>
-        /// The preferred locale of the invoking User.
+        ///     The preferred locale of the invoking User.
         /// </summary>
         string UserLocale { get; }
 
         /// <summary>
-        /// The preferred locale of the guild this interaction was executed in. <see cref="null"/> if not executed in a guild.
+        ///     The preferred locale of the guild this interaction was executed in. <see cref="null"/> if not executed in a guild.
         /// </summary>
         /// <remarks>
-        /// Non-community guilds (With no locale setting available) will have en-US as the default value sent by Discord.
+        ///     Non-community guilds (With no locale setting available) will have en-US as the default value sent by Discord.
         /// </remarks>
         string GuildLocale { get; }
 
