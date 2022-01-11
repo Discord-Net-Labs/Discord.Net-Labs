@@ -33,13 +33,16 @@ namespace Discord.Rest
         public RestUser User { get; private set; }
 
         /// <summary>
-        /// The selected language of the invoking user
+        /// The preferred locale of the invoking User.
         /// </summary>
         public string UserLocale { get; private set; }
 
         /// <summary>
-        /// The guild's preferred locale, if invoked in a guild
+        /// The preferred locale of the guild this interaction was executed in. <see cref="null"/> if not executed in a guild.
         /// </summary>
+        /// <remarks>
+        /// Non-community guilds (With no locale setting available) will have en-US as the default value sent by Discord.
+        /// </remarks>
         public string GuildLocale { get; private set; }
 
         /// <inheritdoc/>
