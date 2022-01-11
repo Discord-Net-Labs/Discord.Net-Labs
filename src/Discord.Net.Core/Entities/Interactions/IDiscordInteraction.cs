@@ -55,7 +55,7 @@ namespace Discord
         string UserLocale { get; }
 
         /// <summary>
-        /// the guild's preferred locale, if invoked in a guild
+        /// The guild's preferred locale, if invoked in a guild
         /// </summary>
         string GuildLocale { get; }
 

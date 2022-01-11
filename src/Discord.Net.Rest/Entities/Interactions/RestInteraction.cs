@@ -38,7 +38,7 @@ namespace Discord.Rest
         public string UserLocale { get; private set; }
 
         /// <summary>
-        /// the guild's preferred locale, if invoked in a guild
+        /// The guild's preferred locale, if invoked in a guild
         /// </summary>
         public string GuildLocale { get; private set; }
 
