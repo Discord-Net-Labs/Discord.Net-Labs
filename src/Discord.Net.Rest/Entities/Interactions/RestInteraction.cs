@@ -35,8 +35,6 @@ namespace Discord.Rest
         /// <inheritdoc/>
         public DateTimeOffset CreatedAt { get; private set; }
 
-        internal abstract bool _hasResponded { get; set; }
-
         /// <summary>
         ///     <see langword="true"/> if the token is valid for replying to, otherwise <see langword="false"/>.
         /// </summary>
@@ -52,6 +50,9 @@ namespace Discord.Rest
         ///     Gets the guild this interaction was executed in.
         /// </summary>
         public RestGuild Guild { get; private set; }
+
+        /// <inheritdoc/>
+        public bool HasResponded { get; protected set; }
 
         internal RestInteraction(BaseDiscordClient discord, ulong id)
             : base(discord, id)
@@ -139,7 +140,6 @@ namespace Discord.Rest
 
         /// <inheritdoc/>
         public abstract string Defer(bool ephemeral = false, RequestOptions options = null);
-
         /// <summary>
         ///     Gets the original response for this interaction.
         /// </summary>
@@ -163,7 +163,7 @@ namespace Discord.Rest
             return RestInteractionMessage.Create(Discord, model, Token, Channel);
         }
         /// <inheritdoc/>
-        public abstract string Respond(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, MessageComponent component = null, Embed embed = null, RequestOptions options = null);
+        public abstract string Respond(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, MessageComponent components = null, Embed embed = null, RequestOptions options = null);
 
         /// <summary>
         ///     Sends a followup message for this interaction.
@@ -261,22 +261,24 @@ namespace Discord.Rest
         public abstract Task<RestFollowupMessage> FollowupWithFilesAsync(IEnumerable<FileAttachment> attachments, string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false,
             AllowedMentions allowedMentions = null, MessageComponent components = null, Embed embed = null, RequestOptions options = null);
 
+        /// <inheritdoc/>
+        public Task DeleteOriginalResponseAsync(RequestOptions options = null)
+            => InteractionHelper.DeleteInteractionResponseAsync(Discord, this, options);
+
         #region  IDiscordInteraction
         /// <inheritdoc/>
         IUser IDiscordInteraction.User => User;
 
         /// <inheritdoc/>
-        Task<IUserMessage> IDiscordInteraction.RespondAsync(string text, Embed[] embeds, bool isTTS, bool ephemeral, AllowedMentions allowedMentions, MessageComponent components, Embed embed, RequestOptions options)
-        {
-            return Task.FromResult<IUserMessage>(null);
-        }
+        Task IDiscordInteraction.RespondAsync(string text, Embed[] embeds, bool isTTS, bool ephemeral, AllowedMentions allowedMentions, MessageComponent components, Embed embed, RequestOptions options)
+            => Task.FromResult(Respond(text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options));
         /// <inheritdoc/>
         Task IDiscordInteraction.DeferAsync(bool ephemeral, RequestOptions options)
             => Task.FromResult(Defer(ephemeral, options));
         /// <inheritdoc/>
         async Task<IUserMessage> IDiscordInteraction.FollowupAsync(string text, Embed[] embeds, bool isTTS, bool ephemeral, AllowedMentions allowedMentions,
-            MessageComponent component, Embed embed, RequestOptions options)
-            => await FollowupAsync(text, embeds, isTTS, ephemeral, allowedMentions, component, embed, options).ConfigureAwait(false);
+            MessageComponent components, Embed embed, RequestOptions options)
+            => await FollowupAsync(text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options).ConfigureAwait(false);
         /// <inheritdoc/>
         async Task<IUserMessage> IDiscordInteraction.GetOriginalResponseAsync(RequestOptions options)
             => await GetOriginalResponseAsync(options).ConfigureAwait(false);
@@ -297,6 +299,17 @@ namespace Discord.Rest
         /// <inheritdoc/>
         async Task<IUserMessage> IDiscordInteraction.FollowupWithFilesAsync(IEnumerable<FileAttachment> attachments, string text, Embed[] embeds, bool isTTS, bool ephemeral, AllowedMentions allowedMentions, MessageComponent components, Embed embed, RequestOptions options)
             => await FollowupWithFilesAsync(attachments, text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options).ConfigureAwait(false);
+        /// <inheritdoc/>
+        Task IDiscordInteraction.RespondWithFilesAsync(IEnumerable<FileAttachment> attachments, string text, Embed[] embeds, bool isTTS, bool ephemeral, AllowedMentions allowedMentions, MessageComponent components, Embed embed, RequestOptions options) => throw new NotSupportedException("REST-Based interactions don't support files.");
+        /// <inheritdoc/>
+#if NETCOREAPP3_0_OR_GREATER != true
+        /// <inheritdoc/>
+        Task IDiscordInteraction.RespondWithFileAsync(Stream fileStream, string fileName, string text, Embed[] embeds, bool isTTS, bool ephemeral, AllowedMentions allowedMentions, MessageComponent components, Embed embed, RequestOptions options) => throw new NotSupportedException("REST-Based interactions don't support files.");
+        /// <inheritdoc/>
+        Task IDiscordInteraction.RespondWithFileAsync(string filePath, string fileName, string text, Embed[] embeds, bool isTTS, bool ephemeral, AllowedMentions allowedMentions, MessageComponent components, Embed embed, RequestOptions options) => throw new NotSupportedException("REST-Based interactions don't support files.");
+        /// <inheritdoc/>
+        Task IDiscordInteraction.RespondWithFileAsync(FileAttachment attachment, string text, Embed[] embeds, bool isTTS, bool ephemeral, AllowedMentions allowedMentions, MessageComponent components, Embed embed, RequestOptions options) => throw new NotSupportedException("REST-Based interactions don't support files.");
+#endif
         #endregion
     }
 }

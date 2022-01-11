@@ -445,12 +445,13 @@ namespace Discord.WebSocket
             client.GuildUpdated += (oldGuild, newGuild) => _guildUpdatedEvent.InvokeAsync(oldGuild, newGuild);
 
             client.UserJoined += (user) => _userJoinedEvent.InvokeAsync(user);
-            client.UserLeft += (user) => _userLeftEvent.InvokeAsync(user);
+            client.UserLeft += (guild, user) => _userLeftEvent.InvokeAsync(guild, user);
             client.UserBanned += (user, guild) => _userBannedEvent.InvokeAsync(user, guild);
             client.UserUnbanned += (user, guild) => _userUnbannedEvent.InvokeAsync(user, guild);
             client.UserUpdated += (oldUser, newUser) => _userUpdatedEvent.InvokeAsync(oldUser, newUser);
             client.GuildMemberUpdated += (oldUser, newUser) => _guildMemberUpdatedEvent.InvokeAsync(oldUser, newUser);
             client.UserVoiceStateUpdated += (user, oldVoiceState, newVoiceState) => _userVoiceStateUpdatedEvent.InvokeAsync(user, oldVoiceState, newVoiceState);
+            client.TimeoutAdded += (user, timeout) => _timeoutAddedEvent.InvokeAsync(user, timeout);
             client.VoiceServerUpdated += (server) => _voiceServerUpdatedEvent.InvokeAsync(server);
             client.CurrentUserUpdated += (oldUser, newUser) => _selfUpdatedEvent.InvokeAsync(oldUser, newUser);
             client.UserIsTyping += (oldUser, newUser) => _userIsTypingEvent.InvokeAsync(oldUser, newUser);

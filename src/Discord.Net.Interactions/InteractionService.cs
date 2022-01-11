@@ -67,7 +67,7 @@ namespace Discord.Interactions
         internal readonly LogManager _logManager;
         internal readonly Func<DiscordRestClient> _getRestClient;
 
-        internal readonly bool _throwOnError, _useCompiledLambda, _enableAutocompleteHandlers;
+        internal readonly bool _throwOnError, _useCompiledLambda, _enableAutocompleteHandlers, _autoServiceScopes;
         internal readonly string _wildCardExp;
         internal readonly RunMode _runMode;
         internal readonly RestResponseCallback _restResponseCallback;
@@ -156,6 +156,7 @@ namespace Discord.Interactions
             _wildCardExp = config.WildCardExpression;
             _useCompiledLambda = config.UseCompiledLambda;
             _enableAutocompleteHandlers = config.EnableAutocompleteHandlers;
+            _autoServiceScopes = config.AutoServiceScopes;
             _restResponseCallback = config.RestResponseCallback;
 
             _genericTypeConverters = new ConcurrentDictionary<Type, Type>
@@ -165,7 +166,8 @@ namespace Discord.Interactions
                 [typeof(IUser)] = typeof(DefaultUserConverter<>),
                 [typeof(IMentionable)] = typeof(DefaultMentionableConverter<>),
                 [typeof(IConvertible)] = typeof(DefaultValueConverter<>),
-                [typeof(Enum)] = typeof(EnumConverter<>)
+                [typeof(Enum)] = typeof(EnumConverter<>),
+                [typeof(Nullable<>)] = typeof(NullableConverter<>),
             };
 
             _typeConverters = new ConcurrentDictionary<Type, TypeConverter>
@@ -666,9 +668,7 @@ namespace Discord.Interactions
 
                 if(autocompleteHandlerResult.IsSuccess)
                 {
-                    var parameter = autocompleteHandlerResult.Command.Parameters.FirstOrDefault(x => string.Equals(x.Name, interaction.Data.Current.Name, StringComparison.Ordinal));
-
-                    if(parameter?.AutocompleteHandler is not null)
+                    if (autocompleteHandlerResult.Command._flattenedParameterDictionary.TryGetValue(interaction.Data.Current.Name, out var parameter) && parameter?.AutocompleteHandler is not null)
                         return await parameter.AutocompleteHandler.ExecuteAsync(context, interaction, parameter, services).ConfigureAwait(false);
                 }
             }
@@ -693,7 +693,8 @@ namespace Discord.Interactions
             if (_typeConverters.TryGetValue(type, out var specific))
                 return specific;
 
-            else if (_genericTypeConverters.Any(x => x.Key.IsAssignableFrom(type)))
+            else if (_genericTypeConverters.Any(x => x.Key.IsAssignableFrom(type)
+            || (x.Key.IsGenericTypeDefinition && type.IsGenericType && x.Key.GetGenericTypeDefinition() == type.GetGenericTypeDefinition())))
             {
                 services ??= EmptyServiceProvider.Instance;
 
@@ -925,6 +926,9 @@ namespace Discord.Interactions
         {
             if (_genericTypeConverters.TryGetValue(type, out var matching))
                 return matching;
+
+            if (type.IsGenericType && _genericTypeConverters.TryGetValue(type.GetGenericTypeDefinition(), out var genericDefinition))
+                return genericDefinition;
 
             var typeInterfaces = type.GetInterfaces();
             var candidates = _genericTypeConverters.Where(x => x.Key.IsAssignableFrom(type))

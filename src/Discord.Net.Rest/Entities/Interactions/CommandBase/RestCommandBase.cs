@@ -32,9 +32,6 @@ namespace Discord.Rest
         /// </summary>
         internal new RestCommandBaseData Data { get; private set; }
 
-
-        internal override bool _hasResponded { get; set; }
-
         private object _lock = new object();
 
         internal RestCommandBase(DiscordRestClient client, Model model)
@@ -63,7 +60,7 @@ namespace Discord.Rest
         /// <param name="ephemeral"><see langword="true"/> if the response should be hidden to everyone besides the invoker of the command, otherwise <see langword="false"/>.</param>
         /// <param name="allowedMentions">The allowed mentions for this response.</param>
         /// <param name="options">The request options for this response.</param>
-        /// <param name="component">A <see cref="MessageComponent"/> to be sent with this response.</param>
+        /// <param name="components">A <see cref="MessageComponent"/> to be sent with this response.</param>
         /// <param name="embed">A single embed to send with this response. If this is passed alongside an array of embeds, the single embed will be ignored.</param>
         /// <exception cref="ArgumentOutOfRangeException">Message content is too long, length must be less or equal to <see cref="DiscordConfig.MaxMessageSize"/>.</exception>
         /// <exception cref="InvalidOperationException">The parameters provided were invalid or the token was invalid.</exception>
@@ -76,7 +73,7 @@ namespace Discord.Rest
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,
-            MessageComponent component = null,
+            MessageComponent components = null,
             Embed embed = null,
             RequestOptions options = null)
         {
@@ -119,30 +116,22 @@ namespace Discord.Rest
                     AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
                     Embeds = embeds.Select(x => x.ToModel()).ToArray(),
                     TTS = isTTS,
-                    Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified,
+                    Components = components?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified,
                     Flags = ephemeral ? MessageFlags.Ephemeral : Optional<MessageFlags>.Unspecified
                 }
             };
 
             lock (_lock)
             {
-                if (_hasResponded)
+                if (HasResponded)
                 {
                     throw new InvalidOperationException("Cannot respond twice to the same interaction");
                 }
+
+                HasResponded = true;
             }
 
-            try
-            {
-                return SerializePayload(response);
-            }
-            finally
-            {
-                lock (_lock)
-                {
-                    _hasResponded = true;
-                }
-            }
+            return SerializePayload(response);
         }
 
         /// <inheritdoc/>
@@ -152,7 +141,7 @@ namespace Discord.Rest
             bool isTTS = false,
             bool ephemeral = false,
             AllowedMentions allowedMentions = null,
-            MessageComponent component = null,
+            MessageComponent components = null,
             Embed embed = null,
             RequestOptions options = null)
         {
@@ -173,7 +162,7 @@ namespace Discord.Rest
                 AllowedMentions = allowedMentions?.ToModel() ?? Optional<API.AllowedMentions>.Unspecified,
                 IsTTS = isTTS,
                 Embeds = embeds.Select(x => x.ToModel()).ToArray(),
-                Components = component?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified
+                Components = components?.Components.Select(x => new API.ActionRowComponent(x)).ToArray() ?? Optional<API.ActionRowComponent[]>.Unspecified
             };
 
             if (ephemeral)
@@ -183,7 +172,7 @@ namespace Discord.Rest
         }
 
         /// <inheritdoc/>
-        public override Task<RestFollowupMessage> FollowupWithFileAsync(
+        public override async Task<RestFollowupMessage> FollowupWithFileAsync(
             Stream fileStream,
             string fileName,
             string text = null,
@@ -198,18 +187,15 @@ namespace Discord.Rest
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");
 
-            embeds ??= Array.Empty<Embed>();
-            if (embed != null)
-                embeds = new[] { embed }.Concat(embeds).ToArray();
-
             Preconditions.NotNull(fileStream, nameof(fileStream), "File Stream must have data");
             Preconditions.NotNullOrEmpty(fileName, nameof(fileName), "File Name must not be empty or null");
 
-            return FollowupWithFileAsync(new FileAttachment(fileStream, fileName), text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options);
+            using(var file = new FileAttachment(fileStream, fileName))
+                return await FollowupWithFileAsync(file, text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public override Task<RestFollowupMessage> FollowupWithFileAsync(
+        public override async Task<RestFollowupMessage> FollowupWithFileAsync(
             string filePath,
             string fileName = null,
             string text = null,
@@ -226,7 +212,8 @@ namespace Discord.Rest
             fileName ??= Path.GetFileName(filePath);
             Preconditions.NotNullOrEmpty(fileName, nameof(fileName), "File Name must not be empty or null");
 
-            return FollowupWithFileAsync(new FileAttachment(File.OpenRead(filePath), fileName), text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options);
+            using (var file = new FileAttachment(File.OpenRead(filePath), fileName))
+                return await FollowupWithFileAsync(file, text, embeds, isTTS, ephemeral, allowedMentions, components, embed, options).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
@@ -319,15 +306,12 @@ namespace Discord.Rest
 
             lock (_lock)
             {
-                if (_hasResponded)
+                if (HasResponded)
                 {
                     throw new InvalidOperationException("Cannot respond or defer twice to the same interaction");
                 }
-            }
 
-            lock (_lock)
-            {
-                _hasResponded = true;
+                HasResponded = true;
             }
 
             return SerializePayload(response);

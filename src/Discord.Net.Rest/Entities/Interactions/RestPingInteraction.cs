@@ -13,8 +13,6 @@ namespace Discord.Rest
     /// </summary>
     public class RestPingInteraction : RestInteraction, IDiscordInteraction
     {
-        internal override bool _hasResponded { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
         internal RestPingInteraction(BaseDiscordClient client, ulong id)
             : base(client, id)
         {
@@ -38,7 +36,7 @@ namespace Discord.Rest
         }
 
         public override string Defer(bool ephemeral = false, RequestOptions options = null) => throw new NotSupportedException();
-        public override string Respond(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, MessageComponent component = null, Embed embed = null, RequestOptions options = null) => throw new NotSupportedException();
+        public override string Respond(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, MessageComponent components = null, Embed embed = null, RequestOptions options = null) => throw new NotSupportedException();
         public override Task<RestFollowupMessage> FollowupAsync(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, MessageComponent components = null, Embed embed = null, RequestOptions options = null) => throw new NotSupportedException();
         public override Task<RestFollowupMessage> FollowupWithFileAsync(Stream fileStream, string fileName, string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, MessageComponent components = null, Embed embed = null, RequestOptions options = null) => throw new NotSupportedException();
         public override Task<RestFollowupMessage> FollowupWithFileAsync(string filePath, string fileName = null, string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, MessageComponent components = null, Embed embed = null, RequestOptions options = null) => throw new NotSupportedException();

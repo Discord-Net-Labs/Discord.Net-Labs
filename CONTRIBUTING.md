@@ -7,7 +7,7 @@ following guidelines when possible:
 ## Development Cycle
 
 We prefer all changes to the library to be discussed beforehand,
-either in a GitHub issue, or in a discussion in our Discord channel
+either in a GitHub issue, or in a discussion in our [Discord channel](https://discord.com/invite/dnet)
 with library regulars or other contributors.
 
 Issues that are tagged as "up for grabs" are free to be picked up by
@@ -17,7 +17,7 @@ any member of the community.
 
 We prefer pull-requests that are descriptive of the changes being made
 and highlight any potential benefits/drawbacks of the change, but these
-types of write-ups are not required. See this [merge request](https://github.com/RogueException/Discord.Net/pull/793)
+types of write-ups are not required. See this [merge request](https://github.com/discord-net/Discord.Net/pull/793)
 for an example of a well-written description.
 
 ## Semantic Versioning
@@ -27,8 +27,9 @@ writing changes to this project, it is recommended to write changes
 that are SemVer compliant with the latest version of the library in
 development.
 
-The working release should be the latest build off of the `dev` branch,
-but can also be found on the [development board](https://github.com/RogueException/Discord.Net/projects/1).
+The working release should be the latest build off of the `release` branch for [labs](https://github.com/Discord-Net-Labs/Discord.Net-Labs).
+Please note that development is primarily done on this fork for new features and bugfixes,
+before they are pushed to the stable repository.
 
 We follow the .NET Foundation's [Breaking Change Rules](https://github.com/dotnet/corefx/blob/master/Documentation/coding-guidelines/breaking-change-rules.md)
 when determining the SemVer compliance of a change.

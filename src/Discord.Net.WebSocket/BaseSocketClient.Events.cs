@@ -424,12 +424,12 @@ namespace Discord.WebSocket
         }
         internal readonly AsyncEvent<Func<SocketGuildUser, Task>> _userJoinedEvent = new AsyncEvent<Func<SocketGuildUser, Task>>();
         /// <summary> Fired when a user leaves a guild. </summary>
-        public event Func<SocketUser, Task> UserLeft
+        public event Func<SocketGuild, SocketUser, Task> UserLeft
         {
             add { _userLeftEvent.Add(value); }
             remove { _userLeftEvent.Remove(value); }
         }
-        internal readonly AsyncEvent<Func<SocketUser, Task>> _userLeftEvent = new AsyncEvent<Func<SocketUser, Task>>();
+        internal readonly AsyncEvent<Func<SocketGuild, SocketUser, Task>> _userLeftEvent = new AsyncEvent<Func<SocketGuild, SocketUser, Task>>();
         /// <summary> Fired when a user is banned from a guild. </summary>
         public event Func<SocketUser, SocketGuild, Task> UserBanned
         {
@@ -458,6 +458,13 @@ namespace Discord.WebSocket
             remove { _guildMemberUpdatedEvent.Remove(value); }
         }
         internal readonly AsyncEvent<Func<Cacheable<SocketGuildUser, ulong>, SocketGuildUser, Task>> _guildMemberUpdatedEvent = new AsyncEvent<Func<Cacheable<SocketGuildUser, ulong>, SocketGuildUser, Task>>();
+        /// <summary> Fired when a user is timedout. </summary>
+        public event Func<SocketGuildUser, TimeSpan, Task> TimeoutAdded
+        {
+            add { _timeoutAddedEvent.Add(value); }
+            remove { _timeoutAddedEvent.Remove(value); }
+        }
+        internal readonly AsyncEvent<Func<SocketGuildUser, TimeSpan, Task>> _timeoutAddedEvent = new AsyncEvent<Func<SocketGuildUser, TimeSpan, Task>>();
         /// <summary> Fired when a user joins, leaves, or moves voice channels. </summary>
         public event Func<SocketUser, SocketVoiceState, SocketVoiceState, Task> UserVoiceStateUpdated
         {
