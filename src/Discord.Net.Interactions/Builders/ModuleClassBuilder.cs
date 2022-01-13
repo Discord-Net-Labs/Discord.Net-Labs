@@ -527,6 +527,7 @@ namespace Discord.Interactions.Builders
         {
             var attributes = propertyInfo.GetCustomAttributes();
             builder.WithType(propertyInfo.PropertyType);
+            builder.Label = propertyInfo.Name;
 
             foreach(var attribute in attributes)
             {
@@ -534,14 +535,17 @@ namespace Discord.Interactions.Builders
                 {
                     case ModalTextInputAttribute textInput:
                         builder.CustomId = textInput.CustomId;
-                        builder.Label = textInput.Label;
                         builder.ComponentType = textInput.ComponentType;
                         builder.Style = textInput.Style;
                         builder.Placeholder = textInput.Placeholder;
                         builder.MaxLength = textInput.MaxLength;
                         builder.MinLength = textInput.MinLength;
-                        builder.Value = textInput.Value;
-                        builder.IsRequired = textInput.Required;
+                        break;
+                    case RequiredInputAttribute requiredInput:
+                        builder.IsRequired = requiredInput.IsRequired;
+                        break;
+                    case InputLabelAttribute inputLabel:
+                        builder.Label = inputLabel.Label;
                         break;
                     default:
                         builder.WithAttributes(attribute);

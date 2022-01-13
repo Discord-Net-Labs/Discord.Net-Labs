@@ -25,7 +25,7 @@ namespace Discord.Interactions.Builders
         public string Label { get; set; }
 
         /// <inheritdoc/>
-        public bool IsRequired { get; set; }
+        public bool IsRequired { get; set; } = true;
 
         /// <inheritdoc/>
         public ComponentType ComponentType { get; internal set; }

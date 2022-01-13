@@ -22,18 +22,12 @@ namespace Discord.Interactions
         /// </summary>
         public int MaxLength { get; }
 
-        /// <summary>
-        ///     Gets or sets the default value of the text input.
-        /// </summary>
-        public string Value { get; }
-
         internal TextInputComponentInfo(Builders.TextInputComponentBuilder builder, ModalInfo modal) : base(builder, modal)
         {
             Style = builder.Style;
             Placeholder = builder.Placeholder;
             MinLength = builder.MinLength;
             MaxLength = builder.MaxLength;
-            Value = builder.Value;
         }
     }
 }

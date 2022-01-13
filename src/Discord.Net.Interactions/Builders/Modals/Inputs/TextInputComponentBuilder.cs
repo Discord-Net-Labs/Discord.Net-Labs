@@ -28,11 +28,6 @@ namespace Discord.Interactions.Builders
         public int MaxLength { get; set; }
 
         /// <summary>
-        ///     Gets or sets the default value of the text input.
-        /// </summary>
-        public string Value { get; set; }
-
-        /// <summary>
         ///     Initializes a new <see cref="TextInputComponentBuilder"/>.
         /// </summary>
         /// <param name="modal">Parent modal of this component.</param>
@@ -87,19 +82,6 @@ namespace Discord.Interactions.Builders
         public TextInputComponentBuilder WithMaxLenght(int maxLenght)
         {
             MaxLength = maxLenght;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets <see cref="Vale"/>.
-        /// </summary>
-        /// <param name="value">New value of the <see cref="Value"/>.</param>
-        /// <returns>
-        ///     The builder instance.
-        /// </returns>
-        public TextInputComponentBuilder SetValue(string value)
-        {
-            Value = value;
             return this;
         }
 
