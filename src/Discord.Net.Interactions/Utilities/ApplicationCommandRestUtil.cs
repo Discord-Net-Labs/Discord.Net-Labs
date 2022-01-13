@@ -42,7 +42,7 @@ namespace Discord.Interactions
                 Description = commandInfo.Description,
                 IsDefaultPermission = commandInfo.DefaultPermission,
                 IsDMEnabled = commandInfo.IsEnabledInDm,
-                DefaultMemberPermissions = commandInfo.DefaultMemberPermission
+                DefaultMemberPermissions = commandInfo.DefaultMemberPermissions
             }.Build();
 
             if (commandInfo.Parameters.Count > SlashCommandBuilder.MaxOptionsCount)
@@ -70,14 +70,14 @@ namespace Discord.Interactions
                 {
                     Name = commandInfo.Name,
                     IsDefaultPermission = commandInfo.DefaultPermission,
-                    DefaultMemberPermissions = commandInfo.DefaultMemberPermission,
+                    DefaultMemberPermissions = commandInfo.DefaultMemberPermissions,
                     IsDMEnabled = commandInfo.IsEnabledInDm
                 }.Build(),
                 ApplicationCommandType.User => new UserCommandBuilder
                 {
                     Name = commandInfo.Name,
                     IsDefaultPermission=commandInfo.DefaultPermission,
-                    DefaultMemberPermissions = commandInfo.DefaultMemberPermission,
+                    DefaultMemberPermissions = commandInfo.DefaultMemberPermissions,
                     IsDMEnabled = commandInfo.IsEnabledInDm
                 }.Build(),
                 _ => throw new InvalidOperationException($"{commandInfo.CommandType} isn't a supported command type.")

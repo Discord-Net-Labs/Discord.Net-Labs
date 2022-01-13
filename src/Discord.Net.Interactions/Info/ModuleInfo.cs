@@ -119,7 +119,7 @@ namespace Discord.Interactions
             Parent = parent;
             DefaultPermission = builder.DefaultPermission;
             IsEnabledInDm = builder.IsEnabledInDm;
-            DefaultMemberPermission = builder.DefaultMemberPermission;
+            DefaultMemberPermission = builder.DefaultMemberPermissions;
             SlashCommands = BuildSlashCommands(builder).ToImmutableArray();
             ContextCommands = BuildContextCommands(builder).ToImmutableArray();
             ComponentCommands = BuildComponentCommands(builder).ToImmutableArray();

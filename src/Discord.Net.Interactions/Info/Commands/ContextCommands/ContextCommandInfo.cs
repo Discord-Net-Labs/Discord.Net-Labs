@@ -21,7 +21,7 @@ namespace Discord.Interactions
         public bool IsEnabledInDm { get; }
 
         /// <inheritdoc/>
-        public GuildPermission? DefaultMemberPermission { get; }
+        public GuildPermission? DefaultMemberPermissions { get; }
 
         /// <inheritdoc/>
         public override IReadOnlyCollection<CommandParameterInfo> Parameters { get; }
@@ -38,7 +38,7 @@ namespace Discord.Interactions
             CommandType = builder.CommandType;
             DefaultPermission = builder.DefaultPermission;
             IsEnabledInDm = builder.IsEnabledInDm;
-            DefaultMemberPermission = builder.DefaultMemberPermission;
+            DefaultMemberPermissions = builder.DefaultMemberPermissions;
             Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
         }
 

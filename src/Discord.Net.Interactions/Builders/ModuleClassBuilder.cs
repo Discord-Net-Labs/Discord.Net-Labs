@@ -92,7 +92,7 @@ namespace Discord.Interactions.Builders
                         break;
                     case DefaultMemberPermissionAttribute memberPermission:
                         {
-                            builder.DefaultMemberPermission = memberPermission.Permissions;
+                            builder.DefaultMemberPermissions = memberPermission.Permissions;
                         }
                         break;
                     case PreconditionAttribute precondition:
@@ -182,7 +182,7 @@ namespace Discord.Interactions.Builders
                         break;
                     case DefaultMemberPermissionAttribute memberPermission:
                         {
-                            builder.DefaultMemberPermission = memberPermission.Permissions;
+                            builder.DefaultMemberPermissions = memberPermission.Permissions;
                         }
                         break;
                     case PreconditionAttribute precondition:
@@ -234,7 +234,7 @@ namespace Discord.Interactions.Builders
                         break;
                     case DefaultMemberPermissionAttribute memberPermission:
                         {
-                            builder.DefaultMemberPermission = memberPermission.Permissions;
+                            builder.DefaultMemberPermissions = memberPermission.Permissions;
                         }
                         break;
                     case PreconditionAttribute precondition:

@@ -27,7 +27,7 @@ namespace Discord.Interactions.Builders
         /// <summary>
         ///     Gets the default permissions needed for executing this command.
         /// </summary>
-        public GuildPermission? DefaultMemberPermission { get; set; } = null;
+        public GuildPermission? DefaultMemberPermissions { get; set; } = null;
 
         internal SlashCommandBuilder (ModuleBuilder module) : base(module) { }
 
@@ -79,15 +79,15 @@ namespace Discord.Interactions.Builders
         }
 
         /// <summary>
-        ///     Sets <see cref="DefaultMemberPermission"/>.
+        ///     Sets <see cref="DefaultMemberPermissions"/>.
         /// </summary>
-        /// <param name="permissions">New value of the <see cref="DefaultMemberPermission"/>.</param>
+        /// <param name="permissions">New value of the <see cref="DefaultMemberPermissions"/>.</param>
         /// <returns>
         ///     The builder instance.
         /// </returns>
-        public SlashCommandBuilder WithDefaultMemberPermission(GuildPermission permissions)
+        public SlashCommandBuilder WithDefaultMemberPermissions(GuildPermission permissions)
         {
-            DefaultMemberPermission = permissions;
+            DefaultMemberPermissions = permissions;
             return this;
         }
 

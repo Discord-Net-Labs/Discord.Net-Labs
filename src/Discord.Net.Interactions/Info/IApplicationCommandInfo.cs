@@ -28,6 +28,6 @@ namespace Discord.Interactions
         /// <summary>
         ///     Gets the default permissions needed for executing this command.
         /// </summary>
-        public GuildPermission? DefaultMemberPermission { get; }
+        public GuildPermission? DefaultMemberPermissions { get; }
     }
 }
