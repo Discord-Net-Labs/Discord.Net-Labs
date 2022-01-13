@@ -42,7 +42,7 @@ namespace Discord.Interactions
                 Description = commandInfo.Description,
                 IsDefaultPermission = commandInfo.DefaultPermission,
                 IsDMEnabled = commandInfo.IsEnabledInDm,
-                DefaultMemberPermissions = commandInfo.DefaultMemberPermissions
+                DefaultMemberPermissions = (commandInfo.DefaultMemberPermissions ?? 0) | (commandInfo.Module.DefaultMemberPermissions ?? 0)
             }.Build();
 
             if (commandInfo.Parameters.Count > SlashCommandBuilder.MaxOptionsCount)
@@ -70,14 +70,14 @@ namespace Discord.Interactions
                 {
                     Name = commandInfo.Name,
                     IsDefaultPermission = commandInfo.DefaultPermission,
-                    DefaultMemberPermissions = commandInfo.DefaultMemberPermissions,
+                    DefaultMemberPermissions = (commandInfo.DefaultMemberPermissions ?? 0) | (commandInfo.Module.DefaultMemberPermissions ?? 0),
                     IsDMEnabled = commandInfo.IsEnabledInDm
                 }.Build(),
                 ApplicationCommandType.User => new UserCommandBuilder
                 {
                     Name = commandInfo.Name,
                     IsDefaultPermission=commandInfo.DefaultPermission,
-                    DefaultMemberPermissions = commandInfo.DefaultMemberPermissions,
+                    DefaultMemberPermissions = (commandInfo.DefaultMemberPermissions ?? 0) | (commandInfo.Module.DefaultMemberPermissions ?? 0),
                     IsDMEnabled = commandInfo.IsEnabledInDm
                 }.Build(),
                 _ => throw new InvalidOperationException($"{commandInfo.CommandType} isn't a supported command type.")
@@ -128,7 +128,7 @@ namespace Discord.Interactions
                     Description = moduleInfo.Description,
                     IsDefaultPermission = moduleInfo.DefaultPermission,
                     IsDMEnabled = moduleInfo.IsEnabledInDm,
-                    DefaultMemberPermissions = moduleInfo.DefaultMemberPermission
+                    DefaultMemberPermissions = moduleInfo.DefaultMemberPermissions
                 }.Build();
 
                 if (options.Count > SlashCommandBuilder.MaxOptionsCount)

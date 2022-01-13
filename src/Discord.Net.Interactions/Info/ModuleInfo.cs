@@ -51,7 +51,7 @@ namespace Discord.Interactions
         /// <summary>
         ///     Gets the default permissions needed for executing this command.
         /// </summary>
-        public GuildPermission? DefaultMemberPermission { get; }
+        public GuildPermission? DefaultMemberPermissions { get; }
 
         /// <summary>
         ///     Gets the collection of Sub Modules of this module.
@@ -119,7 +119,7 @@ namespace Discord.Interactions
             Parent = parent;
             DefaultPermission = builder.DefaultPermission;
             IsEnabledInDm = builder.IsEnabledInDm;
-            DefaultMemberPermission = builder.DefaultMemberPermissions;
+            DefaultMemberPermissions = BuildDefaultMemberPermissions(builder);
             SlashCommands = BuildSlashCommands(builder).ToImmutableArray();
             ContextCommands = BuildContextCommands(builder).ToImmutableArray();
             ComponentCommands = BuildComponentCommands(builder).ToImmutableArray();
@@ -210,6 +210,21 @@ namespace Discord.Interactions
             }
 
             return preconditions;
+        }
+
+        private static GuildPermission? BuildDefaultMemberPermissions(ModuleBuilder builder)
+        {
+            var permissions = builder.DefaultMemberPermissions;
+
+            var parent = builder.Parent;
+
+            while(parent != null)
+            {
+                permissions = (permissions ?? 0) | (parent.DefaultMemberPermissions ?? 0);
+                parent = parent.Parent;
+            }
+
+            return permissions;
         }
 
         private static bool CheckTopLevel (ModuleInfo parent)
