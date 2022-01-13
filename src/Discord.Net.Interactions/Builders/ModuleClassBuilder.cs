@@ -90,7 +90,7 @@ namespace Discord.Interactions.Builders
                             builder.IsEnabledInDm = enabledInDm.IsEnabled;
                         }
                         break;
-                    case DefaultMemberPermissionAttribute memberPermission:
+                    case DefaultMemberPermissionsAttribute memberPermission:
                         {
                             builder.DefaultMemberPermissions = memberPermission.Permissions;
                         }
@@ -180,7 +180,7 @@ namespace Discord.Interactions.Builders
                             builder.IsEnabledInDm = enabledInDm.IsEnabled;
                         }
                         break;
-                    case DefaultMemberPermissionAttribute memberPermission:
+                    case DefaultMemberPermissionsAttribute memberPermission:
                         {
                             builder.DefaultMemberPermissions = memberPermission.Permissions;
                         }
@@ -232,7 +232,7 @@ namespace Discord.Interactions.Builders
                             builder.IsEnabledInDm = enabledInDm.IsEnabled;
                         }
                         break;
-                    case DefaultMemberPermissionAttribute memberPermission:
+                    case DefaultMemberPermissionsAttribute memberPermission:
                         {
                             builder.DefaultMemberPermissions = memberPermission.Permissions;
                         }
