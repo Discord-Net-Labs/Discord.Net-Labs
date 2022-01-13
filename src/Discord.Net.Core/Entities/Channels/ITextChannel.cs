@@ -149,5 +149,69 @@ namespace Discord
         /// </returns>
         Task<IThreadChannel> CreateThreadAsync(string name, ThreadType type = ThreadType.PublicThread, ThreadArchiveDuration autoArchiveDuration = ThreadArchiveDuration.OneDay,
             IMessage message = null, bool? invitable = null, int? slowmode = null, RequestOptions options = null);
+
+        /// <summary>
+        ///     Gets a collection of active threads in this channel.
+        /// </summary>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>A read-only collection of active threads in this channel.</returns>
+        Task<IReadOnlyCollection<IThreadChannel>> GetActiveThreadsAsync(RequestOptions options = null);
+
+        /// <summary>
+        ///     Gets a collection of publicly visible archived threads within this channel.
+        /// </summary>
+        /// <remarks>
+        ///     <note type="important">
+        ///         The returned collection is an asynchronous enumerable object; one must call 
+        ///         <see cref="AsyncEnumerableExtensions.FlattenAsync{T}"/> to access the individual threads as a
+        ///         collection.
+        ///     </note>
+        ///     <br/><br/>
+        ///     <note type="warning">
+        ///         Do not fetch too many threads at once! This may cause unwanted preemptive rate limit or even actual
+        ///         rate limit, causing your bot to freeze!
+        ///     </note>
+        ///     <br/><br/>
+        ///     This method will attempt to fetch the number of threads specified under <paramref name="limit"/>. The
+        ///     library will attempt to split up the requests according to your <paramref name="limit"/> and 
+        ///     <see cref="DiscordConfig.MaxThreadsPerBatch"/>. In other words, should the user request 500 threads,
+        ///     and the <see cref="Discord.DiscordConfig.MaxThreadsPerBatch"/> constant is <c>100</c>, the request will
+        ///     be split into 5 individual requests; thus returning 5 individual asynchronous responses, hence the need
+        ///     of flattening.
+        /// </remarks>
+        /// <param name="limit">The amount of threads to fetch, max is 100.</param>
+        /// <param name="before">The optional date on which to get the threads from, returns all threads created before the passed date.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>A read-only collection of public archived threads.</returns>
+        Task<IReadOnlyCollection<IThreadChannel>> GetPublicArchivedThreadsAsync(int limit = DiscordConfig.MaxThreadsPerBatch, DateTimeOffset? before = null, RequestOptions options = null);
+
+        /// <summary>
+        ///     Gets a collection of archived threads within this channel only visible to members with the
+        ///     <see cref="GuildPermission.ManageThreads"/> permission.
+        /// </summary>
+        /// <remarks>
+        ///     <note type="important">
+        ///         The returned collection is an asynchronous enumerable object; one must call 
+        ///         <see cref="AsyncEnumerableExtensions.FlattenAsync{T}"/> to access the individual threads as a
+        ///         collection.
+        ///     </note>
+        ///     <br/><br/>
+        ///     <note type="warning">
+        ///         Do not fetch too many threads at once! This may cause unwanted preemptive rate limit or even actual
+        ///         rate limit, causing your bot to freeze!
+        ///     </note>
+        ///     <br/><br/>
+        ///     This method will attempt to fetch the number of threads specified under <paramref name="limit"/>. The
+        ///     library will attempt to split up the requests according to your <paramref name="limit"/> and 
+        ///     <see cref="DiscordConfig.MaxThreadsPerBatch"/>. In other words, should the user request 500 threads,
+        ///     and the <see cref="Discord.DiscordConfig.MaxThreadsPerBatch"/> constant is <c>100</c>, the request will
+        ///     be split into 5 individual requests; thus returning 5 individual asynchronous responses, hence the need
+        ///     of flattening.
+        /// </remarks>
+        /// <param name="limit">The amount of threads to fetch, max is 100.</param>
+        /// <param name="before">The optional date on which to get the threads from, returns all threads created before the passed date.</param>
+        /// <param name="options">The options to be used when sending the request.</param>
+        /// <returns>A read-only collection of private archived threads.</returns>
+        Task<IAsyncEnumerable<IThreadChannel>> GetPrivateArchivedThreadsAsync(int limit = DiscordConfig.MaxThreadsPerBatch, DateTimeOffset? before = null, RequestOptions options = null);
     }
 }

@@ -122,6 +122,13 @@ namespace Discord
         ///     The maximum number of audit log entries that can be gotten per-batch.
         /// </returns>
         public const int MaxAuditLogEntriesPerBatch = 100;
+        /// <summary>
+        ///     Returns the max threads allowed to be in a request.
+        /// </summary>
+        /// <returns>
+        ///     The maximum number of threads that can be gotten per-batch.
+        /// </returns>
+        public const int MaxThreadsPerBatch = 100;
 
         /// <summary>
         ///     Gets or sets how a request should act in the case of an error, by default.

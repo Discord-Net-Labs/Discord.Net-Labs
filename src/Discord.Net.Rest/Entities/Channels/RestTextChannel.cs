@@ -237,9 +237,9 @@ namespace Discord.Rest
         /// <inheritdoc />
         public virtual async Task<IReadOnlyCollection<IInviteMetadata>> GetInvitesAsync(RequestOptions options = null)
             => await ChannelHelper.GetInvitesAsync(this, Discord, options).ConfigureAwait(false);
+        #endregion
 
-        private string DebuggerDisplay => $"{Name} ({Id}, Text)";
-
+        #region Threads
         /// <summary>
         ///     Creates a thread within this <see cref="ITextChannel"/>.
         /// </summary>
@@ -277,6 +277,8 @@ namespace Discord.Rest
             return RestThreadChannel.Create(Discord, Guild, model);
         }
         #endregion
+
+        private string DebuggerDisplay => $"{Name} ({Id}, Text)";
 
         #region ITextChannel
         /// <inheritdoc />

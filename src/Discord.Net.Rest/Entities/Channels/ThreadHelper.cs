@@ -1,5 +1,7 @@
 using Discord.API.Rest;
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using Model = Discord.API.Channel;
@@ -72,6 +74,18 @@ namespace Discord.Rest
             var model = await client.ApiClient.GetThreadMemberAsync(channel.Id, userId, options).ConfigureAwait(false);
 
             return RestThreadUser.Create(client, channel.Guild, model, channel);
+        }
+
+        public static async Task<IReadOnlyCollection<RestThreadChannel>> GetActiveThreadsAsync(ITextChannel channel, BaseDiscordClient client, RequestOptions options = null)
+        {
+            var model = await client.ApiClient.GetActiveThreadsAsync(channel.Id, options).ConfigureAwait(false);
+
+            return ImmutableArray.Create(model.Threads.Select(x => RestThreadChannel.Create(client, channel.Guild, x)).ToArray());
+        }
+
+        public static async Task<IReadOnlyCollection<RestThreadChannel>> GetPublicArchivedThreadsAsync(ITextChannel channel, BaseDiscordClient client, int limit, RequestOptions options = null)
+        {
+
         }
     }
 }

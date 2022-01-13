@@ -123,7 +123,15 @@ namespace Discord.WebSocket
 
             return thread;
         }
-#endregion
+
+        public Task<IReadOnlyCollection<RestThreadChannel>> GetActiveThreadsAsync(RequestOptions options = null)
+        {
+            return ThreadHelper.
+        }
+        public Task<IReadOnlyCollection<RestThreadChannel>> GetPublicArchivedThreadsAsync(int limit = 100, DateTimeOffset? before = null, RequestOptions options = null) => throw new NotImplementedException();
+        public Task<IReadOnlyCollection<RestThreadChannel>> GetPrivateArchivedThreadsAsync(int limit = 100, DateTimeOffset? before = null, RequestOptions options = null) => throw new NotImplementedException();
+
+        #endregion
 
         #region Messages
         /// <inheritdoc />
