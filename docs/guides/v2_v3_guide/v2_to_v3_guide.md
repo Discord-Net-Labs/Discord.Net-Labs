@@ -64,7 +64,7 @@ GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.GuildMembers | 
 
 ### UserLeft event
 
-UserLeft has been changed to have the ` SocketUser ` and ` SocketGuild ` parameters instead of a ` SocketGuildUser ` parameter. 
+UserLeft has been changed to have the `SocketUser` and `SocketGuild` parameters instead of a `SocketGuildUser` parameter. 
 Because of this, guild-only user data cannot be retrieved from this user anymore, as this user is not part of the guild.
 
 ### ReactionAdded event
@@ -79,8 +79,8 @@ This allows you to download the user and channel if they aren't cached instead o
 
 ### Presence
 
-There is a new event called ` PresenceUpdated ` that is called when a user's presence changes,
-instead of ` GuildMemberUpdated ` or ` UserUpdated `.
+There is a new event called `PresenceUpdated` that is called when a user's presence changes,
+instead of `GuildMemberUpdated` or `UserUpdated`.
 If your code relied on these events to get presence data then you need to update it to work with the new event.
 
 ## Migrating your commands to application commands
