@@ -500,10 +500,12 @@ namespace Discord.Interactions.Builders
             if (!typeof(IModal).IsAssignableFrom(modalType))
                 throw new InvalidOperationException($"{modalType.FullName} isn't an implementation of {typeof(IModal).FullName}");
 
-            var instance = modalType.GetConstructor(Type.EmptyTypes).Invoke(Array.Empty<object>()) as IModal;
+            var instance = Activator.CreateInstance(modalType, false) as IModal;
 
-            var builder = new ModalBuilder();
-            builder.Title = instance.Title;
+            var builder = new ModalBuilder()
+            {
+                Title = instance.Title
+            };
 
             var publicProps = modalType.GetProperties().Where(x => x.SetMethod?.IsPublic == true && x.SetMethod?.IsStatic == false);
             var textInputs = publicProps.Where(x => x.IsDefined(typeof(ModalTextInputAttribute)));
