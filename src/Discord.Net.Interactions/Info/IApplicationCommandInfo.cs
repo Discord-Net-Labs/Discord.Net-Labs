@@ -19,5 +19,15 @@ namespace Discord.Interactions
         ///     Gets the DefaultPermission of this command.
         /// </summary>
         bool DefaultPermission { get; }
+
+        /// <summary>
+        ///     Gets whether this command can be used in DMs.
+        /// </summary>
+        public bool IsEnabledInDm { get; }
+
+        /// <summary>
+        ///     Gets the default permissions needed for executing this command.
+        /// </summary>
+        public GuildPermission? DefaultMemberPermission { get; }
     }
 }

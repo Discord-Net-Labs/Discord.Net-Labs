@@ -44,6 +44,16 @@ namespace Discord.Interactions
         public bool DefaultPermission { get; }
 
         /// <summary>
+        ///     Gets whether this command can be used in DMs.
+        /// </summary>
+        public bool IsEnabledInDm { get; }
+
+        /// <summary>
+        ///     Gets the default permissions needed for executing this command.
+        /// </summary>
+        public GuildPermission? DefaultMemberPermission { get; }
+
+        /// <summary>
         ///     Gets the collection of Sub Modules of this module.
         /// </summary>
         public IReadOnlyList<ModuleInfo> SubModules { get; }
@@ -108,6 +118,8 @@ namespace Discord.Interactions
             Description = builder.Description;
             Parent = parent;
             DefaultPermission = builder.DefaultPermission;
+            IsEnabledInDm = builder.IsEnabledInDm;
+            DefaultMemberPermission = builder.DefaultMemberPermission;
             SlashCommands = BuildSlashCommands(builder).ToImmutableArray();
             ContextCommands = BuildContextCommands(builder).ToImmutableArray();
             ComponentCommands = BuildComponentCommands(builder).ToImmutableArray();

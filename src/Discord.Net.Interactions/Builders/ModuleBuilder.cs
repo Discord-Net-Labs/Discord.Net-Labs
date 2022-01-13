@@ -53,6 +53,16 @@ namespace Discord.Interactions.Builders
         public bool DefaultPermission { get; set; } = true;
 
         /// <summary>
+        ///     Gets whether this command can be used in DMs.
+        /// </summary>
+        public bool IsEnabledInDm { get; set; } = true;
+
+        /// <summary>
+        ///     Gets the default permissions needed for executing this command.
+        /// </summary>
+        public GuildPermission? DefaultMemberPermission { get; set; } = null;
+
+        /// <summary>
         ///     Gets and sets whether this has a <see cref="DontAutoRegisterAttribute"/>.
         /// </summary>
         public bool DontAutoRegister { get; set; } = false;
@@ -155,6 +165,32 @@ namespace Discord.Interactions.Builders
         public ModuleBuilder WithDefaultPermision (bool permission)
         {
             DefaultPermission = permission;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets <see cref="IsEnabledInDm"/>.
+        /// </summary>
+        /// <param name="isEnabled">New value of the <see cref="IsEnabledInDm"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
+        public ModuleBuilder SetEnabledInDm(bool isEnabled)
+        {
+            IsEnabledInDm = isEnabled;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets <see cref="DefaultMemberPermission"/>.
+        /// </summary>
+        /// <param name="permissions">New value of the <see cref="DefaultMemberPermission"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
+        public ModuleBuilder WithDefaultMemberPermission(GuildPermission permissions)
+        {
+            DefaultMemberPermission = permissions;
             return this;
         }
 

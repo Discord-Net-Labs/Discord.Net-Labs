@@ -41,6 +41,8 @@ namespace Discord.Interactions
                 Name = commandInfo.Name,
                 Description = commandInfo.Description,
                 IsDefaultPermission = commandInfo.DefaultPermission,
+                IsDMEnabled = commandInfo.IsEnabledInDm,
+                DefaultMemberPermissions = commandInfo.DefaultMemberPermission
             }.Build();
 
             if (commandInfo.Parameters.Count > SlashCommandBuilder.MaxOptionsCount)
@@ -64,8 +66,20 @@ namespace Discord.Interactions
         public static ApplicationCommandProperties ToApplicationCommandProps(this ContextCommandInfo commandInfo)
             => commandInfo.CommandType switch
             {
-                ApplicationCommandType.Message => new MessageCommandBuilder { Name = commandInfo.Name, IsDefaultPermission = commandInfo.DefaultPermission}.Build(),
-                ApplicationCommandType.User => new UserCommandBuilder { Name = commandInfo.Name, IsDefaultPermission=commandInfo.DefaultPermission}.Build(),
+                ApplicationCommandType.Message => new MessageCommandBuilder
+                {
+                    Name = commandInfo.Name,
+                    IsDefaultPermission = commandInfo.DefaultPermission,
+                    DefaultMemberPermissions = commandInfo.DefaultMemberPermission,
+                    IsDMEnabled = commandInfo.IsEnabledInDm
+                }.Build(),
+                ApplicationCommandType.User => new UserCommandBuilder
+                {
+                    Name = commandInfo.Name,
+                    IsDefaultPermission=commandInfo.DefaultPermission,
+                    DefaultMemberPermissions = commandInfo.DefaultMemberPermission,
+                    IsDMEnabled = commandInfo.IsEnabledInDm
+                }.Build(),
                 _ => throw new InvalidOperationException($"{commandInfo.CommandType} isn't a supported command type.")
             };
         #endregion
@@ -113,6 +127,8 @@ namespace Discord.Interactions
                     Name = moduleInfo.SlashGroupName.ToLower(),
                     Description = moduleInfo.Description,
                     IsDefaultPermission = moduleInfo.DefaultPermission,
+                    IsDMEnabled = moduleInfo.IsEnabledInDm,
+                    DefaultMemberPermissions = moduleInfo.DefaultMemberPermission
                 }.Build();
 
                 if (options.Count > SlashCommandBuilder.MaxOptionsCount)
