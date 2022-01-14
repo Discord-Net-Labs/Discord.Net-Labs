@@ -110,7 +110,7 @@ namespace Discord
         /// </summary>
         Partnered = 1 << 23,
         /// <summary>
-        ///     The guild has a premium tier three override, usually guilds made by discord have this.
+        ///     The guild has a premium tier three override; guilds made by Discord usually have this.
         /// </summary>
         PremiumTier3Override = 1 << 24,
         /// <summary>
