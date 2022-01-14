@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Discord.Interactions.Builders
 {
@@ -8,7 +9,7 @@ namespace Discord.Interactions.Builders
     /// </summary>
     public class ModalBuilder
     {
-        private readonly List<TextInputComponentBuilder> _textComponents;
+        internal readonly List<IInputComponentBuilder> _components;
 
         /// <summary>
         ///     Gets the initialization delegate for this modal.
@@ -21,13 +22,13 @@ namespace Discord.Interactions.Builders
         public string Title { get; set; }
 
         /// <summary>
-        ///     Gets a collection of the text components of this modal.
+        ///     Gets a collection of the components of this modal.
         /// </summary>
-        public IReadOnlyCollection<TextInputComponentBuilder> TextComponents => _textComponents;
+        public IReadOnlyCollection<IInputComponentBuilder> Components => _components;
 
         internal ModalBuilder()
         {
-            _textComponents = new();
+            _components = new();
         }
 
         /// <summary>
@@ -63,7 +64,7 @@ namespace Discord.Interactions.Builders
         {
             var builder = new TextInputComponentBuilder(this);
             configure(builder);
-            _textComponents.Add(builder);
+            _components.Add(builder);
             return this;
         }
 

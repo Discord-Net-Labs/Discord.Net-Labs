@@ -507,15 +507,23 @@ namespace Discord.Interactions.Builders
                 Title = instance.Title
             };
 
-            var publicProps = modalType.GetProperties().Where(x => x.SetMethod?.IsPublic == true && x.SetMethod?.IsStatic == false);
-            var textInputs = publicProps.Where(x => x.IsDefined(typeof(ModalTextInputAttribute)));
+            var inputs = modalType.GetProperties().Where(IsValidModalInputDefinition);
 
-            foreach (var textInput in textInputs)
-                builder.AddTextComponent(x =>
+            foreach(var prop in inputs)
+            {
+                var componentType = prop.GetCustomAttribute<ModalInputAttribute>()?.ComponentType;
+
+                switch (componentType)
                 {
-                    x.DefaultValue = textInput.GetValue(instance);
-                    BuildTextInputs(x, textInput);
-                });
+                    case ComponentType.TextInput:
+                        builder.AddTextComponent(x => BuildTextInput(x, prop, prop.GetValue(instance)));
+                        break;
+                    case null:
+                        throw new InvalidOperationException($"{prop.Name} of {prop.DeclaringType.Name} isn't a valid modal input field.");
+                    default:
+                        throw new InvalidOperationException($"Component type {componentType} cannot be used in modals.");
+                }
+            }
 
             var memberInit = ReflectionUtils<IModal>.CreateLambdaMemberInit(modalType.GetTypeInfo(), modalType.GetConstructor(Type.EmptyTypes), x => x.IsDefined(typeof(ModalInputAttribute)));
             builder.ModalInitializer = (args) => memberInit(Array.Empty<object>(), args);
@@ -523,11 +531,13 @@ namespace Discord.Interactions.Builders
             return builder.Build();
         }
 
-        private static void BuildTextInputs(TextInputComponentBuilder builder, PropertyInfo propertyInfo)
+        private static void BuildTextInput(TextInputComponentBuilder builder, PropertyInfo propertyInfo, object defaultValue)
         {
             var attributes = propertyInfo.GetCustomAttributes();
-            builder.WithType(propertyInfo.PropertyType);
+
             builder.Label = propertyInfo.Name;
+            builder.DefaultValue = defaultValue;
+            builder.WithType(propertyInfo.PropertyType);
 
             foreach(var attribute in attributes)
             {
@@ -602,6 +612,13 @@ namespace Discord.Interactions.Builders
                 !methodInfo.IsStatic &&
                 !methodInfo.IsGenericMethod &&
                 typeof(IModal).IsAssignableFrom(methodInfo.GetParameters().Last().ParameterType);
+        }
+
+        private static bool IsValidModalInputDefinition(PropertyInfo propertyInfo)
+        {
+            return propertyInfo.SetMethod?.IsPublic == true &&
+                propertyInfo.SetMethod?.IsStatic == false &&
+                propertyInfo.IsDefined(typeof(ModalInputAttribute));
         }
 
         private static ConstructorInfo GetComplexParameterConstructor(TypeInfo typeInfo, ComplexParameterAttribute complexParameter)

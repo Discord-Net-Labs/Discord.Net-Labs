@@ -19,13 +19,14 @@ namespace Discord.Interactions
     /// </summary>
     public class ModalInfo
     {
-        private readonly List<InputComponentInfo> _inputComponents;
         internal readonly ModalInitializer _initializer;
 
         /// <summary>
         ///     Gets the title of this modal.
         /// </summary>
         public string Title { get; }
+
+        public IReadOnlyCollection<InputComponentInfo> Components { get; }
 
         /// <summary>
         ///     Gets a collection of the text components of this modal.
@@ -35,12 +36,15 @@ namespace Discord.Interactions
         internal ModalInfo(Builders.ModalBuilder builder)
         {
             Title = builder.Title;
-            TextComponents = builder.TextComponents.Select(x => x.Build(this)).ToImmutableArray();
+            Components = builder.Components.Select(x => x switch
+            {
+                Builders.TextInputComponentBuilder textComponent => textComponent.Build(this),
+                _ => throw new InvalidOperationException($"{x.GetType().FullName} isn't a supported modal input component builder type.")
+            }).ToImmutableArray();
+
+            TextComponents = Components.Where(x => x is TextInputComponentInfo).Cast<TextInputComponentInfo>().ToImmutableArray();
 
             _initializer = builder.ModalInitializer;
-
-            _inputComponents = new List<InputComponentInfo>();
-            _inputComponents.AddRange(TextComponents);
         }
 
         /// <summary>
@@ -52,12 +56,12 @@ namespace Discord.Interactions
         /// </returns>
         public IModal CreateModal(IModalInteraction modalInteraction)
         {
-            var args = new object[_inputComponents.Count];
+            var args = new object[Components.Count];
             var components = modalInteraction.Data.Components.ToList();
 
-            for (var i = 0; i < _inputComponents.Count; i++)
+            for (var i = 0; i < Components.Count; i++)
             {
-                var input = _inputComponents[i];
+                var input = Components.ElementAt(i);
                 var component = components.Find(x => x.CustomId == input.CustomId);
 
                 if (component is null)
