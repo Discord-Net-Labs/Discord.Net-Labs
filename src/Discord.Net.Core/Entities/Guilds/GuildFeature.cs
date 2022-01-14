@@ -90,7 +90,7 @@ namespace Discord
         /// </summary>
         MonetizationEnabled = 1 << 18,
         /// <summary>
-        ///     The guild has more emojis
+        ///     The guild has more emojis.
         /// </summary>
         MoreEmoji = 1 << 19,
         /// <summary>
