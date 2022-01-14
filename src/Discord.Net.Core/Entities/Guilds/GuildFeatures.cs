@@ -15,10 +15,42 @@ namespace Discord
         public GuildFeature Value { get; }
 
         /// <summary>
-        ///     Gets a collection of experimental features for this guild.
+        ///     Gets a collection of experimental features for this guild. Features that are not contained in <see cref="GuildFeature"/> are put in here.
         /// </summary>
         public IReadOnlyCollection<string> Experimental { get; }
 
+        public bool HasThreads
+            => HasFeature(GuildFeature.ThreadsEnabled | GuildFeature.ThreadsEnabledTesting);
+
+        public bool HasTextInVoice
+            => HasFeature(GuildFeature.TextInVoiceEnabled);
+
+        public bool IsStaffServer
+            => HasFeature(GuildFeature.InternalEmployeeOnly);
+
+        public bool IsHub
+            => HasFeature(GuildFeature.Hub);
+
+        public bool IsLinkedToHub
+            => HasFeature(GuildFeature.LinkedToHub);
+
+        public bool IsPartnered
+            => HasFeature(GuildFeature.Partnered);
+
+        public bool IsVerified
+            => HasFeature(GuildFeature.Verified);
+
+        public bool HasVanityUrl
+            => HasFeature(GuildFeature.VanityUrl);
+
+        public bool HasRoleSubscriptions
+            => HasFeature(GuildFeature.RoleSubscriptionsEnabled | GuildFeature.RoleSubscriptionsAvailableForPurchase);
+
+        public bool HasRoleIcons
+            => HasFeature(GuildFeature.RoleIcons);
+
+        public bool HasPrivateThreads
+            => HasFeature(GuildFeature.PrivateThreads);
 
         internal GuildFeatures(GuildFeature value, string[] experimental)
         {
