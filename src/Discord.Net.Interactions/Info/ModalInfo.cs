@@ -19,7 +19,7 @@ namespace Discord.Interactions
     /// </summary>
     public class ModalInfo
     {
-        private readonly IReadOnlyDictionary<string, InputComponentInfo> _inputComponentDictionary;
+        private readonly List<InputComponentInfo> _inputComponents;
         internal readonly ModalInitializer _initializer;
 
         /// <summary>
@@ -38,7 +38,9 @@ namespace Discord.Interactions
             TextComponents = builder.TextComponents.Select(x => x.Build(this)).ToImmutableArray();
 
             _initializer = builder.ModalInitializer;
-            _inputComponentDictionary = TextComponents.ToDictionary(x => x.CustomId, x => (InputComponentInfo)x).ToImmutableDictionary();
+
+            _inputComponents = new List<InputComponentInfo>();
+            _inputComponents.AddRange(TextComponents);
         }
 
         /// <summary>
@@ -50,20 +52,20 @@ namespace Discord.Interactions
         /// </returns>
         public IModal CreateModal(IModalInteraction modalInteraction)
         {
-            var args = new object[_inputComponentDictionary.Count];
+            var args = new object[_inputComponents.Count];
             var components = modalInteraction.Data.Components.ToList();
 
-            for (var i = 0; i < _inputComponentDictionary.Count; i++)
+            for (var i = 0; i < _inputComponents.Count; i++)
             {
-                var input = _inputComponentDictionary.ElementAt(i);
-                var component = components.Find(x => x.CustomId == input.Value.CustomId);
+                var input = _inputComponents[i];
+                var component = components.Find(x => x.CustomId == input.CustomId);
 
                 if (component is null)
                 {
-                    if (!input.Value.IsRequired)
-                        args[i] = input.Value.DefaultValue;
+                    if (!input.IsRequired)
+                        args[i] = input.DefaultValue;
                     else
-                        throw new InvalidOperationException($"Modal interaction is missing the required field: {input.Key}");
+                        throw new InvalidOperationException($"Modal interaction is missing the required field: {input.CustomId}");
                 }
                 else
                     args[i] = component.Value;
