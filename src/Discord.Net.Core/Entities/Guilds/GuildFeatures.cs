@@ -35,7 +35,7 @@ namespace Discord
         ///     Gets whether or not the server is a internal staff server.
         /// </summary>
         /// <remarks>
-        ///     You shouldn't touch anything here unless you know what your doing :)
+        ///     You shouldn't touch anything here unless you know what you're doing :)
         /// </remarks>
         public bool IsStaffServer
             => HasFeature(GuildFeature.InternalEmployeeOnly);
