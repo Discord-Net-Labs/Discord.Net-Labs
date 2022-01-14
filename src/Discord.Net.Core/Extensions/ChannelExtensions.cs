@@ -9,7 +9,7 @@ namespace Discord
     public static class ChannelExtensions
     {
         /// <summary>
-        ///     Attempts to get the <see cref="ChannelType"/> based off of the channels interfaces.
+        ///     Attempts to get the <see cref="ChannelType"/> based off of the channel's interfaces.
         /// </summary>
         /// <param name="channel">The channel to get the type of.</param>
         /// <returns>The <see cref="ChannelType"/> of the channel if found, otherwise <see langword="null"/>.</returns>
