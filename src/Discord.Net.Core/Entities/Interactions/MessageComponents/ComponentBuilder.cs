@@ -255,6 +255,12 @@ namespace Discord
             return this;
         }
 
+        /// <summary>
+        ///     Sets the rows of this component builder to a specified collection.
+        /// </summary>
+        /// <param name="rows">The rows to set.</param>
+        /// <exception cref="IndexOutOfRangeException">The collection contains more rows then is allowed by discord.</exception>
+        /// <returns>The current builder.</returns>
         public ComponentBuilder WithRows(IEnumerable<ActionRowBuilder> rows)
         {
             if(rows.Count() > MaxActionRowCount)
