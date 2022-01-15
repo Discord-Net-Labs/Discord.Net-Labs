@@ -69,6 +69,7 @@ namespace Discord.Interactions
         private readonly ConcurrentDictionary<Type, TypeConverter> _typeConverters;
         private readonly ConcurrentDictionary<Type, Type> _genericTypeConverters;
         private readonly ConcurrentDictionary<Type, IAutocompleteHandler> _autocompleteHandlers = new();
+        private readonly ConcurrentDictionary<Type, ModalInfo> _modalInfos = new();
         private readonly SemaphoreSlim _lock;
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
@@ -793,6 +794,24 @@ namespace Discord.Interactions
                 throw new InvalidOperationException($"This generic class does not support type {targetType.FullName}");
 
             _genericTypeConverters[targetType] = converterType;
+        }
+
+        /// <summary>
+        ///     Loads and caches an <see cref="ModalInfo"/> for the provided <see cref="IModal"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of <see cref="IModal"/> to be loaded.</typeparam>
+        /// <returns>
+        ///     The built <see cref="ModalInfo"/> instance.
+        /// </returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public ModalInfo AddModalInfo<T>() where T : class, IModal
+        {
+            var type = typeof(T);
+
+            if (_modalInfos.ContainsKey(type))
+                throw new InvalidOperationException($"Modal type {type.FullName} already exists.");
+
+            return ModalUtils.GetOrAdd(type);
         }
 
         internal IAutocompleteHandler GetAutocompleteHandler(Type autocompleteHandlerType, IServiceProvider services = null)

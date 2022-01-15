@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.Interactions.Builders
 {
@@ -10,28 +6,37 @@ namespace Discord.Interactions.Builders
     /// <summary>
     ///     Represents a builder for creating <see cref="ModalCommandBuilder"/>.
     /// </summary>
-
     public class ModalCommandParameterBuilder : ParameterBuilder<ModalCommandParameterInfo, ModalCommandParameterBuilder>
     {
-        /// <summary>
-        ///     Gets the parameters initializer.
-        /// </summary>
-        public ModalParameterInitializer ModalParameterInitializer { get; internal set; }
-
         protected override ModalCommandParameterBuilder Instance => this;
+
+        /// <summary>
+        ///     Gets the built <see cref="ModalInfo"/> class for this parameter, if <see cref="IsModalParameter"/> is <see langword="true"/>.
+        /// </summary>
+        public ModalInfo Modal { get; private set; }
+
+        /// <summary>
+        ///     Gets whether or not this parameter is an <see cref="IModal"/>.
+        /// </summary>
+        public bool IsModalParameter => Modal is not null;
 
         internal ModalCommandParameterBuilder(ICommandBuilder command) : base(command) { }
 
         /// <summary>
-        ///     Creates a new <see cref="ModalCommandParameterBuilder"/>.
+        ///     Initializes a new <see cref="ModalCommandParameterBuilder"/>.
         /// </summary>
         /// <param name="command">Parent command of this parameter.</param>
         /// <param name="name">Name of this command.</param>
         /// <param name="type">Type of this parameter.</param>
-        /// <param name="modalParameterInitializer">the initializer of this parameter.</param>
-        public ModalCommandParameterBuilder(ICommandBuilder command, string name, Type type, ModalParameterInitializer modalParameterInitializer) : base(command, name, type)
+        public ModalCommandParameterBuilder(ICommandBuilder command, string name, Type type) : base(command, name, type) { }
+
+        /// <inheritdoc/>
+        public override ModalCommandParameterBuilder SetParameterType(Type type)
         {
-            ModalParameterInitializer = modalParameterInitializer;
+            if (typeof(IModal).IsAssignableFrom(type))
+                Modal = ModalUtils.GetOrAdd(type);
+
+            return base.SetParameterType(type);
         }
 
         internal override ModalCommandParameterInfo Build(ICommandInfo command) =>

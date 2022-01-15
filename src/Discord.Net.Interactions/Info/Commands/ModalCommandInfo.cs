@@ -2,10 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Reflection;
-using Discord;
 namespace Discord.Interactions
 {
     /// <summary>
@@ -14,21 +11,9 @@ namespace Discord.Interactions
     public class ModalCommandInfo : CommandInfo<ModalCommandParameterInfo>
     {
         /// <summary>
-        ///     Gets the type of <see cref="IModal"/> this command uses.
+        ///     Gets the <see cref="ModalInfo"/> class for this commands <see cref="IModal"/> parameter.
         /// </summary>
-        public Type ModalType { get; }
-
-        /// <summary>
-        ///     Gets a dictionary of the text input components in the modal, with the component's custom id as the key.
-        /// </summary>
-        public Dictionary<string, Delegate> TextInputComponents { get; }
-
-        private Func<object[], object> ModalInitializer { get; }
-
-        /// <remarks>
-        ///     This is only initialized when <see cref="InteractionService._useCompiledLambda"/> is <see langword="false"/>.
-        /// </remarks>
-        private ConstructorInfo ModalCtor { get; }
+        public ModalInfo Modal { get; }
 
         /// <inheritdoc/>
         public override bool SupportsWildCards => true;
@@ -39,19 +24,7 @@ namespace Discord.Interactions
         internal ModalCommandInfo(Builders.ModalCommandBuilder builder, ModuleInfo module, InteractionService commandService) : base(builder, module, commandService)
         {
             Parameters = builder.Parameters.Select(x => x.Build(this)).ToImmutableArray();
-            ModalType = Parameters.First().ParameterType;
-
-            TextInputComponents = ModalType.GetProperties()
-                .Where(x => x.GetCustomAttribute<ModalTextInputAttribute>() != null)
-                .ToDictionary(x => x.GetCustomAttribute<ModalTextInputAttribute>().CustomId, property => commandService._useCompiledLambda
-                       ? ReflectionUtils<IModal>.CreateLambdaPropertySetter(ModalType, property)
-                       : delegate (object obj, string val) { property.SetValue(obj, val); });
-
-            if (!commandService._useCompiledLambda) ModalCtor = ModalType.GetConstructor(Array.Empty<Type>());
-
-            ModalInitializer = commandService._useCompiledLambda
-                ? ReflectionUtils<object>.CreateLambdaConstructorInvoker(ModalType.GetTypeInfo())
-                : x => ModalCtor.Invoke(x);
+            Modal = Parameters.Last().Modal;
         }
 
         /// <inheritdoc/>
@@ -69,46 +42,18 @@ namespace Discord.Interactions
         /// </returns>
         public async Task<IResult> ExecuteAsync(IInteractionContext context, IServiceProvider services, params string[] additionalArgs)
         {
-            if (context.Interaction is not IModalInteraction interaction)
+            if (context.Interaction is not IModalInteraction modalInteraction)
                 return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Modal Interaction.");
 
-            var modal = GetModal(interaction.Data.Components);
+            var args = new List<object>();
 
-            List<object> args = new() { modal };
-            
             if (additionalArgs is not null)
                 args.AddRange(additionalArgs);
 
+            var modal = Modal.CreateModal(modalInteraction);
+            args.Add(modal);
+
             return await RunAsync(context, args.ToArray(), services);
-        }
-
-        /// <summary>
-        ///     Creates an <see cref="IModal"/> and fills it with provided message components.
-        /// </summary>
-        /// <param name="components"Components that will be injected into the modal.></param>
-        /// <returns>A <see cref="IModal"/> filled with the provided components.</returns>
-        public IModal GetModal(IEnumerable<IComponentInteractionData> components)
-        {
-            var modal = (IModal)ModalInitializer(null);
-
-            foreach (var component in components)
-            {
-                try
-                {
-                    switch (component.Type)
-                    {
-                        case ComponentType.TextInput:
-                            TextInputComponents[component.CustomId].DynamicInvoke(modal, component.Value);
-                            break;
-                    };
-                }
-                catch when (!CommandService._throwOnUnknownModalComponent)
-                {
-                    CommandService._logManager.DebugAsync("App Commands", $"No valid property for the {component.Type} \"{component.CustomId}\" was found in the modal \"{ModalType.FullName}\".");
-                }
-            }
-
-            return modal;
         }
 
         /// <inheritdoc/>

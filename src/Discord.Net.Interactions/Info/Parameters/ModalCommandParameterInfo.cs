@@ -7,16 +7,22 @@ namespace Discord.Interactions
     /// </summary>
     public class ModalCommandParameterInfo : CommandParameterInfo
     {
-        internal ModalParameterInitializer _modalParameterInitializer { get; }
+        /// <summary>
+        ///     Gets the <see cref="ModalInfo"/> class for this parameter if <see cref="IsModalParameter"/> is true.
+        /// </summary>
+        public ModalInfo Modal { get; private set; }
+
+        /// <summary>
+        ///     Gets whether this parameter is an <see cref="IModal"/>
+        /// </summary>
+        public bool IsModalParameter => Modal is not null;
 
         /// <inheritdoc/>
         public new ModalCommandInfo Command => base.Command as ModalCommandInfo;
 
         internal ModalCommandParameterInfo(ModalCommandParameterBuilder builder, ICommandInfo command) : base(builder, command)
         {
-            _modalParameterInitializer = builder.ModalParameterInitializer;
+            Modal = builder.Modal;
         }
     }
-
-    public delegate IModal ModalParameterInitializer(object[] args);
 }
