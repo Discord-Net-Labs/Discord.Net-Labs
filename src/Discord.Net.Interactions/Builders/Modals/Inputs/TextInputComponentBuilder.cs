@@ -8,24 +8,29 @@ namespace Discord.Interactions.Builders
         protected override TextInputComponentBuilder Instance => this;
 
         /// <summary>
-        ///     Gets the style of the text input.
+        ///     Gets and sets the style of the text input.
         /// </summary>
         public TextInputStyle Style { get; set; }
 
         /// <summary>
-        ///     Gets the placeholder of the text input.
+        ///     Gets and sets the placeholder of the text input.
         /// </summary>
         public string Placeholder { get; set; }
 
         /// <summary>
-        ///     Gets the minimum length of the text input.
+        ///     Gets and sets the minimum length of the text input.
         /// </summary>
         public int MinLength { get; set; }
 
         /// <summary>
-        ///     Gets the maximum length of the text input.
+        ///     Gets and sets the maximum length of the text input.
         /// </summary>
         public int MaxLength { get; set; }
+
+        /// <summary>
+        ///     Gets and sets the initial value to be displayed by this input.
+        /// </summary>
+        public string InitialValue { get; set; }
 
         /// <summary>
         ///     Initializes a new <see cref="TextInputComponentBuilder"/>.
@@ -82,6 +87,19 @@ namespace Discord.Interactions.Builders
         public TextInputComponentBuilder WithMaxLenght(int maxLenght)
         {
             MaxLength = maxLenght;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets <see cref="InitialValue"/>.
+        /// </summary>
+        /// <param name="value">New value of the <see cref="InitialValue"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
+        public TextInputComponentBuilder WithInitialValue(string value)
+        {
+            InitialValue = value;
             return this;
         }
 

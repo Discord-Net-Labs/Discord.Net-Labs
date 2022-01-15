@@ -22,12 +22,18 @@ namespace Discord.Interactions
         /// </summary>
         public int MaxLength { get; }
 
+        /// <summary>
+        ///     Gets the initial value to be displayed by this input.
+        /// </summary>
+        public string InitialValue { get; }
+
         internal TextInputComponentInfo(Builders.TextInputComponentBuilder builder, ModalInfo modal) : base(builder, modal)
         {
             Style = builder.Style;
             Placeholder = builder.Placeholder;
             MinLength = builder.MinLength;
             MaxLength = builder.MaxLength;
+            InitialValue = builder.InitialValue;
         }
     }
 }

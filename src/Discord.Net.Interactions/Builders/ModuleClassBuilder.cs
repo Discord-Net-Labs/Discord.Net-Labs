@@ -550,6 +550,7 @@ namespace Discord.Interactions.Builders
                         builder.Placeholder = textInput.Placeholder;
                         builder.MaxLength = textInput.MaxLength;
                         builder.MinLength = textInput.MinLength;
+                        builder.InitialValue = textInput.InitialValue;
                         break;
                     case RequiredInputAttribute requiredInput:
                         builder.IsRequired = requiredInput.IsRequired;

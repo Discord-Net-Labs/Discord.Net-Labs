@@ -25,6 +25,11 @@ namespace Discord.Interactions
         public int MaxLength { get; }
 
         /// <summary>
+        ///     Gets the initial value to be displayed by this input.
+        /// </summary>
+        public string InitialValue { get; }
+
+        /// <summary>
         ///     Create a new <see cref="ModalTextInputAttribute"/>.
         /// </summary>
         /// <param name="customId"The custom id of the text input.></param>
@@ -32,13 +37,15 @@ namespace Discord.Interactions
         /// <param name="placeholder">The placeholder of the text input.</param>
         /// <param name="minLength">The minimum length of the text input's content.</param>
         /// <param name="maxLength">The maximum length of the text input's content.</param>
-        public ModalTextInputAttribute(string customId, TextInputStyle style = TextInputStyle.Short, string placeholder = null, int minLength = 1, int maxLength = 4000)
+        /// <param name="initValue">The initial value to be displayed by this input.</param>
+        public ModalTextInputAttribute(string customId, TextInputStyle style = TextInputStyle.Short, string placeholder = null, int minLength = 1, int maxLength = 4000, string initValue = null)
             : base(customId)
         {
             Style = style;
             Placeholder = placeholder;
             MinLength = minLength;
             MaxLength = maxLength;
+            InitialValue = initValue;
         }
     }
 }
