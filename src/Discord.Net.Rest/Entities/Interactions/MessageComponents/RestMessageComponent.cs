@@ -492,5 +492,9 @@ namespace Discord.Rest
 
         /// <inheritdoc/>
         IUserMessage IComponentInteraction.Message => Message;
+
+        /// <inheritdoc />
+        Task IComponentInteraction.UpdateAsync(Action<MessageProperties> func, RequestOptions options)
+            => Task.FromResult(Update(func, options));
     }
 }
