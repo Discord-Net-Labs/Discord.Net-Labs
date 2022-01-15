@@ -1,7 +1,11 @@
 namespace Discord.Interactions
 {
+    /// <summary>
+    ///     Marks a <see cref="IModal"/> property as a text input.
+    /// </summary>
     public sealed class ModalTextInputAttribute : ModalInputAttribute
     {
+        /// <inheritdoc/>
         public override ComponentType ComponentType => ComponentType.TextInput;
 
         /// <summary>

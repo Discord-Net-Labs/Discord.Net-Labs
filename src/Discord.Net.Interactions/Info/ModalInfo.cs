@@ -26,6 +26,9 @@ namespace Discord.Interactions
         /// </summary>
         public string Title { get; }
 
+        /// <summary>
+        ///     Gets a collection of the components of this modal.
+        /// </summary>
         public IReadOnlyCollection<InputComponentInfo> Components { get; }
 
         /// <summary>

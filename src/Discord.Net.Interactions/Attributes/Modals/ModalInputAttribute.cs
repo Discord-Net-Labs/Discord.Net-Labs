@@ -2,6 +2,9 @@ using System;
 
 namespace Discord.Interactions
 {
+    /// <summary>
+    ///     Mark an <see cref="IModal"/> property as a modal input field.
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public abstract class ModalInputAttribute : Attribute
     {

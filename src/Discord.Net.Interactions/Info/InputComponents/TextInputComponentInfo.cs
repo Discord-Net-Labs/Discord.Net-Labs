@@ -1,5 +1,8 @@
 namespace Discord.Interactions
 {
+    /// <summary>
+    ///     Represents the <see cref="InputComponentInfo"/> class for <see cref="ComponentType.TextInput"/> type.
+    /// </summary>
     public class TextInputComponentInfo : InputComponentInfo
     {
         /// <summary>
