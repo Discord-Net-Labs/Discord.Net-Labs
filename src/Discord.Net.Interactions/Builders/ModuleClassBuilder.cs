@@ -502,33 +502,39 @@ namespace Discord.Interactions.Builders
 
             var instance = Activator.CreateInstance(modalType, false) as IModal;
 
-            var builder = new ModalBuilder()
+            try
             {
-                Title = instance.Title
-            };
-
-            var inputs = modalType.GetProperties().Where(IsValidModalInputDefinition);
-
-            foreach(var prop in inputs)
-            {
-                var componentType = prop.GetCustomAttribute<ModalInputAttribute>()?.ComponentType;
-
-                switch (componentType)
+                var builder = new ModalBuilder()
                 {
-                    case ComponentType.TextInput:
-                        builder.AddTextComponent(x => BuildTextInput(x, prop, prop.GetValue(instance)));
-                        break;
-                    case null:
-                        throw new InvalidOperationException($"{prop.Name} of {prop.DeclaringType.Name} isn't a valid modal input field.");
-                    default:
-                        throw new InvalidOperationException($"Component type {componentType} cannot be used in modals.");
+                    Title = instance.Title
+                };
+
+                var inputs = modalType.GetProperties().Where(IsValidModalInputDefinition);
+
+                foreach (var prop in inputs)
+                {
+                    var componentType = prop.GetCustomAttribute<ModalInputAttribute>()?.ComponentType;
+
+                    switch (componentType)
+                    {
+                        case ComponentType.TextInput:
+                            builder.AddTextComponent(x => BuildTextInput(x, prop, prop.GetValue(instance)));
+                            break;
+                        case null:
+                            throw new InvalidOperationException($"{prop.Name} of {prop.DeclaringType.Name} isn't a valid modal input field.");
+                        default:
+                            throw new InvalidOperationException($"Component type {componentType} cannot be used in modals.");
+                    }
                 }
+
+                var memberInit = ReflectionUtils<IModal>.CreateLambdaMemberInit(modalType.GetTypeInfo(), modalType.GetConstructor(Type.EmptyTypes), x => x.IsDefined(typeof(ModalInputAttribute)));
+                builder.ModalInitializer = (args) => memberInit(Array.Empty<object>(), args);
+                return builder.Build();
             }
-
-            var memberInit = ReflectionUtils<IModal>.CreateLambdaMemberInit(modalType.GetTypeInfo(), modalType.GetConstructor(Type.EmptyTypes), x => x.IsDefined(typeof(ModalInputAttribute)));
-            builder.ModalInitializer = (args) => memberInit(Array.Empty<object>(), args);
-
-            return builder.Build();
+            finally
+            {
+                (instance as IDisposable)?.Dispose();
+            }
         }
 
         private static void BuildTextInput(TextInputComponentBuilder builder, PropertyInfo propertyInfo, object defaultValue)
