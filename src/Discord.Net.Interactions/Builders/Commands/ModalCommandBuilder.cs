@@ -1,8 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Discord.Interactions.Builders
 {
@@ -11,10 +7,6 @@ namespace Discord.Interactions.Builders
     /// </summary>
     public class ModalCommandBuilder : CommandBuilder<ModalCommandInfo, ModalCommandBuilder, ModalCommandParameterBuilder>
     {
-        private readonly Dictionary<string, Action<IModal, object>> _textInputComponents = new();
-
-        public IReadOnlyDictionary<string, Action<IModal, object>> TextInputComponents { get; }
-
         protected override ModalCommandBuilder Instance => this;
 
         /// <summary>
@@ -43,12 +35,6 @@ namespace Discord.Interactions.Builders
             var parameter = new ModalCommandParameterBuilder(this);
             configure(parameter);
             AddParameters(parameter);
-            return this;
-        }
-
-        public ModalCommandBuilder AddTextInputComponent(string label, Action<IModal, object> propertySetter)
-        {
-            _textInputComponents[label] = propertySetter;
             return this;
         }
 
