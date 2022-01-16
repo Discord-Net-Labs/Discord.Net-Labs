@@ -19,7 +19,7 @@ namespace Discord
         public string Title { get; set; }
 
         /// <summary>
-        ///     Gets or sets the custom id of the current modal..
+        ///     Gets or sets the custom id of the current modal.
         /// </summary>
         public string CustomId
         {
