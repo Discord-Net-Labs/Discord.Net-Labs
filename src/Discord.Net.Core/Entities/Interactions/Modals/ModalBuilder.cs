@@ -86,12 +86,12 @@ namespace Discord
         /// <summary>
         ///     Adds a <see cref="TextInputBuilder"/> to the current builder.
         /// </summary>
-        /// <param name="customId">The inputs custom id.</param>
-        /// <param name="label">The inputs label.</param>
-        /// <param name="placeholder">The inputs placeholder text.</param>
-        /// <param name="minLength">The inputs minimum length.</param>
-        /// <param name="maxLength">The inputs maximum length.</param>
-        /// <param name="style">The inputs style.</param>
+        /// <param name="customId">The input's custom id.</param>
+        /// <param name="label">The input's label.</param>
+        /// <param name="placeholder">The input's placeholder text.</param>
+        /// <param name="minLength">The input's minimum length.</param>
+        /// <param name="maxLength">The input's maximum length.</param>
+        /// <param name="style">The input's style.</param>
         /// <returns>The current builder.</returns>
         public ModalBuilder AddTextInput(string label, string customId, TextInputStyle style = TextInputStyle.Short, 
             string placeholder = "", int? minLength = null, int? maxLength = null, bool? required = null, string value = null)
