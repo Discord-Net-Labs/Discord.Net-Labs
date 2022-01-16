@@ -3,7 +3,7 @@ using System;
 namespace Discord.Interactions
 {
     /// <summary>
-    ///     Create a Modal interaction handler, CustomId represents
+    ///     Create a Modal interaction handler. CustomId represents
     ///     the CustomId of the Modal that will be handled.
     /// </summary>
     /// <remarks>
