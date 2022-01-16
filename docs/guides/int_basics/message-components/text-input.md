@@ -18,7 +18,7 @@ length.
 
 ## Creating text inputs
 Text input components can be built using the `TextInputBuilder`.
-The simplest text input can build with:
+The simplest text input can built with:
 ```cs
 var tb = new TextInputBuilder()
     .WithLabel("My Text")
