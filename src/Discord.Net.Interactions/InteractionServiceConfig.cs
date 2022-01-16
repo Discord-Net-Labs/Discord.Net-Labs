@@ -61,7 +61,7 @@ namespace Discord.Interactions
         public RestResponseCallback RestResponseCallback { get; set; } = (ctx, str) => Task.CompletedTask;
 
         /// <summary>
-        ///     Gets or sets whether an exception should be thrown when a component does not belong to a field in a modals class.
+        ///     Gets or sets whether an exception should be thrown when a component does not belong to a field in a modal's class.
         /// </summary>
         public bool ThrowOnUnknownModalComponent { get; set; } = false;
     }
