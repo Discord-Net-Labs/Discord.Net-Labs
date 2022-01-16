@@ -135,4 +135,4 @@ _client.ModalSubmitted += async modal =>
 Now responding to the modal should inform everyone of our tasty 
 choices.
 
-![Responce of the modal submitted event](images/image4.png)
+![Response of the modal submitted event](images/image4.png)
