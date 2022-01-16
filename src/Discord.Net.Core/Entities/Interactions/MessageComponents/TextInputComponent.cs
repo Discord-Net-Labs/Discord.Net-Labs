@@ -12,7 +12,7 @@ namespace Discord
         public string CustomId { get; }
 
         /// <summary>
-        ///     Gets the label of the component, this is the text shown above it.
+        ///     Gets the label of the component; this is the text shown above it.
         /// </summary>
         public string Label { get; }
 
