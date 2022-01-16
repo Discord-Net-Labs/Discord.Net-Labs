@@ -25,7 +25,7 @@ var tb = new TextInputBuilder()
     .WithCustomId("text_input");
 ```
 
-and would produce a component looking like:
+and would produce a component that looks like:
 
 ![basic text input component](images/image8.png)
 
