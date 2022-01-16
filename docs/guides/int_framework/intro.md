@@ -200,7 +200,7 @@ Alternatively, you can use the [AutocompleteHandlers] to simplify this workflow.
 
 ## Modals
 
-Modal commands fist paremeter must be an implimentation of `IModal`.
+Modal commands first parameter must be an implementation of `IModal`.
 An Modal implimentation would look like:
 
 [!code-csharp[Modal Command](samples/intro/modal.cs)]
