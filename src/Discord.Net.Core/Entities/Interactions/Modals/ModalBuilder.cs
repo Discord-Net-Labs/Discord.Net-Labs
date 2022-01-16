@@ -9,7 +9,7 @@ namespace Discord
     public class ModalBuilder
     {
         /// <summary>
-        ///     Gets or sets the components of the current model.
+        ///     Gets or sets the components of the current modal.
         /// </summary>
         public ModalComponentBuilder Components { get; set; } = new();
 
