@@ -25,7 +25,7 @@ public partial class FoodCommands : InteractionModuleBase<SocketInteractionConte
     
     public class FoodModal : IModal
     {
-        // Title and CrustomId are both required.
+        // Title and CustomId are both required.
         public string Title => "Fav Food"; 
         public string CustomId => "food_menu";
         
