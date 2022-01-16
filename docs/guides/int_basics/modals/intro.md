@@ -95,7 +95,7 @@ public async Task FoodPreference()
 }
 ```
 
-When we run the command our modal should pop up:
+When we run the command, our modal should pop up:
 
 ![screenshot of the above modal](images/image3.png) 
 
