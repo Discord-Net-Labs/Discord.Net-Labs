@@ -20,7 +20,7 @@ custom id, title, and at least one component.
 
 ![Screenshot of a modal](images/image2.png)
 
-When users submit modals your client fires the ModalSubmitted event. 
+When users submit modals, your client fires the ModalSubmitted event. 
 You can get the components of the modal from the `Data.Components` property
 on the SocketModal:
 
