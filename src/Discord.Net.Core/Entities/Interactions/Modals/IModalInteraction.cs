@@ -6,7 +6,7 @@ namespace Discord
     public interface IModalInteraction : IDiscordInteraction
     {
         /// <summary>
-        ///     Gets the data received with this interaction, contains the button that was clicked.
+        ///     Gets the data received with this interaction; contains the clicked button.
         /// </summary>
         new IModalInteractionData Data { get; }
     }
