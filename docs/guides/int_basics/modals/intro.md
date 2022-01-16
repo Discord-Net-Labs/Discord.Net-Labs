@@ -39,7 +39,7 @@ public async Task FoodPreference()
 }
 ```
 
-Now that we have our command setup we need to build a modal.
+Now that we have our command set up, we need to build a modal.
 We can use the aptly named `ModalBuilder` for that:
 
 | Method          | Description                               |
