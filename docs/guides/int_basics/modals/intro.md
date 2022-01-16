@@ -104,8 +104,8 @@ When we run the command, our modal should pop up:
 > [!WARNING]
 > Modals can not be sent when respoding to a modal.
 
-Once a user has submitted our modal we need to let everyone know what
-their favorite food is. We can start by hooking a task to the clients
+Once a user has submitted the modal, we need to let everyone know what
+their favorite food is. We can start by hooking a task to the client's
 `ModalSubmitted` event.
 ```cs
 _client.ModalSubmitted += async modal =>
