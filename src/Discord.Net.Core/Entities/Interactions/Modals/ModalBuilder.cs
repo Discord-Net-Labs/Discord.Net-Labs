@@ -51,7 +51,7 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Sets the title title of the current modal.
+        ///     Sets the title of the current modal.
         /// </summary>
         /// <param name="title">The value to set the title to.</param>
         /// <returns>The current builder.</returns>
