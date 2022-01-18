@@ -18,7 +18,7 @@ namespace Discord.WebSocket
         public string CustomId { get; }
 
         /// <summary>
-        ///     Gets the <see cref="Modal"/>s components submitted by the user.
+        ///     Gets the <see cref="Modal"/>'s components submitted by the user.
         /// </summary>
         public IReadOnlyCollection<SocketMessageComponentData> Components { get; }
 

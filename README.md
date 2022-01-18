@@ -31,7 +31,8 @@ Nothing here is guaranteed to work but you are more than welcome to submit bugs 
 - 📚 [Guides](https://labs.discordnet.dev/guides/introduction/intro.html)
 
 ## Sponsor us! ❤
-- If this library benefits you consider [sponsoring](https://github.com/sponsors/quinchs) the project as it really helps out. *Only sponsor if you're financially stable!*
+- If this library benefits you consider sponsoring us through [Open Collective](
+opencollective.com/discordnet), [Github Sponsors](https://github.com/sponsors/quinchs), or [Paypal](https://www.paypal.com/paypalme/quinchs). Your financial contributions help us pay for Discord.Net related services like our doc hosts. *Only sponsor if you're financially stable!*
 
 ## Known compatibility issues
 

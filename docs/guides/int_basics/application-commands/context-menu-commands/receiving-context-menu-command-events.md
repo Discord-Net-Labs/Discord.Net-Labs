@@ -27,7 +27,7 @@ public async Task UserCommandHandler(SocketUserCommand arg)
 }
 ```
 
-User commands contain a SocketUser object called `Member` in their data class, showing the user that was clicked to run the command. 
+User commands contain a SocketUser object called `Member` in their data class, showing the user that was clicked to run the command.
 Message commands contain a SocketMessage object called `Message` in their data class, showing the message that was clicked to run the command.
 
 Both return the user who ran the command, the guild (if any), channel, etc.

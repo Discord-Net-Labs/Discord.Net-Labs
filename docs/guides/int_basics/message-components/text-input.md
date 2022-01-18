@@ -18,14 +18,14 @@ length.
 
 ## Creating text inputs
 Text input components can be built using the `TextInputBuilder`.
-The simplest text input can build with:
+The simplest text input can built with:
 ```cs
 var tb = new TextInputBuilder()
     .WithLabel("My Text")
     .WithCustomId("text_input");
 ```
 
-and would produce a component looking like:
+and would produce a component that looks like:
 
 ![basic text input component](images/image8.png)
 

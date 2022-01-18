@@ -23,7 +23,7 @@ namespace Discord
         IReadOnlyCollection<string> Values { get; }
 
         /// <summary>
-        ///     Gets the value of a <see cref="TextInputComponent"/> interaction responce.
+        ///     Gets the value of a <see cref="TextInputComponent"/> interaction response.
         /// </summary>
         public string Value { get; }
     }

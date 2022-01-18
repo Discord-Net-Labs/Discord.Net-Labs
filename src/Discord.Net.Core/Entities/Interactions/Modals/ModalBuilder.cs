@@ -9,7 +9,7 @@ namespace Discord
     public class ModalBuilder
     {
         /// <summary>
-        ///     Gets or sets the components of the current model.
+        ///     Gets or sets the components of the current modal.
         /// </summary>
         public ModalComponentBuilder Components { get; set; } = new();
 
@@ -19,7 +19,7 @@ namespace Discord
         public string Title { get; set; }
 
         /// <summary>
-        ///     Gets or sets the custom id of the current modal..
+        ///     Gets or sets the custom id of the current modal.
         /// </summary>
         public string CustomId
         {
@@ -39,9 +39,9 @@ namespace Discord
         /// <summary>
         ///     Creates a new instance of a <see cref="ModalBuilder"/>
         /// </summary>
-        /// <param name="title">The modals title.</param>
-        /// <param name="customId">The modals customId.</param>
-        /// <param name="components">The modals components.</param>
+        /// <param name="title">The modal's title.</param>
+        /// <param name="customId">The modal's customId.</param>
+        /// <param name="components">The modal's components.</param>
         /// <exception cref="ArgumentException">Only TextInputComponents are allowed.</exception>
         public ModalBuilder(string title, string customId, ModalComponentBuilder components = null)
         {
@@ -51,7 +51,7 @@ namespace Discord
         }
 
         /// <summary>
-        ///     Sets the title title of the current modal.
+        ///     Sets the title of the current modal.
         /// </summary>
         /// <param name="title">The value to set the title to.</param>
         /// <returns>The current builder.</returns>
@@ -86,12 +86,12 @@ namespace Discord
         /// <summary>
         ///     Adds a <see cref="TextInputBuilder"/> to the current builder.
         /// </summary>
-        /// <param name="customId">The inputs custom id.</param>
-        /// <param name="label">The inputs label.</param>
-        /// <param name="placeholder">The inputs placeholder text.</param>
-        /// <param name="minLength">The inputs minimum length.</param>
-        /// <param name="maxLength">The inputs maximum length.</param>
-        /// <param name="style">The inputs style.</param>
+        /// <param name="customId">The input's custom id.</param>
+        /// <param name="label">The input's label.</param>
+        /// <param name="placeholder">The input's placeholder text.</param>
+        /// <param name="minLength">The input's minimum length.</param>
+        /// <param name="maxLength">The input's maximum length.</param>
+        /// <param name="style">The input's style.</param>
         /// <returns>The current builder.</returns>
         public ModalBuilder AddTextInput(string label, string customId, TextInputStyle style = TextInputStyle.Short, 
             string placeholder = "", int? minLength = null, int? maxLength = null, bool? required = null, string value = null)
@@ -197,12 +197,12 @@ namespace Discord
         ///     Adds a <see cref="TextInputBuilder"/> to the <see cref="ComponentBuilder"/> at the specific row.
         ///     If the row cannot accept the component then it will add it to a row that can.
         /// </summary>
-        /// <param name="customId">The inputs custom id.</param>
-        /// <param name="label">The inputs label.</param>
-        /// <param name="placeholder">The inputs placeholder text.</param>
-        /// <param name="minLength">The inputs minimum length.</param>
-        /// <param name="maxLength">The inputs maximum length.</param>
-        /// <param name="style">The inputs style.</param>
+        /// <param name="customId">The input's custom id.</param>
+        /// <param name="label">The input's label.</param>
+        /// <param name="placeholder">The input's placeholder text.</param>
+        /// <param name="minLength">The input's minimum length.</param>
+        /// <param name="maxLength">The input's maximum length.</param>
+        /// <param name="style">The input's style.</param>
         /// <returns>The current builder.</returns>
         public ModalComponentBuilder WithTextInput(string label, string customId, TextInputStyle style = TextInputStyle.Short, 
             string placeholder = null, int? minLength = null, int? maxLength = null, int row = 0, bool? required = null,

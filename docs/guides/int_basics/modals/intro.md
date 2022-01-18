@@ -9,7 +9,7 @@ title: Getting Started with Modals
 
 ## Getting started with modals
 This guide will show you how to use modals and give a few examples of
-valid usecases. If you questions not covered by this guide ask in the
+valid use cases. If your question is not covered by this guide ask in the
 [Discord.Net Discord Server](https://discord.gg/dnet).
 
 ### What is a modal?
@@ -20,8 +20,8 @@ custom id, title, and at least one component.
 
 ![Screenshot of a modal](images/image2.png)
 
-When users submit modals your client fires the ModalSubmitted event. 
-You can get the modals components from the `Data.Components` property
+When users submit modals, your client fires the ModalSubmitted event. 
+You can get the components of the modal from the `Data.Components` property
 on the SocketModal:
 
 ![Screenshot of modal data](images/image1.png) 
@@ -39,7 +39,7 @@ public async Task FoodPreference()
 }
 ```
 
-Now that we have our command setup we need to build a modal.
+Now that we have our command set up, we need to build a modal.
 We can use the aptly named `ModalBuilder` for that:
 
 | Method          | Description                               |
@@ -95,7 +95,7 @@ public async Task FoodPreference()
 }
 ```
 
-When we run the command our modal should pop up:
+When we run the command, our modal should pop up:
 
 ![screenshot of the above modal](images/image3.png) 
 
@@ -104,8 +104,8 @@ When we run the command our modal should pop up:
 > [!WARNING]
 > Modals can not be sent when respoding to a modal.
 
-Once a user has submitted our modal we need to let everyone know what
-their favorite food is. We can start by hooking a task to the clients
+Once a user has submitted the modal, we need to let everyone know what
+their favorite food is. We can start by hooking a task to the client's
 `ModalSubmitted` event.
 ```cs
 _client.ModalSubmitted += async modal =>
@@ -135,4 +135,4 @@ _client.ModalSubmitted += async modal =>
 Now responding to the modal should inform everyone of our tasty 
 choices.
 
-![Responce of the modal submitted event](images/image4.png)
+![Response of the modal submitted event](images/image4.png)
