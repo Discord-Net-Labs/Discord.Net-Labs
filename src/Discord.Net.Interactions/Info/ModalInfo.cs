@@ -27,6 +27,11 @@ namespace Discord.Interactions
         public string Title { get; }
 
         /// <summary>
+        ///     Gets the <see cref="IModal"/> implementation used to initialize this object.
+        /// </summary>
+        public Type Type { get; }
+
+        /// <summary>
         ///     Gets a collection of the components of this modal.
         /// </summary>
         public IReadOnlyCollection<InputComponentInfo> Components { get; }
@@ -39,6 +44,7 @@ namespace Discord.Interactions
         internal ModalInfo(Builders.ModalBuilder builder)
         {
             Title = builder.Title;
+            Type = builder.Type;
             Components = builder.Components.Select(x => x switch
             {
                 Builders.TextInputComponentBuilder textComponent => textComponent.Build(this),
@@ -57,7 +63,7 @@ namespace Discord.Interactions
         /// <returns>
         ///     A <see cref="IModal"/> filled with the provided components.
         /// </returns>
-        public IModal CreateModal(IModalInteraction modalInteraction)
+        public IModal CreateModal(IModalInteraction modalInteraction, bool throwOnMissingField = false)
         {
             var args = new object[Components.Count];
             var components = modalInteraction.Data.Components.ToList();
@@ -69,7 +75,7 @@ namespace Discord.Interactions
 
                 if (component is null)
                 {
-                    if (!input.IsRequired)
+                    if (!throwOnMissingField)
                         args[i] = input.DefaultValue;
                     else
                         throw new InvalidOperationException($"Modal interaction is missing the required field: {input.CustomId}");
