@@ -145,6 +145,7 @@ namespace Discord
         CannotExecuteOnArchivedThread = 50083,
         InvalidThreadNotificationSettings = 50084,
         BeforeValueEarlierThanThreadCreation = 50085,
+        CommunityServerChannelsMustBeTextChannels = 50086,
         ServerLocaleUnavailable = 50095,
         ServerRequiresMonetization = 50097,
         ServerRequiresBoosts = 50101,
