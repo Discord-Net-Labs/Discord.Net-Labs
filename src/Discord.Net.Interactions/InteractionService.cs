@@ -75,7 +75,7 @@ namespace Discord.Interactions
         internal readonly LogManager _logManager;
         internal readonly Func<DiscordRestClient> _getRestClient;
 
-        internal readonly bool _throwOnError, _useCompiledLambda, _enableAutocompleteHandlers, _autoServiceScopes, _throwOnUnknownModalComponent;
+        internal readonly bool _throwOnError, _useCompiledLambda, _enableAutocompleteHandlers, _autoServiceScopes, _exitOnMissingModalField;
         internal readonly string _wildCardExp;
         internal readonly RunMode _runMode;
         internal readonly RestResponseCallback _restResponseCallback;
@@ -109,6 +109,11 @@ namespace Discord.Interactions
         ///     Represents all Modal Commands loaded within <see cref="InteractionService"/>.
         /// </summary>
         public IReadOnlyCollection<ModalCommandInfo> ModalCommands => _moduleDefs.SelectMany(x => x.ModalCommands).ToList();
+
+        /// <summary>
+        ///     Gets a collection of the cached <see cref="ModalInfo"/> classes that are referenced in registered <see cref="ModalCommandInfo"/>s.
+        /// </summary>
+        public IReadOnlyCollection<ModalInfo> Modals => ModalUtils.Modals;
 
         /// <summary>
         ///     Initialize a <see cref="InteractionService"/> with provided configurations.
@@ -169,7 +174,7 @@ namespace Discord.Interactions
             _throwOnError = config.ThrowOnError;
             _wildCardExp = config.WildCardExpression;
             _useCompiledLambda = config.UseCompiledLambda;
-            _throwOnUnknownModalComponent = config.ThrowOnUnknownModalComponent;
+            _exitOnMissingModalField = config.ExitOnMissingModalField;
             _enableAutocompleteHandlers = config.EnableAutocompleteHandlers;
             _autoServiceScopes = config.AutoServiceScopes;
             _restResponseCallback = config.RestResponseCallback;

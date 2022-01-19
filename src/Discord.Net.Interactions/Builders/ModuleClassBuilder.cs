@@ -504,7 +504,7 @@ namespace Discord.Interactions.Builders
 
             try
             {
-                var builder = new ModalBuilder()
+                var builder = new ModalBuilder(modalType)
                 {
                     Title = instance.Title
                 };

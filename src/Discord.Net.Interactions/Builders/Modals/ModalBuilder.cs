@@ -22,12 +22,20 @@ namespace Discord.Interactions.Builders
         public string Title { get; set; }
 
         /// <summary>
+        ///     Gets the <see cref="IModal"/> implementation used to initialize this object.
+        /// </summary>
+        public Type Type { get; }
+
+        /// <summary>
         ///     Gets a collection of the components of this modal.
         /// </summary>
         public IReadOnlyCollection<IInputComponentBuilder> Components => _components;
 
-        internal ModalBuilder()
+        internal ModalBuilder(Type type)
         {
+            if (!typeof(IModal).IsAssignableFrom(type))
+                throw new ArgumentException($"Must be an implementation of {nameof(IModal)}", nameof(type));
+
             _components = new();
         }
 
@@ -35,7 +43,7 @@ namespace Discord.Interactions.Builders
         ///     Initializes a new <see cref="ModalBuilder"/>
         /// </summary>
         /// <param name="modalInitializer">The initialization delegate for this modal.</param>
-        public ModalBuilder(ModalInitializer modalInitializer) : this()
+        public ModalBuilder(Type type, ModalInitializer modalInitializer) : this(type)
         {
             ModalInitializer = modalInitializer;
         }

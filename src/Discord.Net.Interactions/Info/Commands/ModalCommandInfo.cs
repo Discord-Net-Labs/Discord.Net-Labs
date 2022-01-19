@@ -45,15 +45,24 @@ namespace Discord.Interactions
             if (context.Interaction is not IModalInteraction modalInteraction)
                 return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Modal Interaction.");
 
-            var args = new List<object>();
+            try
+            {
+                var args = new List<object>();
 
-            if (additionalArgs is not null)
-                args.AddRange(additionalArgs);
+                if (additionalArgs is not null)
+                    args.AddRange(additionalArgs);
 
-            var modal = Modal.CreateModal(modalInteraction);
-            args.Add(modal);
+                var modal = Modal.CreateModal(modalInteraction, Module.CommandService._exitOnMissingModalField);
+                args.Add(modal);
 
-            return await RunAsync(context, args.ToArray(), services);
+                return await RunAsync(context, args.ToArray(), services);
+            }
+            catch (Exception ex)
+            {
+                var result = ExecuteResult.FromError(ex);
+                await InvokeModuleEvent(context, result).ConfigureAwait(false);
+                return result;
+            }
         }
 
         /// <inheritdoc/>
