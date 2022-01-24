@@ -60,7 +60,7 @@ namespace Discord
         ///     Gets when the thread was created.
         /// </summary>
         /// <remarks>
-        ///     This property is only populated for threads created after 2022-01-09, therfor the default date of this
+        ///     This property is only populated for threads created after 2022-01-09, hence the default date of this
         ///     property will be that date.
         /// </remarks>
         new DateTimeOffset CreatedAt { get; }
