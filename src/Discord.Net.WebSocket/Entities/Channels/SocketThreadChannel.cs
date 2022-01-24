@@ -44,7 +44,7 @@ namespace Discord.WebSocket
         /// <summary>
         ///     Gets the parent channel this thread resides in.
         /// </summary>
-        public SocketTextChannel ParentChannel { get; private set; }
+        public SocketGuildChannel ParentChannel { get; private set; }
 
         /// <inheritdoc/>
         public int MessageCount { get; private set; }
@@ -78,7 +78,7 @@ namespace Discord.WebSocket
 
         private readonly object _downloadLock = new object();
 
-        internal SocketThreadChannel(DiscordSocketClient discord, SocketGuild guild, ulong id, SocketTextChannel parent)
+        internal SocketThreadChannel(DiscordSocketClient discord, SocketGuild guild, ulong id, SocketGuildChannel parent)
             : base(discord, id, guild)
         {
             ParentChannel = parent;
@@ -87,7 +87,7 @@ namespace Discord.WebSocket
 
         internal new static SocketThreadChannel Create(SocketGuild guild, ClientState state, Model model)
         {
-            var parent = (SocketTextChannel)guild.GetChannel(model.CategoryId.Value);
+            var parent = guild.GetChannel(model.CategoryId.Value);
             var entity = new SocketThreadChannel(guild.Discord, guild, model.Id, parent);
             entity.Update(state, model);
             return entity;
