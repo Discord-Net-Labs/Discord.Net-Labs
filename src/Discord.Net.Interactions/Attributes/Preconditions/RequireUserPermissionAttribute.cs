@@ -59,7 +59,7 @@ namespace Discord.Interactions
             {
                 if (guildUser == null)
                     return Task.FromResult(PreconditionResult.FromError(NotAGuildErrorMessage ?? "Command must be used in a guild channel."));
-                if (!guildUser.GuildPermissions.Has(GuildPermission.Value))
+                if (!guildUser.GuildPermissions.Administrator && !guildUser.GuildPermissions.Has(GuildPermission.Value))
                     return Task.FromResult(PreconditionResult.FromError(ErrorMessage ?? $"User requires guild permission {GuildPermission.Value}."));
             }
 
