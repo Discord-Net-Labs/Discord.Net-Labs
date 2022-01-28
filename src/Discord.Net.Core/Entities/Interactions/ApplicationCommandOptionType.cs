@@ -56,7 +56,7 @@ namespace Discord
         Number = 10,
 
         /// <summary>
-        ///     A <see cref="Discord.Attachment"/>
+        ///     A <see cref="Discord.Attachment"/>.
         /// </summary>
         Attachment = 11
     }
