@@ -1288,6 +1288,17 @@ namespace Discord
             Placeholder = placeholder;
             return this;
         }
+        
+        /// <summary>
+        ///     Sets the value of the current builder.
+        /// </summary>
+        /// <param name="value">The value to set</param>
+        /// <returns>The current builder.</returns>
+        public TextInputBuilder WithValue(string value)
+        {
+            Value = value;
+            return this;
+        }
 
         /// <summary>
         ///     Sets the minimum length of the current builder.
