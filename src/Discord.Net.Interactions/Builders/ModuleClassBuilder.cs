@@ -311,7 +311,7 @@ namespace Discord.Interactions.Builders
                 throw new InvalidOperationException($"A modal command can only have one {nameof(IModal)} parameter.");
 
             if (!parameters.All(x => x.ParameterType == typeof(string) || typeof(IModal).IsAssignableFrom(x.ParameterType)))
-                throw new InvalidOperationException($"All parameters of a modal command must be either a string or an implemetation of {nameof(IModal)}");
+                throw new InvalidOperationException($"All parameters of a modal command must be either a string or an implementation of {nameof(IModal)}");
 
             var attributes = methodInfo.GetCustomAttributes();
 

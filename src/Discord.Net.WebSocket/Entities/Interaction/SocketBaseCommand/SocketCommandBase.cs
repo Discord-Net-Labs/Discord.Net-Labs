@@ -135,7 +135,7 @@ namespace Discord.WebSocket
         }
 
         /// <inheritdoc/>
-        public override async Task RespondWithModalAsync(Modal modal, RequestOptions options)
+        public override async Task RespondWithModalAsync(Modal modal, RequestOptions options = null)
         {
             if (!IsValidToken)
                 throw new InvalidOperationException("Interaction token is no longer valid");

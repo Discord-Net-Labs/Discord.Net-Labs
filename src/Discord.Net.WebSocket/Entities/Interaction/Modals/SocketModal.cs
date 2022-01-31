@@ -294,7 +294,7 @@ namespace Discord.WebSocket
         }
 
         /// <inheritdoc/>
-        public override Task RespondWithModalAsync(Modal modal, RequestOptions options)
+        public override Task RespondWithModalAsync(Modal modal, RequestOptions options = null)
             => throw new NotSupportedException("You cannot respond to a modal with a modal!");
             
         IModalInteractionData IModalInteraction.Data => Data;
