@@ -121,7 +121,7 @@ namespace Discord
                 throw new ArgumentException("Modals must have a custom id.", nameof(CustomId));
             if (string.IsNullOrWhiteSpace(Title))
                 throw new ArgumentException("Modals must have a title.", nameof(Title));
-            if (Components.ActionRows.SelectMany(x => x.Components).Any(x => x.Type != ComponentType.TextInput))
+            if (Components.ActionRows?.SelectMany(x => x.Components).Any(x => x.Type != ComponentType.TextInput) ?? false)
                 throw new ArgumentException($"Only TextInputComponents are allowed.", nameof(Components));
 
             return new(Title, CustomId, Components.Build());
@@ -263,6 +263,6 @@ namespace Discord
         /// </summary>
         /// <returns>A <see cref="ModalComponent"/> representing the builder.</returns>
         public ModalComponent Build()
-            => new (ActionRows.Select(x => x.Build()).ToList());
+            => new (ActionRows?.Select(x => x.Build()).ToList());
     }
 }
