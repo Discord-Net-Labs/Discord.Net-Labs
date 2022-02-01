@@ -51,7 +51,7 @@ namespace Discord.Interactions
                 _ => throw new InvalidOperationException($"{x.GetType().FullName} isn't a supported modal input component builder type.")
             }).ToImmutableArray();
 
-            TextComponents = Components.Where(x => x is TextInputComponentInfo).Cast<TextInputComponentInfo>().ToImmutableArray();
+            TextComponents = Components.OfType<TextInputComponentInfo>().ToImmutableArray();
 
             _initializer = builder.ModalInitializer;
         }
