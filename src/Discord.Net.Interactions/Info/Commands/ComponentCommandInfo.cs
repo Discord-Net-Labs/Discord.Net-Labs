@@ -42,22 +42,14 @@ namespace Discord.Interactions
             if (context.Interaction is not IComponentInteraction componentInteraction)
                 return ExecuteResult.FromError(InteractionCommandError.ParseFailed, $"Provided {nameof(IInteractionContext)} doesn't belong to a Message Component Interaction");
 
-            var args = new List<object>();
-
-            if (additionalArgs is not null)
-                args.AddRange(additionalArgs);
-
-            if (componentInteraction.Data?.Values is not null)
-                args.Add(componentInteraction.Data.Values);
-
-            return await ExecuteAsync(context, Parameters, args, services);
+            return await ExecuteAsync(context, Parameters, additionalArgs, componentInteraction.Data, services);
         }
 
         /// <inheritdoc/>
-        public async Task<IResult> ExecuteAsync(IInteractionContext context, IEnumerable<CommandParameterInfo> paramList, IEnumerable<object> values,
+        public async Task<IResult> ExecuteAsync(IInteractionContext context, IEnumerable<CommandParameterInfo> paramList, IEnumerable<string> wildcardCaptures, IComponentInteractionData data,
             IServiceProvider services)
         {
-            if (paramList?.Count() < values?.Count())
+            if (paramList?.Count() < wildcardCaptures?.Count() + 1)
             {
                 var result = ExecuteResult.FromError(InteractionCommandError.BadArgs, "Command was invoked with too many parameters");
                 await InvokeModuleEvent(context, result).ConfigureAwait(false);
@@ -66,33 +58,21 @@ namespace Discord.Interactions
 
             try
             {
-                var valueCount = values.Count();
-                var args = new object[paramList.Count()];
+                var paramCount = paramList.Count();
+                var captureCount = wildcardCaptures?.Count() ?? 0;
+                var args = new object[paramCount];
 
-                for(var i = 0; i < paramList.Count(); i++)
+                for(var i = 0; i < paramCount; i++)
                 {
                     var parameter = Parameters.ElementAt(i);
 
-                    if(i > valueCount)
-                    {
-                        if (!parameter.IsRequired)
-                            args[i] = parameter.DefaultValue;
-                        else
-                        {
-                            var result = ExecuteResult.FromError(InteractionCommandError.BadArgs, "Command was invoked with too few parameters");
-                            await InvokeModuleEvent(context, result).ConfigureAwait(false);
-                            return result;
-                        }
-                            
-                    }
+                    if (i <= captureCount)
+                        args[i] = wildcardCaptures.ElementAt(i);
                     else
                     {
-                        var value = values.ElementAt(i);
-                        var typeReader = parameter.TypeReader;
+                        var readResult = await parameter.TypeConverter.ReadAsync(context, data, services).ConfigureAwait(false);
 
-                        var readResult = await typeReader.ReadAsync(context, value, services).ConfigureAwait(false);
-
-                        if (!readResult.IsSuccess)
+                        if(!readResult.IsSuccess)
                         {
                             await InvokeModuleEvent(context, readResult).ConfigureAwait(false);
                             return readResult;
@@ -101,7 +81,6 @@ namespace Discord.Interactions
                         args[i] = readResult.Value;
                     }
                 }
-
 
                 return await RunAsync(context, args, services).ConfigureAwait(false);
             }
