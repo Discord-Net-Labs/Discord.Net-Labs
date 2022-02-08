@@ -11,42 +11,42 @@ namespace Discord.Interactions.Builders
         /// <summary>
         ///     Gets the parent modal of this input component.
         /// </summary>
-        public ModalBuilder Modal { get; }
+        ModalBuilder Modal { get; }
 
         /// <summary>
         ///     Gets the custom id of this input component.
         /// </summary>
-        public string CustomId { get; }
+        string CustomId { get; }
 
         /// <summary>
         ///     Gets the label of this input component.
         /// </summary>
-        public string Label { get; }
+        string Label { get; }
 
         /// <summary>
         ///     Gets whether this input component is required.
         /// </summary>
-        public bool IsRequired { get; }
+        bool IsRequired { get; }
 
         /// <summary>
         ///     Gets the component type of this input component.
         /// </summary>
-        public ComponentType ComponentType { get; }
+        ComponentType ComponentType { get; }
 
         /// <summary>
         ///     Get the reference type of this input component.
         /// </summary>
-        public Type Type { get; }
+        Type Type { get; }
 
         /// <summary>
         ///     Gets the default value of this input component.
         /// </summary>
-        public object DefaultValue { get; }
+        object DefaultValue { get; }
 
         /// <summary>
         ///     Gets a collection of the attributes of this component.
         /// </summary>
-        public IReadOnlyCollection<Attribute> Attributes { get; }
+        IReadOnlyCollection<Attribute> Attributes { get; }
 
         /// <summary>
         ///     Sets <see cref="CustomId"/>.
@@ -55,7 +55,7 @@ namespace Discord.Interactions.Builders
         /// <returns>
         ///     The builder instance.
         /// </returns>
-        public IInputComponentBuilder WithCustomId(string customId);
+        IInputComponentBuilder WithCustomId(string customId);
 
         /// <summary>
         ///     Sets <see cref="Label"/>.
@@ -64,7 +64,7 @@ namespace Discord.Interactions.Builders
         /// <returns>
         ///     The builder instance.
         /// </returns>
-        public IInputComponentBuilder WithLabel(string label);
+        IInputComponentBuilder WithLabel(string label);
 
         /// <summary>
         ///     Sets <see cref="IsRequired"/>.
@@ -73,7 +73,7 @@ namespace Discord.Interactions.Builders
         /// <returns>
         ///     The builder instance.
         /// </returns>
-        public IInputComponentBuilder SetIsRequired(bool isRequired);
+        IInputComponentBuilder SetIsRequired(bool isRequired);
 
         /// <summary>
         ///     Sets <see cref="Type"/>.
@@ -82,7 +82,7 @@ namespace Discord.Interactions.Builders
         /// <returns>
         ///     The builder instance.
         /// </returns>
-        public IInputComponentBuilder WithType(Type type);
+        IInputComponentBuilder WithType(Type type);
 
         /// <summary>
         ///     Sets <see cref="DefaultValue"/>.
@@ -91,7 +91,7 @@ namespace Discord.Interactions.Builders
         /// <returns>
         ///     The builder instance.
         /// </returns>
-        public IInputComponentBuilder SetDefaultValue(object value);
+        IInputComponentBuilder SetDefaultValue(object value);
 
         /// <summary>
         ///     Adds attributes to <see cref="Attributes"/>.
@@ -100,6 +100,6 @@ namespace Discord.Interactions.Builders
         /// <returns>
         ///     The builder instance.
         /// </returns>
-        public IInputComponentBuilder WithAttributes(params Attribute[] attributes);
+        IInputComponentBuilder WithAttributes(params Attribute[] attributes);
     }
 }
