@@ -4,9 +4,6 @@ title: Getting Started with Modals
 ---
 # Modals
 
-> [!WARNING]
-> Modals are currently not supported on Android.
-
 ## Getting started with modals
 This guide will show you how to use modals and give a few examples of
 valid use cases. If your question is not covered by this guide ask in the
