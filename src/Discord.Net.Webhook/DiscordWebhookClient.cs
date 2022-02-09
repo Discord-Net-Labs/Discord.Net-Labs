@@ -82,13 +82,15 @@ namespace Discord.Webhook
             };
             ApiClient.SentRequest += async (method, endpoint, millis) => await _restLogger.VerboseAsync($"{method} {endpoint}: {millis} ms").ConfigureAwait(false);
         }
+
         private static API.DiscordRestApiClient CreateApiClient(DiscordRestConfig config)
-            => new API.DiscordRestApiClient(config.RestClientProvider, DiscordRestConfig.UserAgent);
+            => new API.DiscordRestApiClient(config.RestClientProvider, DiscordRestConfig.UserAgent, useSystemClock: config.UseSystemClock, defaultRatelimitCallback: config.DefaultRatelimitCallback);
+
         /// <summary> Sends a message to the channel for this webhook. </summary>
         /// <returns> Returns the ID of the created message. </returns>
         public Task<ulong> SendMessageAsync(string text = null, bool isTTS = false, IEnumerable<Embed> embeds = null,
-            string username = null, string avatarUrl = null, RequestOptions options = null, AllowedMentions allowedMentions = null, MessageComponent component = null)
-            => WebhookClientHelper.SendMessageAsync(this, text, isTTS, embeds, username, avatarUrl, allowedMentions, options, component);
+            string username = null, string avatarUrl = null, RequestOptions options = null, AllowedMentions allowedMentions = null, MessageComponent components = null)
+            => WebhookClientHelper.SendMessageAsync(this, text, isTTS, embeds, username, avatarUrl, allowedMentions, options, components);
 
         /// <summary>
         ///     Modifies a message posted using this webhook.

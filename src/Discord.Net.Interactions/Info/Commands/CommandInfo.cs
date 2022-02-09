@@ -31,6 +31,8 @@ namespace Discord.Interactions
         private readonly ExecuteCallback _action;
         private readonly ILookup<string, PreconditionAttribute> _groupedPreconditions;
 
+        internal IReadOnlyDictionary<string, TParameter> _parameterDictionary { get; }
+
         /// <inheritdoc/>
         public ModuleInfo Module { get; }
 
@@ -78,6 +80,7 @@ namespace Discord.Interactions
 
             _action = builder.Callback;
             _groupedPreconditions = builder.Preconditions.ToLookup(x => x.Group, x => x, StringComparer.Ordinal);
+            _parameterDictionary = Parameters?.ToDictionary(x => x.Name, x => x).ToImmutableDictionary();
         }
 
         /// <inheritdoc/>
@@ -131,14 +134,24 @@ namespace Discord.Interactions
             {
                 case RunMode.Sync:
                     {
-                        using var scope = services?.CreateScope();
-                        return await ExecuteInternalAsync(context, args, scope?.ServiceProvider ?? EmptyServiceProvider.Instance).ConfigureAwait(false);
+                        if(CommandService._autoServiceScopes)
+                        {
+                            using var scope = services?.CreateScope();
+                            return await ExecuteInternalAsync(context, args, scope?.ServiceProvider ?? EmptyServiceProvider.Instance).ConfigureAwait(false);
+                        }
+                        else
+                            return await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
                     }
                 case RunMode.Async:
                     _ = Task.Run(async () =>
                     {
-                        using var scope = services?.CreateScope();
-                        await ExecuteInternalAsync(context, args, scope?.ServiceProvider ?? EmptyServiceProvider.Instance).ConfigureAwait(false);
+                        if(CommandService._autoServiceScopes)
+                        {
+                            using var scope = services?.CreateScope();
+                            await ExecuteInternalAsync(context, args, scope?.ServiceProvider ?? EmptyServiceProvider.Instance).ConfigureAwait(false);
+                        }
+                        else
+                            await ExecuteInternalAsync(context, args, services).ConfigureAwait(false);
                     });
                     break;
                 default:

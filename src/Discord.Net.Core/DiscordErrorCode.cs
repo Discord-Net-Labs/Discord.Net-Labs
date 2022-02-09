@@ -65,6 +65,7 @@ namespace Discord
         OnlyOwnerAction = 20018,
         AnnouncementEditRatelimit = 20022,
         ChannelWriteRatelimit = 20028,
+        WriteRatelimitReached = 20029,
         WordsNotAllowed = 20031,
         GuildPremiumTooLow = 20035,
         #endregion
@@ -141,16 +142,18 @@ namespace Discord
         InvalidFileUpload = 50046,
         CannotSelfRedeemGift = 50054,
         InvalidMessageType = 50068,
+        InvalidGuild = 50055,
         PaymentSourceRequiredForGift = 50070,
         CannotDeleteRequiredCommunityChannel = 50074,
         InvalidSticker = 50081,
         CannotExecuteOnArchivedThread = 50083,
         InvalidThreadNotificationSettings = 50084,
         BeforeValueEarlierThanThreadCreation = 50085,
+        CommunityServerChannelsMustBeTextChannels = 50086,
         ServerLocaleUnavailable = 50095,
         ServerRequiresMonetization = 50097,
         ServerRequiresBoosts = 50101,
-
+        RequestBodyContainsInvalidJSON = 50109,
         #endregion
 
         #region 2FA (60XXX)

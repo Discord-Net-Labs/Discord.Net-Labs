@@ -40,6 +40,12 @@ namespace Discord.Rest
                 IsBoostProgressBarEnabled = args.IsBoostProgressBarEnabled
             };
 
+            if (apiArgs.Banner.IsSpecified)
+                guild.Features.EnsureFeature(GuildFeature.Banner);
+
+            if (apiArgs.Splash.IsSpecified)
+                guild.Features.EnsureFeature(GuildFeature.InviteSplash);
+
             if (args.AfkChannel.IsSpecified)
                 apiArgs.AfkChannelId = args.AfkChannel.Value.Id;
             else if (args.AfkChannelId.IsSpecified)
@@ -123,6 +129,15 @@ namespace Discord.Rest
             RequestOptions options)
         {
             await client.ApiClient.DeleteGuildAsync(guild.Id, options).ConfigureAwait(false);
+        }
+        public static ulong GetUploadLimit(IGuild guild)
+        {
+            return guild.PremiumTier switch
+            {
+                PremiumTier.Tier2 => 50ul * 1000000,
+                PremiumTier.Tier3 => 100ul * 1000000,
+                _ => 8ul * 1000000
+            };
         }
         #endregion
 

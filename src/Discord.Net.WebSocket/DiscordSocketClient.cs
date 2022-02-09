@@ -195,8 +195,9 @@ namespace Discord.WebSocket
             _largeGuilds = new ConcurrentQueue<ulong>();
         }
         private static API.DiscordSocketApiClient CreateApiClient(DiscordSocketConfig config)
-            => new API.DiscordSocketApiClient(config.RestClientProvider, config.WebSocketProvider, DiscordRestConfig.UserAgent, config.GatewayHost);
-        /// <inheritdoc />
+            => new DiscordSocketApiClient(config.RestClientProvider, config.WebSocketProvider, DiscordRestConfig.UserAgent, config.GatewayHost,
+                useSystemClock: config.UseSystemClock, defaultRatelimitCallback: config.DefaultRatelimitCallback);
+        /// <inheritdoc/>
         internal override void Dispose(bool disposing)
         {
             if (!_isDisposed)
@@ -240,9 +241,6 @@ namespace Discord.WebSocket
 
                 _defaultStickers = builder.ToImmutable();
             }
-
-            if(LogGatewayIntentWarnings)
-                await LogGatewayIntentsWarning().ConfigureAwait(false);
         }
 
         /// <inheritdoc />
@@ -291,8 +289,12 @@ namespace Discord.WebSocket
                     _shardedClient.ReleaseIdentifyLock();
             }
 
-            //Wait for READY
+            // Wait for READY
             await _connection.WaitAsync().ConfigureAwait(false);
+
+            // Log warnings on ready event
+            if (LogGatewayIntentWarnings)
+                await LogGatewayIntentsWarning().ConfigureAwait(false);
         }
         private async Task OnDisconnectingAsync(Exception ex)
         {
@@ -519,7 +521,7 @@ namespace Discord.WebSocket
             if(model == null)
                 return null;
 
-            
+
             if (model.GuildId.IsSpecified)
             {
                 var guild = State.GetGuild(model.GuildId.Value);
@@ -717,12 +719,12 @@ namespace Discord.WebSocket
         {
             if(_gatewayIntents.HasFlag(GatewayIntents.GuildPresences) && !_presenceUpdated.HasSubscribers)
             {
-                await _gatewayLogger.WarningAsync("You're using the GuildPresences intent without listening to the PresenceUpdate event, consider removing the intent from your config.").ConfigureAwait(false);
+                await _gatewayLogger.WarningAsync("You're using the GuildPresences intent without listening to the PresenceUpdate event. Discord wont send this event to your client without the intent set in your config.").ConfigureAwait(false);
             }
 
             if(!_gatewayIntents.HasFlag(GatewayIntents.GuildPresences) && _presenceUpdated.HasSubscribers)
             {
-                await _gatewayLogger.WarningAsync("You're using the PresenceUpdate event without specifying the GuildPresences intent, consider adding the intent to your config.").ConfigureAwait(false);
+                await _gatewayLogger.WarningAsync("You're using the PresenceUpdate event without specifying the GuildPresences intent. Discord wont send this event to your client without the intent set in your config.").ConfigureAwait(false);
             }
 
             bool hasGuildScheduledEventsSubscribers =
@@ -741,7 +743,7 @@ namespace Discord.WebSocket
 
             if(!_gatewayIntents.HasFlag(GatewayIntents.GuildScheduledEvents) && hasGuildScheduledEventsSubscribers)
             {
-                await _gatewayLogger.WarningAsync("You're using events related to the GuildScheduledEvents gateway intent without specifying the intent, consider adding the intent to your config.").ConfigureAwait(false);
+                await _gatewayLogger.WarningAsync("You're using events related to the GuildScheduledEvents gateway intent without specifying the intent. Discord wont send this event to your client without the intent set in your config.").ConfigureAwait(false);
             }
 
             bool hasInviteEventSubscribers =
@@ -755,7 +757,7 @@ namespace Discord.WebSocket
 
             if (!_gatewayIntents.HasFlag(GatewayIntents.GuildInvites) && hasInviteEventSubscribers)
             {
-                await _gatewayLogger.WarningAsync("You're using events related to the GuildInvites gateway intent without specifying the intent, consider adding the intent to your config.").ConfigureAwait(false);
+                await _gatewayLogger.WarningAsync("You're using events related to the GuildInvites gateway intent without specifying the intent. Discord wont send this event to your client without the intent set in your config.").ConfigureAwait(false);
             }
         }
 
@@ -847,6 +849,7 @@ namespace Discord.WebSocket
                                         var activities = _activity.IsSpecified ? ImmutableList.Create(_activity.Value) : null;
                                         currentUser.Presence = new SocketPresence(Status, null, activities);
                                         ApiClient.CurrentUserId = currentUser.Id;
+                                        ApiClient.CurrentApplicationId = data.Application.Id;
                                         Rest.CurrentUser = RestSelfUser.Create(this, data.User);
                                         int unavailableGuilds = 0;
                                         for (int i = 0; i < data.Guilds.Length; i++)
@@ -1275,13 +1278,18 @@ namespace Discord.WebSocket
                                             var before = user.Clone();
                                             user.Update(State, data);
 
-                                            var cacheableBefore = new Cacheable<SocketGuildUser, ulong>(before, user.Id, true, () => Task.FromResult((SocketGuildUser)null));
+                                            var cacheableBefore = new Cacheable<SocketGuildUser, ulong>(before, user.Id, true, () => null);
                                             await TimedInvokeAsync(_guildMemberUpdatedEvent, nameof(GuildMemberUpdated), cacheableBefore, user).ConfigureAwait(false);
+
+                                            if(!before.TimedOutUntil.HasValue && user.TimedOutUntil.HasValue)
+                                            {
+                                                await TimedInvokeAsync(_timeoutAddedEvent, nameof(TimeoutAdded), user, user.TimedOutUntil.Value - DateTimeOffset.UtcNow).ConfigureAwait(false);
+                                            }
                                         }
                                         else
                                         {
                                             user = guild.AddOrUpdateUser(data);
-                                            var cacheableBefore = new Cacheable<SocketGuildUser, ulong>(null, user.Id, false, () => Task.FromResult((SocketGuildUser)null));
+                                            var cacheableBefore = new Cacheable<SocketGuildUser, ulong>(null, user.Id, false, () => null);
                                             await TimedInvokeAsync(_guildMemberUpdatedEvent, nameof(GuildMemberUpdated), cacheableBefore, user).ConfigureAwait(false);
                                         }
                                     }
@@ -1309,10 +1317,14 @@ namespace Discord.WebSocket
                                             return;
                                         }
 
-                                        if(user == null)
-                                            user = SocketGlobalUser.Create(this, State, data.User);
+                                        user ??= State.GetUser(data.User.Id);
 
-                                        await TimedInvokeAsync(_userLeftEvent, nameof(UserLeft), user).ConfigureAwait(false);
+                                        if (user != null)
+                                            user.Update(State, data.User);
+                                        else
+                                            user = State.GetOrAddUser(data.User.Id, (x) => SocketGlobalUser.Create(this, State, data.User));
+
+                                        await TimedInvokeAsync(_userLeftEvent, nameof(UserLeft), guild, user).ConfigureAwait(false);
                                     }
                                     else
                                     {
@@ -2096,7 +2108,7 @@ namespace Discord.WebSocket
                                             {
                                                 await TimedInvokeAsync(_speakerRemoved, nameof(SpeakerRemoved), stage, guildUser);
                                             }
-                                        }    
+                                        }
                                     }
 
                                     await TimedInvokeAsync(_userVoiceStateUpdatedEvent, nameof(UserVoiceStateUpdated), user, before, after).ConfigureAwait(false);
@@ -2255,6 +2267,9 @@ namespace Discord.WebSocket
                                                 break;
                                             case SocketAutocompleteInteraction autocomplete:
                                                 await TimedInvokeAsync(_autocompleteExecuted, nameof(AutocompleteExecuted), autocomplete).ConfigureAwait(false);
+                                                break;
+                                            case SocketModal modal:
+                                                await TimedInvokeAsync(_modalSubmitted, nameof(ModalSubmitted), modal).ConfigureAwait(false);
                                                 break;
                                         }
                                     }
@@ -2487,7 +2502,7 @@ namespace Discord.WebSocket
                                 }
 
                                 break;
-                            case "THREAD_MEMBERS_UPDATE": 
+                            case "THREAD_MEMBERS_UPDATE":
                                 {
                                     await _gatewayLogger.DebugAsync("Received Dispatch (THREAD_MEMBERS_UPDATE)").ConfigureAwait(false);
 
@@ -2525,16 +2540,14 @@ namespace Discord.WebSocket
                                         {
                                             SocketGuildUser guildMember;
 
-                                            if (threadMember.Member.IsSpecified)
+                                            guildMember = guild.GetUser(threadMember.UserId.Value);
+
+                                            if(guildMember == null)
                                             {
-                                                guildMember = guild.AddOrUpdateUser(threadMember.Member.Value);
+                                                await UnknownGuildUserAsync("THREAD_MEMBERS_UPDATE", threadMember.UserId.Value, guild.Id);
                                             }
                                             else
-                                            {
-                                                guildMember = guild.GetUser(threadMember.UserId.Value);
-                                            }
-
-                                            newThreadMembers.Add(thread.AddOrUpdateThreadMember(threadMember, guildMember));
+                                                newThreadMembers.Add(thread.AddOrUpdateThreadMember(threadMember, guildMember));
                                         }
 
                                         if (newThreadMembers.Any())
@@ -2638,7 +2651,7 @@ namespace Discord.WebSocket
                                         return;
                                     }
 
-                                    var before = guild.GetEvent(data.Id);
+                                    var before = guild.GetEvent(data.Id)?.Clone();
 
                                     var beforeCacheable = new Cacheable<SocketGuildEvent, ulong>(before, data.Id, before != null, () => Task.FromResult((SocketGuildEvent)null));
 
@@ -3079,7 +3092,14 @@ namespace Discord.WebSocket
 
         /// <inheritdoc />
         async Task<IUser> IDiscordClient.GetUserAsync(ulong id, CacheMode mode, RequestOptions options)
-            => mode == CacheMode.AllowDownload ? await GetUserAsync(id, options).ConfigureAwait(false) : GetUser(id);
+        {
+            var user = GetUser(id);
+            if (user is not null || mode == CacheMode.CacheOnly)
+                return user;
+
+            return await Rest.GetUserAsync(id, options).ConfigureAwait(false);
+        }
+
         /// <inheritdoc />
         Task<IUser> IDiscordClient.GetUserAsync(string username, string discriminator, RequestOptions options)
             => Task.FromResult<IUser>(GetUser(username, discriminator));

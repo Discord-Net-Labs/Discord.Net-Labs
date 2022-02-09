@@ -40,6 +40,10 @@ namespace Discord.WebSocket
             => GuildUser.PremiumSince;
 
         /// <inheritdoc/>
+        public DateTimeOffset? TimedOutUntil
+            => GuildUser.TimedOutUntil;
+
+        /// <inheritdoc/>
         public bool? IsPending
             => GuildUser.IsPending;
         /// <inheritdoc />
@@ -119,8 +123,8 @@ namespace Discord.WebSocket
 
         private SocketGuildUser GuildUser { get; set; }
 
-        internal SocketThreadUser(SocketGuild guild, SocketThreadChannel thread, SocketGuildUser member)
-            : base(guild.Discord, member.Id)
+        internal SocketThreadUser(SocketGuild guild, SocketThreadChannel thread, SocketGuildUser member, ulong userId)
+            : base(guild.Discord, userId)
         {
             Thread = thread;
             Guild = guild;
@@ -129,7 +133,7 @@ namespace Discord.WebSocket
 
         internal static SocketThreadUser Create(SocketGuild guild, SocketThreadChannel thread, Model model, SocketGuildUser member)
         {
-            var entity = new SocketThreadUser(guild, thread, member);
+            var entity = new SocketThreadUser(guild, thread, member, model.UserId.Value);
             entity.Update(model);
             return entity;
         }
@@ -137,16 +141,6 @@ namespace Discord.WebSocket
         internal void Update(Model model)
         {
             ThreadJoinedAt = model.JoinTimestamp;
-
-            if (model.Presence.IsSpecified)
-            {
-                GuildUser.Update(Discord.State, model.Presence.Value, true);
-            }
-
-            if (model.Member.IsSpecified)
-            {
-                GuildUser.Update(Discord.State, model.Member.Value);
-            }
         }
 
         /// <inheritdoc/>
@@ -181,7 +175,11 @@ namespace Discord.WebSocket
 
         /// <inheritdoc/>
         public Task RemoveRolesAsync(IEnumerable<IRole> roles, RequestOptions options = null) => GuildUser.RemoveRolesAsync(roles, options);
+        /// <inheritdoc/>
+        public Task SetTimeOutAsync(TimeSpan span, RequestOptions options = null) => GuildUser.SetTimeOutAsync(span, options);
 
+        /// <inheritdoc/>
+        public Task RemoveTimeOutAsync(RequestOptions options = null) => GuildUser.RemoveTimeOutAsync(options);
         /// <inheritdoc/>
         GuildPermissions IGuildUser.GuildPermissions => GuildUser.GuildPermissions;
 
