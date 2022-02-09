@@ -247,7 +247,7 @@ namespace Discord.API
             {
                 ["$device"] = "Discord.Net Labs",
                 ["$os"] = Environment.OSVersion.Platform.ToString(),
-                [$"browser"] = "Discord.Net Labs"
+                ["$browser"] = "Discord.Net Labs"
             };
             var msg = new IdentifyParams()
             {
