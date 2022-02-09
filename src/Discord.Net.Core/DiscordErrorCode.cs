@@ -95,7 +95,7 @@ namespace Discord
         #endregion
 
         #region General Request Errors (40XXX)
-        MaximumNumberOfEditsToMessagesOlderThan1HourReached.TryAgainLater = 30046,
+        MaximumNumberOfEditsPerHourReached = 30046,
         TokenUnauthorized = 40001,
         InvalidVerification = 40002,
         OpeningDMTooFast = 40003,
