@@ -96,6 +96,7 @@ namespace Discord
         #endregion
 
         #region General Request Errors (40XXX)
+        MaximumNumberOfEditsPerHourReached = 30046,
         TokenUnauthorized = 40001,
         InvalidVerification = 40002,
         OpeningDMTooFast = 40003,
@@ -140,6 +141,7 @@ namespace Discord
         FileUploadTooBig = 50045,
         InvalidFileUpload = 50046,
         CannotSelfRedeemGift = 50054,
+        InvalidMessageType = 50068,
         InvalidGuild = 50055,
         PaymentSourceRequiredForGift = 50070,
         CannotDeleteRequiredCommunityChannel = 50074,
