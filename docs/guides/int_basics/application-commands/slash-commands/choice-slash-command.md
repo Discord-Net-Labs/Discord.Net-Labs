@@ -27,21 +27,23 @@ private async Task Client_Ready()
             .AddChoice("Lovely", 4)
             .AddChoice("Excellent!", 5)
             .WithType(ApplicationCommandOptionType.Integer)
-        ).Build();
+        );
 
     try
     {
         await client.Rest.CreateGuildCommand(guildCommand.Build(), guildId);
     }
-    catch(ApplicationCommandException exception)
+    catch(HttpException exception)
     {
-        var json = JsonConvert.SerializeObject(exception.Error, Formatting.Indented);
+        // Turns the error object into json making it easier to read in the console.
+        var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
         Console.WriteLine(json);
     }
 }
 ```
+
 > [!NOTE]
->  Your `ApplicationCommandOptionType` specifies which type your choices are, you need to use `ApplicationCommandOptionType.Integer` for choices whos values are whole numbers, `ApplicationCommandOptionType.Number` for choices whos values are doubles, and `ApplicationCommandOptionType.String` for string values.
+> Your `ApplicationCommandOptionType` specifies which type your choices are, you need to use `ApplicationCommandOptionType.Integer` for choices whos values are whole numbers, `ApplicationCommandOptionType.Number` for choices whos values are doubles, and `ApplicationCommandOptionType.String` for string values.
 
 We have defined 5 choices for the user to pick from, each choice has a value assigned to it. The value can either be a string or an int. In our case we're going to use an int. This is what the command looks like:
 

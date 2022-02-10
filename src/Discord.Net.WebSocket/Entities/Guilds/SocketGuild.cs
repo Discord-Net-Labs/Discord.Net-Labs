@@ -1,3 +1,4 @@
+using Discord.API.Gateway;
 using Discord.Audio;
 using Discord.Rest;
 using System;
@@ -45,6 +46,7 @@ namespace Discord.WebSocket
         private ImmutableArray<GuildEmote> _emotes;
 
         private AudioClient _audioClient;
+        private VoiceStateUpdateParams _voiceStateUpdateParams;
 #pragma warning restore IDISP002, IDISP006
 
         /// <inheritdoc />
@@ -199,6 +201,9 @@ namespace Discord.WebSocket
                 };
             }
         }
+        /// <inheritdoc/>
+        public ulong MaxUploadLimit
+            => GuildHelper.GetUploadLimit(this);
         /// <summary>
         ///     Gets the widget channel (i.e. the channel set in the guild's widget settings) in this guild.
         /// </summary>
@@ -367,7 +372,7 @@ namespace Discord.WebSocket
         ///     This field is based off of caching alone, since there is no events returned on the guild model.
         /// </remarks>
         /// <returns>
-        ///     A read-only collection of guild events found within this guild. 
+        ///     A read-only collection of guild events found within this guild.
         /// </returns>
         public IReadOnlyCollection<SocketGuildEvent> Events => _events.ToReadOnlyCollection();
 
@@ -1414,10 +1419,10 @@ namespace Discord.WebSocket
         /// </returns>
         public async ValueTask<SocketCustomSticker> GetStickerAsync(ulong id, CacheMode mode = CacheMode.AllowDownload, RequestOptions options = null)
         {
-            var sticker = _stickers.FirstOrDefault(x => x.Key == id);
+            var sticker = _stickers?.FirstOrDefault(x => x.Key == id);
 
-            if (sticker.Value != null)
-                return sticker.Value;
+            if (sticker?.Value != null)
+                return sticker?.Value;
 
             if (mode == CacheMode.CacheOnly)
                 return null;
@@ -1593,11 +1598,19 @@ namespace Discord.WebSocket
                 promise = new TaskCompletionSource<AudioClient>();
                 _audioConnectPromise = promise;
 
+                _voiceStateUpdateParams = new VoiceStateUpdateParams
+                {
+                    GuildId = Id,
+                    ChannelId = channelId,
+                    SelfDeaf = selfDeaf,
+                    SelfMute = selfMute
+                };
+
                 if (external)
                 {
 #pragma warning disable IDISP001
                     var _ = promise.TrySetResultAsync(null);
-                    await Discord.ApiClient.SendVoiceStateUpdateAsync(Id, channelId, selfDeaf, selfMute).ConfigureAwait(false);
+                    await Discord.ApiClient.SendVoiceStateUpdateAsync(_voiceStateUpdateParams).ConfigureAwait(false);
                     return null;
 #pragma warning restore IDISP001
                 }
@@ -1632,7 +1645,7 @@ namespace Discord.WebSocket
 #pragma warning restore IDISP003
                 }
 
-                await Discord.ApiClient.SendVoiceStateUpdateAsync(Id, channelId, selfDeaf, selfMute).ConfigureAwait(false);
+                await Discord.ApiClient.SendVoiceStateUpdateAsync(_voiceStateUpdateParams).ConfigureAwait(false);
             }
             catch
             {
@@ -1679,7 +1692,38 @@ namespace Discord.WebSocket
             await Discord.ApiClient.SendVoiceStateUpdateAsync(Id, null, false, false).ConfigureAwait(false);
             _audioClient?.Dispose();
             _audioClient = null;
+            _voiceStateUpdateParams = null;
         }
+
+        internal async Task ModifyAudioAsync(ulong channelId, Action<AudioChannelProperties> func, RequestOptions options)
+        {
+            await _audioLock.WaitAsync().ConfigureAwait(false);
+            try
+            {
+                await ModifyAudioInternalAsync(channelId, func, options).ConfigureAwait(false);
+            }
+            finally
+            {
+                _audioLock.Release();
+            }
+        }
+
+        private async Task ModifyAudioInternalAsync(ulong channelId, Action<AudioChannelProperties> func, RequestOptions options)
+        {
+            if (_voiceStateUpdateParams == null || _voiceStateUpdateParams.ChannelId != channelId)
+                throw new InvalidOperationException("Cannot modify properties of not connected audio channel");
+
+            var props = new AudioChannelProperties();
+            func(props);
+
+            if (props.SelfDeaf.IsSpecified)
+                _voiceStateUpdateParams.SelfDeaf = props.SelfDeaf.Value;
+            if (props.SelfMute.IsSpecified)
+                _voiceStateUpdateParams.SelfMute = props.SelfMute.Value;
+
+            await Discord.ApiClient.SendVoiceStateUpdateAsync(_voiceStateUpdateParams, options).ConfigureAwait(false);
+        }
+
         internal async Task FinishConnectAudio(string url, string token)
         {
             //TODO: Mem Leak: Disconnected/Connected handlers aren't cleaned up
@@ -1882,8 +1926,15 @@ namespace Discord.WebSocket
         async Task<IGuildUser> IGuild.AddGuildUserAsync(ulong userId, string accessToken, Action<AddGuildUserProperties> func, RequestOptions options)
             => await AddGuildUserAsync(userId, accessToken, func, options);
         /// <inheritdoc />
-        Task<IGuildUser> IGuild.GetUserAsync(ulong id, CacheMode mode, RequestOptions options)
-            => Task.FromResult<IGuildUser>(GetUser(id));
+        async Task<IGuildUser> IGuild.GetUserAsync(ulong id, CacheMode mode, RequestOptions options)
+        {
+            var user = GetUser(id);
+            if (user is not null || mode == CacheMode.CacheOnly)
+                return user;
+
+            return await GuildHelper.GetUserAsync(this, Discord, id, options).ConfigureAwait(false);
+        }
+
         /// <inheritdoc />
         Task<IGuildUser> IGuild.GetCurrentUserAsync(CacheMode mode, RequestOptions options)
             => Task.FromResult<IGuildUser>(CurrentUser);

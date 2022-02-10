@@ -17,6 +17,7 @@ Guild commands are specific to the guild you specify when making them. Guild com
 - Multiple apps can have commands with the same names
 
 [!IMPORTANT]
+
 > Apps can have a maximum of 5 global context menu commands,
 > and an additional 5 guild-specific context menu commands per guild.
 
@@ -91,10 +92,10 @@ public async Task Client_Ready()
             globalMessageCommand.Build()
         })
     }
-    catch(ApplicationCommandException exception)
+    catch(HttpException exception)
     {
         // If our command was invalid, we should catch an ApplicationCommandException. This exception contains the path of the error as well as the error message. You can serialize the Error field in the exception to get a visual of where your error is.
-        var json = JsonConvert.SerializeObject(exception.Error, Formatting.Indented);
+        var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
 
         // You can send this error somewhere or just print it to the console, for this example we're just going to print it.
         Console.WriteLine(json);

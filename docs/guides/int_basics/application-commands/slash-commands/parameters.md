@@ -52,9 +52,10 @@ public async Task Client_Ready()
     {
         await client.Rest.CreateGuildCommand(guildCommand.Build(), guildId);
     }
-    catch(ApplicationCommandException exception)
+    catch(HttpException exception)
     {
-        var json = JsonConvert.SerializeObject(exception.Error, Formatting.Indented);
+        // Turns the error object into json making it easier to read in the console.
+        var json = JsonConvert.SerializeObject(exception.Errors, Formatting.Indented);
         Console.WriteLine(json);
     }
 }

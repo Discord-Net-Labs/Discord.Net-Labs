@@ -29,6 +29,8 @@ namespace Discord
         public DateTimeOffset CreatedAt => throw new NotImplementedException();
         public ulong Id => throw new NotImplementedException();
 
+        public string RTCRegion => throw new NotImplementedException();
+
         public Task AddPermissionOverwriteAsync(IRole role, OverwritePermissions permissions, RequestOptions options = null)
         {
             throw new NotImplementedException();
@@ -60,6 +62,11 @@ namespace Discord
         }
 
         public Task DisconnectAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ModifyAsync(Action<AudioChannelProperties> func, RequestOptions options)
         {
             throw new NotImplementedException();
         }

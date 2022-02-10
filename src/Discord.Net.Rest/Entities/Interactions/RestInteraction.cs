@@ -33,17 +33,13 @@ namespace Discord.Rest
         public RestUser User { get; private set; }
 
         /// <inheritdoc/>
-        public DateTimeOffset CreatedAt { get; private set; }
-        
-        /// <summary>
-        ///     Gets whether or not this interaction has been responded to.
-        /// </summary>
-        /// <remarks>
-        ///     This property is locally set -- if you're running multiple bots
-        ///     off the same token then this property won't be in sync with them.
-        /// </remarks>
+        public string UserLocale { get; private set; }
 
-        public abstract bool HasResponded { get; internal set; }
+        /// <inheritdoc/>
+        public string GuildLocale { get; private set; }
+
+        /// <inheritdoc/>
+        public DateTimeOffset CreatedAt { get; private set; }
 
         /// <summary>
         ///     <see langword="true"/> if the token is valid for replying to, otherwise <see langword="false"/>.
@@ -60,6 +56,9 @@ namespace Discord.Rest
         ///     Gets the guild this interaction was executed in.
         /// </summary>
         public RestGuild Guild { get; private set; }
+
+        /// <inheritdoc/>
+        public bool HasResponded { get; protected set; }
 
         internal RestInteraction(BaseDiscordClient discord, ulong id)
             : base(discord, id)
@@ -100,6 +99,9 @@ namespace Discord.Rest
             if (model.Type == InteractionType.ApplicationCommandAutocomplete)
                 return await RestAutocompleteInteraction.CreateAsync(client, model).ConfigureAwait(false);
 
+            if (model.Type == InteractionType.ModalSubmit)
+                return await RestModal.CreateAsync(client, model).ConfigureAwait(false);
+
             return null;
         }
 
@@ -133,6 +135,13 @@ namespace Discord.Rest
             {
                 Channel = (IRestMessageChannel)await discord.GetChannelAsync(model.ChannelId.Value);
             }
+
+            UserLocale = model.UserLocale.IsSpecified
+                ? model.UserLocale.Value
+                : null;
+            GuildLocale = model.GuildLocale.IsSpecified
+                ? model.GuildLocale.Value
+                : null;
         }
 
         internal string SerializePayload(object payload)
@@ -147,7 +156,6 @@ namespace Discord.Rest
 
         /// <inheritdoc/>
         public abstract string Defer(bool ephemeral = false, RequestOptions options = null);
-
         /// <summary>
         ///     Gets the original response for this interaction.
         /// </summary>
@@ -170,6 +178,9 @@ namespace Discord.Rest
             var model = await InteractionHelper.ModifyInteractionResponseAsync(Discord, Token, func, options);
             return RestInteractionMessage.Create(Discord, model, Token, Channel);
         }
+        /// <inheritdoc/>
+        public abstract string RespondWithModal(Modal modal, RequestOptions options = null);
+        
         /// <inheritdoc/>
         public abstract string Respond(string text = null, Embed[] embeds = null, bool isTTS = false, bool ephemeral = false, AllowedMentions allowedMentions = null, MessageComponent components = null, Embed embed = null, RequestOptions options = null);
 
@@ -283,6 +294,9 @@ namespace Discord.Rest
         /// <inheritdoc/>
         Task IDiscordInteraction.DeferAsync(bool ephemeral, RequestOptions options)
             => Task.FromResult(Defer(ephemeral, options));
+        /// <inheritdoc/>
+        Task IDiscordInteraction.RespondWithModalAsync(Modal modal, RequestOptions options)
+            => Task.FromResult(RespondWithModal(modal, options));
         /// <inheritdoc/>
         async Task<IUserMessage> IDiscordInteraction.FollowupAsync(string text, Embed[] embeds, bool isTTS, bool ephemeral, AllowedMentions allowedMentions,
             MessageComponent components, Embed embed, RequestOptions options)

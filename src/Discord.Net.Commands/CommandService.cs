@@ -644,7 +644,7 @@ namespace Discord.Commands
                 .Where(x => x.Value.IsSuccess)
                 .ToArray();
 
-            if (successfulParses.Length == 0)
+            if(successfulParses.Length == 0)
             {
                 var bestMatch = parseResults
                     .FirstOrDefault(x => !x.Value.IsSuccess);

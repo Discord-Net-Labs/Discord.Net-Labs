@@ -54,22 +54,30 @@ namespace Discord.Interactions
         public event Func<IAutocompleteHandler, IInteractionContext, IResult, Task> AutocompleteHandlerExecuted { add { _autocompleteHandlerExecutedEvent.Add(value); } remove { _autocompleteHandlerExecutedEvent.Remove(value); } }
         internal readonly AsyncEvent<Func<IAutocompleteHandler, IInteractionContext, IResult, Task>> _autocompleteHandlerExecutedEvent = new();
 
+        /// <summary>
+        ///     Occurs when a Modal command is executed.
+        /// </summary>
+        public event Func<ModalCommandInfo, IInteractionContext, IResult, Task> ModalCommandExecuted { add { _modalCommandExecutedEvent.Add(value); } remove { _modalCommandExecutedEvent.Remove(value); } }
+        internal readonly AsyncEvent<Func<ModalCommandInfo, IInteractionContext, IResult, Task>> _modalCommandExecutedEvent = new();
+
         private readonly ConcurrentDictionary<Type, ModuleInfo> _typedModuleDefs;
         private readonly CommandMap<SlashCommandInfo> _slashCommandMap;
         private readonly ConcurrentDictionary<ApplicationCommandType, CommandMap<ContextCommandInfo>> _contextCommandMaps;
         private readonly CommandMap<ComponentCommandInfo> _componentCommandMap;
         private readonly CommandMap<AutocompleteCommandInfo> _autocompleteCommandMap;
+        private readonly CommandMap<ModalCommandInfo> _modalCommandMap;
         private readonly HashSet<ModuleInfo> _moduleDefs;
         private readonly TypeMap<TypeConverter, IApplicationCommandInteractionDataOption> _typeConverterMap;
         private readonly TypeMap<ComponentTypeConverter, IComponentInteractionData> _compTypeConverterMap;
         private readonly TypeMap<TypeReader, string> _typeReaderMap;
         private readonly ConcurrentDictionary<Type, IAutocompleteHandler> _autocompleteHandlers = new();
+        private readonly ConcurrentDictionary<Type, ModalInfo> _modalInfos = new();
         private readonly SemaphoreSlim _lock;
         internal readonly Logger _cmdLogger;
         internal readonly LogManager _logManager;
         internal readonly Func<DiscordRestClient> _getRestClient;
 
-        internal readonly bool _throwOnError, _useCompiledLambda, _enableAutocompleteHandlers, _autoServiceScopes;
+        internal readonly bool _throwOnError, _useCompiledLambda, _enableAutocompleteHandlers, _autoServiceScopes, _exitOnMissingModalField;
         internal readonly string _wildCardExp;
         internal readonly RunMode _runMode;
         internal readonly RestResponseCallback _restResponseCallback;
@@ -98,6 +106,16 @@ namespace Discord.Interactions
         ///     Represents all Component Commands loaded within <see cref="InteractionService"/>.
         /// </summary>
         public IReadOnlyCollection<ComponentCommandInfo> ComponentCommands => _moduleDefs.SelectMany(x => x.ComponentCommands).ToList();
+
+        /// <summary>
+        ///     Represents all Modal Commands loaded within <see cref="InteractionService"/>.
+        /// </summary>
+        public IReadOnlyCollection<ModalCommandInfo> ModalCommands => _moduleDefs.SelectMany(x => x.ModalCommands).ToList();
+
+        /// <summary>
+        ///     Gets a collection of the cached <see cref="ModalInfo"/> classes that are referenced in registered <see cref="ModalCommandInfo"/>s.
+        /// </summary>
+        public IReadOnlyCollection<ModalInfo> Modals => ModalUtils.Modals;
 
         /// <summary>
         ///     Initialize a <see cref="InteractionService"/> with provided configurations.
@@ -147,6 +165,7 @@ namespace Discord.Interactions
             _contextCommandMaps = new ConcurrentDictionary<ApplicationCommandType, CommandMap<ContextCommandInfo>>();
             _componentCommandMap = new CommandMap<ComponentCommandInfo>(this, config.InteractionCustomIdDelimiters);
             _autocompleteCommandMap = new CommandMap<AutocompleteCommandInfo>(this);
+            _modalCommandMap = new CommandMap<ModalCommandInfo>(this, config.InteractionCustomIdDelimiters);
 
             _getRestClient = getRestClient;
 
@@ -157,6 +176,7 @@ namespace Discord.Interactions
             _throwOnError = config.ThrowOnError;
             _wildCardExp = config.WildCardExpression;
             _useCompiledLambda = config.UseCompiledLambda;
+            _exitOnMissingModalField = config.ExitOnMissingModalField;
             _enableAutocompleteHandlers = config.EnableAutocompleteHandlers;
             _autoServiceScopes = config.AutoServiceScopes;
             _restResponseCallback = config.RestResponseCallback;
@@ -168,6 +188,7 @@ namespace Discord.Interactions
             {
                 [typeof(IChannel)] = typeof(DefaultChannelConverter<>),
                 [typeof(IRole)] = typeof(DefaultRoleConverter<>),
+                [typeof(IAttachment)] = typeof(DefaultAttachmentConverter<>),
                 [typeof(IUser)] = typeof(DefaultUserConverter<>),
                 [typeof(IMentionable)] = typeof(DefaultMentionableConverter<>),
                 [typeof(IConvertible)] = typeof(DefaultValueConverter<>),
@@ -525,6 +546,9 @@ namespace Discord.Interactions
             foreach (var command in module.AutocompleteCommands)
                 _autocompleteCommandMap.AddCommand(command.GetCommandKeywords(), command);
 
+            foreach (var command in module.ModalCommands)
+                _modalCommandMap.AddCommand(command, command.IgnoreGroupNames);
+
             foreach (var subModule in module.SubModules)
                 LoadModuleInternal(subModule);
         }
@@ -606,6 +630,60 @@ namespace Discord.Interactions
         }
 
         /// <summary>
+        ///     Search the registered slash commands using a <see cref="ISlashCommandInteraction"/>.
+        /// </summary>
+        /// <param name="slashCommandInteraction">Interaction entity to perform the search with.</param>
+        /// <returns>
+        ///     The search result. When successful, result contains the found <see cref="SlashCommandInfo"/>.
+        /// </returns>
+        public SearchResult<SlashCommandInfo> SearchSlashCommand(ISlashCommandInteraction slashCommandInteraction)
+            => _slashCommandMap.GetCommand(slashCommandInteraction.Data.GetCommandKeywords());
+
+        /// <summary>
+        ///     Search the registered slash commands using a <see cref="IComponentInteraction"/>.
+        /// </summary>
+        /// <param name="componentInteraction">Interaction entity to perform the search with.</param>
+        /// <returns>
+        ///     The search result. When successful, result contains the found <see cref="ComponentCommandInfo"/>.
+        /// </returns>
+        public SearchResult<ComponentCommandInfo> SearchComponentCommand(IComponentInteraction componentInteraction)
+            => _componentCommandMap.GetCommand(componentInteraction.Data.CustomId);
+
+        /// <summary>
+        ///     Search the registered slash commands using a <see cref="IUserCommandInteraction"/>.
+        /// </summary>
+        /// <param name="userCommandInteraction">Interaction entity to perform the search with.</param>
+        /// <returns>
+        ///     The search result. When successful, result contains the found <see cref="ContextCommandInfo"/>.
+        /// </returns>
+        public SearchResult<ContextCommandInfo> SearchUserCommand(IUserCommandInteraction userCommandInteraction)
+            => _contextCommandMaps[ApplicationCommandType.User].GetCommand(userCommandInteraction.Data.Name);
+
+        /// <summary>
+        ///     Search the registered slash commands using a <see cref="IMessageCommandInteraction"/>.
+        /// </summary>
+        /// <param name="messageCommandInteraction">Interaction entity to perform the search with.</param>
+        /// <returns>
+        ///     The search result. When successful, result contains the found <see cref="ContextCommandInfo"/>.
+        /// </returns>
+        public SearchResult<ContextCommandInfo> SearchMessageCommand(IMessageCommandInteraction messageCommandInteraction)
+            => _contextCommandMaps[ApplicationCommandType.Message].GetCommand(messageCommandInteraction.Data.Name);
+
+        /// <summary>
+        ///     Search the registered slash commands using a <see cref="IAutocompleteInteraction"/>.
+        /// </summary>
+        /// <param name="autocompleteInteraction">Interaction entity to perform the search with.</param>
+        /// <returns>
+        ///     The search result. When successful, result contains the found <see cref="AutocompleteCommandInfo"/>.
+        /// </returns>
+        public SearchResult<AutocompleteCommandInfo> SearchAutocompleteCommand(IAutocompleteInteraction autocompleteInteraction)
+        {
+            var keywords = autocompleteInteraction.Data.GetCommandKeywords();
+            keywords.Add(autocompleteInteraction.Data.Current.Name);
+            return _autocompleteCommandMap.GetCommand(keywords);
+        } 
+
+        /// <summary>
         ///     Execute a Command from a given <see cref="IInteractionContext"/>.
         /// </summary>
         /// <param name="context">Name context of the command.</param>
@@ -616,7 +694,7 @@ namespace Discord.Interactions
         public async Task<IResult> ExecuteCommandAsync (IInteractionContext context, IServiceProvider services)
         {
             var interaction = context.Interaction;
-
+            
             return interaction switch
             {
                 ISlashCommandInteraction slashCommand => await ExecuteSlashCommandAsync(context, slashCommand, services).ConfigureAwait(false),
@@ -624,6 +702,7 @@ namespace Discord.Interactions
                 IUserCommandInteraction userCommand => await ExecuteContextCommandAsync(context, userCommand.Data.Name, ApplicationCommandType.User, services).ConfigureAwait(false),
                 IMessageCommandInteraction messageCommand => await ExecuteContextCommandAsync(context, messageCommand.Data.Name, ApplicationCommandType.Message, services).ConfigureAwait(false),
                 IAutocompleteInteraction autocomplete => await ExecuteAutocompleteAsync(context, autocomplete, services).ConfigureAwait(false),
+                IModalInteraction modalCommand => await ExecuteModalCommandAsync(context, modalCommand.Data.CustomId, services).ConfigureAwait(false),
                 _ => throw new InvalidOperationException($"{interaction.Type} interaction type cannot be executed by the Interaction service"),
             };
         }
@@ -685,9 +764,7 @@ namespace Discord.Interactions
 
                 if(autocompleteHandlerResult.IsSuccess)
                 {
-                    var parameter = autocompleteHandlerResult.Command.Parameters.FirstOrDefault(x => string.Equals(x.Name, interaction.Data.Current.Name, StringComparison.Ordinal));
-
-                    if(parameter?.AutocompleteHandler is not null)
+                    if (autocompleteHandlerResult.Command._flattenedParameterDictionary.TryGetValue(interaction.Data.Current.Name, out var parameter) && parameter?.AutocompleteHandler is not null)
                         return await parameter.AutocompleteHandler.ExecuteAsync(context, interaction, parameter, services).ConfigureAwait(false);
                 }
             }
@@ -705,6 +782,20 @@ namespace Discord.Interactions
             }
 
             return await commandResult.Command.ExecuteAsync(context, services).ConfigureAwait(false);
+        }
+
+        private async Task<IResult> ExecuteModalCommandAsync(IInteractionContext context, string input, IServiceProvider services)
+        {
+            var result = _modalCommandMap.GetCommand(input);
+
+            if (!result.IsSuccess)
+            {
+                await _cmdLogger.DebugAsync($"Unknown custom interaction id, skipping execution ({input.ToUpper()})");
+
+                await _componentCommandExecutedEvent.InvokeAsync(null, context, result).ConfigureAwait(false);
+                return result;
+            }
+            return await result.Command.ExecuteAsync(context, services, result.RegexCaptureGroups).ConfigureAwait(false);
         }
 
         internal TypeConverter GetTypeConverter(Type type, IServiceProvider services = null)
@@ -796,6 +887,24 @@ namespace Discord.Interactions
 
         public void AddGenericTypeReader(Type targetType, Type readerType) =>
             _typeReaderMap.AddGeneric(targetType, readerType);
+
+        /// <summary>
+        ///     Loads and caches an <see cref="ModalInfo"/> for the provided <see cref="IModal"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of <see cref="IModal"/> to be loaded.</typeparam>
+        /// <returns>
+        ///     The built <see cref="ModalInfo"/> instance.
+        /// </returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        public ModalInfo AddModalInfo<T>() where T : class, IModal
+        {
+            var type = typeof(T);
+
+            if (_modalInfos.ContainsKey(type))
+                throw new InvalidOperationException($"Modal type {type.FullName} already exists.");
+
+            return ModalUtils.GetOrAdd(type);
+        }
 
         internal IAutocompleteHandler GetAutocompleteHandler(Type autocompleteHandlerType, IServiceProvider services = null)
         {

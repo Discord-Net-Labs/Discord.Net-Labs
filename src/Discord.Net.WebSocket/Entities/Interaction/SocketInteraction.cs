@@ -39,6 +39,12 @@ namespace Discord.WebSocket
         /// </summary>
         public IDiscordInteractionData Data { get; private set; }
 
+        /// <inheritdoc/>
+        public string UserLocale { get; private set; }
+
+        /// <inheritdoc/>
+        public string GuildLocale { get; private set; }
+
         /// <summary>
         ///     The version of this interaction.
         /// </summary>
@@ -98,6 +104,9 @@ namespace Discord.WebSocket
             if (model.Type == InteractionType.ApplicationCommandAutocomplete)
                 return SocketAutocompleteInteraction.Create(client, model, channel);
 
+            if (model.Type == InteractionType.ModalSubmit)
+                return SocketModal.Create(client, model, channel);
+
             return null;
         }
 
@@ -121,6 +130,13 @@ namespace Discord.WebSocket
                     User = SocketGlobalUser.Create(Discord, Discord.State, model.User.Value);
                 }
             }
+
+            UserLocale = model.UserLocale.IsSpecified
+                ? model.UserLocale.Value
+                : null;
+            GuildLocale = model.GuildLocale.IsSpecified
+                ? model.GuildLocale.Value
+                : null;
         }
 
         /// <summary>
@@ -367,6 +383,13 @@ namespace Discord.WebSocket
         /// </returns>
         public abstract Task DeferAsync(bool ephemeral = false, RequestOptions options = null);
 
+        /// <summary>
+        ///     Responds to this interaction with a <see cref="Modal"/>.
+        /// </summary>
+        /// <param name="modal">The <see cref="Modal"/> to respond with.</param>
+        /// <param name="options">The request options for this <see langword="async"/> request.</param>
+        /// <returns>A task that represents the asynchronous operation of responding to the interaction.</returns>
+        public abstract Task RespondWithModalAsync(Modal modal, RequestOptions options = null);
         #endregion
 
         #region  IDiscordInteraction

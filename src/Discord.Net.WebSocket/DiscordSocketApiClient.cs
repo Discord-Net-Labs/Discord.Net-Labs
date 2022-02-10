@@ -39,8 +39,8 @@ namespace Discord.API
 
         public DiscordSocketApiClient(RestClientProvider restClientProvider, WebSocketProvider webSocketProvider, string userAgent,
             string url = null, RetryMode defaultRetryMode = RetryMode.AlwaysRetry, JsonSerializer serializer = null,
-			bool useSystemClock = true)
-            : base(restClientProvider, userAgent, defaultRetryMode, serializer, useSystemClock)
+			bool useSystemClock = true, Func<IRateLimitInfo, Task> defaultRatelimitCallback = null)
+            : base(restClientProvider, userAgent, defaultRetryMode, serializer, useSystemClock, defaultRatelimitCallback)
         {
             _gatewayUrl = url;
             if (url != null)
@@ -78,7 +78,7 @@ namespace Discord.API
                         if (msg != null)
                         {
 #if DEBUG_PACKETS
-                            Console.WriteLine($"<- {(GatewayOpCode)msg.Operation} [{msg.Type ?? "none"}] : {(msg.Payload as Newtonsoft.Json.Linq.JToken)?.ToString().Length}");
+                            Console.WriteLine($"<- {(GatewayOpCode)msg.Operation} [{msg.Type ?? "none"}] : {(msg.Payload as Newtonsoft.Json.Linq.JToken)}");
 #endif
 
                             await _receivedGatewayEvent.InvokeAsync((GatewayOpCode)msg.Operation, msg.Sequence, msg.Type, msg.Payload).ConfigureAwait(false);
@@ -95,7 +95,7 @@ namespace Discord.API
                     if (msg != null)
                     {
 #if DEBUG_PACKETS
-                        Console.WriteLine($"<- {(GatewayOpCode)msg.Operation} [{msg.Type ?? "none"}] : {(msg.Payload as Newtonsoft.Json.Linq.JToken)?.ToString().Length}");
+                        Console.WriteLine($"<- {(GatewayOpCode)msg.Operation} [{msg.Type ?? "none"}] : {(msg.Payload as Newtonsoft.Json.Linq.JToken)}");
 #endif
 
                         await _receivedGatewayEvent.InvokeAsync((GatewayOpCode)msg.Operation, msg.Sequence, msg.Type, msg.Payload).ConfigureAwait(false);
@@ -247,7 +247,7 @@ namespace Discord.API
             {
                 ["$device"] = "Discord.Net Labs",
                 ["$os"] = Environment.OSVersion.Platform.ToString(),
-                [$"browser"] = "Discord.Net Labs"
+                ["$browser"] = "Discord.Net Labs"
             };
             var msg = new IdentifyParams()
             {
@@ -311,7 +311,6 @@ namespace Discord.API
         }
         public async Task SendVoiceStateUpdateAsync(ulong guildId, ulong? channelId, bool selfDeaf, bool selfMute, RequestOptions options = null)
         {
-            options = RequestOptions.CreateOrClone(options);
             var payload = new VoiceStateUpdateParams
             {
                 GuildId = guildId,
@@ -319,6 +318,12 @@ namespace Discord.API
                 SelfDeaf = selfDeaf,
                 SelfMute = selfMute
             };
+            options = RequestOptions.CreateOrClone(options);
+            await SendGatewayAsync(GatewayOpCode.VoiceStateUpdate, payload, options: options).ConfigureAwait(false);
+        }
+        public async Task SendVoiceStateUpdateAsync(VoiceStateUpdateParams payload, RequestOptions options = null)
+        {
+            options = RequestOptions.CreateOrClone(options);
             await SendGatewayAsync(GatewayOpCode.VoiceStateUpdate, payload, options: options).ConfigureAwait(false);
         }
         public async Task SendGuildSyncAsync(IEnumerable<ulong> guildIds, RequestOptions options = null)

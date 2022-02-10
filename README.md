@@ -28,25 +28,17 @@ Nothing here is guaranteed to work but you are more than welcome to submit bugs 
 - 📢 [Main repository](https://github.com/discord-net/Discord.Net)
 - 📄 [Documentation](https://labs.discordnet.dev)
 - 🔗 [Support](https://discord.com/invite/dnet)
-- 📚 [Guides](https://discord-net-labs.com/guides/introduction/intro.html)
+- 📚 [Guides](https://labs.discordnet.dev/guides/introduction/intro.html)
 
 ## Sponsor us! ❤
-- If this library benefits you consider [sponsoring](https://github.com/sponsors/quinchs) the project as it really helps out. *Only sponsor if you're financially stable!*
+- If this library benefits you consider sponsoring us through [Open Collective](
+opencollective.com/discordnet), [Github Sponsors](https://github.com/sponsors/quinchs), or [Paypal](https://www.paypal.com/paypalme/quinchs). Your financial contributions help us pay for Discord.Net related services like our doc hosts. *Only sponsor if you're financially stable!*
 
 ## Known compatibility issues
 
 - Playwo's [InteractivityAddon](https://www.nuget.org/packages/Discord.InteractivityAddon)
   * ❌ Reason: The default package depends on Discord.NET instead of labs.
   * ✔ Fix: [InteractivityAddon.Labs](https://www.nuget.org/packages/Discord.InteractivityAddon.Labs), which implements some of the features added in Discord.Net-Labs.
-
-- [Victoria](https://github.com/Yucked/Victoria)
-  * ❌ Reason: Victoria is built around Discord.NET and is not supported by labs.
-  * ✔ Fix: A custom build based on Discord.NET-labs: 
-```xml
-<PropertyGroup>
-  <RestoreAdditionalProjectSources>https://www.myget.org/F/yucked/api/v3/index.json</RestoreAdditionalProjectSources>
-</PropertyGroup>
-```
 
 ## How to use
 
