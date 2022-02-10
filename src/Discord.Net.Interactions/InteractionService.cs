@@ -199,7 +199,8 @@ namespace Discord.Interactions
             _compTypeConverterMap = new TypeMap<ComponentTypeConverter, IComponentInteractionData>(this, new Dictionary<Type, ComponentTypeConverter>(),
                 new Dictionary<Type, Type>
                 {
-                    [typeof(Array)] = typeof(DefaultArrayComponentConverter<>)
+                    [typeof(Array)] = typeof(DefaultArrayComponentConverter<>),
+                    [typeof(IConvertible)] = typeof(DefaultValueComponentConverter<>)
                 });
 
             _typeReaderMap = new TypeMap<TypeReader, string>(this, new Dictionary<Type, TypeReader>(),
@@ -903,7 +904,7 @@ namespace Discord.Interactions
             if (_modalInfos.ContainsKey(type))
                 throw new InvalidOperationException($"Modal type {type.FullName} already exists.");
 
-            return ModalUtils.GetOrAdd(type);
+            return ModalUtils.GetOrAdd(type, this);
         }
 
         internal IAutocompleteHandler GetAutocompleteHandler(Type autocompleteHandlerType, IServiceProvider services = null)
