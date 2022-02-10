@@ -196,5 +196,23 @@ namespace Discord.Interactions
                 }).ToList(),
                 Options = commandOption.Options?.Select(x => x.ToApplicationCommandOptionProps()).ToList()
             };
+
+        public static Modal ToModal(this ModalInfo modalInfo, string customId)
+        {
+            var builder = new ModalBuilder(modalInfo.Title, customId);
+
+            foreach (var input in modalInfo.Components)
+                switch (input)
+                {
+                    case TextInputComponentInfo textComponent:
+                        builder.AddTextInput(textComponent.Label, textComponent.CustomId, textComponent.Style, textComponent.Placeholder, textComponent.IsRequired ? textComponent.MinLength : null,
+                            textComponent.MaxLength, textComponent.IsRequired, textComponent.InitialValue);
+                        break;
+                    default:
+                        throw new InvalidOperationException($"{input.GetType().FullName} isn't a valid component info class");
+                }
+
+            return builder.Build();
+        }
     }
 }
