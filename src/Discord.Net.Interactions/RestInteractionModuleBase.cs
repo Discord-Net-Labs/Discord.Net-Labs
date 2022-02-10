@@ -74,7 +74,7 @@ namespace Discord.Interactions
         /// <returns>A string that contains json to write back to the incoming http request.</returns>
         /// <exception cref="TimeoutException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        protected async Task RespondWithModal(Modal modal, RequestOptions options = null)
+        protected override async Task RespondWithModalAsync(Modal modal, RequestOptions options = null)
         {
             if (Context.Interaction is not RestInteraction restInteraction)
                 throw new InvalidOperationException($"Invalid interaction type. Interaction must be a type of {nameof(RestInteraction)} in order to execute this method");
@@ -87,13 +87,12 @@ namespace Discord.Interactions
                 await InteractionService._restResponseCallback(Context, payload).ConfigureAwait(false);
         }
 
-        protected async Task RespondWithModal<T>(string customId, RequestOptions options = null)
-            where T : class, IModal
+        protected override async Task RespondWithModalAsync<T>(string customId, RequestOptions options = null)
         {
             if (Context.Interaction is not RestInteraction restInteraction)
                 throw new InvalidOperationException($"Invalid interaction type. Interaction must be a type of {nameof(RestInteraction)} in order to execute this method");
 
-            string payload = restInteraction.RespondWithModal<T>(customId, options);
+            var payload = restInteraction.RespondWithModal<T>(customId, options);
 
             if (Context is IRestInteractionContext restContext && restContext.InteractionResponseCallback != null)
                 await restContext.InteractionResponseCallback.Invoke(payload).ConfigureAwait(false);
