@@ -52,11 +52,7 @@ namespace Discord.Interactions
             var captureCount = wildcardCaptures?.Count() ?? 0;
 
             if (paramCount < captureCount + 1)
-            {
-                var result = ExecuteResult.FromError(InteractionCommandError.BadArgs, "Command was invoked with too many parameters");
-                await InvokeModuleEvent(context, result).ConfigureAwait(false);
-                return result;
-            }
+                return await InvokeEventAndReturn(context, ExecuteResult.FromError(InteractionCommandError.BadArgs, "Command was invoked with too many parameters")).ConfigureAwait(false);
 
             try
             {
@@ -65,27 +61,16 @@ namespace Discord.Interactions
                 for (var i = 0; i < paramCount; i++)
                 {
                     var parameter = Parameters.ElementAt(i);
-                    bool isCapture = i < captureCount;
+                    var isCapture = i < captureCount;
 
                     if (isCapture ^ parameter.IsRouteSegmentParameter)
-                    {
-                        var result = ExecuteResult.FromError(InteractionCommandError.BadArgs, $"Argument type and parameter type didn't match (Wild Card capture/Component value)");
-                        await InvokeModuleEvent(context, result).ConfigureAwait(false);
-                        return result;
-                    }
+                        return await InvokeEventAndReturn(context, ExecuteResult.FromError(InteractionCommandError.BadArgs, "Argument type and parameter type didn't match (Wild Card capture/Component value)")).ConfigureAwait(false);
 
-                    TypeConverterResult readResult;
-
-                    if (isCapture)
-                        readResult = await parameter.TypeReader.ReadAsync(context, wildcardCaptures.ElementAt(i), services).ConfigureAwait(false);
-                    else
-                        readResult = await parameter.TypeConverter.ReadAsync(context, data, services).ConfigureAwait(false);
+                    var readResult = isCapture ? await parameter.TypeReader.ReadAsync(context, wildcardCaptures.ElementAt(i), services).ConfigureAwait(false) :
+                        await parameter.TypeConverter.ReadAsync(context, data, services).ConfigureAwait(false);
 
                     if (!readResult.IsSuccess)
-                    {
-                        await InvokeModuleEvent(context, readResult).ConfigureAwait(false);
-                        return readResult;
-                    }
+                        return await InvokeEventAndReturn(context, readResult).ConfigureAwait(false);
 
                     args[i] = readResult.Value;
                 }
@@ -94,9 +79,7 @@ namespace Discord.Interactions
             }
             catch (Exception ex)
             {
-                var result = ExecuteResult.FromError(ex);
-                await InvokeModuleEvent(context, result).ConfigureAwait(false);
-                return result;
+                return await InvokeEventAndReturn(context, ExecuteResult.FromError(ex)).ConfigureAwait(false);
             }
         }
 
