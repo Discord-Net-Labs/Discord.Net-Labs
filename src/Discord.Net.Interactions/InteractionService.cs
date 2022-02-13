@@ -914,7 +914,7 @@ namespace Discord.Interactions
         /// <returns>
         ///     A task representing the conversion process. The task result contains the result of the conversion.
         /// </returns>
-        public Task<string> SerializeValue<T>(T obj, IServiceProvider services = null) =>
+        public Task<string> SerializeValueAsync<T>(T obj, IServiceProvider services = null) =>
             _typeReaderMap.Get(typeof(T), services).SerializeAsync(obj);
 
         /// <summary>
