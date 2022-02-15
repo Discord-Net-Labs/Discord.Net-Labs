@@ -98,6 +98,7 @@ namespace Discord
         TokenUnauthorized = 40001,
         InvalidVerification = 40002,
         OpeningDMTooFast = 40003,
+        SendMessagesHasBeenTemporarilyDisabled = 40004,
         RequestEntityTooLarge = 40005,
         FeatureDisabled = 40006,
         UserBanned = 40007,
@@ -107,6 +108,7 @@ namespace Discord
         #endregion
 
         #region Action Preconditions/Checks (50XXX)
+        InteractionHasAlreadyBeenAcknowledged = 40060,
         MissingPermissions = 50001,
         InvalidAccountType = 50002,
         CannotExecuteForDM = 50003,
