@@ -48,7 +48,7 @@ namespace Discord
         /// </returns>
         bool? IsSyncing { get; }
         /// <summary>
-        ///     ID that this integration uses for "subscribers".
+        ///     Gets the ID that this integration uses for "subscribers".
         /// </summary>
         ulong? RoleId { get; }
         /// <summary>
