@@ -52,11 +52,11 @@ namespace Discord
         /// </summary>
         ulong? RoleId { get; }
         /// <summary>
-        ///     Whether emoticons should be synced for this integration (twitch only currently).
+        ///     Gets whether emoticons should be synced for this integration (twitch only currently).
         /// </summary>
         bool? HasEnabledEmoticons { get; }
         /// <summary>
-        ///     The behavior of expiring subscribers.
+        ///     Gets the behavior of expiring subscribers.
         /// </summary>
         IntegrationExpireBehavior? ExpireBehavior { get; }
         /// <summary>
