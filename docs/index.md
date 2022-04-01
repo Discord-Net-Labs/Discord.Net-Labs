@@ -23,6 +23,9 @@ interface with the [Discord API](https://discord.com/).
 If this is your first time using Discord.Net, you should refer to the
 [Intro](xref:Guides.Introduction) for tutorials.
 
+If you're coming from Discord.NET V2, 
+consider checking out [what has changed](xref:Guides.V2V3Guide).
+
 More experienced users might want to refer to the
 [API Documentation](xref:API.Docs) for a breakdown of the individual
 objects in the library.
@@ -47,39 +50,15 @@ FAQ. Read it thoroughly because most common questions are already answered there
 If you still have unanswered questions after reading the [FAQ](xref:FAQ.Basics.GetStarted), further support is available on 
 [Discord](https://discord.gg/dnet).
 
-## Commonly used features
+## New in V3
 
-#### Interaction Framework
+### Interaction Framework
 
-A counterpart to staple command service of Discord.NET, the Interaction Framework implements the same
-feature-rich structure to register & handle interactions like Slash commands & buttons.
+A counterpart to the well-known command service of Discord.NET, the Interaction Framework implements the same
+feature-rich structure to register & handle interactions like application commands & buttons.
 
 - Read about the Interaction Framework
 [here](xref:Guides.IntFw.Intro)
-
-#### Slash Commands
-
-Slash commands are purposed to take over the normal prefixed commands in Discord and comes with good functionality to serve as a replacement. 
-Being interactions, they are handled as SocketInteractions. Creating and receiving slashcommands is covered below.
-
-- Find out more about slash commands in the 
-[Slash Command Guides](xref:Guides.SlashCommands.Intro)
-
-#### Context Message & User Ccommands
-
-These commands can be pointed at messages and users, in custom application tabs. 
-Being interactions as well, they are able to be handled just like slash commands. They do not have options however.
-
-- Learn how to create and handle these commands in the 
-[Context Command Guides](xref:Guides.ContextCommands.Creating)
-
-#### Message Components
-
-Components of a message such as buttons and dropdowns, which can be interacted with and responded to. 
-Message components can be set in rows and multiple can exist on a single message!
-
-- Explanation on how to add & respond to message components can be found in the 
-[Message Component Guides](xref:Guides.MessageComponents.Intro)
 
 > [!Note]
 > More experienced users might want to refer to the

@@ -28,6 +28,9 @@ namespace Discord.API.Gateway
         public Channel[] PrivateChannels { get; set; }
         [JsonProperty("relationships")]
         public Relationship[] Relationships { get; set; }
+        [JsonProperty("application")]
+        public PartialApplication Application { get; set; }
+
 
         //Ignored
         /*[JsonProperty("user_settings")]
