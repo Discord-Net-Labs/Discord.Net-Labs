@@ -44,6 +44,16 @@ namespace Discord.Interactions
         public bool DefaultPermission { get; }
 
         /// <summary>
+        ///     Gets whether this command can be used in DMs.
+        /// </summary>
+        public bool IsEnabledInDm { get; }
+
+        /// <summary>
+        ///     Gets the default permissions needed for executing this command.
+        /// </summary>
+        public GuildPermission? DefaultMemberPermissions { get; }
+
+        /// <summary>
         ///     Gets the collection of Sub Modules of this module.
         /// </summary>
         public IReadOnlyList<ModuleInfo> SubModules { get; }
@@ -67,6 +77,8 @@ namespace Discord.Interactions
         ///     Gets the Autocomplete Commands that are declared in this module.
         /// </summary>
         public IReadOnlyCollection<AutocompleteCommandInfo> AutocompleteCommands { get; }
+
+        public IReadOnlyCollection<ModalCommandInfo> ModalCommands { get; }
 
         /// <summary>
         ///     Gets the declaring type of this module, if <see cref="IsSubModule"/> is <see langword="true"/>.
@@ -108,10 +120,13 @@ namespace Discord.Interactions
             Description = builder.Description;
             Parent = parent;
             DefaultPermission = builder.DefaultPermission;
+            IsEnabledInDm = builder.IsEnabledInDm;
+            DefaultMemberPermissions = BuildDefaultMemberPermissions(builder);
             SlashCommands = BuildSlashCommands(builder).ToImmutableArray();
             ContextCommands = BuildContextCommands(builder).ToImmutableArray();
             ComponentCommands = BuildComponentCommands(builder).ToImmutableArray();
             AutocompleteCommands = BuildAutocompleteCommands(builder).ToImmutableArray();
+            ModalCommands = BuildModalCommands(builder).ToImmutableArray();
             SubModules = BuildSubModules(builder, commandService, services).ToImmutableArray();
             Attributes = BuildAttributes(builder).ToImmutableArray();
             Preconditions = BuildPreconditions(builder).ToImmutableArray();
@@ -171,6 +186,16 @@ namespace Discord.Interactions
             return result;
         }
 
+        private IEnumerable<ModalCommandInfo> BuildModalCommands(ModuleBuilder builder)
+        {
+            var result = new List<ModalCommandInfo>();
+
+            foreach (var commandBuilder in builder.ModalCommands)
+                result.Add(commandBuilder.Build(this, CommandService));
+
+            return result;
+        }
+
         private IEnumerable<Attribute> BuildAttributes (ModuleBuilder builder)
         {
             var result = new List<Attribute>();
@@ -198,6 +223,21 @@ namespace Discord.Interactions
             }
 
             return preconditions;
+        }
+
+        private static GuildPermission? BuildDefaultMemberPermissions(ModuleBuilder builder)
+        {
+            var permissions = builder.DefaultMemberPermissions;
+
+            var parent = builder.Parent;
+
+            while(parent != null)
+            {
+                permissions = (permissions ?? 0) | (parent.DefaultMemberPermissions ?? 0);
+                parent = parent.Parent;
+            }
+
+            return permissions;
         }
 
         private static bool CheckTopLevel (ModuleInfo parent)

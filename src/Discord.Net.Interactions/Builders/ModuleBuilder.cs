@@ -16,6 +16,7 @@ namespace Discord.Interactions.Builders
         private readonly List<ContextCommandBuilder> _contextCommands;
         private readonly List<ComponentCommandBuilder> _componentCommands;
         private readonly List<AutocompleteCommandBuilder> _autocompleteCommands;
+        private readonly List<ModalCommandBuilder> _modalCommands;
 
         /// <summary>
         ///     Gets the underlying Interaction Service.
@@ -51,6 +52,16 @@ namespace Discord.Interactions.Builders
         ///     Gets and sets the default permission of this module.
         /// </summary>
         public bool DefaultPermission { get; set; } = true;
+
+        /// <summary>
+        ///     Gets whether this command can be used in DMs.
+        /// </summary>
+        public bool IsEnabledInDm { get; set; } = true;
+
+        /// <summary>
+        ///     Gets the default permissions needed for executing this command.
+        /// </summary>
+        public GuildPermission? DefaultMemberPermissions { get; set; } = null;
 
         /// <summary>
         ///     Gets and sets whether this has a <see cref="DontAutoRegisterAttribute"/>.
@@ -92,6 +103,11 @@ namespace Discord.Interactions.Builders
         /// </summary>
         public IReadOnlyList<AutocompleteCommandBuilder> AutocompleteCommands => _autocompleteCommands;
 
+        /// <summary>
+        ///     Gets a collection of the Modal Commands of this module.
+        /// </summary>
+        public IReadOnlyList<ModalCommandBuilder> ModalCommands => _modalCommands;
+
         internal TypeInfo TypeInfo { get; set; }
 
         internal ModuleBuilder (InteractionService interactionService, ModuleBuilder parent = null)
@@ -105,6 +121,7 @@ namespace Discord.Interactions.Builders
             _contextCommands = new List<ContextCommandBuilder>();
             _componentCommands = new List<ComponentCommandBuilder>();
             _autocompleteCommands = new List<AutocompleteCommandBuilder>();
+            _modalCommands = new List<ModalCommandBuilder> ();
             _preconditions = new List<PreconditionAttribute>();
         }
 
@@ -152,9 +169,35 @@ namespace Discord.Interactions.Builders
         /// <returns>
         ///     The builder instance.
         /// </returns>
-        public ModuleBuilder WithDefaultPermision (bool permission)
+        public ModuleBuilder WithDefaultPermission (bool permission)
         {
             DefaultPermission = permission;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets <see cref="IsEnabledInDm"/>.
+        /// </summary>
+        /// <param name="isEnabled">New value of the <see cref="IsEnabledInDm"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
+        public ModuleBuilder SetEnabledInDm(bool isEnabled)
+        {
+            IsEnabledInDm = isEnabled;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets <see cref="DefaultMemberPermissions"/>.
+        /// </summary>
+        /// <param name="permissions">New value of the <see cref="DefaultMemberPermissions"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
+        public ModuleBuilder WithDefaultMemberPermissions(GuildPermission permissions)
+        {
+            DefaultMemberPermissions = permissions;
             return this;
         }
 
@@ -241,6 +284,21 @@ namespace Discord.Interactions.Builders
             var command = new AutocompleteCommandBuilder(this);
             configure(command);
             _autocompleteCommands.Add(command);
+            return this;
+        }
+
+        /// <summary>
+        ///     Adds a modal command builder to <see cref="ModalCommands"/>.
+        /// </summary>
+        /// <param name="configure"><see cref="ModalCommands"/> factory.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
+        public ModuleBuilder AddModalCommand(Action<ModalCommandBuilder> configure)
+        {
+            var command = new ModalCommandBuilder(this);
+            configure(command);
+            _modalCommands.Add(command);
             return this;
         }
 

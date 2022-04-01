@@ -19,6 +19,16 @@ namespace Discord.Interactions.Builders
         /// </summary>
         public bool DefaultPermission { get; set; } = true;
 
+        /// <summary>
+        ///     Gets whether this command can be used in DMs.
+        /// </summary>
+        public bool IsEnabledInDm { get; set; } = true;
+
+        /// <summary>
+        ///     Gets the default permissions needed for executing this command.
+        /// </summary>
+        public GuildPermission? DefaultMemberPermissions { get; set; } = null;
+
         internal ContextCommandBuilder (ModuleBuilder module) : base(module) { }
 
         /// <summary>
@@ -52,6 +62,32 @@ namespace Discord.Interactions.Builders
         public ContextCommandBuilder SetDefaultPermission (bool defaultPermision)
         {
             DefaultPermission = defaultPermision;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets <see cref="IsEnabledInDm"/>.
+        /// </summary>
+        /// <param name="isEnabled">New value of the <see cref="IsEnabledInDm"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
+        public ContextCommandBuilder SetEnabledInDm(bool isEnabled)
+        {
+            IsEnabledInDm = isEnabled;
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets <see cref="DefaultMemberPermissions"/>.
+        /// </summary>
+        /// <param name="permissions">New value of the <see cref="DefaultMemberPermissions"/>.</param>
+        /// <returns>
+        ///     The builder instance.
+        /// </returns>
+        public ContextCommandBuilder WithDefaultMemberPermissions(GuildPermission permissions)
+        {
+            DefaultMemberPermissions = permissions;
             return this;
         }
 
