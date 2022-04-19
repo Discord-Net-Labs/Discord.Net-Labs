@@ -18,6 +18,10 @@
   </a>
 </p>
 
+<p align="center">
+  <img width="100%" src="https://gist.githubusercontent.com/MrCakeSlayer/cfd51f87a5b38918325869402e48ce71/raw/ccfa66373fdb7db8eb5d3c22b184053f4e3d4801/Alert-Labs.svg">
+</p>
+
 ## What is labs?
 
 Discord.NET Labs is an experimental branch of [Discord.NET](https://github.com/discord-net/Discord.Net) that introduces the newest features of discord for testing and experimenting.
